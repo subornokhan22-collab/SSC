@@ -1,75 +1,42 @@
-name: Build Android APK
+name: Build Release APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Java JDK
+      - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
 
-      - name: Generate Android project structure
-        run: flutter create . --platforms=android --project-name ssc_prep_app
+      - name: Clean Flutter Build Cache
+        run: flutter clean
 
-      - name: Create pubspec.yaml with launcher icons config
-        run: |
-          cat << 'EOF' > pubspec.yaml
-          name: ssc_prep_app
-          description: "All-in-One SSC 2027 Preparation App"
-          publish_to: 'none'
-          version: 1.0.0+1
-
-          environment:
-            sdk: '>=3.0.0 <4.0.0'
-
-          dependencies:
-            flutter:
-              sdk: flutter
-            cupertino_icons: ^1.0.8
-
-          dev_dependencies:
-            flutter_test:
-              sdk: flutter
-            flutter_lints: ^4.0.0
-            flutter_launcher_icons: ^0.13.1
-
-          flutter_launcher_icons:
-            android: true
-            ios: false
-            image_path: "assets/icon.png"
-            min_sdk_android: 21
-
-          flutter:
-            uses-material-design: true
-            assets:
-              - assets/icon.png
-          EOF
-
-      - name: Install dependencies
+      - name: Get Dependencies
         run: flutter pub get
 
-      - name: Generate App Icons
-        run: dart run flutter_launcher_icons
-
-      - name: Build APK
+      - name: Build Release APK
         run: flutter build apk --release
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ssc-prep-app-release
+          name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
