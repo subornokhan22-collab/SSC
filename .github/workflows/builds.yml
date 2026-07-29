@@ -26,7 +26,7 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Clean Flutter Build Cache
+      - name: Clean Flutter Cache
         run: flutter clean
 
       - name: Get Dependencies
