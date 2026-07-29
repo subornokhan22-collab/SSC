@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const SSCPrepApp());
@@ -111,6 +112,23 @@ class Question {
     required this.correctAnswerIndex,
     required this.explanation,
   });
+}
+
+class DrivePdfItem {
+  final String title;
+  final String category;
+  final String driveFileId;
+  final String fileSize;
+
+  DrivePdfItem({
+    required this.title,
+    required this.category,
+    required this.driveFileId,
+    required this.fileSize,
+  });
+
+  String get viewUrl => 'https://drive.google.com/file/d/$driveFileId/view?usp=sharing';
+  String get downloadUrl => 'https://drive.google.com/uc?export=download&id=$driveFileId';
 }
 
 /// ---------------------------------------------------------------------------
@@ -283,7 +301,7 @@ final List<Subject> sscSubjects = [
 ];
 
 /// ---------------------------------------------------------------------------
-/// SUBJECT-SPECIFIC STATIC QUESTION BANK
+/// QUESTION BANK
 /// ---------------------------------------------------------------------------
 final Map<String, List<Question>> staticQuestionBank = {
   'বাংলা ১ম পত্র': [
@@ -299,12 +317,6 @@ final Map<String, List<Question>> staticQuestionBank = {
       correctAnswerIndex: 2,
       explanation: 'প্রমথ চৌধুরীর মতে, বই পড়াই মানুষের সর্বশ্রেষ্ঠ শখ হওয়া উচিত।',
     ),
-    Question(
-      questionText: '‘কপোতাক্ষ নদ’ কবিতাটি কোন ধরনের কবিতা?',
-      options: ['A) মহাকাব্য', 'B) সনেট', 'C) গীতি কবিতা', 'D) রূপক কবিতা'],
-      correctAnswerIndex: 1,
-      explanation: 'মাইকেল মধুসূদন দত্ত রচিত এটি একটি চতুর্দশপদী (সনেট) কবিতা।',
-    ),
   ],
   'বাংলা ২য় পত্র': [
     Question(
@@ -319,12 +331,6 @@ final Map<String, List<Question>> staticQuestionBank = {
       correctAnswerIndex: 1,
       explanation: 'ক্রিয়ার পারস্পরিক অর্থ প্রকাশ করলে ব্যতিহার বহুব্রীহি সমাস হয়।',
     ),
-    Question(
-      questionText: 'বাংলা ভাষায় মৌলিক স্বরধ্বনি কয়টি?',
-      options: ['A) ৭ টি', 'B) ৯ টি', 'C) ১১ টি', 'D) ৩৯ টি'],
-      correctAnswerIndex: 0,
-      explanation: 'বাংলা ভাষায় মৌলিক স্বরধ্বনি মোট ৭ টি (অ, আ, ই, উ, এ, ও, অ্যা)।',
-    ),
   ],
   'English 1st Paper': [
     Question(
@@ -332,12 +338,6 @@ final Map<String, List<Question>> staticQuestionBank = {
       options: ['A) Kazi Nazrul Islam', 'B) Bangabandhu Sheikh Mujibur Rahman', 'C) Rabindranath Tagore', 'D) Sher-e-Bangla'],
       correctAnswerIndex: 1,
       explanation: 'Bangabandhu Sheikh Mujibur Rahman is the Father of the Nation.',
-    ),
-    Question(
-      questionText: 'When is International Mother Language Day celebrated globally?',
-      options: ['A) 26th March', 'B) 16th December', 'C) 21st February', 'D) 14th April'],
-      correctAnswerIndex: 2,
-      explanation: 'UNESCO declared 21st February as International Mother Language Day.',
     ),
   ],
   'English 2nd Paper': [
@@ -347,12 +347,6 @@ final Map<String, List<Question>> staticQuestionBank = {
       correctAnswerIndex: 1,
       explanation: 'Abbreviation "M.A." starts with a vowel sound /em/, so "an" is used.',
     ),
-    Question(
-      questionText: 'Select the correct tag question: "Let us go out for a walk, ___?"',
-      options: ['A) will you', 'B) shall we', 'C) don\'t we', 'D) aren\'t we'],
-      correctAnswerIndex: 1,
-      explanation: 'Imperative sentence starting with "Let us" takes "shall we?".',
-    ),
   ],
   'সাধারণ গণিত': [
     Question(
@@ -360,12 +354,6 @@ final Map<String, List<Question>> staticQuestionBank = {
       options: ['A) 5', 'B) 10', 'C) 25', 'D) ±5'],
       correctAnswerIndex: 0,
       explanation: r'log_x (25) = 2 => x² = 25 => x = 5 (ভিত্তি ঋণাত্মক হতে পারে না)।',
-    ),
-    Question(
-      questionText: r'a + b = 5 এবং a - b = 3 হলে, a² + b² এর মান কত?',
-      options: ['A) 17', 'B) 34', 'C) 16', 'D) 8'],
-      correctAnswerIndex: 0,
-      explanation: r'2(a² + b²) = (a+b)² + (a-b)² = 25 + 9 = 34 => a² + b² = 17।',
     ),
   ],
   'পদার্থবিজ্ঞান': [
@@ -375,33 +363,15 @@ final Map<String, List<Question>> staticQuestionBank = {
       correctAnswerIndex: 2,
       explanation: r'h = (1/2) × g × t² = 0.5 × 9.8 × 9 = 44.1 মিটার।',
     ),
-    Question(
-      questionText: 'শব্দের বেগ সবচেয়ে বেশি কোন মাধ্যমে?',
-      options: ['A) বায়ুতে', 'B) তরলে', 'C) কঠিন পদার্থে', 'D) শূন্যস্থানে'],
-      correctAnswerIndex: 2,
-      explanation: 'কঠিন মাধ্যমে অণুগুলো কাছাকাছি থাকায় শব্দের বেগ সবচেয়ে বেশি।',
-    ),
   ],
-  'ICT': [
-    Question(
-      questionText: 'কম্পিউটার ব্রেইনের সাথে তুলনা করা হয় কোন অংশকে?',
-      options: ['A) RAM', 'B) Hard Disk', 'C) CPU', 'D) Monitor'],
-      correctAnswerIndex: 2,
-      explanation: 'CPU (Central Processing Unit) হলো কম্পিউটারের মস্তিষ্ক।',
-    ),
-  ]
 };
 
-/// DYNAMIC MCQ GENERATOR ENGINE FOR UNLIMITED CHAPTER MCQs
 List<Question> generateDynamicMcqs(String subjectName, String? chapterName, int count) {
   List<Question> questions = [];
-  
-  // First load matching static questions if available
   if (staticQuestionBank.containsKey(subjectName)) {
     questions.addAll(staticQuestionBank[subjectName]!);
   }
 
-  // Fill remaining required count dynamically based on chapter/subject name
   int id = questions.length + 1;
   while (questions.length < count) {
     String chapterTag = chapterName != null ? '[$chapterName]' : '';
@@ -457,7 +427,7 @@ class HomeScreen extends StatelessWidget {
                       children: const [
                         Text('SSC 2027 সম্পূর্ণ প্রস্তুতি', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                         SizedBox(height: 4),
-                        Text('সকল বিষয়ের অধ্যায়ভিত্তিক MCQ, লাইভ পরীক্ষা ও স্মার্ট AI টিউটর।', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                        Text('সকল বিষয়ের অধ্যায়ভিত্তিক MCQ, লাইভ পরীক্ষা ও গুগল ড্রাইভ নোটস।', style: TextStyle(color: Colors.white70, fontSize: 13)),
                       ],
                     ),
                   )
@@ -484,7 +454,7 @@ class HomeScreen extends StatelessWidget {
                 _buildQuickCard(context, 'AI শিক্ষক', Icons.smart_toy, Colors.purple, () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const AiTutorScreen()));
                 }),
-                _buildQuickCard(context, 'PDF লাইব্রেরি', Icons.picture_as_pdf, Colors.orange, () {
+                _buildQuickCard(context, 'Drive PDF', Icons.picture_as_pdf, Colors.orange, () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const PdfLibraryScreen()));
                 }),
               ],
@@ -517,7 +487,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 /// ---------------------------------------------------------------------------
-/// SUBJECTS LIST SCREEN
+/// ALL SUBJECTS SCREEN
 /// ---------------------------------------------------------------------------
 class AllSubjectsScreen extends StatelessWidget {
   const AllSubjectsScreen({super.key});
@@ -580,13 +550,13 @@ class SubjectDetailScreen extends StatelessWidget {
               trailing: const Icon(Icons.play_circle_fill, color: Colors.indigo),
               onTap: () {
                 Navigator.push(
-                  context, 
+                  context,
                   MaterialPageRoute(
                     builder: (_) => LiveMcqExamScreen(
                       subjectName: subject.name,
                       chapterName: chapterName,
-                    )
-                  )
+                    ),
+                  ),
                 );
               },
             ),
@@ -667,7 +637,7 @@ class LiveMcqExamScreen extends StatefulWidget {
   final String? chapterName;
 
   const LiveMcqExamScreen({
-    super.key, 
+    super.key,
     required this.subjectName,
     this.chapterName,
   });
@@ -687,7 +657,6 @@ class _LiveMcqExamScreenState extends State<LiveMcqExamScreen> {
   @override
   void initState() {
     super.initState();
-    // Load generated or static subject/chapter specific questions
     _questions = generateDynamicMcqs(widget.subjectName, widget.chapterName, 10);
     _userAnswers = List<int>.filled(_questions.length, -1);
     _startTimer();
@@ -731,7 +700,7 @@ class _LiveMcqExamScreenState extends State<LiveMcqExamScreen> {
       builder: (context) => AlertDialog(
         title: const Text('পরীক্ষার ফলাফল 🎉'),
         content: Column(
-          mainAxisSize: dynamic,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text('আপনার প্রাপ্ত নম্বর: $score / ${_questions.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
@@ -877,7 +846,6 @@ class _AiTutorScreenState extends State<AiTutorScreen> {
   String _processAiResponse(String query) {
     String cleanQuery = query.trim().replaceAll(' ', '');
 
-    // 1. Basic Math Expression Evaluator
     try {
       if (cleanQuery.contains('+')) {
         var parts = cleanQuery.split('+');
@@ -898,7 +866,6 @@ class _AiTutorScreenState extends State<AiTutorScreen> {
       }
     } catch (_) {}
 
-    // 2. Subject Knowledge base matchers
     String qLower = query.toLowerCase();
     if (qLower.contains('শুভা') || qLower.contains('subha')) {
       return '‘শুভা’ রবীন্দ্রনাথ ঠাকুরের একটি বিখ্যাত ছোটগল্প। গল্পের প্রধান চরিত্র একটি বাকপ্রতিবন্ধী মেয়ে যার নাম সুভাষিণী।';
@@ -910,7 +877,6 @@ class _AiTutorScreenState extends State<AiTutorScreen> {
       return 'নিউটনের ২য় সূত্র: বস্তুর ভরবেগের পরিবর্তনের হার তার ওপর প্রযুক্ত বলের সমানুপাতিক। (F = ma)';
     }
 
-    // Default intelligent fallback response
     return 'তোমার প্রশ্নটি পেয়েছি: "$query"\n\nএটি SSC কারিকুলামের অন্তর্ভুক্ত একটি বিষয়। আরও সঠিক ফলাফলের জন্য প্রশ্নটি স্পষ্ট করে লিখুন বা কোনো বিশেষ গাণিতিক সমস্যা হলে সমীকরণ আকারে দিন।';
   }
 
@@ -992,44 +958,211 @@ class _AiTutorScreenState extends State<AiTutorScreen> {
 }
 
 /// ---------------------------------------------------------------------------
-/// PDF LIBRARY SCREEN
+/// GOOGLE DRIVE INTEGRATED PDF LIBRARY SCREEN (OPTION B)
 /// ---------------------------------------------------------------------------
-class PdfLibraryScreen extends StatelessWidget {
+class PdfLibraryScreen extends StatefulWidget {
   const PdfLibraryScreen({super.key});
 
   @override
+  State<PdfLibraryScreen> createState() => _PdfLibraryScreenState();
+}
+
+class _PdfLibraryScreenState extends State<PdfLibraryScreen> {
+  String _selectedCategory = 'সব';
+  final String _driveFolderUrl = 'https://drive.google.com/drive/folders/19UW5mGKcBgorLSmO-joBer0HBodGA65G';
+
+  /// 📌 Google Drive File Database mapped to your Drive folder.
+  /// Replace 'YOUR_DRIVE_FILE_ID_X' with individual File IDs from inside your Google Drive folder.
+  final List<DrivePdfItem> _pdfList = [
+    DrivePdfItem(
+      title: 'বাংলা ১ম পত্র সংক্ষিপ্ত নোট ও সাজেশন',
+      category: 'বাংলা',
+      driveFileId: 'YOUR_DRIVE_FILE_ID_1',
+      fileSize: '4.2 MB',
+    ),
+    DrivePdfItem(
+      title: 'পদার্থবিজ্ঞান সকল অধ্যায়ের সূত্র ও গাণিতিক সমাধান',
+      category: 'পদার্থবিজ্ঞান',
+      driveFileId: 'YOUR_DRIVE_FILE_ID_2',
+      fileSize: '6.8 MB',
+    ),
+    DrivePdfItem(
+      title: 'সাধারণ গণিত শর্টকাট টেকনিক ও বোর্ড প্রশ্ন',
+      category: 'গণিত',
+      driveFileId: 'YOUR_DRIVE_FILE_ID_3',
+      fileSize: '12.1 MB',
+    ),
+    DrivePdfItem(
+      title: 'English 2nd Paper Grammar Rules & CV Format',
+      category: 'English',
+      driveFileId: 'YOUR_DRIVE_FILE_ID_4',
+      fileSize: '3.5 MB',
+    ),
+  ];
+
+  Future<void> _openUrl(String urlString) async {
+    final Uri uri = Uri.parse(urlString);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('লিংকটি খোলা সম্ভব হয়নি! Check your internet connection.')),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> pdfs = [
-      {'title': 'সকল বোর্ড প্রশ্নপত্র ২০২৬', 'size': '24.5 MB'},
-      {'title': 'বাংলা ১ম ও ২য় পত্র সাজেশন', 'size': '12.3 MB'},
-      {'title': 'পদার্থবিজ্ঞান চিত্র ও সূত্রাবলী', 'size': '8.4 MB'},
-      {'title': 'উচ্চতর গণিত শর্টকাট টেকনিক', 'size': '5.1 MB'},
-    ];
+    final categories = ['সব', 'বাংলা', 'গণিত', 'পদার্থবিজ্ঞান', 'English'];
+
+    final filteredList = _selectedCategory == 'সব'
+        ? _pdfList
+        : _pdfList.where((pdf) => pdf.category == _selectedCategory).toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('PDF নোটস ও প্রশ্ন')),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: pdfs.length,
-        itemBuilder: (context, index) {
-          final pdf = pdfs[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: ListTile(
-              leading: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 36),
-              title: Text(pdf['title']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(pdf['size']!),
-              trailing: IconButton(
-                icon: const Icon(Icons.download, color: Colors.indigo),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${pdf['title']} ডাউনলোড হচ্ছে...')),
-                  );
-                },
-              ),
+      appBar: AppBar(
+        title: const Text('Google Drive PDF লাইব্রেরি'),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          // Drive Folder Launcher Banner
+          Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)]),
+              borderRadius: BorderRadius.circular(12),
             ),
-          );
-        },
+            child: Row(
+              children: [
+                const Icon(Icons.folder_shared, color: Colors.white, size: 40),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('অফিসিয়াল গুগল ড্রাইভ ফোল্ডার', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      SizedBox(height: 2),
+                      Text('সকল ফাইল একসাথে ড্রাইভে দেখতে নিচের বাটনে চাপ দিন।', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.blue.shade900),
+                  onPressed: () => _openUrl(_driveFolderUrl),
+                  child: const Text('খুলুন'),
+                )
+              ],
+            ),
+          ),
+
+          // Subject Category Filters
+          Container(
+            height: 45,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                final cat = categories[index];
+                final isSelected = cat == _selectedCategory;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: ChoiceChip(
+                    label: Text(cat),
+                    selected: isSelected,
+                    selectedColor: Colors.indigo,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() => _selectedCategory = cat);
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Divider(height: 1),
+
+          // File List View
+          Expanded(
+            child: filteredList.isEmpty
+                ? const Center(child: Text('এই বিভাগে কোনো PDF পাওয়া যায়নি'))
+                : ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: filteredList.length,
+                    itemBuilder: (context, index) {
+                      final pdf = filteredList[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        elevation: 1.5,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.picture_as_pdf, color: Colors.red, size: 36),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          pdf.title,
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'বিভাগ: ${pdf.category}  •  সাইজ: ${pdf.fileSize}',
+                                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: Colors.indigo,
+                                      side: const BorderSide(color: Colors.indigo),
+                                    ),
+                                    icon: const Icon(Icons.remove_red_eye, size: 18),
+                                    label: const Text('পড়ুন (View)'),
+                                    onPressed: () => _openUrl(pdf.viewUrl),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.indigo,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    icon: const Icon(Icons.download, size: 18),
+                                    label: const Text('ডাউনলোড'),
+                                    onPressed: () => _openUrl(pdf.downloadUrl),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
