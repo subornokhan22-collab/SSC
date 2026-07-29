@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Java JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -22,11 +22,14 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Generate missing Android platform files
+      - name: Generate Android project structure
         run: flutter create . --platforms=android --project-name ssc_prep_app
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate App Icons
+        run: flutter pub run flutter_launcher_icons
 
       - name: Build APK
         run: flutter build apk --release
