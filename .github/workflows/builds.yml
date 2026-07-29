@@ -22,14 +22,20 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Backup custom pubspec.yaml
+        run: cp pubspec.yaml pubspec.yaml.bak
+
       - name: Generate Android project structure
         run: flutter create . --platforms=android --project-name ssc_prep_app
+
+      - name: Restore custom pubspec.yaml
+        run: cp pubspec.yaml.bak pubspec.yaml
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Generate App Icons
-        run: flutter pub run flutter_launcher_icons
+        run: dart run flutter_launcher_icons
 
       - name: Build APK
         run: flutter build apk --release
