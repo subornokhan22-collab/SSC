@@ -47,10 +47,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'হোম'),
-          NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: 'বিষয়সমূহ'),
-          NavigationDestination(icon: Icon(Icons.timer_outlined), selectedIcon: Icon(Icons.timer), label: 'পরীক্ষা (Exam)'),
-          NavigationDestination(icon: Icon(Icons.picture_as_pdf_outlined), selectedIcon: Icon(Icons.picture_as_pdf), label: 'PDF সংগ্রহ'),
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'হোম',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'বিষয়সমূহ',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.timer_outlined),
+            selectedIcon: Icon(Icons.timer),
+            label: 'পরীক্ষা (Exam)',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.picture_as_pdf_outlined),
+            selectedIcon: Icon(Icons.picture_as_pdf),
+            label: 'PDF সংগ্রহ',
+          ),
         ],
       ),
     );
@@ -67,7 +83,13 @@ class Subject {
   final Color color;
   final List<String> chapters;
 
-  Subject({required this.name, required this.code, required this.icon, required this.color, required this.chapters});
+  Subject({
+    required this.name,
+    required this.code,
+    required this.icon,
+    required this.color,
+    required this.chapters,
+  });
 }
 
 final List<Subject> sscSubjects = [
@@ -76,56 +98,112 @@ final List<Subject> sscSubjects = [
     code: '109',
     icon: Icons.calculate,
     color: Colors.indigo,
-    chapters: ['বাস্তব সংখ্যা', 'সেট ও ফাংশন', 'বীজগণিতীয় রাশি', 'সূচক ও লগারিদম', 'এক চলকবিশিষ্ট সমীকরণ', 'ত্রিকোণমিতিক অনুপাত', 'পরিমিতি', 'পরিসংখ্যান'],
+    chapters: [
+      'বাস্তব সংখ্যা',
+      'সেট ও ফাংশন',
+      'বীজগণিতীয় রাশি',
+      'সূচক ও লগারিদম',
+      'এক চলকবিশিষ্ট সমীকরণ',
+      'ত্রিকোণমিতিক অনুপাত',
+      'পরিমিতি',
+      'পরিসংখ্যান'
+    ],
   ),
   Subject(
     name: 'উচ্চতর গণিত (Higher Math)',
     code: '126',
     icon: Icons.functions,
     color: Colors.deepPurple,
-    chapters: ['সেট ও ফাংশন', 'বীজগণিতীয় রাশি', 'জ্যামিতি', 'স্থানাঙ্ক জ্যামিতি', 'অসীম ধারা', 'ত্রিকোণমিতি', 'সম্ভাবনা'],
+    chapters: [
+      'সেট ও ফাংশন',
+      'বীজগণিতীয় রাশি',
+      'জ্যামিতি',
+      'স্থানাঙ্ক জ্যামিতি',
+      'অসীম ধারা',
+      'ত্রিকোণমিতি',
+      'সম্ভাবনা'
+    ],
   ),
   Subject(
     name: 'পদার্থবিজ্ঞান (Physics)',
     code: '136',
     icon: Icons.science,
     color: Colors.blue,
-    chapters: ['ভৌত রাশি ও পরিমাপ', 'গতি', 'বল', 'কাজ, ক্ষমতা ও শক্তি', 'পদার্থের অবস্থা ও চাপ', 'শব্দ ও তরঙ্গ', 'আলোর প্রতিফলন', 'চল বিদ্যুৎ'],
+    chapters: [
+      'ভৌত রাশি ও পরিমাপ',
+      'গতি',
+      'বল',
+      'কাজ, ক্ষমতা ও শক্তি',
+      'পদার্থের অবস্থা ও চাপ',
+      'শব্দ ও তরঙ্গ',
+      'আলোর প্রতিফলন',
+      'চল বিদ্যুৎ'
+    ],
   ),
   Subject(
     name: 'রসায়ন (Chemistry)',
     code: '137',
     icon: Icons.biotech,
     color: Colors.teal,
-    chapters: ['রসায়নের ধারণা', 'পদার্থের অবস্থা', 'পর্যায় সারণি', 'রাসায়নিক বন্ধন', 'এসিড-ক্ষার সমতা', 'খনিজ সম্পদ ও জীবাশ্ম'],
+    chapters: [
+      'রসায়নের ধারণা',
+      'পদার্থের অবস্থা',
+      'পর্যায় সারণি',
+      'রাসায়নিক বন্ধন',
+      'এসিড-ক্ষার সমতা',
+      'খনিজ সম্পদ ও জীবাশ্ম'
+    ],
   ),
   Subject(
     name: 'জীববিজ্ঞান (Biology)',
     code: '138',
     icon: Icons.eco,
     color: Colors.green,
-    chapters: ['জীবন পাঠ', 'জীবকোষ ও টিস্যু', 'কোষ বিভাজন', 'জীবনীশক্তি', 'উদ্ভিদে পরিবহন', 'মানব রেচন', 'জীবের বংশগতি ও বিবর্তন'],
+    chapters: [
+      'জীবন পাঠ',
+      'জীবকোষ ও টিস্যু',
+      'কোষ বিভাজন',
+      'জীবনীশক্তি',
+      'উদ্ভিদে পরিবহন',
+      'মানব রেচন',
+      'জীবের বংশগতি ও বিবর্তন'
+    ],
   ),
   Subject(
     name: 'ইংরেজি (English Prep)',
     code: '107',
     icon: Icons.language,
     color: Colors.orange,
-    chapters: ['Grammar: Right Form of Verbs', 'Changing Sentences', 'Tag Questions', 'Paragraph Writing', 'CV Writing'],
+    chapters: [
+      'Grammar: Right Form of Verbs',
+      'Changing Sentences',
+      'Tag Questions',
+      'Paragraph Writing',
+      'CV Writing'
+    ],
   ),
   Subject(
     name: 'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)',
     code: '154',
     icon: Icons.computer,
     color: Colors.cyan,
-    chapters: ['তথ্য ও যোগাযোগ প্রযুক্তি এবং আমাদের বাংলাদেশ', 'কম্পিউটার ও কম্পিউটার ব্যবহারকারীর নিরাপত্তা', 'আমার শিক্ষায় ইন্টারনেট'],
+    chapters: [
+      'তথ্য ও যোগাযোগ প্রযুক্তি এবং আমাদের বাংলাদেশ',
+      'কম্পিউটার ও কম্পিউটার ব্যবহারকারীর নিরাপত্তা',
+      'আমার শিক্ষায় ইন্টারনেট'
+    ],
   ),
   Subject(
     name: 'বাংলা (Bangla First & Second)',
     code: '101',
     icon: Icons.book,
-    color: Colors.crimson,
-    chapters: ['গদ্য ও পদ্য বিশ্লেষণ', 'ব্যাকরণ: সমাস ও কারক', 'সন্ধি ও উপসর্গ', 'অনুবাদ ও সারাংশ'],
+    color: Colors.redAccent,
+    chapters: [
+      'গদ্য ও পদ্য বিশ্লেষণ',
+      'ব্যাকরণ: সমাস ও কারক',
+      'সন্ধি ও উপসর্গ',
+      'অনুবাদ ও সারাংশ'
+    ],
   ),
 ];
 
@@ -156,25 +234,24 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // AI Assistant Card
             Card(
               elevation: 0,
               color: Colors.indigo.shade50,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+              child: const Padding(
+                padding: EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 26,
                       backgroundColor: Colors.indigo,
                       child: Icon(Icons.smart_toy, color: Colors.white, size: 28),
                     ),
-                    const SizedBox(width: 14),
+                    SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text('স্মার্ট অল-সাবজেক্ট টিউটর', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                           SizedBox(height: 4),
                           Text('সকল বিষয়ের অধ্যায়ভিত্তিক নোট, প্রশ্ন এবং উত্তর এক জায়গায়।'),
@@ -201,7 +278,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Horizontal Subject Scroll
             SizedBox(
               height: 110,
               child: ListView.builder(
@@ -213,7 +289,10 @@ class HomeScreen extends StatelessWidget {
                     width: 100,
                     margin: const EdgeInsets.only(right: 12),
                     child: InkWell(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: subject))),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: subject)),
+                      ),
                       borderRadius: BorderRadius.circular(12),
                       child: Card(
                         color: subject.color.withOpacity(0.1),
@@ -223,7 +302,11 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             Icon(subject.icon, color: subject.color, size: 32),
                             const SizedBox(height: 8),
-                            Text(subject.name.split(' ')[0], textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            Text(
+                              subject.name.split(' ')[0],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
                           ],
                         ),
                       ),
@@ -382,7 +465,10 @@ class ExamHubScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Align(alignment: Alignment.centerLeft, child: Text('বিষয়ভিত্তিক আর্কাইভ টেস্ট', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('বিষয়ভিত্তিক আর্কাইভ টেস্ট', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
@@ -440,7 +526,7 @@ class _LiveMcqExamScreenState extends State<LiveMcqExamScreen> {
             const Text('প্রশ্ন ১ / ১০', style: TextStyle(color: Colors.grey)),
             const SizedBox(height: 8),
             const Text(
-              'যদি $\\log_x 25 = 2$ হয়, তবে $x$ এর মান কত?',
+              r'যদি $\log_x 25 = 2$ হয়, তবে $x$ এর মান কত?',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
