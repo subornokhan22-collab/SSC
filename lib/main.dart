@@ -11,11 +11,11 @@ class SSCPrepApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SSC Prep 2027',
+      title: 'SSC Master Prep 2027',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+        scaffoldBackgroundColor: const Color(0xFFF4F6F9),
       ),
       home: const MainNavigationScreen(),
     );
@@ -34,9 +34,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const FlashcardsScreen(),
-    const AnalyticsScreen(),
-    const BookmarksScreen(),
+    const AllSubjectsScreen(),
+    const ExamHubScreen(),
+    const PdfLibraryScreen(),
   ];
 
   @override
@@ -45,16 +45,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       body: _screens[_currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onDestinationSelected: (index) => setState(() => _currentIndex = index),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'হোম'),
-          NavigationDestination(icon: Icon(Icons.style_outlined), selectedIcon: Icon(Icons.style), label: 'সূত্র/কার্ড'),
-          NavigationDestination(icon: Icon(Icons.bar_chart_outlined), selectedIcon: Icon(Icons.bar_chart), label: 'অ্যানালিটিক্স'),
-          NavigationDestination(icon: Icon(Icons.bookmark_border), selectedIcon: Icon(Icons.bookmark), label: 'বুকমার্ক'),
+          NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: 'বিষয়সমূহ'),
+          NavigationDestination(icon: Icon(Icons.timer_outlined), selectedIcon: Icon(Icons.timer), label: 'পরীক্ষা (Exam)'),
+          NavigationDestination(icon: Icon(Icons.picture_as_pdf_outlined), selectedIcon: Icon(Icons.picture_as_pdf), label: 'PDF সংগ্রহ'),
         ],
       ),
     );
@@ -62,7 +58,79 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 }
 
 /// ---------------------------------------------------------------------------
-/// 1. MAIN HOME SCREEN (Includes textbook features + PDF/Offline downloads)
+/// SUBJECT DATA MODELS
+/// ---------------------------------------------------------------------------
+class Subject {
+  final String name;
+  final String code;
+  final IconData icon;
+  final Color color;
+  final List<String> chapters;
+
+  Subject({required this.name, required this.code, required this.icon, required this.color, required this.chapters});
+}
+
+final List<Subject> sscSubjects = [
+  Subject(
+    name: 'গণিত (General Math)',
+    code: '109',
+    icon: Icons.calculate,
+    color: Colors.indigo,
+    chapters: ['বাস্তব সংখ্যা', 'সেট ও ফাংশন', 'বীজগণিতীয় রাশি', 'সূচক ও লগারিদম', 'এক চলকবিশিষ্ট সমীকরণ', 'ত্রিকোণমিতিক অনুপাত', 'পরিমিতি', 'পরিসংখ্যান'],
+  ),
+  Subject(
+    name: 'উচ্চতর গণিত (Higher Math)',
+    code: '126',
+    icon: Icons.functions,
+    color: Colors.deepPurple,
+    chapters: ['সেট ও ফাংশন', 'বীজগণিতীয় রাশি', 'জ্যামিতি', 'স্থানাঙ্ক জ্যামিতি', 'অসীম ধারা', 'ত্রিকোণমিতি', 'সম্ভাবনা'],
+  ),
+  Subject(
+    name: 'পদার্থবিজ্ঞান (Physics)',
+    code: '136',
+    icon: Icons.science,
+    color: Colors.blue,
+    chapters: ['ভৌত রাশি ও পরিমাপ', 'গতি', 'বল', 'কাজ, ক্ষমতা ও শক্তি', 'পদার্থের অবস্থা ও চাপ', 'শব্দ ও তরঙ্গ', 'আলোর প্রতিফলন', 'চল বিদ্যুৎ'],
+  ),
+  Subject(
+    name: 'রসায়ন (Chemistry)',
+    code: '137',
+    icon: Icons.biotech,
+    color: Colors.teal,
+    chapters: ['রসায়নের ধারণা', 'পদার্থের অবস্থা', 'পর্যায় সারণি', 'রাসায়নিক বন্ধন', 'এসিড-ক্ষার সমতা', 'খনিজ সম্পদ ও জীবাশ্ম'],
+  ),
+  Subject(
+    name: 'জীববিজ্ঞান (Biology)',
+    code: '138',
+    icon: Icons.eco,
+    color: Colors.green,
+    chapters: ['জীবন পাঠ', 'জীবকোষ ও টিস্যু', 'কোষ বিভাজন', 'জীবনীশক্তি', 'উদ্ভিদে পরিবহন', 'মানব রেচন', 'জীবের বংশগতি ও বিবর্তন'],
+  ),
+  Subject(
+    name: 'ইংরেজি (English Prep)',
+    code: '107',
+    icon: Icons.language,
+    color: Colors.orange,
+    chapters: ['Grammar: Right Form of Verbs', 'Changing Sentences', 'Tag Questions', 'Paragraph Writing', 'CV Writing'],
+  ),
+  Subject(
+    name: 'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)',
+    code: '154',
+    icon: Icons.computer,
+    color: Colors.cyan,
+    chapters: ['তথ্য ও যোগাযোগ প্রযুক্তি এবং আমাদের বাংলাদেশ', 'কম্পিউটার ও কম্পিউটার ব্যবহারকারীর নিরাপত্তা', 'আমার শিক্ষায় ইন্টারনেট'],
+  ),
+  Subject(
+    name: 'বাংলা (Bangla First & Second)',
+    code: '101',
+    icon: Icons.book,
+    color: Colors.crimson,
+    chapters: ['গদ্য ও পদ্য বিশ্লেষণ', 'ব্যাকরণ: সমাস ও কারক', 'সন্ধি ও উপসর্গ', 'অনুবাদ ও সারাংশ'],
+  ),
+];
+
+/// ---------------------------------------------------------------------------
+/// HOME SCREEN
 /// ---------------------------------------------------------------------------
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -71,17 +139,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SSC Math Prep 2027', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('SSC All Subjects 2027', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.download_for_offline, color: Colors.teal),
-            tooltip: 'অফলাইন ডেটা',
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.psychology, color: Colors.deepPurple),
-            tooltip: 'টিউটর গাইডলাইন',
-            onPressed: () => _showTutorDialog(context),
+            icon: const Icon(Icons.notifications_active, color: Colors.amber),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('আজকের স্পেশাল মডেল টেস্ট রাত ৮টায়!')),
+              );
+            },
           ),
         ],
       ),
@@ -90,245 +156,378 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Smart Tutor Banner
+            // AI Assistant Card
             Card(
-              color: Colors.teal.shade50,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: Colors.teal,
-                  child: Icon(Icons.smart_toy, color: Colors.white),
-                ),
-                title: const Text('টিউটর (Smart Assistant)', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('প্রতিটি অনুশীলনের সঠিক দিকনির্দেশনা পেতে এখানে ট্যাপ করো।'),
-                onTap: () => _showTutorDialog(context),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            const Text('মডিউল ও প্রস্তুতি', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-
-            // Feature Grid
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              children: [
-                _buildCard(context, 'অধ্যায়ভিত্তিক প্রস্তুতি', Icons.menu_book, Colors.blue),
-                _buildCard(context, 'বোর্ড প্রশ্ন ও সমাধান', Icons.assignment, Colors.orange),
-                _buildCard(context, 'নির্বাচনি পরীক্ষার প্রশ্ন', Icons.school, Colors.purple),
-                _buildCard(context, 'শিখনফলভিত্তিক প্রশ্ন', Icons.center_focus_strong, Colors.green),
-                _buildCard(context, 'অধ্যায়ভিত্তিক মডেল টেস্ট', Icons.timer, Colors.red),
-                _buildCard(context, 'সমন্বিত অধ্যায়ের প্রশ্ন', Icons.extension, Colors.indigo),
-                _buildCard(context, 'সুপার সাজেশন ২০২৭', Icons.stars, Colors.amber),
-                _buildCard(context, 'এক্সক্লুসিভ মডেল টেস্ট', Icons.quiz, Colors.teal),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // PDF Download Section (Offline Mode Enabled)
-            const Text('প্রশ্নপত্র ও অফলাইন ডাউনলোড', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-
-            _buildDownloadTile('বোর্ড পরীক্ষার প্রশ্নপত্র (২০২৬ ও ২০২৫)', 'PDF • 12.5 MB'),
-            const SizedBox(height: 8),
-            _buildDownloadTile('শীর্ষস্থানীয় স্কুল টেস্ট পেপার (২০২৫)', 'PDF • 18.2 MB'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showTutorDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Row(
-          children: [Icon(Icons.psychology, color: Colors.teal), SizedBox(width: 8), Text('টিউটর নির্দেশনা')],
-        ),
-        content: const Text('১. অধ্যায়ভিত্তিক শিখনফল বিশ্লেষণ ভালো করে দেখে নাও।\n২. প্রথমে বোর্ড প্রশ্ন সমাধান করো, তারপর টেস্ট পেপার দেখুন।\n৩. মডেল টেস্ট দিয়ে তোমার দুর্বলতা চিহ্নিত করো।'),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('ঠিক আছে'))],
-      ),
-    );
-  }
-
-  Widget _buildCard(BuildContext context, String title, IconData icon, Color color) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 36, color: color),
-              const SizedBox(height: 8),
-              Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDownloadTile(String title, String subtitle) {
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
-        trailing: IconButton(
-          icon: const Icon(Icons.download_for_offline_outlined, color: Colors.teal),
-          onPressed: () {},
-        ),
-      ),
-    );
-  }
-}
-
-/// ---------------------------------------------------------------------------
-/// 2. FORMULA FLASHCARDS SCREEN 🆕
-/// ---------------------------------------------------------------------------
-class FlashcardsScreen extends StatelessWidget {
-  const FlashcardsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('সূত্র ও ফ্ল্যাশকার্ড')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildFlashcard('বীজগণিতীয় সূত্রাবলী', '(a + b)² = a² + 2ab + b²', 'অধ্যায় ৩: বীজগণিতীয় রাশি'),
-          _buildFlashcard('ত্রিকোণমিতি', 'sin²θ + cos²θ = 1', 'অধ্যায় ৯: ত্রিকোণমিতিক অনুপাত'),
-          _buildFlashcard('পরিমিতি', 'বৃত্তের ক্ষেত্রফল = πr²', 'অধ্যায় ১৬: পরিমিতি'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFlashcard(String topic, String formula, String chapter) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(chapter, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-            const SizedBox(height: 6),
-            Text(topic, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const Divider(),
-            Center(
-              child: Text(
-                formula,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// ---------------------------------------------------------------------------
-/// 3. ANALYTICS DASHBOARD SCREEN 🆕
-/// ---------------------------------------------------------------------------
-class AnalyticsScreen extends StatelessWidget {
-  const AnalyticsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('আপনার অগ্রগতি ও অ্যানালিটিক্স')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Card(
-              color: Colors.teal,
+              elevation: 0,
+              color: Colors.indigo.shade50,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('সর্বমোট প্রস্তুতি', style: TextStyle(color: Colors.white70)),
-                        Text('৬৪%', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
-                      ],
+                    const CircleAvatar(
+                      radius: 26,
+                      backgroundColor: Colors.indigo,
+                      child: Icon(Icons.smart_toy, color: Colors.white, size: 28),
                     ),
-                    Icon(Icons.pie_chart, color: Colors.white, size: 48),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('স্মার্ট অল-সাবজেক্ট টিউটর', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          SizedBox(height: 4),
+                          Text('সকল বিষয়ের অধ্যায়ভিত্তিক নোট, প্রশ্ন এবং উত্তর এক জায়গায়।'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            const Text('অধ্যায়ভিত্তিক দক্ষতা', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            _buildProgressBar('বাস্তব সংখ্যা', 0.85, Colors.green),
-            _buildProgressBar('বীজগণিতীয় রাশি', 0.60, Colors.orange),
-            _buildProgressBar('ত্রিকোণমিতি', 0.40, Colors.red),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('সকল বিষয় (Subjects)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AllSubjectsScreen()));
+                  },
+                  child: const Text('সব দেখুন'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Horizontal Subject Scroll
+            SizedBox(
+              height: 110,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: sscSubjects.length,
+                itemBuilder: (context, index) {
+                  final subject = sscSubjects[index];
+                  return Container(
+                    width: 100,
+                    margin: const EdgeInsets.only(right: 12),
+                    child: InkWell(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: subject))),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Card(
+                        color: subject.color.withOpacity(0.1),
+                        elevation: 0,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(subject.icon, color: subject.color, size: 32),
+                            const SizedBox(height: 8),
+                            Text(subject.name.split(' ')[0], textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            const Text('দ্রুত প্রস্তুতি (Quick Shortcuts)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionTile(context, 'লাইভ মডেল টেস্ট', Icons.timer, Colors.red, () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ExamHubScreen()));
+                  }),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionTile(context, 'PDF প্রশ্ন ব্যাংক', Icons.picture_as_pdf, Colors.redAccent, () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PdfLibraryScreen()));
+                  }),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProgressBar(String title, double value, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildActionTile(BuildContext context, String title, IconData icon, Color color, VoidCallback onTap) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+          child: Column(
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text('${(value * 100).toInt()}%'),
+              Icon(icon, color: color, size: 32),
+              const SizedBox(height: 8),
+              Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
-          const SizedBox(height: 4),
-          LinearProgressIndicator(value: value, color: color, backgroundColor: Colors.grey.shade300, minHeight: 8),
-        ],
+        ),
       ),
     );
   }
 }
 
 /// ---------------------------------------------------------------------------
-/// 4. BOOKMARKS & NOTES SCREEN 🆕
+/// SUBJECTS LIST SCREEN
 /// ---------------------------------------------------------------------------
-class BookmarksScreen extends StatelessWidget {
-  const BookmarksScreen({super.key});
+class AllSubjectsScreen extends StatelessWidget {
+  const AllSubjectsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('সংরক্ষিত প্রশ্ন ও নোটস')),
-      body: ListView(
+      appBar: AppBar(title: const Text('সকল বিষয় (SSC Curriculum)')),
+      body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        children: const [
-          Card(
+        itemCount: sscSubjects.length,
+        itemBuilder: (context, index) {
+          final subject = sscSubjects[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
-              leading: Icon(Icons.bookmark, color: Colors.amber),
-              title: Text('ঢাকা বোর্ড ২০২৬ - সৃজনশীল ৩ (খ)'),
-              subtitle: Text('নোট: এই জ্যামিতিক প্রমাণটিতে বিকল্প পদ্ধতি প্রযোজ্য।'),
-              trailing: Icon(Icons.arrow_forward_ios, size: 16),
+              leading: CircleAvatar(
+                backgroundColor: subject.color,
+                child: Icon(subject.icon, color: Colors.white),
+              ),
+              title: Text(subject.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('${subject.chapters.length} টি অধ্যায় • বিষয় কোড: ${subject.code}'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: subject)));
+              },
             ),
-          ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// ---------------------------------------------------------------------------
+/// SUBJECT DETAIL & CHAPTER SCREEN
+/// ---------------------------------------------------------------------------
+class SubjectDetailScreen extends StatelessWidget {
+  final Subject subject;
+  const SubjectDetailScreen({super.key, required this.subject});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(subject.name)),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: subject.chapters.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: subject.color.withOpacity(0.2),
+                child: Text('${index + 1}', style: TextStyle(color: subject.color, fontWeight: FontWeight.bold)),
+              ),
+              title: Text(subject.chapters[index], style: const TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('অধ্যায়ভিত্তিক MCQ, সৃজনশীল ও নোটস'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${subject.chapters[index]} ওপেন করা হচ্ছে...')),
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// ---------------------------------------------------------------------------
+/// EXAM HUB & INTERACTIVE MCQ TEST
+/// ---------------------------------------------------------------------------
+class ExamHubScreen extends StatelessWidget {
+  const ExamHubScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('অনলাইন পরীক্ষা ও মডেল টেস্ট')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Card(
+              color: Colors.red.shade50,
+              child: ListTile(
+                leading: const Icon(Icons.live_tv, color: Colors.red),
+                title: const Text('দৈনিক লাইভ MCQ পরীক্ষা', style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: const Text('সময়: ২০ মিনিট | ২৫ টি প্রশ্ন'),
+                trailing: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LiveMcqExamScreen()));
+                  },
+                  child: const Text('শুরু করুন'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Align(alignment: Alignment.centerLeft, child: Text('বিষয়ভিত্তিক আর্কাইভ টেস্ট', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: sscSubjects.length,
+                itemBuilder: (context, index) {
+                  final sub = sscSubjects[index];
+                  return Card(
+                    child: ListTile(
+                      leading: Icon(sub.icon, color: sub.color),
+                      title: Text('${sub.name} মডেল টেস্ট'),
+                      subtitle: const Text('৩০ মিনিট • ৩০ নম্বর'),
+                      trailing: const Icon(Icons.play_circle_fill, color: Colors.indigo, size: 30),
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const LiveMcqExamScreen()));
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LiveMcqExamScreen extends StatefulWidget {
+  const LiveMcqExamScreen({super.key});
+
+  @override
+  State<LiveMcqExamScreen> createState() => _LiveMcqExamScreenState();
+}
+
+class _LiveMcqExamScreenState extends State<LiveMcqExamScreen> {
+  int _selectedAnswer = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('অনলাইন MCQ পরীক্ষা'),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('⏱️ ১৫:০০', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red)),
+          )
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('প্রশ্ন ১ / ১০', style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 8),
+            const Text(
+              'যদি $\\log_x 25 = 2$ হয়, তবে $x$ এর মান কত?',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+
+            _buildOption(0, 'A) 5'),
+            _buildOption(1, 'B) 10'),
+            _buildOption(2, 'C) 25'),
+            _buildOption(3, 'D) 50'),
+
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, foregroundColor: Colors.white),
+                onPressed: _selectedAnswer == -1
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('উত্তর সফলভাবে জমা হয়েছে!')),
+                        );
+                        Navigator.pop(context);
+                      },
+                child: const Text('উত্তর জমা দিন (Submit)', style: TextStyle(fontSize: 16)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOption(int index, String text) {
+    final isSelected = _selectedAnswer == index;
+    return Card(
+      color: isSelected ? Colors.indigo.shade100 : Colors.white,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: isSelected ? Colors.indigo : Colors.grey.shade300, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        title: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+        onTap: () => setState(() => _selectedAnswer = index),
+      ),
+    );
+  }
+}
+
+/// ---------------------------------------------------------------------------
+/// PDF HUB & DOWNLOAD MANAGER
+/// ---------------------------------------------------------------------------
+class PdfLibraryScreen extends StatelessWidget {
+  const PdfLibraryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Map<String, String>> pdfs = [
+      {'title': 'সকল বোর্ড প্রশ্নপত্র ২০২৬ (All Board Questions)', 'size': '24.5 MB'},
+      {'title': 'শীর্ষস্থানীয় স্কুল টেস্ট পেপার (Top Schools)', 'size': '32.1 MB'},
+      {'title': 'পদার্থবিজ্ঞান ও রসায়ন গুরুত্বপূর্ণ চিত্র নোট', 'size': '8.4 MB'},
+      {'title': 'উচ্চতর গণিত সূত্রাবলী ও শর্টকাট শিট', 'size': '4.2 MB'},
+    ];
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('PDF বোর্ড প্রশ্ন ও সাজেশন্স')),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: pdfs.length,
+        itemBuilder: (context, index) {
+          final pdf = pdfs[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 36),
+              title: Text(pdf['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              subtitle: Text(pdf['size']!),
+              trailing: IconButton(
+                icon: const Icon(Icons.download_for_offline, color: Colors.indigo),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${pdf['title']} ডাউনলোড হচ্ছে...')),
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
