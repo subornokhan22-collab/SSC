@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const SSCPrepApp());
+  runApp(const ALearningApp());
 }
 
-class SSCPrepApp extends StatelessWidget {
-  const SSCPrepApp({super.key});
+class ALearningApp extends StatelessWidget {
+  const ALearningApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SSC Master Prep 2027',
+      title: 'A-Learning',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
@@ -21,7 +21,7 @@ class SSCPrepApp extends StatelessWidget {
   }
 }
 
-// 1. Question Data Model with Explicit ID
+// 1. Question Model
 class Question {
   final int id;
   final String subject;
@@ -40,7 +40,7 @@ class Question {
   });
 }
 
-// 2. Organized MCQ Screen Widget
+// 2. MCQ Screen Widget
 class MCQScreen extends StatefulWidget {
   const MCQScreen({super.key});
 
@@ -84,7 +84,7 @@ class _MCQScreenState extends State<MCQScreen> {
   @override
   void initState() {
     super.initState();
-    // Sort questions deterministically by ID once when initialized
+    // Deterministic sorting by ID to maintain strict ordering
     organizedQuestions = List.from(_rawQuestions);
     organizedQuestions.sort((a, b) => a.id.compareTo(b.id));
   }
@@ -95,7 +95,7 @@ class _MCQScreenState extends State<MCQScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Question ${currentIndex + 1} of ${organizedQuestions.length}'),
+        title: Text('A-Learning • Question ${currentIndex + 1} of ${organizedQuestions.length}'),
         centerTitle: true,
       ),
       body: Padding(
