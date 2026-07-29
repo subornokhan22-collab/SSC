@@ -1,5 +1,5 @@
 name: ssc_prep_app
-description: "SSC Master Prep 2027 App"
+description: "SSC Prep App"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  url_launcher: ^6.3.0
+  url_launcher: ^6.3.0  # <--- Make sure this is here!
 
 dev_dependencies:
   flutter_test:
