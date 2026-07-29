@@ -27,7 +27,7 @@ jobs:
           cache: true
 
       - name: Reconstruct Missing Project Files
-        run: flutter create . --platforms=android,ios --org=com.example.ssc_prep_app
+        run: flutter create . --platforms=android,ios --org=com.example.alearning --project-name=alearning
 
       - name: Get Dependencies
         run: flutter pub get
