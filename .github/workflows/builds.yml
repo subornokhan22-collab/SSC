@@ -26,8 +26,8 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Clean Flutter Cache
-        run: flutter clean
+      - name: Reconstruct Missing Project Files
+        run: flutter create . --platforms=android --org=com.example.ssc_prep_app
 
       - name: Get Dependencies
         run: flutter pub get
