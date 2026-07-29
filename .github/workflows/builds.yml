@@ -23,7 +23,7 @@ jobs:
           channel: 'stable'
 
       - name: Generate missing Android platform files
-        run: flutter create . --platforms=android
+        run: flutter create . --platforms=android --project-name ssc_prep_app
 
       - name: Install dependencies
         run: flutter pub get
