@@ -46,17 +46,27 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
+  final Set<int> _visitedTabs = {0};
 
-  void _goToTab(int index) => setState(() => _currentIndex = index);
+  void _goToTab(int index) {
+    setState(() {
+      _visitedTabs.add(index);
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Only build a tab's screen once it has actually been visited. This
+    // matters most for the PDF tab: building its WebView while off-screen
+    // (as a plain IndexedStack would do for every tab immediately) is what
+    // triggers Android's net::ERR_CACHE_MISS WebView bug.
     final screens = [
       HomeScreen(onNavigate: _goToTab),
-      const SubjectsScreen(),
-      const ExamScreen(),
-      const AITutorScreen(),
-      const PDFResourceScreen(),
+      _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
+      _visitedTabs.contains(2) ? const ExamScreen() : const SizedBox.shrink(),
+      _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
+      _visitedTabs.contains(4) ? const PDFResourceScreen() : const SizedBox.shrink(),
     ];
 
     return Scaffold(
