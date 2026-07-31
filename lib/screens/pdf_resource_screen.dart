@@ -1,18 +1,43 @@
 // lib/screens/pdf_resource_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PDFResourceScreen extends StatelessWidget {
+class PDFResourceScreen extends StatefulWidget {
   const PDFResourceScreen({super.key});
 
-  final String googleDriveFolderUrl =
-      'https://drive.google.com/drive/folders/19UW5mGKcBgorLSmO-joBer0HBodGA65G';
+  @override
+  State<PDFResourceScreen> createState() => _PDFResourceScreenState();
+}
 
-  Future<void> _openDriveFolder(BuildContext context) async {
-    final Uri url = Uri.parse(googleDriveFolderUrl);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) {
+class _PDFResourceScreenState extends State<PDFResourceScreen> {
+  static const String _folderId = '19UW5mGKcBgorLSmO-joBer0HBodGA65G';
+  static const String _embedUrl =
+      'https://drive.google.com/embeddedfolderview?id=$_folderId#grid';
+  static const String _externalUrl =
+      'https://drive.google.com/drive/folders/$_folderId';
+
+  late final WebViewController _controller;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) => setState(() => _loading = false),
+        ),
+      )
+      ..loadRequest(Uri.parse(_embedUrl));
+  }
+
+  Future<void> _openExternally() async {
+    final uri = Uri.parse(_externalUrl);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('লিংক খোলা যায়নি।')),
         );
@@ -26,28 +51,19 @@ class PDFResourceScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('PDF রিসোর্স'),
         centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(12),
-            leading: const CircleAvatar(
-              radius: 26,
-              backgroundColor: Color(0x1AF59E0B),
-              child: Icon(Icons.folder, color: Colors.amber, size: 28),
-            ),
-            title: const Text(
-              'SSC নোটস ড্রাইভ',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            subtitle: const Text('বিষয়ভিত্তিক PDF নোট, সাজেশন ও শীট দেখুন'),
-            trailing: const Icon(Icons.open_in_new),
-            onTap: () => _openDriveFolder(context),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.open_in_new),
+            tooltip: 'ব্রাউজারে খুলুন',
+            onPressed: _openExternally,
           ),
-        ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (_loading) const Center(child: CircularProgressIndicator()),
+        ],
       ),
     );
   }
