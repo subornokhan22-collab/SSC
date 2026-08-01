@@ -13,70 +13,59 @@ class CQScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cqs = QuestionsData.cqs
-        .where((q) => q.subject == subjectId)
-        .toList();
+    final cqs = sampleCreativeQuestions.where((cq) => cq.subject == subjectId).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$subjectName - সৃজনশীল (CQ)'),
-        backgroundColor: const Color(0xFF1A82BB),
+        title: Text('$subjectName - সৃজনশীল প্রশ্ন (CQ)'),
+        backgroundColor: const Color(0xFF2E7D32),
         foregroundColor: Colors.white,
       ),
       body: cqs.isEmpty
-          ? const Center(child: Text('এই বিষয়ে কোনো সৃজনশীল প্রশ্ন নেই।'))
+          ? const Center(child: Text('এই বিষয়ের কোনো সৃজনশীল প্রশ্ন এখনো যুক্ত করা হয়নি।'))
           : ListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: cqs.length,
               itemBuilder: (context, index) {
                 final cq = cqs[index];
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'অধ্যায়: ${cq.chapter}',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1A82BB)),
+                            Chip(
+                              label: Text(cq.chapter, style: const TextStyle(fontSize: 12)),
+                              backgroundColor: Colors.green.shade50,
                             ),
                             Chip(
-                              label: Text(cq.sourceLabel, style: const TextStyle(fontSize: 11, color: Colors.white)),
-                              backgroundColor: Colors.teal.shade700,
+                              label: Text(cq.sourceLabel, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                              backgroundColor: Colors.amber.shade100,
                             ),
                           ],
                         ),
-                        const Divider(),
-
-                        // Stem (উদ্দীপক)
-                        const Text(
-                          'উদ্দীপক:',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        const SizedBox(height: 8),
+                        Text(
+                          'উদ্দীপক ${index + 1}:',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF2E7D32)),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey.shade300),
                           ),
-                          child: Text(
-                            cq.stem,
-                            style: const TextStyle(fontSize: 16, height: 1.4),
-                          ),
+                          child: Text(cq.stem, style: const TextStyle(fontSize: 15, height: 1.3)),
                         ),
-                        const SizedBox(height: 16),
-
-                        // Sub Parts (ক, খ, গ, ঘ)
-                        ...cq.subParts.map((sub) => _buildSubPartWidget(sub)).toList(),
+                        const SizedBox(height: 12),
+                        ...cq.subParts.map((sub) => _buildSubPartTile(sub)).toList(),
                       ],
                     ),
                   ),
@@ -86,66 +75,35 @@ class CQScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSubPartWidget(CQSubPart sub) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        bool showAnswer = false;
-
-        return Card(
-          margin: const EdgeInsets.only(bottom: 10),
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: Colors.grey.shade300),
+  Widget _buildSubPartTile(CQSubPart sub) {
+    return ExpansionTile(
+      tilePadding: EdgeInsets.zero,
+      title: Text(
+        '(${sub.label}) ${sub.prompt} [${sub.marks}]',
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      ),
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: ExpansionTile(
-            title: Row(
-              children: [
-                CircleAvatar(
-                  radius: 12,
-                  backgroundColor: const Color(0xFF1A82BB),
-                  child: Text(
-                    sub.label,
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    sub.prompt,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                Text(
-                  '[${sub.marks}]',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                color: Colors.teal.shade50,
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'নমুনা উত্তর (Model Answer):',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      sub.modelAnswer.isNotEmpty ? sub.modelAnswer : 'উত্তর প্রস্তুত করা হচ্ছে...',
-                      style: const TextStyle(fontSize: 14, height: 1.3),
-                    ),
-                  ],
-                ),
+              const Text(
+                'নমুনা উত্তর:',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32), fontSize: 13),
               ),
+              const SizedBox(height: 4),
+              Text(sub.modelAnswer, style: const TextStyle(fontSize: 14, height: 1.3)),
             ],
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }
