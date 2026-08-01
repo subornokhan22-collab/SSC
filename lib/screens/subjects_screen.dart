@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../data/questions_data.dart';
+import 'subject_detail_screen.dart';
+import 'quiz_screen.dart';
 
 enum SubjectGroup { science, general, business, humanities }
 
@@ -30,9 +33,9 @@ class SubjectsScreen extends StatelessWidget {
     SubjectInfo(id: 'biology', name: 'Biology', bengaliName: 'জীববিজ্ঞান', icon: '🧬', colorHex: 0xFFD84315, group: SubjectGroup.science),
     SubjectInfo(id: 'general_math', name: 'General Math', bengaliName: 'সাধারণ গণিত', icon: '🔢', colorHex: 0xFF0288D1, group: SubjectGroup.general),
     SubjectInfo(id: 'bangla_1st', name: 'Bangla 1st', bengaliName: 'বাংলা ১ম পত্র', icon: '📚', colorHex: 0xFFC2185B, group: SubjectGroup.general),
-    SubjectInfo(id: 'bangla_2nd', name: 'Bangla 2nd', bengaliName: 'বাংলা ২য় পত্র', icon: '📖', colorHex: 0xFFAD1457, group: SubjectGroup.general),
+    SubjectInfo(id: 'bangla_2nd', name: 'Bangla 2nd', bengaliName: 'বাংলা ২য় পত্র', icon: '📖', colorHex: 0xFFAD1457, group: SubjectGroup.general),
     SubjectInfo(id: 'english_1st', name: 'English 1st', bengaliName: 'ইংরেজি ১ম পত্র', icon: '🔤', colorHex: 0xFF5D4037, group: SubjectGroup.general),
-    SubjectInfo(id: 'english_2nd', name: 'English 2nd', bengaliName: 'ইংরেজি ২য় পত্র', icon: '📝', colorHex: 0xFF4E342E, group: SubjectGroup.general),
+    SubjectInfo(id: 'english_2nd', name: 'English 2nd', bengaliName: 'ইংরেজি ২য় পত্র', icon: '📝', colorHex: 0xFF4E342E, group: SubjectGroup.general),
     SubjectInfo(id: 'bgs', name: 'BGS', bengaliName: 'বাংলাদেশ ও বিশ্বপরিচয়', icon: '🌏', colorHex: 0xFF00838F, group: SubjectGroup.general),
     SubjectInfo(id: 'religion', name: 'Religion & Moral Ed.', bengaliName: 'ইসলাম ও নৈতিক শিক্ষা', icon: '🕌', colorHex: 0xFF2E7D32, group: SubjectGroup.general),
     SubjectInfo(id: 'ict', name: 'ICT', bengaliName: 'তথ্য ও যোগাযোগ প্রযুক্তি', icon: '💻', colorHex: 0xFF00796B, group: SubjectGroup.general),
@@ -42,6 +45,9 @@ class SubjectsScreen extends StatelessWidget {
     SubjectInfo(id: 'civics', name: 'Civics & Citizenship', bengaliName: 'পৌরনীতি ও নাগরিকতা', icon: '⚖️', colorHex: 0xFF37474F, group: SubjectGroup.humanities),
   ];
 
+  int _mcqCount(String id) => allMCQs.where((q) => q.subjectId == id).length;
+  int _cqCount(String id) => allCQs.where((q) => q.subjectId == id).length;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,12 +56,28 @@ class SubjectsScreen extends StatelessWidget {
         itemCount: _allSubjects.length,
         itemBuilder: (context, index) {
           final subject = _allSubjects[index];
-          return ListTile(
-            leading: Text(subject.icon, style: const TextStyle(fontSize: 24)),
-            title: Text(subject.name),
-            subtitle: Text(subject.bengaliName),
+          final mcq = _mcqCount(subject.id);
+          final cq = _cqCount(subject.id);
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Color(subject.colorHex).withOpacity(0.15),
+                child: Text(subject.icon, style: const TextStyle(fontSize: 20)),
+              ),
+              title: Text(subject.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('${subject.bengaliName}\nMCQ: $mcq  •  CQ: $cq'),
+              isThreeLine: true,
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: subject))),
+            ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen())),
+        icon: const Icon(Icons.timer),
+        label: const Text('লাইভ পরীক্ষা'),
       ),
     );
   }
