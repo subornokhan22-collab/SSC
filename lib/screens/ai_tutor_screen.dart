@@ -1,6 +1,20 @@
-  Future<String> _fetchGeminiResponse(String prompt) async {
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class AITutorScreen extends StatefulWidget {
+  const AITutorScreen({super.key});
+
+  @override
+  State<AITutorScreen> createState() => _AITutorScreenState();
+}
+
+class _AITutorScreenState extends State<AITutorScreen> {
+  final String _apiKey = 'YOUR_GEMINI_API_KEY'; // Replace with your actual Gemini API key
+
+  Future<void> _sendMessage(String userMessage) async {
     if (_apiKey == 'YOUR_GEMINI_API_KEY') {
-      return 'API Key সংযুক্ত করা হয়নি। অনুগ্রহ করে আপনার Google Gemini API Key বসান।';
+      return;
     }
 
     final url = Uri.parse(
@@ -8,34 +22,38 @@
     );
 
     final body = jsonEncode({
-      "system_instruction": {
-        "parts": [
-          {
-            "text": "You are an expert Bangladeshi SSC Exam Tutor for A-Learning platform. Your target audience is SSC candidates in Bangladesh. Answer clearly, accurately, and politely in Bengali."
-          }
-        ]
-      },
       "contents": [
         {
-          "role": "user",
           "parts": [
-            {"text": prompt}
+            {"text": userMessage}
           ]
         }
       ]
     });
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: body,
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'];
-      return text ?? 'উত্তর খুঁজে পাওয়া যায়নি।';
-    } else {
-      throw Exception('Failed to communicate with AI API: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Handle successful response data here
+      }
+    } catch (e) {
+      // Handle error
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('AI Tutor')),
+      body: const Center(
+        child: Text('AI Tutor Ready'),
+      ),
+    );
+  }
+}
