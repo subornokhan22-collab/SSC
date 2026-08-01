@@ -1,0 +1,50 @@
+name: Flutter APK Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Set up Java Development Kit (JDK) 17
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. Set up Flutter SDK
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      # 4. Re-create the missing android folder with internet permissions pre-configured
+      - name: Recreate Android platform files
+        run: flutter create . --platforms=android
+
+      # 5. Fetch dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 6. Build Release APK
+      - name: Build APK
+        run: flutter build apk --release
+
+      # 7. Upload APK artifact so you can download it from GitHub Actions
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
