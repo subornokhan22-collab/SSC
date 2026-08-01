@@ -71,7 +71,7 @@ class _AITutorScreenState extends State<AITutorScreen> {
     });
     _scrollToBottom();
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_apiKey');
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$_apiKey');
 
     try {
       final response = await http.post(
