@@ -1,4 +1,4 @@
-Name: ssc_prep_app
+name: ssc_prep_app
 description: "A-Learning"
 publish_to: 'none'
 version: 1.0.0+1
