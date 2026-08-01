@@ -1,117 +1,163 @@
-// lib/screens/exam_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/questions_data.dart';
-import 'quiz_screen.dart';
 
-class ExamScreen extends StatelessWidget {
-  const ExamScreen({super.key});
+class ExamScreen extends StatefulWidget {
+  const ExamScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ExamScreen> createState() => _ExamScreenState();
+}
+
+class _ExamScreenState extends State<ExamScreen> {
+  List<Question> _questions = [];
+  Map<int, int> _userAnswers = {};
+  int _secondsRemaining = 900; // 15 Minutes
+  Timer? _timer;
+  bool _isSubmitted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startExam();
+  }
+
+  void _startExam() {
+    final shuffled = List<Question>.from(sampleQuestions)..shuffle();
+    setState(() {
+      _questions = shuffled.take(20).toList();
+      _userAnswers.clear();
+      _secondsRemaining = 900;
+      _isSubmitted = false;
+    });
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsRemaining > 0) {
+        setState(() {
+          _secondsRemaining--;
+        });
+      } else {
+        _submitExam();
+      }
+    });
+  }
+
+  void _submitExam() {
+    _timer?.cancel();
+    setState(() {
+      _isSubmitted = true;
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  int _calculateScore() {
+    int score = 0;
+    _userAnswers.forEach((index, selected) {
+      if (_questions[index].correctOptionIndex == selected) {
+        score++;
+      }
+    });
+    return score;
+  }
+
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Mixed-subject question set, capped for a focused live exam.
-    final shuffled = List<Question>.from(allQuestions)..shuffle();
-    final questionSet = shuffled.take(20).toList();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('লাইভ পরীক্ষা'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFEF4444), Color(0xFFF97316)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        title: const Text('লাইভ পরীক্ষা', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF1A82BB),
+        foregroundColor: Colors.white,
+        actions: [
+          if (!_isSubmitted)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Text(
+                  _formatTime(_secondsRemaining),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.timer, color: Colors.white, size: 36),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'SSC ২০২৭ মডেল টেস্ট',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'সকল বিষয় থেকে মিশ্র ${questionSet.length}টি প্রশ্ন • সময়সীমা ১৫ মিনিট',
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ],
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'নিয়মাবলী',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const _RuleRow(text: 'পরীক্ষা শুরু হলে টাইমার চালু হয়ে যাবে।'),
-            const _RuleRow(text: 'সময় শেষ হলে পরীক্ষা স্বয়ংক্রিয়ভাবে জমা হবে।'),
-            const _RuleRow(text: 'প্রতিটি প্রশ্নের জন্য একটি মাত্র উত্তর বাছাই করা যাবে।'),
-            const Spacer(),
-            ElevatedButton.icon(
-              onPressed: questionSet.isEmpty
-                  ? null
-                  : () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => QuizScreen(
-                            title: 'লাইভ পরীক্ষা',
-                            questions: questionSet,
-                            timeLimit: const Duration(minutes: 15),
+        ],
+      ),
+      body: _questions.isEmpty
+          ? const Center(child: Text('কোনো প্রশ্ন পাওয়া যায়নি।'))
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: _questions.length,
+                    itemBuilder: (context, index) {
+                      final q = _questions[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${index + 1}. ${q.questionText}',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              ...List.generate(q.options.length, (optIndex) {
+                                return RadioListTile<int>(
+                                  title: Text(q.options[optIndex]),
+                                  value: optIndex,
+                                  groupValue: _userAnswers[index],
+                                  onChanged: _isSubmitted
+                                      ? null
+                                      : (val) {
+                                          setState(() {
+                                            if (val != null) _userAnswers[index] = val;
+                                          });
+                                        },
+                                );
+                              }),
+                            ],
                           ),
                         ),
                       );
                     },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('পরীক্ষা শুরু করুন'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (_isSubmitted)
+                        Text(
+                          'স্কোর: ${_calculateScore()} / ${_questions.length}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A82BB)),
+                        ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1A82BB),
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: _isSubmitted ? _startExam : _submitExam,
+                        child: Text(_isSubmitted ? 'পুনরায় পরীক্ষা দাও' : 'জমা দাও'),
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RuleRow extends StatelessWidget {
-  final String text;
-  const _RuleRow({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.check_circle, size: 16, color: Colors.green),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text)),
-        ],
-      ),
     );
   }
 }
