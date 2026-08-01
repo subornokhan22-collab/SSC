@@ -34,8 +34,8 @@ class _AITutorScreenState extends State<AITutorScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
 
-  // Insert your Gemini API Key here or load from app config
-  static const String _apiKey = 'YOUR_GEMINI_API_KEY';
+  // Embedded Gemini API Key
+  static const String _apiKey = 'AQ.Ab8RN6JGuLGb3n0-eyKsvx7Vo2YJ7Q4i-yrBLcEdMRvjAS6nrw';
 
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
@@ -256,7 +256,7 @@ class _AITutorScreenState extends State<AITutorScreen> {
         child: Text(
           message.text,
           style: TextStyle(
-            color: isUser ? Colors.white : Colors.black800,
+            color: isUser ? Colors.white : Colors.black87,
             fontSize: 15,
             height: 1.3,
           ),
