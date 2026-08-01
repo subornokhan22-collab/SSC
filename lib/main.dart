@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
 import 'screens/subjects_screen.dart';
 import 'screens/ai_tutor_screen.dart';
+import 'screens/pdf_resource_screen.dart';
 
 void main() {
   runApp(const ALearningApp());
@@ -14,10 +16,7 @@ class ALearningApp extends StatelessWidget {
     return MaterialApp(
       title: 'A-Learning',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A82BB)),
-        useMaterial3: true,
-      ),
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A82BB)), useMaterial3: true),
       home: const MainHomeScreen(),
     );
   }
@@ -47,33 +46,11 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          // Tab 0: Home / Dashboard
-          const Center(
-            child: Text(
-              'Welcome to A-Learning (SSC 2027)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-
-          // Tab 1: Subjects List
-          _visitedTabs.contains(1)
-              ? SubjectsScreen()
-              : const SizedBox.shrink(),
-
-          // Tab 2: Resource / PDF Viewer
-          const Center(
-            child: Text('PDF Resource Viewer'),
-          ),
-
-          // Tab 3: AI Tutor
-          _visitedTabs.contains(3)
-              ? AITutorScreen()
-              : const SizedBox.shrink(),
-
-          // Tab 4: Profile / Settings
-          const Center(
-            child: Text('User Profile & Settings'),
-          ),
+          HomeScreen(onNavigate: _onTabTapped),
+          _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
+          _visitedTabs.contains(2) ? const PdfResourceScreen() : const SizedBox.shrink(),
+          _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
+          const Center(child: Text('User Profile & Settings')),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -83,26 +60,11 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         selectedItemColor: const Color(0xFF1A82BB),
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Subjects',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.picture_as_pdf),
-            label: 'Resources',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.psychology),
-            label: 'AI Tutor',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Subjects'),
+          BottomNavigationBarItem(icon: Icon(Icons.picture_as_pdf), label: 'Resources'),
+          BottomNavigationBarItem(icon: Icon(Icons.psychology), label: 'AI Tutor'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );
