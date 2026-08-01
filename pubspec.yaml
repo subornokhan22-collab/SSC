@@ -1,4 +1,4 @@
-name: ssc_prep_app
+Name: ssc_prep_app
 description: "A-Learning"
 publish_to: 'none'
 version: 1.0.0+1
@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.0
   webview_flutter: ^4.8.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
