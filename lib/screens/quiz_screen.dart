@@ -1,131 +1,179 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/questions_data.dart';
 
 class QuizScreen extends StatefulWidget {
-  final String subjectId;
-  final String subjectName;
-
-  const QuizScreen({
-    Key? key,
-    required this.subjectId,
-    required this.subjectName,
-  }) : super(key: key);
+  final String? subjectId;
+  final String? chapter;
+  const QuizScreen({super.key, this.subjectId, this.chapter});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  List<Question> _subjectQuestions = [];
-  Map<int, int> _selectedAnswers = {};
-  Map<int, bool> _showExplanations = {};
+  late List<Question> _questions;
+  late List<int?> _answers;
+  int _current = 0;
+  Timer? _timer;
+  int _secondsLeft = 0;
+  bool _submitted = false;
 
   @override
   void initState() {
     super.initState();
-    _subjectQuestions = sampleQuestions.where((q) => q.subject == widget.subjectId).toList();
+    _questions = _buildQuestionSet();
+    _answers = List<int?>.filled(_questions.length, null);
+    _secondsLeft = widget.subjectId == null ? 15 * 60 : _questions.length * 60;
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_secondsLeft <= 0) {
+        _submit();
+      } else {
+        setState(() => _secondsLeft--);
+      }
+    });
+  }
+
+  List<Question> _buildQuestionSet() {
+    List<Question> pool;
+    if (widget.subjectId == null) {
+      pool = List.of(allMCQs)..shuffle();
+      return pool.take(20).toList();
+    } else if (widget.chapter != null) {
+      pool = allMCQs.where((q) => q.subjectId == widget.subjectId && q.chapter == widget.chapter).toList();
+    } else {
+      pool = allMCQs.where((q) => q.subjectId == widget.subjectId).toList();
+    }
+    pool.shuffle();
+    return pool;
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_submitted) return;
+    _timer?.cancel();
+    setState(() => _submitted = true);
+  }
+
+  int get _score => List.generate(_questions.length, (i) => _answers[i] == _questions[i].correctIndex ? 1 : 0).fold(0, (a, b) => a + b);
+
+  String get _timeLabel {
+    final m = (_secondsLeft ~/ 60).toString().padLeft(2, '0');
+    final s = (_secondsLeft % 60).toString().padLeft(2, '0');
+    return '$m:$s';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_questions.isEmpty) {
+      return Scaffold(appBar: AppBar(title: const Text('Quiz')), body: const Center(child: Text('কোনো প্রশ্ন পাওয়া যায়নি।')));
+    }
+    if (_submitted) return _buildResult();
+
+    final q = _questions[_current];
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.subjectName} - MCQ'),
-        backgroundColor: const Color(0xFF1A82BB),
-        foregroundColor: Colors.white,
+        title: Text('প্রশ্ন ${_current + 1}/${_questions.length}'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(child: Text(_timeLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+          ),
+        ],
       ),
-      body: _subjectQuestions.isEmpty
-          ? const Center(child: Text('এই বিষয়ের কোনো প্রশ্ন এখনো যুক্ত করা হয়নি।'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: _subjectQuestions.length,
-              itemBuilder: (context, index) {
-                final q = _subjectQuestions[index];
-                final selectedOption = _selectedAnswers[index];
-                final showExp = _showExplanations[index] ?? false;
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: Padding(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(q.chapter, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            const SizedBox(height: 8),
+            Text(q.questionText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 20),
+            ...List.generate(q.options.length, (i) {
+              final selected = _answers[_current] == i;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: InkWell(
+                  onTap: () => setState(() => _answers[_current] = i),
+                  child: Container(
                     padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Chip(
-                              label: Text(q.chapter, style: const TextStyle(fontSize: 12)),
-                              backgroundColor: Colors.blue.shade50,
-                            ),
-                            Chip(
-                              label: Text(q.sourceLabel, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87)),
-                              backgroundColor: Colors.amber.shade100,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${index + 1}. ${q.questionText}',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        ...List.generate(q.options.length, (optIndex) {
-                          Color? tileColor;
-                          if (selectedOption != null) {
-                            if (optIndex == q.correctOptionIndex) {
-                              tileColor = Colors.green.shade100;
-                            } else if (optIndex == selectedOption) {
-                              tileColor = Colors.red.shade100;
-                            }
-                          }
-
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 2),
-                            color: tileColor,
-                            child: RadioListTile<int>(
-                              title: Text(q.options[optIndex]),
-                              value: optIndex,
-                              groupValue: selectedOption,
-                              onChanged: (val) {
-                                setState(() {
-                                  if (val != null) {
-                                    _selectedAnswers[index] = val;
-                                  }
-                                });
-                              },
-                            ),
-                          );
-                        }),
-                        if (selectedOption != null) ...[
-                          TextButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _showExplanations[index] = !showExp;
-                              });
-                            },
-                            icon: Icon(showExp ? Icons.visibility_off : Icons.visibility),
-                            label: Text(showExp ? 'ব্যাখ্যা লুকান' : 'ব্যাখ্যা দেখুন'),
-                          ),
-                          if (showExp)
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                q.explanation,
-                                style: const TextStyle(fontSize: 14, color: Colors.black87),
-                              ),
-                            ),
-                        ],
-                      ],
+                    decoration: BoxDecoration(
+                      border: Border.all(color: selected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                      color: selected ? Theme.of(context).colorScheme.primary.withOpacity(0.08) : null,
                     ),
+                    child: Text(q.options[i]),
                   ),
-                );
-              },
+                ),
+              );
+            }),
+            const Spacer(),
+            Row(
+              children: [
+                if (_current > 0)
+                  Expanded(
+                    child: OutlinedButton(onPressed: () => setState(() => _current--), child: const Text('আগের প্রশ্ন')),
+                  ),
+                if (_current > 0) const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_current < _questions.length - 1) {
+                        setState(() => _current++);
+                      } else {
+                        _submit();
+                      }
+                    },
+                    child: Text(_current < _questions.length - 1 ? 'পরের প্রশ্ন' : 'জমা দিন'),
+                  ),
+                ),
+              ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResult() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('ফলাফল')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Center(child: Text('স্কোর: $_score / ${_questions.length}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+          const SizedBox(height: 20),
+          ...List.generate(_questions.length, (i) {
+            final q = _questions[i];
+            final userAns = _answers[i];
+            final correct = userAns == q.correctIndex;
+            return Card(
+              margin: const EdgeInsets.only(bottom: 10),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${i + 1}. ${q.questionText}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 6),
+                    Text('সঠিক উত্তর: ${q.options[q.correctIndex]}', style: const TextStyle(color: Colors.green)),
+                    if (userAns != null && !correct) Text('আপনার উত্তর: ${q.options[userAns]}', style: const TextStyle(color: Colors.red)),
+                    if (userAns == null) const Text('উত্তর দেওয়া হয়নি', style: TextStyle(color: Colors.orange)),
+                    const SizedBox(height: 4),
+                    Text(q.explanation, style: TextStyle(color: Colors.grey[700], fontSize: 13)),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }
