@@ -13,7 +13,7 @@ class _PdfResourceScreenState extends State<PdfResourceScreen> {
   bool _loading = true;
 
   // TODO: replace with your actual Google Drive folder share link
-  static const String driveUrl = 'https://drive.google.com/drive/folders/https://drive.google.com/drive/folders/19UW5mGKcBgorLSmO-joBer0HBodGA65G';
+  static const String driveUrl = 'https://drive.google.com/drive/folders/19UW5mGKcBgorLSmO-joBer0HBodGA65G';
 
   @override
   void initState() {
