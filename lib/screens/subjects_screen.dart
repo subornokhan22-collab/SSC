@@ -11,185 +11,139 @@ class SubjectsScreen extends StatefulWidget {
 }
 
 class _SubjectsScreenState extends State<SubjectsScreen> {
-  String searchQuery = '';
-  SubjectGroup selectedGroup = SubjectGroup.all;
+  String _searchQuery = '';
+  SubjectGroup _selectedGroup = SubjectGroup.all;
+
+  // List of all SSC subjects
+  final List<SubjectInfo> _allSubjects = const [
+    SubjectInfo(id: 'physics', name: 'Physics', bengaliName: 'পদার্থবিজ্ঞান', icon: '⚛️', colorHex: 0xFF1A82BB, group: SubjectGroup.science),
+    SubjectInfo(id: 'chemistry', name: 'Chemistry', bengaliName: 'রসায়ন', icon: '🧪', colorHex: 0xFF2E7D32, group: SubjectGroup.science),
+    SubjectInfo(id: 'higher_math', name: 'Higher Math', bengaliName: 'উচ্চতর গণিত', icon: '📐', colorHex: 0xFF6A1B9A, group: SubjectGroup.science),
+    SubjectInfo(id: 'biology', name: 'Biology', bengaliName: 'জীববিজ্ঞান', icon: '🧬', colorHex: 0xFFD84315, group: SubjectGroup.science),
+    SubjectInfo(id: 'general_math', name: 'General Math', bengaliName: 'সাধারণ গণিত', icon: '🔢', colorHex: 0xFF0288D1, group: SubjectGroup.general),
+    SubjectInfo(id: 'bangla_1st', name: 'Bangla 1st', bengaliName: 'বাংলা ১ম পত্র', icon: '📚', colorHex: 0xFFC2185B, group: SubjectGroup.general),
+    SubjectInfo(id: 'english_1st', name: 'English 1st', bengaliName: 'ইংরেজি ১ম পত্র', icon: '🔤', colorHex: 0xFF5D4037, group: SubjectGroup.general),
+    SubjectInfo(id: 'ict', name: 'ICT', bengaliName: 'তথ্য ও যোগাযোগ প্রযুক্তি', icon: '💻', colorHex: 0xFF00796B, group: SubjectGroup.general),
+    SubjectInfo(id: 'accounting', name: 'Accounting', bengaliName: 'হিসাববিজ্ঞান', icon: '📊', colorHex: 0xFFE65100, group: SubjectGroup.business),
+    SubjectInfo(id: 'finance', name: 'Finance & Banking', bengaliName: 'ফিন্যান্স ও ব্যাংকিং', icon: '🏦', colorHex: 0xFF1B5E20, group: SubjectGroup.business),
+    SubjectInfo(id: 'history', name: 'History of Bangladesh', bengaliName: 'বাংলাদেশের ইতিহাস ও বিশ্বসভ্যতা', icon: '🏛️', colorHex: 0xFF4E342E, group: SubjectGroup.humanities),
+    SubjectInfo(id: 'civics', name: 'Civics & Citizenship', bengaliName: 'পৌরনীতি ও নাগরিকতা', icon: '⚖️', colorHex: 0xFF37474F, group: SubjectGroup.humanities),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final filteredSubjects = QuestionsData.subjects.where((subject) {
-      final matchesSearch = subject.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          subject.bengaliName.contains(searchQuery);
-      
-      final matchesGroup = selectedGroup == SubjectGroup.all || subject.group == selectedGroup;
-
+    final filteredSubjects = _allSubjects.where((subject) {
+      final matchesSearch = subject.bengaliName.contains(_searchQuery) ||
+          subject.name.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesGroup = _selectedGroup == SubjectGroup.all || subject.group == _selectedGroup;
       return matchesSearch && matchesGroup;
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('বিষয়সমূহ (Subjects)', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('বিষয়সমূহ', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF1A82BB),
         foregroundColor: Colors.white,
-        elevation: 0,
       ),
       body: Column(
         children: [
-          // Search & Filter Header Section
-          Container(
-            color: const Color(0xFF1A82BB),
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Column(
-              children: [
-                // Search Bar
-                TextField(
-                  onChanged: (value) => setState(() => searchQuery = value),
-                  decoration: InputDecoration(
-                    hintText: 'বিষয় খুঁজুন (e.g. Physics, গণিত)...',
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF1A82BB)),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+          // Search Field
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              onChanged: (value) => setState(() => _searchQuery = value),
+              decoration: InputDecoration(
+                hintText: 'বিষয় খুঁজুন (যেমন: পদার্থবিজ্ঞান)...',
+                prefixIcon: const Icon(Icons.search),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                fillColor: Colors.grey.shade100,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
-                const SizedBox(height: 12),
-                
-                // Group Category Filter Chips
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildGroupFilterChip('সব', SubjectGroup.all),
-                      _buildGroupFilterChip('বিজ্ঞান', SubjectGroup.science),
-                      _buildGroupFilterChip('ব্যবসায় শিক্ষা', SubjectGroup.commerce),
-                      _buildGroupFilterChip('মানবিক', SubjectGroup.humanities),
-                      _buildGroupFilterChip('সাধারণ', SubjectGroup.general),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
 
-          // Subjects Grid List
+          // Group Filter Choice Chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                _buildGroupFilterChip('সব', SubjectGroup.all),
+                _buildGroupFilterChip('বিজ্ঞান', SubjectGroup.science),
+                _buildGroupFilterChip('ব্যবসায় শিক্ষা', SubjectGroup.business),
+                _buildGroupFilterChip('মানবিক', SubjectGroup.humanities),
+                _buildGroupFilterChip('সাধারণ', SubjectGroup.general),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Subjects List
           Expanded(
             child: filteredSubjects.isEmpty
-                ? const Center(
-                    child: Text(
-                      'কোনো বিষয় পাওয়া যায়নি',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  )
+                ? const Center(child: Text('কোনো বিষয় খুঁজে পাওয়া যায়নি।'))
                 : ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: filteredSubjects.length,
                     itemBuilder: (context, index) {
                       final subject = filteredSubjects[index];
-                      final mcqCount = QuestionsData.mcqs
-                          .where((q) => q.subject == subject.id)
-                          .length;
-                      final cqCount = QuestionsData.cqs
-                          .where((q) => q.subject == subject.id)
-                          .length;
+                      final mcqCount = sampleQuestions.where((q) => q.subject == subject.id).length;
+                      final cqCount = sampleCreativeQuestions.where((q) => q.subject == subject.id).length;
 
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        margin: const EdgeInsets.symmetric(vertical: 6),
                         elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          leading: CircleAvatar(
+                            backgroundColor: Color(subject.colorHex).withOpacity(0.15),
+                            child: Text(subject.icon, style: const TextStyle(fontSize: 20)),
+                          ),
+                          title: Text(
+                            subject.bengaliName,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          subtitle: Text(
+                            '${subject.name} • MCQ: $mcqCount | CQ: $cqCount',
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Subject Icon
-                              CircleAvatar(
-                                radius: 24,
-                                backgroundColor: subject.color.withOpacity(0.15),
-                                child: Icon(subject.icon, color: subject.color, size: 28),
-                              ),
-                              const SizedBox(width: 12),
-
-                              // Subject Title
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      subject.bengaliName,
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
+                              IconButton(
+                                icon: const Icon(Icons.quiz, color: Color(0xFF1A82BB)),
+                                tooltip: 'MCQ Practice',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => QuizScreen(
+                                        subjectId: subject.id,
+                                        subjectName: subject.bengaliName,
                                       ),
                                     ),
-                                    Text(
-                                      subject.name,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.grey.shade600,
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.article, color: Color(0xFF2E7D32)),
+                                tooltip: 'Creative Questions',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CQScreen(
+                                        subjectId: subject.id,
+                                        subjectName: subject.bengaliName,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-
-                              // Action Buttons (MCQ & CQ)
-                              Row(
-                                children: [
-                                  // MCQ Button
-                                  ElevatedButton(
-                                    onPressed: mcqCount > 0
-                                        ? () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => QuizScreen(
-                                                  subjectId: subject.id,
-                                                  subjectName: subject.bengaliName,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        : null,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue.shade700,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    child: Text('MCQ ($mcqCount)'),
-                                  ),
-                                  const SizedBox(width: 6),
-
-                                  // CQ Button
-                                  ElevatedButton(
-                                    onPressed: cqCount > 0
-                                        ? () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => CQScreen(
-                                                  subjectId: subject.id,
-                                                  subjectName: subject.bengaliName,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        : null,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal.shade700,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    child: Text('CQ ($cqCount)'),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -204,23 +158,20 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   }
 
   Widget _buildGroupFilterChip(String label, SubjectGroup group) {
-    final isSelected = selectedGroup == group;
+    final isSelected = _selectedGroup == group;
     return Padding(
-      padding: const EdgeInsets.only(right: 6.0),
+      padding: const EdgeInsets.only(right: 8.0),
       child: ChoiceChip(
-        label: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFF1A82BB) : Colors.white,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
+        label: Text(label),
         selected: isSelected,
-        selectedColor: Colors.white,
-        backgroundColor: Colors.white.withOpacity(0.2),
+        selectedColor: const Color(0xFF1A82BB),
+        labelStyle: TextStyle(
+          color: isSelected ? Colors.white : Colors.black87,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
         onSelected: (selected) {
           if (selected) {
-            setState(() => selectedGroup = group);
+            setState(() => _selectedGroup = group);
           }
         },
       ),
