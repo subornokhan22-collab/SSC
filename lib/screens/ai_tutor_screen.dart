@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../theme/app_theme.dart';
 
 class ChatMessage {
   final String text;
@@ -133,8 +134,12 @@ class _AITutorScreenState extends State<AITutorScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                           constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                           decoration: BoxDecoration(
-                            color: m.isUser ? Theme.of(context).colorScheme.primary : Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(14),
+                            gradient: m.isUser
+                                ? const LinearGradient(colors: [AppTheme.primary, AppTheme.secondary])
+                                : null,
+                            color: m.isUser ? null : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 3))],
                           ),
                           child: Text(m.text, style: TextStyle(color: m.isUser ? Colors.white : Colors.black87)),
                         ),
@@ -160,7 +165,22 @@ class _AITutorScreenState extends State<AITutorScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton.filled(icon: const Icon(Icons.send), onPressed: _loading ? null : _sendMessage),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: _loading
+                          ? null
+                          : const LinearGradient(colors: [AppTheme.primary, AppTheme.secondary]),
+                      color: _loading ? Colors.grey.shade300 : null,
+                      boxShadow: _loading
+                          ? []
+                          : [BoxShadow(color: AppTheme.primary.withOpacity(0.35), blurRadius: 10, offset: const Offset(0, 4))],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      onPressed: _loading ? null : _sendMessage,
+                    ),
+                  ),
                 ],
               ),
             ),
