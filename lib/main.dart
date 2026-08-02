@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
+import 'widgets/animated_background.dart';
 import 'screens/home_screen.dart';
 import 'screens/subjects_screen.dart';
 import 'screens/ai_tutor_screen.dart';
@@ -16,7 +18,7 @@ class ALearningApp extends StatelessWidget {
     return MaterialApp(
       title: 'A-Learning',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A82BB)), useMaterial3: true),
+      theme: AppTheme.light(),
       home: const MainHomeScreen(),
     );
   }
@@ -43,22 +45,21 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          HomeScreen(onNavigate: _onTabTapped),
-          _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
-          _visitedTabs.contains(2) ? const PdfResourceScreen() : const SizedBox.shrink(),
-          _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
-          const Center(child: Text('User Profile & Settings')),
-        ],
+      body: AnimatedBackground(
+        child: IndexedStack(
+          index: _currentIndex,
+          children: [
+            HomeScreen(onNavigate: _onTabTapped),
+            _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
+            _visitedTabs.contains(2) ? const PdfResourceScreen() : const SizedBox.shrink(),
+            _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
+            const Center(child: Text('User Profile & Settings')),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF1A82BB),
-        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Subjects'),
