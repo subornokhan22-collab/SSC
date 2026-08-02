@@ -57,6 +57,75 @@ class _AITutorScreenState extends State<AITutorScreen> {
     if (result != null && result.isNotEmpty) await _saveKey(result);
   }
 
+  /// Strips LaTeX/Markdown artifacts the model sometimes emits and
+  /// converts common math notation into plain readable Unicode,
+  /// since this chat renders plain Text (no LaTeX engine).
+  String _cleanMathText(String raw) {
+    String s = raw;
+
+    // Remove markdown bold/italic/headers
+    s = s.replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1');
+    s = s.replaceAll(RegExp(r'\*(.*?)\*'), r'$1');
+    s = s.replaceAll(RegExp(r'^#{1,6}\s*', multiLine: true), '');
+
+    // Remove LaTeX delimiters: $$...$$, $...$, \( \), \[ \]
+    s = s.replaceAll(r'$$', '');
+    s = s.replaceAll(r'$', '');
+    s = s.replaceAll(r'\(', '').replaceAll(r'\)', '');
+    s = s.replaceAll(r'\[', '').replaceAll(r'\]', '');
+
+    // \frac{a}{b} -> (a/b)
+    s = s.replaceAllMapped(
+      RegExp(r'\\frac\{([^{}]*)\}\{([^{}]*)\}'),
+      (m) => '(${m[1]}/${m[2]})',
+    );
+
+    // Common LaTeX operators -> Unicode
+    final replacements = <String, String>{
+      r'\times': '×',
+      r'\cdot': '·',
+      r'\div': '÷',
+      r'\pm': '±',
+      r'\sqrt': '√',
+      r'\pi': 'π',
+      r'\theta': 'θ',
+      r'\alpha': 'α',
+      r'\beta': 'β',
+      r'\gamma': 'γ',
+      r'\Delta': 'Δ',
+      r'\delta': 'δ',
+      r'\lambda': 'λ',
+      r'\omega': 'ω',
+      r'\leq': '≤',
+      r'\geq': '≥',
+      r'\neq': '≠',
+      r'\approx': '≈',
+      r'\infty': '∞',
+      r'\rightarrow': '→',
+      r'\Rightarrow': '⇒',
+      r'\%': '%',
+      r'\,': ' ',
+      r'\ ': ' ',
+    };
+    replacements.forEach((k, v) => s = s.replaceAll(k, v));
+
+    // Superscripts for common exponents: x^2 -> x², x^3 -> x³
+    s = s.replaceAllMapped(RegExp(r'\^\{?2\}?'), (m) => '²');
+    s = s.replaceAllMapped(RegExp(r'\^\{?3\}?'), (m) => '³');
+    s = s.replaceAllMapped(RegExp(r'\^\{?(-?\d+)\}?'), (m) => '^${m[1]}');
+
+    // Subscripts for common single-digit indices: x_1 -> x₁ (best-effort)
+    const subDigits = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉'};
+    s = s.replaceAllMapped(RegExp(r'_\{?(\d)\}?'), (m) => subDigits[m[1]] ?? '_${m[1]}');
+
+    // Clean leftover stray backslashes and double spaces
+    s = s.replaceAll(RegExp(r'\\(?![a-zA-Z])'), '');
+    s = s.replaceAll(RegExp(r' {2,}'), ' ');
+    s = s.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+
+    return s.trim();
+  }
+
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
@@ -74,6 +143,15 @@ class _AITutorScreenState extends State<AITutorScreen> {
 
     final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$_apiKey');
 
+    const systemInstruction = 'তুমি একজন বাংলাদেশি SSC শিক্ষার্থীর জন্য একজন সহায়ক শিক্ষক। '
+        'প্রশ্নটির সহজ ও স্পষ্ট বাংলা উত্তর দাও। '
+        'গুরুত্বপূর্ণ ফরম্যাটিং নিয়ম: '
+        'কখনো LaTeX ব্যবহার করবে না (\\frac, \\times, \$...\$, \\(...\\) ইত্যাদি নিষিদ্ধ)। '
+        'কখনো markdown ব্যবহার করবে না (** বোল্ড বা # হেডিং নিষিদ্ধ)। '
+        'গাণিতিক রাশি লিখতে সাধারণ টেক্সট ও ইউনিকোড চিহ্ন ব্যবহার করো, যেমন: x^2 এর বদলে x², ভগ্নাংশের জন্য a/b, গুণের জন্য ×, বর্গমূলের জন্য √। '
+        'প্রতিটি ধাপ আলাদা লাইনে সহজভাবে লেখো, যেন সাধারণ চ্যাট মেসেজে পরিষ্কার দেখায়। '
+        'প্রশ্ন: ';
+
     try {
       final response = await http.post(
         url,
@@ -82,7 +160,7 @@ class _AITutorScreenState extends State<AITutorScreen> {
           'contents': [
             {
               'parts': [
-                {'text': 'তুমি একজন বাংলাদেশি SSC শিক্ষার্থীর জন্য একজন সহায়ক শিক্ষক। প্রশ্নটির সহজ ও স্পষ্ট বাংলা উত্তর দাও: $text'}
+                {'text': '$systemInstruction$text'}
               ]
             }
           ]
@@ -91,8 +169,8 @@ class _AITutorScreenState extends State<AITutorScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final reply = data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? 'দুঃখিত, উত্তর পাওয়া যায়নি।';
-        setState(() => _messages.add(ChatMessage(reply, false)));
+        final rawReply = data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? 'দুঃখিত, উত্তর পাওয়া যায়নি।';
+        setState(() => _messages.add(ChatMessage(_cleanMathText(rawReply), false)));
       } else {
         setState(() => _messages.add(ChatMessage('ত্রুটি: ${response.statusCode}। API Key সঠিক কিনা যাচাই করুন।', false)));
       }
@@ -132,7 +210,7 @@ class _AITutorScreenState extends State<AITutorScreen> {
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
                           decoration: BoxDecoration(
                             gradient: m.isUser
                                 ? const LinearGradient(colors: [AppTheme.primary, AppTheme.secondary])
@@ -141,7 +219,13 @@ class _AITutorScreenState extends State<AITutorScreen> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 3))],
                           ),
-                          child: Text(m.text, style: TextStyle(color: m.isUser ? Colors.white : Colors.black87)),
+                          child: SelectableText(
+                            m.text,
+                            style: TextStyle(
+                              color: m.isUser ? Colors.white : Colors.black87,
+                              height: 1.5,
+                            ),
+                          ),
                         ),
                       );
                     },
