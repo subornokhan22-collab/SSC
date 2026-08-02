@@ -17,7 +17,11 @@ class AppTheme {
         tertiary: accent,
         surface: surface,
       ),
-      scaffoldBackgroundColor: surface,
+      // Transparent so the global AnimatedBackground (painted once, behind
+      // the IndexedStack in main.dart) shows through every screen instead
+      // of being hidden behind each screen's own opaque Scaffold.
+      scaffoldBackgroundColor: Colors.transparent,
+      canvasColor: Colors.transparent,
       textTheme: base.textTheme.apply(
         bodyColor: textDark,
         displayColor: textDark,
@@ -31,6 +35,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         elevation: 1.5,
         shadowColor: Colors.black.withOpacity(0.08),
+        color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: EdgeInsets.zero,
       ),
