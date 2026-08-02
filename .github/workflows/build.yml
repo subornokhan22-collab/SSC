@@ -12,40 +12,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Set up Java Development Kit (JDK) 17
       - name: Set up Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # 3. Set up Flutter SDK
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      # 4. Re-create the missing android folder with internet permissions pre-configured
       - name: Ensure Android platform files exist
         run: |
           if [ ! -d "android" ]; then
             flutter create . --platforms=android
           fi
 
-      # 5. Fetch dependencies
       - name: Install dependencies
         run: flutter pub get
 
-      # 6. Build Release APK
+      - name: Generate launcher icons
+        run: flutter pub run flutter_launcher_icons
+
       - name: Build APK
         run: flutter build apk --release
 
-      # 7. Upload APK artifact so you can download it from GitHub Actions
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
