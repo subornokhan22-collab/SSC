@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/questions_data.dart';
+import '../theme/app_theme.dart';
+import '../widgets/app_button.dart';
 
 class QuizScreen extends StatefulWidget {
   final String? subjectId;
@@ -82,7 +84,16 @@ class _QuizScreenState extends State<QuizScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: Center(child: Text(_timeLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(_timeLabel, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
           ),
         ],
       ),
@@ -98,17 +109,36 @@ class _QuizScreenState extends State<QuizScreen> {
             ...List.generate(q.options.length, (i) {
               final selected = _answers[_current] == i;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
                   onTap: () => setState(() => _answers[_current] = i),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      border: Border.all(color: selected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(10),
-                      color: selected ? Theme.of(context).colorScheme.primary.withOpacity(0.08) : null,
+                      border: Border.all(color: selected ? AppTheme.primary : Colors.grey.shade300, width: selected ? 1.6 : 1),
+                      borderRadius: BorderRadius.circular(14),
+                      color: selected ? AppTheme.primary.withOpacity(0.08) : Colors.white,
+                      boxShadow: selected
+                          ? [BoxShadow(color: AppTheme.primary.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))]
+                          : [],
                     ),
-                    child: Text(q.options[i]),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 22, height: 22,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: selected ? AppTheme.primary : Colors.transparent,
+                            border: Border.all(color: selected ? AppTheme.primary : Colors.grey.shade400, width: 1.6),
+                          ),
+                          child: selected ? const Icon(Icons.check, size: 15, color: Colors.white) : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(q.options[i])),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -118,11 +148,17 @@ class _QuizScreenState extends State<QuizScreen> {
               children: [
                 if (_current > 0)
                   Expanded(
-                    child: OutlinedButton(onPressed: () => setState(() => _current--), child: const Text('আগের প্রশ্ন')),
+                    child: AppButton(
+                      label: 'আগের প্রশ্ন',
+                      outlined: true,
+                      onPressed: () => setState(() => _current--),
+                    ),
                   ),
-                if (_current > 0) const SizedBox(width: 8),
+                if (_current > 0) const SizedBox(width: 10),
                 Expanded(
-                  child: ElevatedButton(
+                  child: AppButton(
+                    label: _current < _questions.length - 1 ? 'পরের প্রশ্ন' : 'জমা দিন',
+                    icon: _current < _questions.length - 1 ? Icons.arrow_forward : Icons.check_circle,
                     onPressed: () {
                       if (_current < _questions.length - 1) {
                         setState(() => _current++);
@@ -130,7 +166,6 @@ class _QuizScreenState extends State<QuizScreen> {
                         _submit();
                       }
                     },
-                    child: Text(_current < _questions.length - 1 ? 'পরের প্রশ্ন' : 'জমা দিন'),
                   ),
                 ),
               ],
@@ -147,7 +182,20 @@ class _QuizScreenState extends State<QuizScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Center(child: Text('স্কোর: $_score / ${_questions.length}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.secondary]),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 8))],
+            ),
+            child: Center(
+              child: Text(
+                'স্কোর: $_score / ${_questions.length}',
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          ),
           const SizedBox(height: 20),
           ...List.generate(_questions.length, (i) {
             final q = _questions[i];
@@ -156,12 +204,18 @@ class _QuizScreenState extends State<QuizScreen> {
             return Card(
               margin: const EdgeInsets.only(bottom: 10),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${i + 1}. ${q.questionText}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(correct ? Icons.check_circle : Icons.cancel, size: 18, color: correct ? Colors.green : Colors.red),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text('${i + 1}. ${q.questionText}', style: const TextStyle(fontWeight: FontWeight.w600))),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
                     Text('সঠিক উত্তর: ${q.options[q.correctIndex]}', style: const TextStyle(color: Colors.green)),
                     if (userAns != null && !correct) Text('আপনার উত্তর: ${q.options[userAns]}', style: const TextStyle(color: Colors.red)),
                     if (userAns == null) const Text('উত্তর দেওয়া হয়নি', style: TextStyle(color: Colors.orange)),
