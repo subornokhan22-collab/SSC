@@ -21,7 +21,10 @@ class AppTheme {
       // the IndexedStack in main.dart) shows through every screen instead
       // of being hidden behind each screen's own opaque Scaffold.
       scaffoldBackgroundColor: Colors.transparent,
-      canvasColor: Colors.transparent,
+      // Solid canvas so DropdownButton menus (which default to the theme's
+      // canvasColor) and Drawers get a readable background. A transparent
+      // canvasColor makes dropdown menus paint directly over page content.
+      canvasColor: Colors.white,
       textTheme: base.textTheme.apply(
         bodyColor: textDark,
         displayColor: textDark,
