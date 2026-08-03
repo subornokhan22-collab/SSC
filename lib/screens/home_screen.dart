@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import 'model_test_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final void Function(int) onNavigate;
@@ -14,7 +16,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
               decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xFF1A82BB), Color(0xFF0D4F73)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                gradient: LinearGradient(colors: [AppTheme.primary, Color(0xFF0D4F73)], begin: Alignment.topLeft, end: Alignment.bottomRight),
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(28), bottomRight: Radius.circular(28)),
               ),
               child: Row(
@@ -22,7 +24,7 @@ class HomeScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-                    child: const Icon(Icons.school, color: Color(0xFF1A82BB), size: 32),
+                    child: const Icon(Icons.school, color: AppTheme.primary, size: 32),
                   ),
                   const SizedBox(width: 14),
                   const Expanded(
@@ -33,18 +35,48 @@ class HomeScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 14,
-                crossAxisSpacing: 14,
-                childAspectRatio: 1.15,
+              child: Column(
                 children: [
-                  _featureCard(context, 'বিষয়সমূহ', Icons.menu_book, const Color(0xFF1A82BB), () => onNavigate(1)),
-                  _featureCard(context, 'রিসোর্স/PDF', Icons.picture_as_pdf, const Color(0xFFD84315), () => onNavigate(2)),
-                  _featureCard(context, 'AI টিউটর', Icons.psychology, const Color(0xFF6A1B9A), () => onNavigate(3)),
-                  _featureCard(context, 'প্রোফাইল', Icons.person, const Color(0xFF2E7D32), () => onNavigate(4)),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ModelTestScreen())),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(colors: [AppTheme.accent, Color(0xFFFFA000)]),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [BoxShadow(color: AppTheme.accent.withOpacity(0.35), blurRadius: 14, offset: const Offset(0, 6))],
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.emoji_events, color: Colors.white, size: 34),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'ফুল মডেল টেস্ট\nMCQ + সংক্ষিপ্ত প্রশ্ন + সৃজনশীল',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15, height: 1.3),
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 14,
+                    crossAxisSpacing: 14,
+                    childAspectRatio: 1.15,
+                    children: [
+                      _featureCard(context, 'বিষয়সমূহ', Icons.menu_book, AppTheme.primary, () => onNavigate(1)),
+                      _featureCard(context, 'রিসোর্স/PDF', Icons.picture_as_pdf, const Color(0xFFD84315), () => onNavigate(2)),
+                      _featureCard(context, 'AI টিউটর', Icons.psychology, const Color(0xFF6A1B9A), () => onNavigate(3)),
+                      _featureCard(context, 'প্রোফাইল', Icons.person, const Color(0xFF2E7D32), () => onNavigate(4)),
+                    ],
+                  ),
                 ],
               ),
             ),
