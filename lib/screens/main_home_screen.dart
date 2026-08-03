@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/animated_background.dart';
 import 'home_screen.dart';
 import 'subjects_screen.dart';
 import 'ai_tutor_screen.dart';
@@ -26,17 +25,15 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedBackground(
-        child: IndexedStack(
-          index: _currentIndex,
-          children: [
-            HomeScreen(onNavigate: _onTabTapped),
-            _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
-            _visitedTabs.contains(2) ? const PdfResourceScreen() : const SizedBox.shrink(),
-            _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
-            const Center(child: Text('User Profile & Settings')),
-          ],
-        ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          HomeScreen(onNavigate: _onTabTapped),
+          _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
+          _visitedTabs.contains(2) ? const PdfResourceScreen() : const SizedBox.shrink(),
+          _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
+          const Center(child: Text('User Profile & Settings')),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
