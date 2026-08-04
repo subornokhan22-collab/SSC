@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/paper_license.dart';
+import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import 'subjects_screen.dart';
@@ -192,27 +193,41 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     }
   }
 
-  void _onPrintTap() {
+  Future<void> _onPrintTap() async {
     if (!_isPro) {
       _showUnlockDialog();
       return;
     }
-    // PDF সেটআপ: paper_pdf.dart ফাইল + pubspec এ pdf/printing প্যাকেজ +
-    // assets/fonts এ বাংলা ফন্ট যোগ করলে এই ডায়ালগের পরিবর্তে
-    // সরাসরি PaperPdf.printPaper(...) কল করো।
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('PDF/প্রিন্ট সেটআপ'),
-        content: const Text(
-          'প্রিন্ট চালু করতে ডেভেলপারকে বলো: pubspec.yaml এ pdf ও printing প্যাকেজ যোগ করে assets/fonts এ বাংলা ফন্ট (NotoSansBengali) বসাতে হবে। তারপর এই বাটনটি PaperPdf.printPaper() এর সাথে যুক্ত হবে।',
-          style: TextStyle(fontSize: 13, height: 1.5),
+    if (!_generated) return;
+    try {
+      await PaperPdf.printPaper(
+        title: '${_subject!.name} (${_subject!.bengaliName})',
+        modeLine: _mode == 'chapter' ? (_chapter ?? '') : 'ফুল মডেল টেস্ট পেপার',
+        mcqs: _mcqs,
+        cqs: _cqs,
+        time: _mode == 'chapter' ? '১ ঘণ্টা' : '৩ ঘণ্টা',
+        marks: _mode == 'chapter' ? '৩০' : '১০০',
+        cqAnswerCount: _mode == 'chapter' ? _cqs.length : 7,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('প্রিন্ট চালু করা গেল না'),
+          content: Text(
+            'সমস্যা: $e\n\nassets/fonts/NotoSansBengali-Regular.ttf ফাইলটি pubspec এর assets তালিকায় আছে কিনা দেখো।',
+            style: const TextStyle(fontSize: 13, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('ঠিক আছে'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('ঠিক আছে')),
-        ],
-      ),
-    );
+      );
+    }
   }
 
   // ── UI ────────────────────────────────────────────────────────────
