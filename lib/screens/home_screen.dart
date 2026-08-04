@@ -3,6 +3,7 @@ import '../data/questions_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import 'model_test_screen.dart';
+import 'question_paper_screen.dart';
 import 'subjects_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -41,17 +42,8 @@ class HomeScreen extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  // Decorative translucent circles
-                  Positioned(
-                    right: -30,
-                    top: -40,
-                    child: _decoCircle(140, 0.08),
-                  ),
-                  Positioned(
-                    right: 60,
-                    bottom: -30,
-                    child: _decoCircle(80, 0.06),
-                  ),
+                  Positioned(right: -30, top: -40, child: _decoCircle(140, 0.08)),
+                  Positioned(right: 60, bottom: -30, child: _decoCircle(80, 0.06)),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -106,7 +98,8 @@ class HomeScreen extends StatelessWidget {
                         delay: Duration(milliseconds: 200),
                         child: Text(
                           'SSC 2027 প্রস্তুতি — আজকের পড়া শুরু হোক',
-                          style: TextStyle(color: Colors.white70, fontSize: 13.5),
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 13.5),
                         ),
                       ),
                     ],
@@ -140,8 +133,8 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         _stat(Icons.quiz_rounded, allMCQs.length, 'MCQ প্রশ্ন',
                             AppTheme.primary),
-                        _stat(Icons.edit_note_rounded, allCQs.length, 'CQ প্রশ্ন',
-                            AppTheme.secondary),
+                        _stat(Icons.edit_note_rounded, allCQs.length,
+                            'CQ প্রশ্ন', AppTheme.secondary),
                         _stat(Icons.menu_book_rounded, allSubjects.length,
                             'বিষয়', const Color(0xFF6A1B9A)),
                       ],
@@ -216,6 +209,79 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // ── Tutor question-paper shortcut ───────────────────
+                  FadeSlideIn(
+                    delay: const Duration(milliseconds: 400),
+                    child: PressableScale(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const QuestionPaperScreen()),
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: const Color(0xFF00838F)
+                                  .withOpacity(0.28)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF00838F)
+                                  .withOpacity(0.12),
+                              blurRadius: 12,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(9),
+                              decoration: BoxDecoration(
+                                color:
+                                    const Color(0xFF00838F).withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.description_rounded,
+                                  color: Color(0xFF00838F), size: 22),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'প্রশ্নপত্র',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 14.5,
+                                      color: Color(0xFF00838F),
+                                    ),
+                                  ),
+                                  SizedBox(height: 1),
+                                  Text(
+                                    'প্রিন্ট-রেডি পেপার • টিউটর (Demo/Pro)',
+                                    style: TextStyle(
+                                        fontSize: 11.5,
+                                        color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right,
+                                color: Color(0xFF00838F)),
+                          ],
                         ),
                       ),
                     ),
@@ -344,7 +410,8 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(label,
-              style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600)),
+              style:
+                  TextStyle(fontSize: 11.5, color: Colors.grey.shade600)),
         ],
       ),
     );
@@ -396,7 +463,8 @@ class HomeScreen extends StatelessWidget {
                 child: Text(
                   caption,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                  style:
+                      TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
               ),
             ],
