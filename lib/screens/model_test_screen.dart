@@ -4,6 +4,7 @@ import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/chapter_source_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
 import '../widgets/app_button.dart';
 import 'subjects_screen.dart';
 import 'quiz_screen.dart';
@@ -68,34 +69,50 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('বিষয় নির্বাচন করো', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const FadeSlideIn(
+              child: Text('বিষয় নির্বাচন করো',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ),
             const SizedBox(height: 10),
-            DropdownButtonFormField<SubjectInfo>(
-              value: _subject,
-              decoration: InputDecoration(
-                filled: true, fillColor: Colors.white,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            FadeSlideIn(
+              delay: const Duration(milliseconds: 100),
+              child: DropdownButtonFormField<SubjectInfo>(
+                value: _subject,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                items: allSubjects
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
+                    .toList(),
+                onChanged: (s) => setState(() => _subject = s),
+                hint: const Text('একটি বিষয় বাছাই করো'),
               ),
-              items: allSubjects.map((s) => DropdownMenuItem(value: s, child: Text(s.name))).toList(),
-              onChanged: (s) => setState(() => _subject = s),
-              hint: const Text('একটি বিষয় বাছাই করো'),
             ),
             const SizedBox(height: 24),
             if (_subject != null)
               Expanded(
-                child: _ModelTestSections(
-                  subject: _subject!,
-                  chapters: _chaptersForSubject,
-                  apiKey: _apiKey,
-                  onNeedKey: _promptForKey,
+                child: FadeSlideIn(
+                  delay: const Duration(milliseconds: 120),
+                  child: _ModelTestSections(
+                    subject: _subject!,
+                    chapters: _chaptersForSubject,
+                    apiKey: _apiKey,
+                    onNeedKey: _promptForKey,
+                  ),
                 ),
               )
             else
               const Expanded(
-                child: Center(
-                  child: Text(
-                    'একটি বিষয় বেছে নিলে MCQ, সংক্ষিপ্ত প্রশ্ন ও সৃজনশীল প্রশ্ন সহ পূর্ণাঙ্গ টেস্ট তৈরি হবে।',
-                    textAlign: TextAlign.center,
+                child: FadeSlideIn(
+                  delay: Duration(milliseconds: 150),
+                  child: Center(
+                    child: Text(
+                      'একটি বিষয় বেছে নিলে MCQ, সংক্ষিপ্ত প্রশ্ন ও সৃজনশীল প্রশ্ন সহ পূর্ণাঙ্গ টেস্ট তৈরি হবে।',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
@@ -222,26 +239,59 @@ class _ModelTestSectionsState extends State<_ModelTestSections> {
     }
   }
 
+  Widget _errorBanner() {
+    return FadeSlideIn(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.red.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 12.5)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Column(
         children: [
-          const TabBar(
-            labelColor: AppTheme.primary,
-            unselectedLabelColor: Colors.grey,
-            tabs: [
-              Tab(text: 'MCQ'),
-              Tab(text: 'সংক্ষিপ্ত প্রশ্ন'),
-              Tab(text: 'সৃজনশীল'),
-            ],
-          ),
-          if (_error != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(_error!, style: const TextStyle(color: Colors.red)),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primary.withOpacity(0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
+            child: const TabBar(
+              labelColor: AppTheme.primary,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: AppTheme.primary,
+              tabs: [
+                Tab(text: 'MCQ'),
+                Tab(text: 'সংক্ষিপ্ত প্রশ্ন'),
+                Tab(text: 'সৃজনশীল'),
+              ],
+            ),
+          ),
+          if (_error != null) _errorBanner(),
           Expanded(
             child: TabBarView(
               children: [
@@ -251,16 +301,27 @@ class _ModelTestSectionsState extends State<_ModelTestSections> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          '৩০টি প্রশ্ন, ৩০ মিনিট সময়সীমা।\nবিদ্যমান প্রশ্ন কম থাকলে বাকিগুলো AI দিয়ে তৈরি হবে।',
-                          textAlign: TextAlign.center,
+                        FadeSlideIn(
+                          child: Icon(Icons.quiz_rounded,
+                              size: 46, color: AppTheme.primary.withOpacity(0.35)),
+                        ),
+                        const SizedBox(height: 12),
+                        const FadeSlideIn(
+                          delay: Duration(milliseconds: 80),
+                          child: Text(
+                            '৩০টি প্রশ্ন, ৩০ মিনিট সময়সীমা।\nবিদ্যমান প্রশ্ন কম থাকলে বাকিগুলো AI দিয়ে তৈরি হবে।',
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        AppButton(
-                          label: _loadingMcq ? 'তৈরি হচ্ছে...' : 'MCQ পরীক্ষা শুরু করো',
-                          icon: Icons.play_arrow,
-                          fullWidth: false,
-                          onPressed: _loadingMcq ? null : _startMcqSection,
+                        FadeSlideIn(
+                          delay: const Duration(milliseconds: 160),
+                          child: AppButton(
+                            label: _loadingMcq ? 'তৈরি হচ্ছে...' : 'MCQ পরীক্ষা শুরু করো',
+                            icon: Icons.play_arrow,
+                            fullWidth: false,
+                            onPressed: _loadingMcq ? null : _startMcqSection,
+                          ),
                         ),
                       ],
                     ),
@@ -268,31 +329,39 @@ class _ModelTestSectionsState extends State<_ModelTestSections> {
                 ),
                 _shortQuestions.isEmpty
                     ? Center(
-                        child: AppButton(
-                          label: _loadingSq ? 'তৈরি হচ্ছে...' : 'সংক্ষিপ্ত প্রশ্ন তৈরি করো',
-                          icon: Icons.auto_awesome,
-                          fullWidth: false,
-                          onPressed: _loadingSq ? null : _loadShortQuestions,
+                        child: FadeSlideIn(
+                          child: AppButton(
+                            label: _loadingSq ? 'তৈরি হচ্ছে...' : 'সংক্ষিপ্ত প্রশ্ন তৈরি করো',
+                            icon: Icons.auto_awesome,
+                            fullWidth: false,
+                            onPressed: _loadingSq ? null : _loadShortQuestions,
+                          ),
                         ),
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.all(12),
                         itemCount: _shortQuestions.length,
-                        itemBuilder: (context, i) => Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Text('${i + 1}. ${_shortQuestions[i]}'),
+                        itemBuilder: (context, i) => FadeSlideIn(
+                          delay: Duration(milliseconds: 50 * (i > 8 ? 8 : i)),
+                          offset: const Offset(0, 14),
+                          child: Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text('${i + 1}. ${_shortQuestions[i]}'),
+                            ),
                           ),
                         ),
                       ),
                 _cqs.isEmpty
                     ? Center(
-                        child: AppButton(
-                          label: _loadingCq ? 'তৈরি হচ্ছে...' : 'সৃজনশীল প্রশ্ন তৈরি করো',
-                          icon: Icons.auto_awesome,
-                          fullWidth: false,
-                          onPressed: _loadingCq ? null : _loadCqs,
+                        child: FadeSlideIn(
+                          child: AppButton(
+                            label: _loadingCq ? 'তৈরি হচ্ছে...' : 'সৃজনশীল প্রশ্ন তৈরি করো',
+                            icon: Icons.auto_awesome,
+                            fullWidth: false,
+                            onPressed: _loadingCq ? null : _loadCqs,
+                          ),
                         ),
                       )
                     : ListView.builder(
@@ -300,25 +369,29 @@ class _ModelTestSectionsState extends State<_ModelTestSections> {
                         itemCount: _cqs.length,
                         itemBuilder: (context, i) {
                           final cq = _cqs[i];
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 14),
-                            child: Padding(
-                              padding: const EdgeInsets.all(14),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(cq.chapter, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                                  const SizedBox(height: 6),
-                                  Text(cq.stem, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                  const Divider(height: 20),
-                                  Text('ক. ${cq.questionK}'),
-                                  const SizedBox(height: 6),
-                                  Text('খ. ${cq.questionKh}'),
-                                  const SizedBox(height: 6),
-                                  Text('গ. ${cq.questionG}'),
-                                  const SizedBox(height: 6),
-                                  Text('ঘ. ${cq.questionGh}'),
-                                ],
+                          return FadeSlideIn(
+                            delay: Duration(milliseconds: 60 * (i > 6 ? 6 : i)),
+                            offset: const Offset(0, 14),
+                            child: Card(
+                              margin: const EdgeInsets.only(bottom: 14),
+                              child: Padding(
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(cq.chapter, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                                    const SizedBox(height: 6),
+                                    Text(cq.stem, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                    const Divider(height: 20),
+                                    Text('ক. ${cq.questionK}'),
+                                    const SizedBox(height: 6),
+                                    Text('খ. ${cq.questionKh}'),
+                                    const SizedBox(height: 6),
+                                    Text('গ. ${cq.questionG}'),
+                                    const SizedBox(height: 6),
+                                    Text('ঘ. ${cq.questionGh}'),
+                                  ],
+                                ),
                               ),
                             ),
                           );
