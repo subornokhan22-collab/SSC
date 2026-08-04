@@ -1,13 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/gemini_client.dart';
 import '../theme/app_theme.dart';
 
 class ChatMessage {
   final String text;
   final bool isUser;
-  ChatMessage(this.text, this.isUser);
+  final bool isError;
+  ChatMessage(this.text, this.isUser, {this.isError = false});
 }
 
 class AITutorScreen extends StatefulWidget {
@@ -141,8 +141,6 @@ class _AITutorScreenState extends State<AITutorScreen> {
     });
     _scrollToBottom();
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$_apiKey');
-
     const systemInstruction = 'তুমি একজন বাংলাদেশি SSC শিক্ষার্থীর জন্য একজন সহায়ক শিক্ষক। '
         'প্রশ্নটির সহজ ও স্পষ্ট বাংলা উত্তর দাও। '
         'গুরুত্বপূর্ণ ফরম্যাটিং নিয়ম: '
@@ -153,29 +151,27 @@ class _AITutorScreenState extends State<AITutorScreen> {
         'প্রশ্ন: ';
 
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'contents': [
-            {
-              'parts': [
-                {'text': '$systemInstruction$text'}
-              ]
-            }
-          ]
-        }),
+      final rawReply = await GeminiClient.generate(
+        apiKey: _apiKey!,
+        prompt: '$systemInstruction$text',
+        temperature: 0.6,
       );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final rawReply = data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? 'দুঃখিত, উত্তর পাওয়া যায়নি।';
-        setState(() => _messages.add(ChatMessage(_cleanMathText(rawReply), false)));
-      } else {
-        setState(() => _messages.add(ChatMessage('ত্রুটি: ${response.statusCode}। API Key সঠিক কিনা যাচাই করুন।', false)));
-      }
-    } catch (e) {
-      setState(() => _messages.add(ChatMessage('সংযোগ ত্রুটি হয়েছে। ইন্টারনেট চেক করুন।', false)));
+      final reply = rawReply.trim().isEmpty
+          ? 'দুঃখিত, উত্তর পাওয়া যায়নি।'
+          : _cleanMathText(rawReply);
+      setState(() => _messages.add(ChatMessage(reply, false)));
+    } on Exception catch (e) {
+      setState(() => _messages.add(ChatMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+        false,
+        isError: true,
+      )));
+    } catch (_) {
+      setState(() => _messages.add(ChatMessage(
+        'অজানা সমস্যা হয়েছে। আবার চেষ্টা করো।',
+        false,
+        isError: true,
+      )));
     } finally {
       setState(() => _loading = false);
       _scrollToBottom();
@@ -190,6 +186,51 @@ class _AITutorScreenState extends State<AITutorScreen> {
     });
   }
 
+  Widget _buildBubble(ChatMessage m) {
+    return Align(
+      alignment: m.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+        decoration: BoxDecoration(
+          gradient: m.isUser
+              ? const LinearGradient(colors: [AppTheme.primary, AppTheme.secondary])
+              : null,
+          color: m.isUser
+              ? null
+              : (m.isError ? Colors.red.withOpacity(0.06) : Colors.white),
+          border: m.isError
+              ? Border.all(color: Colors.red.withOpacity(0.4))
+              : null,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 3))],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (m.isError) ...[
+              const Icon(Icons.info_outline, size: 17, color: Colors.red),
+              const SizedBox(width: 6),
+            ],
+            Flexible(
+              child: SelectableText(
+                m.text,
+                style: TextStyle(
+                  color: m.isUser
+                      ? Colors.white
+                      : (m.isError ? Colors.red.shade800 : Colors.black87),
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,36 +243,21 @@ class _AITutorScreenState extends State<AITutorScreen> {
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(12),
-                    itemCount: _messages.length,
+                    itemCount: _messages.length + (_loading ? 1 : 0),
                     itemBuilder: (context, index) {
-                      final m = _messages[index];
-                      return Align(
-                        alignment: m.isUser ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-                          decoration: BoxDecoration(
-                            gradient: m.isUser
-                                ? const LinearGradient(colors: [AppTheme.primary, AppTheme.secondary])
-                                : null,
-                            color: m.isUser ? null : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 3))],
+                      if (_loading && index == _messages.length) {
+                        return const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            child: _TypingIndicator(),
                           ),
-                          child: SelectableText(
-                            m.text,
-                            style: TextStyle(
-                              color: m.isUser ? Colors.white : Colors.black87,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                      );
+                        );
+                      }
+                      return _buildBubble(_messages[index]);
                     },
                   ),
           ),
-          if (_loading) const LinearProgressIndicator(),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -270,6 +296,66 @@ class _AITutorScreenState extends State<AITutorScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Three bouncing dots shown while the tutor is "typing".
+class _TypingIndicator extends StatefulWidget {
+  const _TypingIndicator();
+
+  @override
+  State<_TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<_TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))
+      ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 3))],
+      ),
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(3, (i) {
+              // Each dot bounces with a phase offset.
+              final phase = (_c.value * 3 - i).clamp(0.0, 1.0);
+              final bounce = phase < 0.5 ? phase * 2 : (1 - phase) * 2;
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                width: 8,
+                height: 8 + 4 * bounce,
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withOpacity(0.35 + 0.45 * bounce),
+                  shape: BoxShape.circle,
+                ),
+              );
+            }),
+          );
+        },
       ),
     );
   }
