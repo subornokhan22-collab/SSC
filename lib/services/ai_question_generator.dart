@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../data/questions_data.dart';
+import 'gemini_client.dart';
 
 class AiQuestionGenerator {
   static Future<List<Question>> generateMcqs({
@@ -10,10 +10,6 @@ class AiQuestionGenerator {
     required String sourceText,
     int count = 10,
   }) async {
-    final url = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$apiKey',
-    );
-
     final sourceBlock = sourceText.trim().isEmpty
         ? 'কোনো নির্দিষ্ট উৎস টেক্সট দেওয়া হয়নি; বাংলাদেশ SSC পাঠ্যবই অনুযায়ী সাধারণ জ্ঞান ব্যবহার করো।'
         : 'নিচের পাঠ্য উপকরণের ভিত্তিতে প্রশ্ন তৈরি করো:\n"""\n${sourceText.trim()}\n"""';
@@ -33,27 +29,15 @@ $count টি সম্পূর্ণ নতুন ও অনন্য (unique)
 - প্রতিবার ভিন্ন ভিন্ন প্রশ্ন তৈরি করো।
 ''';
 
-    return _mcqRequest(url, prompt);
+    final raw = await GeminiClient.generate(
+      apiKey: apiKey,
+      prompt: prompt,
+      temperature: 0.9,
+    );
+    return _parseMcqs(raw);
   }
 
-  static Future<List<Question>> _mcqRequest(Uri url, String prompt) async {
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [
-          {'parts': [{'text': prompt}]}
-        ],
-        'generationConfig': {'temperature': 0.9},
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('API ত্রুটি: ${response.statusCode}। কিছুক্ষণ পর আবার চেষ্টা করো।');
-    }
-
-    final data = jsonDecode(response.body);
-    String raw = data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? '';
+  static List<Question> _parseMcqs(String raw) {
     raw = _stripCodeFence(raw);
 
     final start = raw.indexOf('[');
@@ -98,10 +82,6 @@ $count টি সম্পূর্ণ নতুন ও অনন্য (unique)
     required String sourceText,
     int count = 8,
   }) async {
-    final url = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$apiKey',
-    );
-
     final sourceBlock = sourceText.trim().isEmpty
         ? 'কোনো নির্দিষ্ট উৎস টেক্সট দেওয়া হয়নি; বাংলাদেশ SSC পাঠ্যবই অনুযায়ী সাধারণ জ্ঞান ব্যবহার করো।'
         : 'নিচের পাঠ্য উপকরণের ভিত্তিতে প্রশ্ন তৈরি করো:\n"""\n${sourceText.trim()}\n"""';
@@ -119,29 +99,12 @@ $count টি সংক্ষিপ্ত প্রশ্ন (জ্ঞানম
 - LaTeX বা মার্কডাউন ব্যবহার করবে না।
 ''';
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [{'parts': [{'text': prompt}]}],
-        'generationConfig': {'temperature': 0.9},
-      }),
+    final raw = await GeminiClient.generate(
+      apiKey: apiKey,
+      prompt: prompt,
+      temperature: 0.9,
     );
-
-    if (response.statusCode != 200) {
-      throw Exception('API ত্রুটি: ${response.statusCode}');
-    }
-    final data = jsonDecode(response.body);
-    String raw = data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? '';
-    raw = _stripCodeFence(raw);
-
-    final start = raw.indexOf('[');
-    final end = raw.lastIndexOf(']');
-    if (start == -1 || end == -1) throw Exception('সঠিক ফরম্যাট পাওয়া যায়নি।');
-    raw = raw.substring(start, end + 1);
-
-    final List<dynamic> parsed = jsonDecode(raw);
-    return parsed.map((e) => e.toString()).toList();
+    return _parseStringArray(raw, 'সঠিক ফরম্যাট পাওয়া যায়নি।');
   }
 
   static Future<List<CreativeQuestion>> generateCqs({
@@ -151,10 +114,6 @@ $count টি সংক্ষিপ্ত প্রশ্ন (জ্ঞানম
     required String sourceText,
     int count = 3,
   }) async {
-    final url = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$apiKey',
-    );
-
     final sourceBlock = sourceText.trim().isEmpty
         ? 'কোনো নির্দিষ্ট উৎস টেক্সট দেওয়া হয়নি; বাংলাদেশ SSC পাঠ্যবই অনুযায়ী সাধারণ জ্ঞান ব্যবহার করো।'
         : 'নিচের পাঠ্য উপকরণের ভিত্তিতে প্রশ্ন তৈরি করো:\n"""\n${sourceText.trim()}\n"""';
@@ -170,22 +129,27 @@ $count টি সৃজনশীল প্রশ্ন (উদ্দীপক + 
 LaTeX বা মার্কডাউন ব্যবহার করবে না।
 ''';
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [{'parts': [{'text': prompt}]}],
-        'generationConfig': {'temperature': 0.9},
-      }),
+    final raw = await GeminiClient.generate(
+      apiKey: apiKey,
+      prompt: prompt,
+      temperature: 0.9,
     );
+    return _parseCqs(raw, chapter);
+  }
 
-    if (response.statusCode != 200) {
-      throw Exception('API ত্রুটি: ${response.statusCode}');
-    }
-    final data = jsonDecode(response.body);
-    String raw = data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? '';
+  static List<String> _parseStringArray(String raw, String errorMsg) {
     raw = _stripCodeFence(raw);
+    final start = raw.indexOf('[');
+    final end = raw.lastIndexOf(']');
+    if (start == -1 || end == -1) throw Exception(errorMsg);
+    raw = raw.substring(start, end + 1);
 
+    final List<dynamic> parsed = jsonDecode(raw);
+    return parsed.map((e) => e.toString()).toList();
+  }
+
+  static List<CreativeQuestion> _parseCqs(String raw, String chapter) {
+    raw = _stripCodeFence(raw);
     final start = raw.indexOf('[');
     final end = raw.lastIndexOf(']');
     if (start == -1 || end == -1) throw Exception('সঠিক ফরম্যাট পাওয়া যায়নি।');
