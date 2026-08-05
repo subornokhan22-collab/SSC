@@ -361,6 +361,17 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (!_generated) return;
     final isFull = _mode == 'full';
     final pat = _patternFor(_subject!.id);
+    // স্কুল-বোর্ড স্টাইল: লিখিত পত্র ও বহুনির্বাচনি পত্রের আলাদা সময়/মান
+    final int wMarks = _mode == 'chapter'
+        ? _cqs.length * 10
+        : pat.cqAnswerCount * 10 + pat.saqAnswerCount * 2;
+    final int mMarks = _mode == 'chapter' ? _mcqs.length : pat.mcqCount;
+    final String wTime = _mode == 'chapter'
+        ? '৪০ মিনিট'
+        : (pat.totalMarks == 75 ? '২ ঘণ্টা' : '২ ঘণ্টা ৩০ মিনিট');
+    final String mTime = _mode == 'chapter'
+        ? '২০ মিনিট'
+        : (pat.totalMarks == 75 ? '২৫ মিনিট' : '৩০ মিনিট');
     try {
       await PaperPdf.printPaper(
         title: '${_subject!.name} (${_subject!.bengaliName})',
@@ -375,6 +386,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         cqNote: (isFull && pat.mathDivisions)
             ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
             : null,
+        writtenTime: wTime,
+        writtenMarks: _bn(wMarks),
+        mcqTime: mTime,
+        mcqMarks: _bn(mMarks),
       );
     } catch (e) {
       if (!mounted) return;
@@ -383,7 +398,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         builder: (context) => AlertDialog(
           title: const Text('প্রিন্ট চালু করা গেল না'),
           content: Text(
-            'সমস্যা: $e\n\nassets/fonts/HindSiliguri-Regular.ttf ও HindSiliguri-Bold.ttf দুটি ফাইল assets/fonts/ ফোল্ডারে আছে কিনা দেখো।',
+            'সমস্যা: $e\n\nassets/fonts/ ফোল্ডারে NotoSerifBengali-Regular.ttf, NotoSerifBengali-Bold.ttf ও HindSiliguri-Regular.ttf ফাইলগুলো আছে কিনা দেখো।',
             style: const TextStyle(fontSize: 13, height: 1.5),
           ),
           actions: [
