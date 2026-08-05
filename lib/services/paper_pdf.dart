@@ -20,8 +20,10 @@ import '../data/questions_data.dart';
 /// হিসেবে PDF এ বসানো হয়। অর্থাৎ PDF এ টেক্সট নয়, ছবি থাকে — প্রিন্টে
 /// কোনো ফন্ট/শেপিং সমস্যা আসার সুযোগই থাকে না।
 ///
-/// ফন্ট: assets/fonts/HindSiliguri-Regular.ttf ও HindSiliguri-Bold.ttf
-/// (rootBundle থেকে লোড হয়; না পেলে সিস্টেম ফন্টে চলে যায় — প্রিন্ট তবু হবে)
+/// ফন্ট (assets/fonts/): NotoSerifBengali-Regular.ttf + NotoSerifBengali-Bold.ttf
+/// (ঐতিহ্যবাহী বাংলা সংখ্যার প্রধান ফন্ট) এবং HindSiliguri-Regular.ttf
+/// (গাণিতিক চিহ্নের ফলব্যাক)। rootBundle থেকে লোড হয়; কোনোটি না পেলে সেই
+/// স্তরটুকু বাদ পড়ে — প্রিন্ট তবু হবে।
 class PaperPdf {
   static const _optionLetters = ['ক', 'খ', 'গ', 'ঘ'];
 
@@ -33,32 +35,30 @@ class PaperPdf {
   static const double _margin = 40 * _k; // মার্জিন ≈ 14 মিমি
 
   // ফন্ট ফ্যামিলি (FontLoader দিয়ে রেজিস্টার করা নাম)
+  //
+  // ১) HSPDF-Regular/Bold = Noto Serif Bengali — বাংলা অক্ষর ও
+  //    ঐতিহ্যবাহী বাংলা সংখ্যা (১২৩…) এই ফন্ট থেকে আসে।
+  // ২) HSPDF-Sym = Hind Siliguri — ² ³ √ π × ÷ ± ≤ ≥ ≈ ≠ ইত্যাদি গাণিতিক
+  //    চিহ্ন Noto তে নেই, তাই সেগুলো ফলব্যাক হিসেবে এই ফন্ট থেকে আসে।
+  //    (Hind Siliguri-র বাংলা সংখ্যা অদ্ভুদ আকৃতির — তাই এটি প্রাথমিক
+  //    ফন্ট নয়, শুধু চিহ্নের ফলব্যাক)
   static String? _regular;
   static String? _bold;
+  static String? _sym;
+  static bool _fontsTried = false;
 
   static Future<void> _loadFonts() async {
-    if (_regular != null) return; // একবার হলেই যথেষ্ট
+    if (_fontsTried) return; // একবার চেষ্টা করলেই যথেষ্ট
+    _fontsTried = true;
     try {
       final lr = FontLoader('HSPDF-Regular')
-        ..addFont(rootBundle.load('assets/fonts/HindSiliguri-Regular.ttf'));
+        ..addFont(
+            rootBundle.load('assets/fonts/NotoSerifBengali-Regular.ttf'));
       await lr.load();
-      final lb = FontLoader('HSPDF-Bold')
-        ..addFont(rootBundle.load('assets/fonts/HindSiliguri-Bold.ttf'));
-      await lb.load();
       _regular = 'HSPDF-Regular';
+    } catch (_) {}
+    try {
+      final lb = FontLoader('HSPDF-Bold')
+        ..addFont(rootBundle.load('assets/fonts/NotoSerifBengali-Bold.ttf'));
+      await lb.load();
       _bold = 'HSPDF-Bold';
-    } catch (_) {
-      // ফন্ট ফাইল না পেলে সিস্টেম ফন্ট ব্যবহার হবে — প্রিন্ট তবু কাজ করবে
-      _regular = null;
-      _bold = null;
-    }
-  }
-
-  // Hind Siliguri তে নেই এমন গাণিতিক/বিশেষ চিহ্নগুলো নিরাপদ বাংলা/ASCII
-  // রূপে বদলে দেওয়া হয়, যাতে কোনো ফোনে □ (টোফু) না আসে।
-  static String _safe(String s, {bool preserveSpaces = false}) {
-    const multi = <String, String>{
-      '⁻¹': '^-1', '⁻²': '^-2', '⁻³': '^-3', '⁻⁴': '^-4', '⁻⁵': '^-5',
-      '⁻⁶': '^-6', '⁻⁷': '^-7', '⁻⁸': '^-8', '⁻⁹': '^-9', '⁻ⁿ': '^-n',
-    };
-    const single = <String, String>{
