@@ -9,21 +9,36 @@ import 'package:printing/printing.dart';
 
 import '../data/questions_data.dart';
 
-/// বাংলা প্রশ্নপত্র → PDF / প্রিন্ট (v2 - সম্পূর্ণ নতুন ইঞ্জিন)
+/// একটি স্ট্যাকড ভগ্নাংশ (লব উপরে, দাগ মাঝে, হর নিচে)
+class _Frac {
+  final String n, d;
+  const _Frac(this.n, this.d);
+}
+
+/// রেন্ডার-সময়ে একটি সাজানো ভগ্নাংশের পেইন্টার-জোড়া
+typedef _FracP = ({TextPainter n, TextPainter d, double w, double h});
+
+/// একটি প্যারাগ্রাফের ফল: মূল TextPainter + ভেতরের ভগ্নাংশগুলো
+typedef _RichLine = ({TextPainter tp, List<_FracP> fr});
+
+/// বাংলা প্রশ্নপত্র → PDF / প্রিন্ট (v3 ইঞ্জিন)
 ///
-/// সমস্যা যেটা ঠিক করা হয়েছে:
-/// pub.dev এর `pdf` প্যাকেজে OpenType shaping নেই — তাই বাংলা যুক্তাক্ষর
-/// (শ্চ, ক্ষ, ত্র, র্ব ইত্যাদি), হসন্ত, মাত্রা ভেঙে ছিল ও □ বাক্স আসছিল।
+/// v2: প্রতিটি A4 পেজ আগে Flutter-এর TextPainter (Skia/Harfbuzz) দিয়ে আঁকা
+/// হয় — বাংলা যুক্তাক্ষর ১০০% ঠিক থাকে; তারপর পেজটি PNG হিসেবে PDF এ বসে।
 ///
-/// সমাধান: প্রতিটি A4 পেজ আগে Flutter-এর নিজের TextPainter (Skia/Harfbuzz)
-/// দিয়ে আঁকা হয় — এতে বাংলা লিখি ১০০% ঠিকমতো বসে। তারপর পেজটি PNG ছবি
-/// হিসেবে PDF এ বসানো হয়। অর্থাৎ PDF এ টেক্সট নয়, ছবি থাকে — প্রিন্টে
-/// কোনো ফন্ট/শেপিং সমস্যা আসার সুযোগই থাকে না।
+/// v3-এ নতুন:
+///  ১) DejaVu Sans চিহ্ন-ফন্ট যুক্ত — α θ π Δ, ∩∪∈∅⊂⊆ √ ∠ ∥ ⊥ ′, সুপার-
+///     স্ক্রিপ্ট (² ⁿ ⁻), সাবস্ক্রিপ্ট (₁₂ₐ) সব *আসল চিহ্নে* ছাপে
+///     (আগে "থেটা", "x^-2" লিখে ফেলত)।
+///  ২) স্ট্যাকড ভগ্নাংশ রেন্ডারার — "1/2", "(a+b)/ab", "১/২" সব স্কুল-
+///     বইয়ের মতো লব-দাগ-হর আকারে আঁকা হয়।
+///  ৩) "নাম ঃ" টাইপে স্পেস+ঃ বসলে ফন্ট-শেপার ডটেড-সার্কেল বসিয়ে দেয়
+///     (যেটা "O:" দেখায়) — তাই সব 'ঃ' আগের শব্দের সাথে লেগে রাখা হয়েছে।
+///  ৪) গণিত/উচ্চতর গণিতের সৃজনশীল নতুন নিয়মে ক(২)+খ(৪)+গ(৪) — ৩ ভাগ।
 ///
-/// ফন্ট (assets/fonts/): NotoSerifBengali-Regular.ttf + NotoSerifBengali-Bold.ttf
-/// (ঐতিহ্যবাহী বাংলা সংখ্যার প্রধান ফন্ট) এবং HindSiliguri-Regular.ttf
-/// (গাণিতিক চিহ্নের ফলব্যাক)। rootBundle থেকে লোড হয়; কোনোটি না পেলে সেই
-/// স্তরটুকু বাদ পড়ে — প্রিন্ট তবু হবে।
+/// ফন্ট (assets/fonts/): NotoSerifBengali-Regular/Bold.ttf (বাংলা ও সংখ্যা),
+/// HindSiliguri-Regular.ttf (অতিরিক্ত সেফটি), DejaVuSans.ttf ও
+/// DejaVuSans-Bold.ttf (গাণিতিক/বৈজ্ঞানিক চিহ্ন)।
 class PaperPdf {
   static const _optionLetters = ['ক', 'খ', 'গ', 'ঘ'];
 
@@ -34,17 +49,15 @@ class PaperPdf {
   static const int _H = 2339; // A4 উচ্চতা @200dpi (px)
   static const double _margin = 40 * _k; // মার্জিন ≈ 14 মিমি
 
-  // ফন্ট ফ্যামিলি (FontLoader দিয়ে রেজিস্টার করা নাম)
-  //
-  // ১) HSPDF-Regular/Bold = Noto Serif Bengali — বাংলা অক্ষর ও
-  //    ঐতিহ্যবাহী বাংলা সংখ্যা (১২৩…) এই ফন্ট থেকে আসে।
-  // ২) HSPDF-Sym = Hind Siliguri — ² ³ √ π × ÷ ± ≤ ≥ ≈ ≠ ইত্যাদি গাণিতিক
-  //    চিহ্ন Noto তে নেই, তাই সেগুলো ফলব্যাক হিসেবে এই ফন্ট থেকে আসে।
-  //    (Hind Siliguri-র বাংলা সংখ্যা অদ্ভুদ আকৃতির — তাই এটি প্রাথমিক
-  //    ফন্ট নয়, শুধু চিহ্নের ফলব্যাক)
+  // ফন্ট ফ্যামিলি (FontLoader দিয়ে রেজিস্টার করা নাম):
+  //  HSPDF-Regular/Bold = Noto Serif Bengali — বাংলা অক্ষর ও সংখ্যা
+  //  HSPDF-Sym          = Hind Siliguri — সর্বশেষ সেফটি ফলব্যাক
+  //  DVPDF / DVPDF-Bold = DejaVu Sans — গ্রিক/গাণিতিক চিহ্ন, সুপার-সাবস্ক্রিপ্ট
   static String? _regular;
   static String? _bold;
   static String? _sym;
+  static String? _dv;
+  static String? _dvb;
   static bool _fontsTried = false;
 
   static Future<void> _loadFonts() async {
@@ -69,39 +82,203 @@ class PaperPdf {
       await ls.load();
       _sym = 'HSPDF-Sym';
     } catch (_) {}
+    try {
+      final ld = FontLoader('DVPDF')
+        ..addFont(rootBundle.load('assets/fonts/DejaVuSans.ttf'));
+      await ld.load();
+      _dv = 'DVPDF';
+    } catch (_) {}
+    try {
+      final ldb = FontLoader('DVPDF-Bold')
+        ..addFont(rootBundle.load('assets/fonts/DejaVuSans-Bold.ttf'));
+      await ldb.load();
+      _dvb = 'DVPDF-Bold';
+    } catch (_) {}
     // কোনো ফাইল না পেলে সেই স্তর বাদ পড়বে — প্রিন্ট তবু কাজ করবে
   }
 
-  // Hind Siliguri তে নেই এমন গাণিতিক/বিশেষ চিহ্নগুলো নিরাপদ বাংলা/ASCII
-  // রূপে বদলে দেওয়া হয়, যাতে কোনো ফোনে □ (টোফু) না আসে।
+  /// কোন গ্লিফ কোন ফন্ট থেকে আসবে — ফলব্যাক শৃঙ্খলা
+  static List<String>? _fb(bool bold) {
+    final l = <String>[
+      if (bold && _dvb != null) _dvb!,
+      if (_dv != null) _dv!,
+      if (_sym != null) _sym!,
+    ];
+    return l.isEmpty ? null : l;
+  }
+
+  // DejaVu-তে থাকা সব চিহ্ন এখন আর বদলানো হয় না — সরাসরি ছাপে।
+  // শুধু যেগুলো কোনো ফন্টেই নেই/ভগ্নাংশে রূপান্তর দরকার সেগুলোই বদলায়।
   static String _safe(String s, {bool preserveSpaces = false}) {
-    const multi = <String, String>{
-      '⁻¹': '^-1', '⁻²': '^-2', '⁻³': '^-3', '⁻⁴': '^-4', '⁻⁵': '^-5',
-      '⁻⁶': '^-6', '⁻⁷': '^-7', '⁻⁸': '^-8', '⁻⁹': '^-9', '⁻ⁿ': '^-n',
-    };
     const single = <String, String>{
-      '⁰': '^0', '⁴': '^4', '⁵': '^5', '⁶': '^6', '⁷': '^7', '⁸': '^8',
-      '⁹': '^9', '⁻': '^-', 'ⁿ': '^n', 'ᵐ': '^m',
-      '₀': '_0', '₁': '_1', '₂': '_2', '₃': '_3', '₄': '_4', '₅': '_5',
-      '₆': '_6', '₇': '_7', '₈': '_8', '₉': '_9', 'ₐ': '_a',
-      'Δ': 'ডেল্টা ', 'θ': 'থেটা', 'λ': 'ল্যামডা', 'ρ': 'রো',
-      '′': "'", '″': '"',
-      '∈': ' সদস্য ', '∉': ' সদস্য নয় ', '∅': ' ফাঁকা সেট ',
-      '∩': ' ছেদ ', '∪': ' সংযোগ ',
-      '⊆': ' উপসেট ', '⊂': ' প্রকৃত উপসেট ', '⊄': ' উপসেট নয় ',
-      '∠': 'কোণ ', '∥': ' সমান্তরাল ', '⊥': ' লম্ব ', '⟂': ' লম্ব ',
-      '∝': ' সমানুপাতিক ',
-      '→': ' -> ', '∴': ' অতএব ',
+      '½': '1/2', '¼': '1/4', '¾': '3/4', // ভগ্নাংশ রেন্ডারারে যাবে
+      '⟂': '⊥', // U+27C2 কোনো ফন্টেই নেই — সমার্থক ⊥ (লম্ব) দিয়ে
     };
-    multi.forEach((k, v) => s = s.replaceAll(k, v));
     single.forEach((k, v) => s = s.replaceAll(k, v));
-    // রিপ্লেসমেন্টে বাড়তি স্পেস এলে এক ঘর করে দেই
-    // (অপশন-লাইনে পাঁচ স্পেসের দূরত্ব বজায় রাখতে preserveSpaces ব্যবহার হয়)
     return preserveSpaces ? s : s.replaceAll(RegExp(' +'), ' ');
   }
 
-  /// মূল এন্ট্রি পয়েন্ট — আগের মতোই। question_paper_screen থেকে
-  /// একইভাবে কল করা যায়, কোনো পরিবর্তন লাগে না।
+  // ═══════════ স্ট্যাকড ভগ্নাংশ বিভাজক ═══════════
+  // "x + 1/x = 4" → ["x + ", Frac(1,x), " = 4"]
+  // পাশে স্পেস থাকলে (1 / sin x), একক হলে (m/s², kg/m³), হর শুদ্ধ ত্রিকোণমিতি
+  // হলে (30/tan 30°), বা দুই পাশই বাংলা হলে (উচ্চতা/দূরত্ব) — ভগ্নাংশ হয় না।
+  static const String _tokChars =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      '0123456789০১২৩৪৫৬৭৮৯√πθ°.·−-²³¹⁴⁵⁶⁷⁸⁹⁰ⁿ₁₂₀ₐ';
+  static const String _supChars = '²³¹⁴⁵⁶⁷⁸⁹⁰ⁿ⁻⁺ᵐ';
+  static const String _mathyChars =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      '0123456789০১২৩৪৫৬৭৮৯√πθ°';
+  static const Set<String> _unitFracs = {
+    'm/s', 'm/s²', 'kg/m³', 'g/cm³', 'N/m²', 'N/kg',
+    'W/m²', 'km/h', 'kg·m/s', 'kg·m/s²',
+  };
+  static const Set<String> _trigNames = {
+    'sin', 'cos', 'tan', 'sec', 'cosec', 'cot', 'log',
+  };
+
+  static bool _hasMathChar(String t) {
+    for (int i = 0; i < t.length; i++) {
+      if (_mathyChars.contains(t[i])) return true;
+    }
+    return false;
+  }
+
+  static String _stripParens(String t) {
+    if (t.length >= 2 && t[0] == '(' && t[t.length - 1] == ')') {
+      var depth = 0;
+      var closedAtEnd = true;
+      for (int i = 0; i < t.length; i++) {
+        if (t[i] == '(') depth++;
+        if (t[i] == ')') {
+          depth--;
+          if (depth == 0 && i != t.length - 1) closedAtEnd = false;
+        }
+      }
+      if (closedAtEnd && depth == 0) return t.substring(1, t.length - 1);
+    }
+    return t;
+  }
+
+  static List<Object> _splitFractions(String s) {
+    final out = <Object>[];
+    final buf = StringBuffer();
+    int i = 0;
+    void flush() {
+      if (buf.isNotEmpty) {
+        out.add(buf.toString());
+        buf.clear();
+      }
+    }
+
+    while (i < s.length) {
+      if (s[i] != '/') {
+        buf.write(s[i]);
+        i++;
+        continue;
+      }
+      final ls = i - 1;
+      if (ls < 0 || s[ls] == ' ' || i + 1 >= s.length || s[i + 1] == ' ') {
+        buf.write('/');
+        i++;
+        continue;
+      }
+      // ── বাম পাশ (লব) ──
+      String num;
+      int leftStart;
+      int k = ls;
+      while (k >= 0 && _supChars.contains(s[k])) {
+        k--;
+      }
+      final bool supTail = k < ls;
+      if ((supTail && k >= 0 && s[k] == ')') || (!supTail && s[ls] == ')')) {
+        // বন্ধনী-গোষ্ঠী (সুপারস্ক্রিপ্ট থাকলে সেটা-সহ): (a + b)²/…
+        final closeIdx = supTail ? k : ls;
+        var depth = 0;
+        var j = closeIdx;
+        while (j >= 0) {
+          if (s[j] == ')') depth++;
+          if (s[j] == '(') {
+            depth--;
+            if (depth == 0) break;
+          }
+          j--;
+        }
+        if (j < 0) {
+          buf.write('/');
+          i++;
+          continue;
+        }
+        leftStart = j;
+        num = s.substring(j, ls + 1);
+      } else {
+        var j = ls;
+        var cnt = 0;
+        while (j >= 0 && _tokChars.contains(s[j]) && cnt < 18) {
+          j--;
+          cnt++;
+        }
+        leftStart = j + 1;
+        num = s.substring(leftStart, ls + 1);
+      }
+      // ── ডান পাশ (হর) ──
+      String den;
+      int rightEnd;
+      final r = i + 1;
+      if (s[r] == '(') {
+        var depth = 0;
+        var j = r;
+        while (j < s.length) {
+          if (s[j] == '(') depth++;
+          if (s[j] == ')') {
+            depth--;
+            if (depth == 0) break;
+          }
+          j++;
+        }
+        if (j >= s.length) {
+          buf.write('/');
+          i++;
+          continue;
+        }
+        den = s.substring(r, j + 1);
+        rightEnd = j + 1;
+      } else {
+        var j = r;
+        var cnt = 0;
+        while (j < s.length && _tokChars.contains(s[j]) && cnt < 18) {
+          j++;
+          cnt++;
+        }
+        den = s.substring(r, j);
+        rightEnd = j;
+      }
+      final nc = _stripParens(num);
+      final dc = _stripParens(den);
+      if (nc.isEmpty ||
+          dc.isEmpty ||
+          !_hasMathChar(nc) ||
+          !_hasMathChar(dc) ||
+          _unitFracs.contains('$num/$den') ||
+          _trigNames.contains(dc.toLowerCase())) {
+        buf.write('/');
+        i++;
+        continue;
+      }
+      // বাফারে লেখা বাম-টোকেন ফেরত নিই (সেটা ভগ্নাংশে চলে যাবে)
+      final leftLen = ls + 1 - leftStart;
+      final cur = buf.toString();
+      buf.clear();
+      buf.write(cur.substring(0, cur.length - leftLen));
+      flush();
+      out.add(_Frac(nc, dc));
+      i = rightEnd;
+    }
+    flush();
+    return out;
+  }
+
+  /// মূল এন্ট্রি পয়েন্ট — আগের মতোই + নতুন ঐচ্ছিক প্যারামিটার।
   static Future<void> printPaper({
     required String title,
     required String modeLine,
@@ -119,6 +296,7 @@ class PaperPdf {
     String? writtenMarks,
     String? mcqTime,
     String? mcqMarks,
+    bool mathCqThreePart = false, // গণিত: সৃজনশীল ক(২)+খ(৪)+গ(৪)
   }) async {
     await _loadFonts();
 
@@ -139,6 +317,7 @@ class PaperPdf {
       writtenMarks: writtenMarks,
       mcqTime: mcqTime,
       mcqMarks: mcqMarks,
+      mathCqThreePart: mathCqThreePart,
     );
 
     // রাস্টার পেজগুলো PDF এ বসাও
@@ -182,6 +361,7 @@ class PaperPdf {
     String? writtenMarks,
     String? mcqTime,
     String? mcqMarks,
+    bool mathCqThreePart = false,
   }) async {
     final pages = <Uint8List>[];
     const double sw = 1654.0;
@@ -214,29 +394,123 @@ class PaperPdf {
       pages.add(bd!.buffer.asUint8List());
     }
 
+    TextStyle st(double size, bool isBold, double lineHeight) => TextStyle(
+          fontFamily: isBold ? (_bold ?? _regular) : _regular,
+          fontFamilyFallback: _fb(isBold),
+          fontWeight:
+              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+          fontSize: size * _k,
+          height: lineHeight,
+          color: const Color(0xFF000000),
+        );
+
     TextPainter makePainter(String text, double size,
         {bool isBold = false,
         TextAlign align = TextAlign.left,
         double lineHeight = 1.4}) {
       return TextPainter(
-        text: TextSpan(
-          text: text,
-          style: TextStyle(
-            fontFamily: isBold ? (_bold ?? _regular) : _regular,
-            fontFamilyFallback: _sym != null ? const ['HSPDF-Sym'] : null,
-            fontWeight:
-                (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
-            fontSize: size * _k,
-            height: lineHeight,
-            color: const Color(0xFF000000),
-          ),
-        ),
+        text: TextSpan(text: text, style: st(size, isBold, lineHeight)),
         textDirection: TextDirection.ltr,
         textAlign: align,
       );
     }
 
     double mx(double a, double b) => a > b ? a : b;
+
+    // ── রিচ লাইন: টেক্সটের ভেতরে স্ট্যাকড ভগ্নাংশ বসানো ──
+    // ভগ্নাংশগুলো placeholder হিসেবে TextPainter-এ জায়গা নেয়; লে-আউটের পর
+    // সেই ঘরগুলোতে লব-দাগ-হর আলাদা করে আঁকা হয়। কোনো ঝামেলা হলে নিরাপদে
+    // প্লেইন টেক্সটে ফিরে যায়।
+    _RichLine rich(
+      String text,
+      double size, {
+      bool isBold = false,
+      TextAlign align = TextAlign.left,
+      double lineHeight = 1.4,
+      bool preserveSpaces = false,
+      required double maxWidth,
+    }) {
+      try {
+        final safe = _safe(text, preserveSpaces: preserveSpaces);
+        final segs = _splitFractions(safe);
+        if (segs.length == 1 && segs.first is String) {
+          final tp = makePainter(segs.first as String, size,
+              isBold: isBold, align: align, lineHeight: lineHeight);
+          tp.layout(maxWidth: maxWidth);
+          return (tp: tp, fr: const []);
+        }
+        final children = <InlineSpan>[];
+        final frs = <_FracP>[];
+        for (final seg in segs) {
+          if (seg is String) {
+            if (seg.isNotEmpty) children.add(TextSpan(text: seg));
+          } else {
+            final f = seg as _Frac;
+            final small = size * 0.72;
+            final tn = TextPainter(
+              text: TextSpan(text: f.n, style: st(small, isBold, 1.1)),
+              textDirection: TextDirection.ltr,
+            )..layout();
+            final td = TextPainter(
+              text: TextSpan(text: f.d, style: st(small, isBold, 1.1)),
+              textDirection: TextDirection.ltr,
+            )..layout();
+            final w = mx(tn.width, td.width) + 1.6 * _k;
+            final h = tn.height + td.height + 2.0 * _k;
+            frs.add((n: tn, d: td, w: w, h: h));
+            children.add(const WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: SizedBox.shrink(),
+            ));
+          }
+        }
+        final tp = TextPainter(
+          text: TextSpan(style: st(size, isBold, lineHeight), children: children),
+          textDirection: TextDirection.ltr,
+          textAlign: align,
+        );
+        tp.setPlaceholderDimensions([
+          for (final f in frs)
+            PlaceholderDimensions(
+              size: Size(f.w, f.h),
+              alignment: PlaceholderAlignment.middle,
+            ),
+        ]);
+        tp.layout(maxWidth: maxWidth);
+        return (tp: tp, fr: frs);
+      } catch (_) {
+        final tp = makePainter(_safe(text), size,
+            isBold: isBold, align: align, lineHeight: lineHeight);
+        tp.layout(maxWidth: maxWidth);
+        return (tp: tp, fr: const []);
+      }
+    }
+
+    void paintRich(_RichLine line, double x, double y0) {
+      line.tp.paint(canvas, Offset(x, y0));
+      if (line.fr.isEmpty) return;
+      final boxes = line.tp.inlinePlaceholderBoxes;
+      if (boxes == null || boxes.length < line.fr.length) return;
+      for (int fi = 0; fi < line.fr.length; fi++) {
+        final f = line.fr[fi];
+        final r = boxes[fi].toRect().translate(x, y0);
+        final nh = f.n.height;
+        final dh = f.d.height;
+        final ny = r.top + 0.3 * _k; // লবের উপরের কিনারা
+        final dy2 = r.bottom - 0.3 * _k - dh; // হরের উপরের কিনারা
+        f.n.paint(canvas, Offset(r.left + (r.width - f.n.width) / 2, ny));
+        f.d.paint(canvas, Offset(r.left + (r.width - f.d.width) / 2, dy2));
+        final yb = (ny + nh + dy2) / 2; // ভগ্নাংশ-দাগ মাঝখানে
+        canvas.drawLine(
+          Offset(r.left + 0.35 * _k, yb),
+          Offset(r.right - 0.35 * _k, yb),
+          Paint()
+            ..color = const Color(0xFF000000)
+            ..strokeWidth = 0.6 * _k
+            ..strokeCap = StrokeCap.butt,
+        );
+      }
+    }
 
     void strokeRect(Rect r, {double thick = 1.2}) {
       canvas.drawRect(
@@ -258,16 +532,18 @@ class PaperPdf {
       double indent = 0,
       bool preserveSpaces = false,
     }) async {
-      final tp = makePainter(_safe(text, preserveSpaces: preserveSpaces), size,
-          isBold: isBold, align: align);
-      tp.layout(maxWidth: contentW - indent * _k);
-      if (y + gapBefore * _k + tp.height > bottomY + 1) {
+      final line = rich(text, size,
+          isBold: isBold,
+          align: align,
+          preserveSpaces: preserveSpaces,
+          maxWidth: contentW - indent * _k);
+      if (y + gapBefore * _k + line.tp.height > bottomY + 1) {
         await commit();
         begin();
       }
       y += gapBefore * _k;
-      tp.paint(canvas, Offset(_margin + indent * _k, y));
-      y += tp.height;
+      paintRich(line, _margin + indent * _k, y);
+      y += line.tp.height;
     }
 
     // ── মান ডান কলামে এমন প্যারাগ্রাফ (স্কুল-স্টাইল) ──
@@ -280,17 +556,17 @@ class PaperPdf {
       double indent = 0,
     }) async {
       final markW = 26 * _k; // মান কলাম ≈ ৯ মিমি
-      final tp = makePainter(_safe(text), size, isBold: isBold);
-      tp.layout(maxWidth: contentW - indent * _k - markW);
+      final line = rich(text, size,
+          isBold: isBold, maxWidth: contentW - indent * _k - markW);
       final tm = makePainter(_safe(mark), size);
       tm.layout(maxWidth: markW);
-      final h = mx(tp.height, tm.height);
+      final h = mx(line.tp.height, tm.height);
       if (y + gapBefore * _k + h > bottomY + 1) {
         await commit();
         begin();
       }
       y += gapBefore * _k;
-      tp.paint(canvas, Offset(_margin + indent * _k, y));
+      paintRich(line, _margin + indent * _k, y);
       tm.paint(canvas, Offset(_margin + contentW - tm.width, y));
       y += h;
     }
@@ -348,17 +624,17 @@ class PaperPdf {
       // বামে: প্রাপ্ত নম্বর বাক্স
       final leftW = 62 * _k;
       strokeRect(Rect.fromLTWH(_margin, y, leftW, h), thick: 1.0);
-      final t1 = makePainter('প্রাপ্ত নম্বর ঃ', 9);
+      final t1 = makePainter('প্রাপ্ত নম্বরঃ', 9);
       t1.layout(maxWidth: leftW - 6 * _k);
       t1.paint(canvas, Offset(_margin + 4 * _k, y + (h - t1.height) / 2));
       // ডানে: বিষয় কোড / সেট কোড বাক্স
       final rightW = 62 * _k;
       final rx = sw - _margin - rightW;
       strokeRect(Rect.fromLTWH(rx, y, rightW, h), thick: 1.0);
-      final t2 = makePainter('বিষয় কোড ঃ', 9);
+      final t2 = makePainter('বিষয় কোডঃ', 9);
       t2.layout(maxWidth: rightW - 6 * _k);
       t2.paint(canvas, Offset(rx + 4 * _k, y + 4 * _k));
-      final t3 = makePainter('সেট কোড ঃ', 9);
+      final t3 = makePainter('সেট কোডঃ', 9);
       t3.layout(maxWidth: rightW - 6 * _k);
       t3.paint(canvas, Offset(rx + 4 * _k, y + h - t3.height - 4 * _k));
       y += h;
@@ -367,11 +643,11 @@ class PaperPdf {
     // ── নাম / রোল নং / শাখা লাইন ──
     Future<void> nameRollLine() async {
       const size = 10.0;
-      final ln = makePainter('নাম ঃ', size);
+      final ln = makePainter('নামঃ', size);
       ln.layout(maxWidth: contentW * 0.2);
-      final lr = makePainter('রোল নং ঃ', size);
+      final lr = makePainter('রোল নংঃ', size);
       lr.layout(maxWidth: contentW * 0.2);
-      final ls = makePainter('শাখা ঃ', size);
+      final ls = makePainter('শাখাঃ', size);
       ls.layout(maxWidth: contentW * 0.15);
       final h = ln.height;
       if (y + 5 * _k + h > bottomY + 1) {
@@ -445,8 +721,8 @@ class PaperPdf {
     // ══════════════ ১ম অংশ: লিখিত পত্র ══════════════
     begin();
     final subj =
-        'বিষয় ঃ $title${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
-    await partHeader(subjLine: subj, tLeft: 'সময় ঃ $wt', tRight: 'পূর্ণমান ঃ $wm');
+        'বিষয়ঃ $title${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
+    await partHeader(subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
 
     if (cqs.isNotEmpty) {
       await sectionTitle('সৃজনশীল প্রশ্ন', cqNote ??
@@ -454,18 +730,26 @@ class PaperPdf {
       for (int i = 0; i < cqs.length; i++) {
         final cq = cqs[i];
         await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
+        // গণিত/উচ্চতর গণিত (নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ;
+        // অন্য বিষয়: আগের মতো ব্যাংকের মান হিসেবে ৪ ভাগ পর্যন্ত।
         await paraMark(
-            'ক) ${cq.questionK}', 10.5, _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
+            'ক) ${cq.questionK}', 10.5,
+            mathCqThreePart ? '২' : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
             indent: 10, gapBefore: 2.5);
         await paraMark(
-            'খ) ${cq.questionKh}', 10.5, _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
+            'খ) ${cq.questionKh}', 10.5,
+            mathCqThreePart ? '৪' : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
             indent: 10, gapBefore: 1.5);
         await paraMark(
-            'গ) ${cq.questionG}', 10.5, _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
+            'গ) ${cq.questionG}', 10.5,
+            mathCqThreePart ? '৪' : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
             indent: 10, gapBefore: 1.5);
-        await paraMark(
-            'ঘ) ${cq.questionGh}', 10.5, _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
-            indent: 10, gapBefore: 1.5);
+        if (!mathCqThreePart) {
+          await paraMark(
+              'ঘ) ${cq.questionGh}', 10.5,
+              _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
+              indent: 10, gapBefore: 1.5);
+        }
       }
     }
 
@@ -491,12 +775,12 @@ class PaperPdf {
       begin();
       await partHeader(
         subjLine: '$subj (বহুনির্বাচনি)',
-        tLeft: 'সময় ঃ $mt',
-        tRight: 'পূর্ণমান ঃ $mm',
+        tLeft: 'সময়ঃ $mt',
+        tRight: 'পূর্ণমানঃ $mm',
         mcqStyle: true,
       );
       await noteBox(
-          'বিশেষ দ্রষ্টব্য ঃ সবগুলো প্রশ্নের উত্তর দিতে হবে। প্রতিটি প্রশ্নের মান ১। উত্তরপত্রে প্রশ্নের ক্রমিক নম্বরের বিপরীতে প্রদত্ত বর্ণ সন্নিবেশিত বৃত্তসমূহ ভরাট করতে হবে।');
+          'বিশেষ দ্রষ্টব্যঃ সবগুলো প্রশ্নের উত্তর দিতে হবে। প্রতিটি প্রশ্নের মান ১। উত্তরপত্রে প্রশ্নের ক্রমিক নম্বরের বিপরীতে প্রদত্ত বর্ণ সন্নিবেশিত বৃত্তসমূহ ভরাট করতে হবে।');
       y += 6 * _k;
 
       final double gutter = 16 * _k;
@@ -506,30 +790,25 @@ class PaperPdf {
       int cur = 0;
 
       Future<void> placeMcq(int no, Question q) async {
-        final qt = makePainter(
-            _safe('${_bn(no)}। ${q.questionText}'), 10.5);
-        qt.layout(maxWidth: colW);
-        final optP = <TextPainter>[];
+        final qt = rich('${_bn(no)}। ${q.questionText}', 10.5, maxWidth: colW);
+        final opts = <_RichLine>[];
         for (int o = 0; o < q.options.length; o++) {
-          final tp = makePainter(
-              _safe('${_optionLetters[o]}) ${q.options[o]}', preserveSpaces: true),
-              10);
-          tp.layout(maxWidth: colW - 7 * _k);
-          optP.add(tp);
+          opts.add(rich('${_optionLetters[o]}) ${q.options[o]}', 10,
+              preserveSpaces: true, maxWidth: colW - 7 * _k));
         }
         final half = (colW - 7 * _k) / 2;
-        bool grid = q.options.length == 4 &&
-            optP.every((o) => o.width <= half - 2 * _k);
+        final bool grid = q.options.length == 4 &&
+            opts.every((o) => o.tp.width <= half - 2 * _k);
         double optH;
         double rowA = 0, rowB = 0;
         if (grid) {
-          rowA = mx(optP[0].height, optP[1].height);
-          rowB = mx(optP[2].height, optP[3].height);
+          rowA = mx(opts[0].tp.height, opts[1].tp.height);
+          rowB = mx(opts[2].tp.height, opts[3].tp.height);
           optH = rowA + rowB + 1.5 * _k;
         } else {
-          optH = optP.fold<double>(0, (a, o) => a + o.height + 0.6 * _k);
+          optH = opts.fold<double>(0, (a, o) => a + o.tp.height + 0.6 * _k);
         }
-        final need = qt.height + 2 * _k + optH + 4 * _k;
+        final need = qt.tp.height + 2 * _k + optH + 4 * _k;
         if (colY[cur] + need > bottomY) {
           if (cur == 0) {
             cur = 1;
@@ -542,19 +821,19 @@ class PaperPdf {
         }
         final x = colX[cur];
         double yy = colY[cur];
-        qt.paint(canvas, Offset(x, yy));
-        yy += qt.height + 2 * _k;
+        paintRich(qt, x, yy);
+        yy += qt.tp.height + 2 * _k;
         if (grid) {
-          optP[0].paint(canvas, Offset(x + 7 * _k, yy));
-          optP[1].paint(canvas, Offset(x + 7 * _k + half, yy));
+          paintRich(opts[0], x + 7 * _k, yy);
+          paintRich(opts[1], x + 7 * _k + half, yy);
           yy += rowA + 1.5 * _k;
-          optP[2].paint(canvas, Offset(x + 7 * _k, yy));
-          optP[3].paint(canvas, Offset(x + 7 * _k + half, yy));
+          paintRich(opts[2], x + 7 * _k, yy);
+          paintRich(opts[3], x + 7 * _k + half, yy);
           yy += rowB;
         } else {
-          for (final o in optP) {
-            o.paint(canvas, Offset(x + 7 * _k, yy));
-            yy += o.height + 0.6 * _k;
+          for (final o in opts) {
+            paintRich(o, x + 7 * _k, yy);
+            yy += o.tp.height + 0.6 * _k;
           }
         }
         colY[cur] = yy + 4 * _k;
