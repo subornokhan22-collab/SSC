@@ -390,6 +390,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         writtenMarks: _bn(wMarks),
         mcqTime: mTime,
         mcqMarks: _bn(mMarks),
+        // গণিত/উচ্চতর গণিত (SSC-2027 নতুন নিয়ম): সৃজনশীল ৩ ভাগ — ক(২) খ(৪) গ(৪)
+        mathCqThreePart:
+            _subject!.id == 'general_math' || _subject!.id == 'higher_math',
       );
     } catch (e) {
       if (!mounted) return;
@@ -398,7 +401,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         builder: (context) => AlertDialog(
           title: const Text('প্রিন্ট চালু করা গেল না'),
           content: Text(
-            'সমস্যা: $e\n\nassets/fonts/ ফোল্ডারে NotoSerifBengali-Regular.ttf, NotoSerifBengali-Bold.ttf ও HindSiliguri-Regular.ttf ফাইলগুলো আছে কিনা দেখো।',
+            'সমস্যা: $e\n\nassets/fonts/ ফোল্ডারে ফন্টগুলো আছে কিনা দেখো: NotoSerifBengali-Regular.ttf, NotoSerifBengali-Bold.ttf, HindSiliguri-Regular.ttf, DejaVuSans.ttf, DejaVuSans-Bold.ttf',
             style: const TextStyle(fontSize: 13, height: 1.5),
           ),
           actions: [
@@ -810,6 +813,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   }
 
   Widget _cqBlock(int no, CreativeQuestion cq) {
+    // গণিত/উচ্চতর গণিত (SSC-2027 নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ
+    final bool math3 =
+        _subject?.id == 'general_math' || _subject?.id == 'higher_math';
     Widget part(String letter, String text, int mark) {
       return Padding(
         padding: const EdgeInsets.only(left: 22, top: 3),
@@ -829,10 +835,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('${_bn(no)}। ${cq.stem}', style: _serifBody),
-          part('ক', cq.questionK, cq.marks.isNotEmpty ? cq.marks[0] : 1),
-          part('খ', cq.questionKh, cq.marks.length > 1 ? cq.marks[1] : 2),
-          part('গ', cq.questionG, cq.marks.length > 2 ? cq.marks[2] : 3),
-          part('ঘ', cq.questionGh, cq.marks.length > 3 ? cq.marks[3] : 4),
+          part('ক', cq.questionK, math3 ? 2 : (cq.marks.isNotEmpty ? cq.marks[0] : 1)),
+          part('খ', cq.questionKh, math3 ? 4 : (cq.marks.length > 1 ? cq.marks[1] : 2)),
+          part('গ', cq.questionG, math3 ? 4 : (cq.marks.length > 2 ? cq.marks[2] : 3)),
+          if (!math3) part('ঘ', cq.questionGh, cq.marks.length > 3 ? cq.marks[3] : 4),
         ],
       ),
     );
