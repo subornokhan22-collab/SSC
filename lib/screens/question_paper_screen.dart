@@ -8,6 +8,30 @@ import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import 'subjects_screen.dart';
 
+/// SSC-2027 অফিসিয়াল প্রশ্ন-কাঠামো (জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড)
+/// গণিত: সৃজনশীল ৮ (৫×১০) + সংক্ষিপ্ত-উত্তর ১৫ (১০×২) + MCQ ৩০ = ১০০
+/// বিজ্ঞান/উচ্চতর গণিত (তত্ত্বীয় ৭৫): সৃজনশীল ৭ (৪×১০) + সংক্ষিপ্ত ৭ (৫×২) + MCQ ২৫
+/// অন্যান্য: সৃজনশীল ৮ (৫×১০) + সংক্ষিপ্ত ১৫ (১০×২) + MCQ ৩০ = ১০০
+class _PaperPattern {
+  final int mcqCount;
+  final int cqCount;
+  final int saqCount;
+  final int cqAnswerCount;
+  final int saqAnswerCount;
+  final bool mathDivisions;
+
+  const _PaperPattern({
+    required this.mcqCount,
+    required this.cqCount,
+    required this.saqCount,
+    required this.cqAnswerCount,
+    required this.saqAnswerCount,
+    this.mathDivisions = false,
+  });
+
+  int get totalMarks => cqAnswerCount * 10 + saqAnswerCount * 2 + mcqCount;
+}
+
 class QuestionPaperScreen extends StatefulWidget {
   const QuestionPaperScreen({super.key});
 
@@ -29,6 +53,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
 
   List<Question> _mcqs = [];
   List<CreativeQuestion> _cqs = [];
+  List<Question> _saqs = []; // সংক্ষিপ্ত-উত্তর (SSC-2027 নতুন অংশ)
 
   static const _optionLetters = ['ক', 'খ', 'গ', 'ঘ'];
 
@@ -56,6 +81,99 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     }).join();
   }
 
+  // ── বিষয় অনুযায়ী SSC-2027 প্যাটার্ন ─────────────────────────────
+  _PaperPattern _patternFor(String sid) {
+    const science = {'physics', 'chemistry', 'higher_math', 'biology'};
+    if (sid == 'general_math') {
+      return const _PaperPattern(
+        mcqCount: 30, cqCount: 8, saqCount: 15,
+        cqAnswerCount: 5, saqAnswerCount: 10, mathDivisions: true,
+      );
+    }
+    if (science.contains(sid)) {
+      return const _PaperPattern(
+        mcqCount: 25, cqCount: 7, saqCount: 7,
+        cqAnswerCount: 4, saqAnswerCount: 5,
+      );
+    }
+    return const _PaperPattern(
+      mcqCount: 30, cqCount: 8, saqCount: 15,
+      cqAnswerCount: 5, saqAnswerCount: 10,
+    );
+  }
+
+  // ── সাধারণ গণিতের অধ্যায় → বিভাগ (বোর্ডের নির্দেশনা অনুযায়ী) ────
+  static const _divChapters = {
+    'বীজগণিত': {1, 2, 3, 4, 5, 11, 12, 13},
+    'জ্যামিতি': {6, 7, 8, 14, 15},
+    'ত্রিকোণমিতি ও পরিমিতি': {9, 10, 16},
+    'পরিসংখ্যান': {17},
+  };
+
+  int? _chapterNumber(String chapter) {
+    final m = RegExp(r'অধ্যায় ([০-৯]+)').firstMatch(chapter);
+    if (m == null) return null;
+    const bd = {
+      '০': 0, '১': 1, '২': 2, '৩': 3, '৪': 4,
+      '৫': 5, '৬': 6, '৭': 7, '৮': 8, '৯': 9,
+    };
+    int v = 0;
+    for (final ch in m.group(1)!.split('')) {
+      v = v * 10 + (bd[ch] ?? 0);
+    }
+    return v;
+  }
+
+  String? _divisionOf(String chapter) {
+    final n = _chapterNumber(chapter);
+    if (n == null) return null;
+    for (final e in _divChapters.entries) {
+      if (e.value.contains(n)) return e.key;
+    }
+    return null;
+  }
+
+  /// বিভাগভিত্তিক কোটা মেনে প্রশ্ন বাছাই (ঘাটতি হলে বাকি বিভাগ থেকে পূরণ)
+  List<T> _pickByQuota<T>(
+      List<T> pool, Map<String, int> quota, String Function(T) chapterOf) {
+    final byDiv = <String, List<T>>{for (final d in quota.keys) d: []};
+    final spare = <T>[];
+    final shuffled = List<T>.from(pool)..shuffle();
+    for (final q in shuffled) {
+      final d = _divisionOf(chapterOf(q));
+      if (d != null && byDiv.containsKey(d)) {
+        byDiv[d]!.add(q);
+      } else {
+        spare.add(q);
+      }
+    }
+    final out = <T>[];
+    final overflow = <T>[];
+    quota.forEach((d, need) {
+      final list = byDiv[d]!;
+      out.addAll(list.take(need));
+      overflow.addAll(list.skip(need));
+    });
+    overflow.addAll(spare);
+    overflow.shuffle();
+    final total = quota.values.fold<int>(0, (a, b) => a + b);
+    if (out.length < total) out.addAll(overflow.take(total - out.length));
+    out.shuffle();
+    return out;
+  }
+
+  // ── সংক্ষিপ্ত-উত্তরে রূপান্তরযোগ্য MCQ কিনা ───────────────────────
+  // অপশন ছাড়া যে প্রশ্ন একা একা দাঁড়ায়, সেটিই ২ মার্কের সংক্ষিপ্ত প্রশ্ন হয়।
+  static const _saqBad = [
+    'কোনটি', 'কোনটির', 'কোন বাক্য', 'নিচের', 'নিচে', 'কোন সূত্র', 'কোন শ্রেণি',
+    'কোন চতুর্ভুজ', 'কোন সেটটি', 'কোন জোড়া', 'কোন অনুক্রম', 'কোন ধারা',
+    'কোন বিন্দুতে', 'কোন জোট', 'কোন ক্ষেত্রে', 'কোন প্রকার', 'কোন ধরনের',
+    'কোন সংখ্যা', 'কোন অংশে', 'উল্লেখ করো', '—', 'কোন অবস্থান', 'কোন বিন্দু',
+    'কোন ত্রিভুজ', 'কোন চতুর্ভুজের', 'কোন ভগ্নাংশ', 'কোন সমীকরণ',
+  ];
+
+  bool _saqOk(String text) => !_saqBad.any((b) => text.contains(b));
+
   List<String> get _chapters {
     if (_subject == null) return [];
     final set = <String>{
@@ -82,19 +200,42 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     });
 
     final sid = _subject!.id;
-    final mcqNeed = _mode == 'chapter' ? 10 : 30;
-    final cqNeed = _mode == 'chapter' ? 2 : 11;
+    final pat = _patternFor(sid);
+    final isFull = _mode == 'full';
+    final mcqNeed = isFull ? pat.mcqCount : 10;
+    final cqNeed = isFull ? pat.cqCount : 2;
+    final saqNeed = isFull ? pat.saqCount : 0;
 
-    List<Question> mcqs = (_mode == 'chapter'
+    final bankMcqs = (_mode == 'chapter'
             ? allMCQs.where((q) => q.subjectId == sid && q.chapter == _chapter)
             : allMCQs.where((q) => q.subjectId == sid))
-        .toList()
-      ..shuffle();
-    List<CreativeQuestion> cqs = (_mode == 'chapter'
+        .toList();
+    final bankCqs = (_mode == 'chapter'
             ? allCQs.where((q) => q.subjectId == sid && q.chapter == _chapter)
             : allCQs.where((q) => q.subjectId == sid))
-        .toList()
-      ..shuffle();
+        .toList();
+
+    List<Question> mcqs;
+    List<CreativeQuestion> cqs;
+    if (isFull && pat.mathDivisions) {
+      // বোর্ডের বিভাগ-কোটা: বীজগণিত ১২, জ্যামিতি ১১, ত্রিকোণ+পরিমিতি ৪, পরিসংখ্যান ৩
+      mcqs = _pickByQuota(bankMcqs, const {
+        'বীজগণিত': 12,
+        'জ্যামিতি': 11,
+        'ত্রিকোণমিতি ও পরিমিতি': 4,
+        'পরিসংখ্যান': 3,
+      }, (q) => q.chapter);
+      // সৃজনশীল: প্রতি বিভাগ থেকে ২টি করে মোট ৮টি
+      cqs = _pickByQuota(bankCqs, const {
+        'বীজগণিত': 2,
+        'জ্যামিতি': 2,
+        'ত্রিকোণমিতি ও পরিমিতি': 2,
+        'পরিসংখ্যান': 2,
+      }, (q) => q.chapter);
+    } else {
+      mcqs = List<Question>.from(bankMcqs)..shuffle();
+      cqs = List<CreativeQuestion>.from(bankCqs)..shuffle();
+    }
 
     // ভান্ডারে কম থাকলে AI দিয়ে পূরণ (Gemini key থাকলে)
     final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
@@ -130,14 +271,33 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       }
     }
 
+    final pickedMcqs = mcqs.take(mcqNeed).toList();
+    final pickedCqs = cqs.take(cqNeed).toList();
+
+    // সংক্ষিপ্ত-উত্তর বাছাই (MCQ-র সঙ্গে ডুপ্লিকেট হবে না)
+    List<Question> saqs = [];
+    if (saqNeed > 0) {
+      final used = pickedMcqs.map((q) => q.id).toSet();
+      final pool = bankMcqs
+          .where((q) => !used.contains(q.id) && _saqOk(q.questionText))
+          .toList()
+        ..shuffle();
+      saqs = pool.take(saqNeed).toList();
+    }
+
     if (!mounted) return;
     setState(() {
       _busy = false;
       _generated = true;
       _showAnswerKey = false;
       // Demo সীমা প্রয়োগ
-      _mcqs = mcqs.take(_isPro ? mcqNeed : PaperLicense.demoMcqLimit).toList();
-      _cqs = cqs.take(_isPro ? cqNeed : PaperLicense.demoCqLimit).toList();
+      _mcqs = _isPro
+          ? pickedMcqs
+          : pickedMcqs.take(PaperLicense.demoMcqLimit).toList();
+      _cqs = _isPro
+          ? pickedCqs
+          : pickedCqs.take(PaperLicense.demoCqLimit).toList();
+      _saqs = _isPro ? saqs : saqs.take(5).toList();
       if (!hasKey && (mcqs.isEmpty && cqs.isEmpty)) {
         _note = 'এই বিষয়ে প্রশ্নভান্ডারে প্রশ্ন নেই। AI দিয়ে তৈরি করতে AI টিউটর পেজের 🔑 থেকে Gemini API Key সংরক্ষণ করো।';
       }
@@ -199,15 +359,22 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       return;
     }
     if (!_generated) return;
+    final isFull = _mode == 'full';
+    final pat = _patternFor(_subject!.id);
     try {
       await PaperPdf.printPaper(
         title: '${_subject!.name} (${_subject!.bengaliName})',
         modeLine: _mode == 'chapter' ? (_chapter ?? '') : 'ফুল মডেল টেস্ট পেপার',
         mcqs: _mcqs,
         cqs: _cqs,
+        saqs: _saqs,
         time: _mode == 'chapter' ? '১ ঘণ্টা' : '৩ ঘণ্টা',
-        marks: _mode == 'chapter' ? '৩০' : '১০০',
-        cqAnswerCount: _mode == 'chapter' ? _cqs.length : 7,
+        marks: _mode == 'chapter' ? _bn(30) : _bn(pat.totalMarks),
+        cqAnswerCount: _mode == 'chapter' ? _cqs.length : pat.cqAnswerCount,
+        saqAnswerCount: pat.saqAnswerCount,
+        cqNote: (isFull && pat.mathDivisions)
+            ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
+            : null,
       );
     } catch (e) {
       if (!mounted) return;
@@ -216,7 +383,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         builder: (context) => AlertDialog(
           title: const Text('প্রিন্ট চালু করা গেল না'),
           content: Text(
-            'সমস্যা: $e\n\nassets/fonts/NotoSansBengali-Regular.ttf ফাইলটি pubspec এর assets তালিকায় আছে কিনা দেখো।',
+            'সমস্যা: $e\n\nassets/fonts/HindSiliguri-Regular.ttf ও HindSiliguri-Bold.ttf দুটি ফাইল assets/fonts/ ফোল্ডারে আছে কিনা দেখো।',
             style: const TextStyle(fontSize: 13, height: 1.5),
           ),
           actions: [
@@ -279,6 +446,16 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ],
       ),
     );
+  }
+
+  String _patternInfoLine() {
+    final p = _patternFor(_subject?.id ?? 'general_math');
+    final line =
+        'সৃজনশীল ${_bn(p.cqCount)}টি (${_bn(p.cqAnswerCount)}×১০ = ${_bn(p.cqAnswerCount * 10)})'
+        ' + সংক্ষিপ্ত ${_bn(p.saqCount)}টি (${_bn(p.saqAnswerCount)}×২ = ${_bn(p.saqAnswerCount * 2)})'
+        ' + MCQ ${_bn(p.mcqCount)}';
+    final extra = p.totalMarks == 75 ? ' (তত্ত্বীয়; ব্যবহারিক ২৫ আলাদা)' : '';
+    return '📄 SSC-2027 নতুন কাঠামো: $line • মোট ${_bn(p.totalMarks)}$extra • সময় ৩ ঘণ্টা';
   }
 
   Widget _configCard() {
@@ -352,7 +529,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           Text(
             _mode == 'chapter'
                 ? '📄 কাঠামো: MCQ ${_bn(10)} + সৃজনশীল ${_bn(2)}  •  পূর্ণমান ${_bn(30)}  •  সময় ১ ঘণ্টা'
-                : '📄 বোর্ড কাঠামো: MCQ ${_bn(30)} + সৃজনশীল ${_bn(11)} (যেকোনো ${_bn(7)}টি)  •  পূর্ণমান ${_bn(100)}  •  সময় ৩ ঘণ্টা',
+                : _patternInfoLine(),
             style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
           ),
           const SizedBox(height: 12),
@@ -406,9 +583,20 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       TextStyle(fontFamily: 'serif', fontSize: 12, color: Colors.grey.shade800, height: 1.5);
 
   List<Widget> _paperPages() {
+    final isFull = _mode == 'full';
+    final pat = _patternFor(_subject!.id);
     final time = _mode == 'chapter' ? '১ ঘণ্টা' : '৩ ঘণ্টা';
-    final marks = _mode == 'chapter' ? _bn(30) : _bn(100);
-    final cqAnswerCount = _mode == 'chapter' ? _cqs.length : 7;
+    final marks = _mode == 'chapter' ? _bn(30) : _bn(pat.totalMarks);
+    final cqAnswerCount = _mode == 'chapter' ? _cqs.length : pat.cqAnswerCount;
+    final cqNote = (isFull && pat.mathDivisions)
+        ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
+        : '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)';
+
+    String divLetter() {
+      if (_saqs.isNotEmpty) return 'গ';
+      if (_cqs.isNotEmpty) return 'খ';
+      return 'ক';
+    }
 
     return [
       Stack(
@@ -431,7 +619,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
                     children: [
                       Text('মডেল টেস্ট পেপার — SSC 2027', style: _serifTitle),
                       const SizedBox(height: 2),
-                      Text('(বাংলাদেশ শিক্ষাবোর্ড প্রশ্ন-কাঠামো অনুপ্রাণিত)', style: _serifSmall),
+                      Text('(বাংলাদেশ শিক্ষাবোর্ড নতুন প্রশ্ন-কাঠামো অনুপ্রাণিত)', style: _serifSmall),
                       const SizedBox(height: 6),
                       Text(
                         'বিষয়: ${_subject!.name} (${_subject!.bengaliName})'
@@ -460,27 +648,57 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
                 const SizedBox(height: 10),
                 _doubleDivider(),
 
-                if (_mcqs.isNotEmpty) ...[
+                // ── বিভাগ-ক: সৃজনশীল ──
+                if (_cqs.isNotEmpty) ...[
                   const SizedBox(height: 12),
-                  Center(child: Text('বিভাগ — ক\nবহুনির্বাচনি প্রশ্ন (MCQ)', textAlign: TextAlign.center, style: _serifTitle.copyWith(fontSize: 14.5))),
+                  Center(child: Text('বিভাগ — ক\nসৃজনশীল প্রশ্ন', textAlign: TextAlign.center, style: _serifTitle.copyWith(fontSize: 14.5))),
+                  const SizedBox(height: 4),
+                  Center(child: Text(cqNote, style: _serifSmall, textAlign: TextAlign.center)),
                   const SizedBox(height: 8),
-                  ...List.generate(_mcqs.length, (i) => _mcqBlock(i + 1, _mcqs[i])),
+                  ...List.generate(_cqs.length, (i) => _cqBlock(i + 1, _cqs[i])),
                 ],
 
-                if (_cqs.isNotEmpty) ...[
+                // ── বিভাগ-খ: সংক্ষিপ্ত-উত্তর (SSC-2027 নতুন অংশ) ──
+                if (_saqs.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   _doubleDivider(),
                   const SizedBox(height: 12),
-                  Center(child: Text('বিভাগ — খ\nসৃজনশীল প্রশ্ন', textAlign: TextAlign.center, style: _serifTitle.copyWith(fontSize: 14.5))),
+                  Center(
+                    child: Text(
+                      '${_cqs.isNotEmpty ? 'বিভাগ — খ' : 'বিভাগ — ক'}\nসংক্ষিপ্ত-উত্তর প্রশ্ন',
+                      textAlign: TextAlign.center,
+                      style: _serifTitle.copyWith(fontSize: 14.5),
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Center(
                     child: Text(
-                      '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)',
+                      '(যেকোনো ${_bn(pat.saqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ২)',
                       style: _serifSmall,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...List.generate(_cqs.length, (i) => _cqBlock(i + 1, _cqs[i])),
+                  ...List.generate(_saqs.length, (i) => _saqBlock(i + 1, _saqs[i])),
+                ],
+
+                // ── শেষ বিভাগ: বহুনির্বাচনি (MCQ) ──
+                if (_mcqs.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _doubleDivider(),
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      'বিভাগ — ${divLetter()}\nবহুনির্বাচনি প্রশ্ন (MCQ)',
+                      textAlign: TextAlign.center,
+                      style: _serifTitle.copyWith(fontSize: 14.5),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Center(
+                    child: Text('(সবগুলো প্রশ্নের উত্তর দাও)', style: _serifSmall),
+                  ),
+                  const SizedBox(height: 8),
+                  ...List.generate(_mcqs.length, (i) => _mcqBlock(i + 1, _mcqs[i])),
                 ],
 
                 const SizedBox(height: 16),
@@ -556,6 +774,21 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _saqBlock(int no, Question q) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text('${_bn(no)}। ${q.questionText}', style: _serifBody),
+          ),
+          Text('— ${_bn(2)}', style: _serifSmall),
         ],
       ),
     );
@@ -641,6 +874,22 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
               ),
             ),
           ),
+          if (_saqs.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            const Text('উত্তরমালা (সংক্ষিপ্ত-উত্তর)',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            const Divider(height: 16),
+            ...List.generate(
+              _saqs.length,
+              (i) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  '${_bn(i + 1)}। ${_saqs[i].options[_saqs[i].correctIndex]}',
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
