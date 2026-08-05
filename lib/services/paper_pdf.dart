@@ -107,14 +107,18 @@ class PaperPdf {
     required String modeLine,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
-    String headerLine1 = 'মডেল টেস্ট পেপার - SSC 2027',
-    String headerLine2 = '(বাংলাদেশ শিক্ষাবোর্ড প্রশ্ন-কাঠামো অনুপ্রাণিত)',
+    String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
+    String headerLine2 = 'দশম শ্রেণি',
     String time = '৩ ঘণ্টা',
     String marks = '১০০',
     int cqAnswerCount = 7,
     List<Question> saqs = const [],
     int saqAnswerCount = 10,
     String? cqNote,
+    String? writtenTime,
+    String? writtenMarks,
+    String? mcqTime,
+    String? mcqMarks,
   }) async {
     await _loadFonts();
 
@@ -131,6 +135,10 @@ class PaperPdf {
       saqs: saqs,
       saqAnswerCount: saqAnswerCount,
       cqNote: cqNote,
+      writtenTime: writtenTime,
+      writtenMarks: writtenMarks,
+      mcqTime: mcqTime,
+      mcqMarks: mcqMarks,
     );
 
     // রাস্টার পেজগুলো PDF এ বসাও
@@ -153,7 +161,10 @@ class PaperPdf {
     await Printing.layoutPdf(onLayout: (format) async => doc.save());
   }
 
-  // ── পেজ রেন্ডারিং ইঞ্জিন ──────────────────────────────────────
+  // ── স্কুল-স্টাইল পেজ রেন্ডারিং ইঞ্জিন ─────────────────────────
+  // ১ম অংশ (লিখিত পত্র): সৃজনশীল + সংক্ষিপ্ত-উত্তর, মান ডান কলামে।
+  // ২য় অংশ (বহুনির্বাচনি পত্র): স্কুল-বোর্ড স্টাইল হেডার (প্রাপ্ত নম্বর ও
+  // কোড বাক্স, নাম/রোল/শাখা লাইন, দ্রষ্টব্য বাক্স) + দুই কলাম MCQ।
   static Future<List<Uint8List>> _renderPages({
     required String title,
     required String modeLine,
@@ -167,12 +178,21 @@ class PaperPdf {
     required List<Question> saqs,
     required int saqAnswerCount,
     String? cqNote,
+    String? writtenTime,
+    String? writtenMarks,
+    String? mcqTime,
+    String? mcqMarks,
   }) async {
     final pages = <Uint8List>[];
     const double sw = 1654.0;
     const double sh = 2339.0;
     final double bottomY = sh - _margin;
     final double contentW = sw - 2 * _margin;
+
+    final wt = _safe(writtenTime ?? time);
+    final wm = _safe(writtenMarks ?? marks);
+    final mt = _safe(mcqTime ?? '৩০ মিনিট');
+    final mm = _safe(mcqMarks ?? _bn(mcqs.length));
 
     late ui.PictureRecorder rec;
     late Canvas canvas;
@@ -181,7 +201,6 @@ class PaperPdf {
     void begin() {
       rec = ui.PictureRecorder();
       canvas = Canvas(rec, Rect.fromLTWH(0, 0, sw, sh));
-      // সাদা ব্যাকগ্রাউন্ড (PDF এ ছবি হিসেবে যাবে)
       canvas.drawRect(
         Rect.fromLTWH(0, 0, sw, sh),
         Paint()..color = const Color(0xFFFFFFFF),
@@ -217,7 +236,19 @@ class PaperPdf {
       );
     }
 
-    /// একটি প্যারাগ্রাফ আঁকে; পেজে জায়গা না থাকলে নতুন পেজে যায়।
+    double mx(double a, double b) => a > b ? a : b;
+
+    void strokeRect(Rect r, {double thick = 1.2}) {
+      canvas.drawRect(
+        r,
+        Paint()
+          ..color = const Color(0xFF000000)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = thick * _k,
+      );
+    }
+
+    // ── বেসিক প্যারাগ্রাফ ──
     Future<void> para(
       String text,
       double size, {
@@ -239,7 +270,32 @@ class PaperPdf {
       y += tp.height;
     }
 
-    /// অনুভূমিক রেখা
+    // ── মান ডান কলামে এমন প্যারাগ্রাফ (স্কুল-স্টাইল) ──
+    Future<void> paraMark(
+      String text,
+      double size,
+      String mark, {
+      bool isBold = false,
+      double gapBefore = 0,
+      double indent = 0,
+    }) async {
+      final markW = 26 * _k; // মান কলাম ≈ ৯ মিমি
+      final tp = makePainter(_safe(text), size, isBold: isBold);
+      tp.layout(maxWidth: contentW - indent * _k - markW);
+      final tm = makePainter(_safe(mark), size);
+      tm.layout(maxWidth: markW);
+      final h = mx(tp.height, tm.height);
+      if (y + gapBefore * _k + h > bottomY + 1) {
+        await commit();
+        begin();
+      }
+      y += gapBefore * _k;
+      tp.paint(canvas, Offset(_margin + indent * _k, y));
+      tm.paint(canvas, Offset(_margin + contentW - tm.width, y));
+      y += h;
+    }
+
+    // ── অনুভূমিক রেখা ──
     Future<void> rule(
         {double gapBefore = 0, double gapAfter = 0, double thick = 1.2}) async {
       final need = (gapBefore + gapAfter + 4) * _k;
@@ -258,14 +314,19 @@ class PaperPdf {
       y += (gapAfter + 2) * _k;
     }
 
-    /// একই লাইনে বাম-ডান দুই টেক্সট (সময় / পূর্ণমান)
+    Future<void> doubleRule({double gapBefore = 8}) async {
+      await rule(gapBefore: gapBefore);
+      await rule(gapBefore: 2);
+    }
+
+    // ── বাম-ডান দুই টেক্সট এক লাইনে ──
     Future<void> row2(String left, String right, double size,
-        {double gapBefore = 0}) async {
-      final tl = makePainter(_safe(left), size);
+        {double gapBefore = 0, bool isBold = false}) async {
+      final tl = makePainter(_safe(left), size, isBold: isBold);
       tl.layout(maxWidth: contentW / 2);
-      final tr = makePainter(_safe(right), size);
+      final tr = makePainter(_safe(right), size, isBold: isBold);
       tr.layout(maxWidth: contentW / 2);
-      final h = tl.height > tr.height ? tl.height : tr.height;
+      final h = mx(tl.height, tr.height);
       if (y + gapBefore * _k + h > bottomY + 1) {
         await commit();
         begin();
@@ -276,97 +337,236 @@ class PaperPdf {
       y += h;
     }
 
-    // ─────── কনটেন্ট বিন্যাস (SSC-2027 বোর্ড ক্রম:
-    //           সৃজনশীল → সংক্ষিপ্ত-উত্তর → বহুনির্বাচনি) ───────
+    // ── প্রাপ্ত নম্বর + বিষয়/সেট কোড বাক্স ──
+    Future<void> codeBoxes() async {
+      final h = 2 * 9.0 * 1.4 * _k + 8 * _k; // দুই লাইনের উচ্চতা
+      if (y + 5 * _k + h > bottomY + 1) {
+        await commit();
+        begin();
+      }
+      y += 5 * _k;
+      // বামে: প্রাপ্ত নম্বর বাক্স
+      final leftW = 62 * _k;
+      strokeRect(Rect.fromLTWH(_margin, y, leftW, h), thick: 1.0);
+      final t1 = makePainter('প্রাপ্ত নম্বর ঃ', 9);
+      t1.layout(maxWidth: leftW - 6 * _k);
+      t1.paint(canvas, Offset(_margin + 4 * _k, y + (h - t1.height) / 2));
+      // ডানে: বিষয় কোড / সেট কোড বাক্স
+      final rightW = 62 * _k;
+      final rx = sw - _margin - rightW;
+      strokeRect(Rect.fromLTWH(rx, y, rightW, h), thick: 1.0);
+      final t2 = makePainter('বিষয় কোড ঃ', 9);
+      t2.layout(maxWidth: rightW - 6 * _k);
+      t2.paint(canvas, Offset(rx + 4 * _k, y + 4 * _k));
+      final t3 = makePainter('সেট কোড ঃ', 9);
+      t3.layout(maxWidth: rightW - 6 * _k);
+      t3.paint(canvas, Offset(rx + 4 * _k, y + h - t3.height - 4 * _k));
+      y += h;
+    }
+
+    // ── নাম / রোল নং / শাখা লাইন ──
+    Future<void> nameRollLine() async {
+      const size = 10.0;
+      final ln = makePainter('নাম ঃ', size);
+      ln.layout(maxWidth: contentW * 0.2);
+      final lr = makePainter('রোল নং ঃ', size);
+      lr.layout(maxWidth: contentW * 0.2);
+      final ls = makePainter('শাখা ঃ', size);
+      ls.layout(maxWidth: contentW * 0.15);
+      final h = ln.height;
+      if (y + 5 * _k + h > bottomY + 1) {
+        await commit();
+        begin();
+      }
+      y += 5 * _k;
+      final lineY = y + h - 1.5 * _k;
+      void ul(double x1, double x2) => canvas.drawLine(
+            Offset(x1, lineY),
+            Offset(x2, lineY),
+            Paint()
+              ..color = const Color(0xFF000000)
+              ..strokeWidth = 0.8 * _k,
+          );
+      ln.paint(canvas, Offset(_margin, y));
+      final nameEnd = _margin + contentW * 0.52;
+      ul(_margin + ln.width + 2 * _k, nameEnd);
+      final rx = nameEnd + 6 * _k;
+      lr.paint(canvas, Offset(rx, y));
+      final rollEnd = rx + lr.width + 20 * _k;
+      ul(rx + lr.width + 2 * _k, rollEnd);
+      final sx = rollEnd + 6 * _k;
+      ls.paint(canvas, Offset(sx, y));
+      ul(sx + ls.width + 2 * _k, sw - _margin);
+      y += h;
+    }
+
+    // ── দ্রষ্টব্য বাক্স ──
+    Future<void> noteBox(String text) async {
+      final tp = makePainter(_safe(text), 9.5);
+      tp.layout(maxWidth: contentW - 10 * _k);
+      final h = tp.height + 6 * _k;
+      if (y + 4 * _k + h > bottomY + 1) {
+        await commit();
+        begin();
+      }
+      y += 4 * _k;
+      strokeRect(Rect.fromLTWH(_margin, y, contentW, h), thick: 1.0);
+      tp.paint(canvas, Offset(_margin + 5 * _k, y + 3 * _k));
+      y += h;
+    }
+
+    // ── অংশের হেডার (লিখিত / বহুনির্বাচনি) ──
+    Future<void> partHeader({
+      required String subjLine,
+      required String tLeft,
+      required String tRight,
+      bool mcqStyle = false,
+    }) async {
+      await para(headerLine1, 17, isBold: true, align: TextAlign.center);
+      await para(headerLine2, 12, align: TextAlign.center, gapBefore: 1);
+      await para(subjLine, 11.5,
+          isBold: true, align: TextAlign.center, gapBefore: 3);
+      if (mcqStyle) await codeBoxes();
+      await row2(tLeft, tRight, 10.5, gapBefore: 5, isBold: true);
+      if (mcqStyle) await nameRollLine();
+      await doubleRule(gapBefore: 6);
+    }
+
+    // ── সেকশন টাইটেল ──
+    Future<void> sectionTitle(String title2, String? note,
+        {double gapBefore = 8}) async {
+      await para(title2, 12.5,
+          isBold: true, align: TextAlign.center, gapBefore: gapBefore);
+      if (note != null) {
+        await para(note, 9.5, align: TextAlign.center, gapBefore: 2);
+      }
+    }
+
+    // ══════════════ ১ম অংশ: লিখিত পত্র ══════════════
     begin();
+    final subj =
+        'বিষয় ঃ $title${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
+    await partHeader(subjLine: subj, tLeft: 'সময় ঃ $wt', tRight: 'পূর্ণমান ঃ $wm');
 
-    await para(headerLine1, 16, isBold: true, align: TextAlign.center);
-    await para(headerLine2, 10, align: TextAlign.center, gapBefore: 2);
-    await para(
-      'বিষয়: $title${modeLine.isNotEmpty ? '  -  $modeLine' : ''}',
-      11,
-      align: TextAlign.center,
-      gapBefore: 4,
-    );
-    await rule(gapBefore: 8);
-    await rule(gapBefore: 2);
-    await row2('সময়: $time', 'পূর্ণমান: $marks', 10, gapBefore: 4);
-
-    // ── বিভাগ-ক: সৃজনশীল প্রশ্ন ──
     if (cqs.isNotEmpty) {
-      await para('বিভাগ - ক', 12,
-          isBold: true, align: TextAlign.center, gapBefore: 10);
-      await para('সৃজনশীল প্রশ্ন', 12,
-          isBold: true, align: TextAlign.center, gapBefore: 2);
-      await para(
-        cqNote ??
-            '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)',
-        9.5,
-        align: TextAlign.center,
-        gapBefore: 2,
-      );
+      await sectionTitle('সৃজনশীল প্রশ্ন', cqNote ??
+          '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)');
       for (int i = 0; i < cqs.length; i++) {
         final cq = cqs[i];
-        String part(String l, String t, int m) => '$l) $t  -  ${_bn(m)}';
-        await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 8);
-        await para(part('ক', cq.questionK, cq.marks.isNotEmpty ? cq.marks[0] : 1),
-            10.5, indent: 16, gapBefore: 2);
-        await para(part('খ', cq.questionKh, cq.marks.length > 1 ? cq.marks[1] : 2),
-            10.5, indent: 16, gapBefore: 1.5);
-        await para(part('গ', cq.questionG, cq.marks.length > 2 ? cq.marks[2] : 3),
-            10.5, indent: 16, gapBefore: 1.5);
-        await para(part('ঘ', cq.questionGh, cq.marks.length > 3 ? cq.marks[3] : 4),
-            10.5, indent: 16, gapBefore: 1.5);
+        await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
+        await paraMark(
+            'ক) ${cq.questionK}', 10.5, _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
+            indent: 10, gapBefore: 2.5);
+        await paraMark(
+            'খ) ${cq.questionKh}', 10.5, _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
+            indent: 10, gapBefore: 1.5);
+        await paraMark(
+            'গ) ${cq.questionG}', 10.5, _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
+            indent: 10, gapBefore: 1.5);
+        await paraMark(
+            'ঘ) ${cq.questionGh}', 10.5, _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
+            indent: 10, gapBefore: 1.5);
       }
     }
 
-    // ── বিভাগ-খ: সংক্ষিপ্ত-উত্তর প্রশ্ন (SSC-2027 নতুন অংশ) ──
     if (saqs.isNotEmpty) {
-      await rule(gapBefore: 10);
-      await para(cqs.isNotEmpty ? 'বিভাগ - খ' : 'বিভাগ - ক', 12,
-          isBold: true, align: TextAlign.center, gapBefore: 8);
-      await para('সংক্ষিপ্ত-উত্তর প্রশ্ন', 12,
-          isBold: true, align: TextAlign.center, gapBefore: 2);
-      await para(
+      await sectionTitle(
+        'সংক্ষিপ্ত-উত্তর প্রশ্ন',
         '(যেকোনো ${_bn(saqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ২)',
-        9.5,
-        align: TextAlign.center,
-        gapBefore: 2,
+        gapBefore: 12,
       );
       for (int i = 0; i < saqs.length; i++) {
-        await para('${_bn(i + 1)}। ${saqs[i].questionText}', 11, gapBefore: 6);
+        await paraMark(
+          '${_bn(cqs.length + i + 1)}। ${saqs[i].questionText}',
+          11,
+          _bn(2),
+          gapBefore: 7,
+        );
       }
     }
 
-    // ── শেষ বিভাগ: বহুনির্বাচনি প্রশ্ন (MCQ) ──
+    // ══════════════ ২য় অংশ: বহুনির্বাচনি পত্র (দুই কলাম) ══════════════
     if (mcqs.isNotEmpty) {
-      await rule(gapBefore: 10);
-      await para(
-          saqs.isNotEmpty
-              ? 'বিভাগ - গ'
-              : (cqs.isNotEmpty ? 'বিভাগ - খ' : 'বিভাগ - ক'),
-          12,
-          isBold: true,
-          align: TextAlign.center,
-          gapBefore: 8);
-      await para('বহুনির্বাচনি প্রশ্ন (MCQ)', 12,
-          isBold: true, align: TextAlign.center, gapBefore: 2);
-      await para('(সবগুলো প্রশ্নের উত্তর দাও)', 9.5,
-          align: TextAlign.center, gapBefore: 2);
-      for (int i = 0; i < mcqs.length; i++) {
-        final q = mcqs[i];
-        await para('${_bn(i + 1)}। ${q.questionText}', 11, gapBefore: 7);
-        // অপশনগুলো ৫ স্পেস দিয়ে জোড়া (preserveSpaces তাই দূরত্ব বজায় থাকে)
-        final opts = List.generate(
-          q.options.length,
-          (o) => '${_optionLetters[o]}) ${q.options[o]}',
-        ).join('     ');
-        await para(opts, 10.5, indent: 16, gapBefore: 1, preserveSpaces: true);
+      await commit();
+      begin();
+      await partHeader(
+        subjLine: '$subj (বহুনির্বাচনি)',
+        tLeft: 'সময় ঃ $mt',
+        tRight: 'পূর্ণমান ঃ $mm',
+        mcqStyle: true,
+      );
+      await noteBox(
+          'বিশেষ দ্রষ্টব্য ঃ সবগুলো প্রশ্নের উত্তর দিতে হবে। প্রতিটি প্রশ্নের মান ১। উত্তরপত্রে প্রশ্নের ক্রমিক নম্বরের বিপরীতে প্রদত্ত বর্ণ সন্নিবেশিত বৃত্তসমূহ ভরাট করতে হবে।');
+      y += 6 * _k;
+
+      final double gutter = 16 * _k;
+      final double colW = (contentW - gutter) / 2;
+      final colX = [_margin, _margin + colW + gutter];
+      final colY = [y, y];
+      int cur = 0;
+
+      Future<void> placeMcq(int no, Question q) async {
+        final qt = makePainter(
+            _safe('${_bn(no)}। ${q.questionText}'), 10.5);
+        qt.layout(maxWidth: colW);
+        final optP = <TextPainter>[];
+        for (int o = 0; o < q.options.length; o++) {
+          final tp = makePainter(
+              _safe('${_optionLetters[o]}) ${q.options[o]}', preserveSpaces: true),
+              10);
+          tp.layout(maxWidth: colW - 7 * _k);
+          optP.add(tp);
+        }
+        final half = (colW - 7 * _k) / 2;
+        bool grid = q.options.length == 4 &&
+            optP.every((o) => o.width <= half - 2 * _k);
+        double optH;
+        double rowA = 0, rowB = 0;
+        if (grid) {
+          rowA = mx(optP[0].height, optP[1].height);
+          rowB = mx(optP[2].height, optP[3].height);
+          optH = rowA + rowB + 1.5 * _k;
+        } else {
+          optH = optP.fold<double>(0, (a, o) => a + o.height + 0.6 * _k);
+        }
+        final need = qt.height + 2 * _k + optH + 4 * _k;
+        if (colY[cur] + need > bottomY) {
+          if (cur == 0) {
+            cur = 1;
+          } else {
+            await commit();
+            begin();
+            colY[0] = colY[1] = _margin;
+            cur = 0;
+          }
+        }
+        final x = colX[cur];
+        double yy = colY[cur];
+        qt.paint(canvas, Offset(x, yy));
+        yy += qt.height + 2 * _k;
+        if (grid) {
+          optP[0].paint(canvas, Offset(x + 7 * _k, yy));
+          optP[1].paint(canvas, Offset(x + 7 * _k + half, yy));
+          yy += rowA + 1.5 * _k;
+          optP[2].paint(canvas, Offset(x + 7 * _k, yy));
+          optP[3].paint(canvas, Offset(x + 7 * _k + half, yy));
+          yy += rowB;
+        } else {
+          for (final o in optP) {
+            o.paint(canvas, Offset(x + 7 * _k, yy));
+            yy += o.height + 0.6 * _k;
+          }
+        }
+        colY[cur] = yy + 4 * _k;
       }
+
+      for (int i = 0; i < mcqs.length; i++) {
+        await placeMcq(i + 1, mcqs[i]);
+      }
+      y = mx(colY[0], colY[1]);
     }
 
-    await rule(gapBefore: 12);
-    await rule(gapBefore: 2);
+    await doubleRule(gapBefore: 10);
     await para('- শেষ -', 10, align: TextAlign.center, gapBefore: 4);
 
     await commit();
