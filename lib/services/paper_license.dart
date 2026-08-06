@@ -47,6 +47,13 @@ class PaperLicense {
     await prefs.remove(_prefKey);
   }
 
+  /// সার্ভারে (Supabase profiles.is_pro) এই অ্যাকাউন্ট Pro হিসেবে চিহ্নিত —
+  /// তখন AuthService এই মেথড ডেকে ডিভাইসেও Pro চালু করে দেয়।
+  static Future<void> markProFromServer() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefKey, true);
+  }
+
   /// [secret] থেকে নির্ধারিত অ্যাক্টিভেশন কোড (যেমন "3F7A-9C21")।
   static String expectedCode() {
     var h = 0;
