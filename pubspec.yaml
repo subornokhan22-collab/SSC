@@ -13,9 +13,10 @@ dependencies:
   http: ^1.2.0
   webview_flutter: ^4.7.0
   shared_preferences: ^2.2.2
-  # ── প্রশ্নপত্র PDF/প্রিন্ট ──
   pdf: ^3.11.0
   printing: ^5.15.0
+  # ইমেইল OTP লগইন + Pro সিংক (Supabase)
+  supabase_flutter: ^2.8.0
 
 dev_dependencies:
   flutter_test:
