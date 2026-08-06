@@ -79,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
       return 'কোডটি সঠিক নয় বা মেয়াদ শেষ — নতুন কোড নাও।';
     }
-    return 'সমস্যা হয়েছে, আবার চেষ্টা করো।';
+      return 'সমস্যা হয়েছে, আবার চেষ্টা করো।\n\n(বিস্তারিত: $s)';
   }
 
   Future<void> _sendOtp() async {
