@@ -10,7 +10,7 @@
 class SupabaseConfig {
   // ⚠️ এখানে তোমার Supabase প্রজেক্ট URL বসাও, যেমন:
   // static const String url = 'https://abcdwxyz.supabase.co';
-  static const String url = 'https://vxexidxdoghdmzvkvgqk.supabase.co/rest/v1/';
+  static const String url = 'https://vxexidxdoghdmzvkvgqk.supabase.co';
 
   // ⚠️ এখানে তোমার anon public key বসাও (eyJhbGciOi... দিয়ে শুরু হয়)
   static const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4ZXhpZHhkb2doZG16dmt2Z3FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODYzMTcsImV4cCI6MjEwMTU2MjMxN30.hp1ZatmQpCXDFClWlOQEpSJhUwh8bfvspWYKXnXcMY4';
