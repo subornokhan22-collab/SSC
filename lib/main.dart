@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
-import 'screens/splash_screen.dart';
+import 'screens/root_gate.dart';
 import 'widgets/animated_background.dart';
 
 Future<void> main() async {
@@ -20,7 +20,8 @@ class ALearningApp extends StatelessWidget {
       title: 'A-Learning',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
-      home: const SplashScreen(),
+      // লগইন থাকলে ভূমিকা অনুযায়ী হোম, না থাকলে সাইন-ইন/সাইন-আপ পর্দা
+      home: const RootGate(),
       // Wraps EVERY screen (tabs and pushed routes alike) with the
       // animated background painted underneath, so nothing needs to
       // remember to add it individually.
