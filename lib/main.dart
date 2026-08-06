@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
-import 'widgets/animated_gradient_background.dart';
+import 'widgets/animated_background.dart';
 
-void main() {
+Future<void> main() async {
+  // Supabase-এর আগে binding দরকার; কনফিগ না থাকলে init নিঃশব্দে skip হবে
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.init();
   runApp(const ALearningApp());
 }
 
@@ -18,12 +22,9 @@ class ALearningApp extends StatelessWidget {
       theme: AppTheme.light(),
       home: const SplashScreen(),
       // Wraps EVERY screen (tabs and pushed routes alike) with the
-      // flowing gradient background painted underneath.
-      builder: (context, child) => AnimatedGradientBackground(
-        duration: const Duration(seconds: 7),
-        softWash: true, // পূর্ণ রঙিন ব্যাকগ্রাউন্ড চাইলে false করো
-        child: child!,
-      ),
+      // animated background painted underneath, so nothing needs to
+      // remember to add it individually.
+      builder: (context, child) => AnimatedBackground(child: child!),
     );
   }
 }
