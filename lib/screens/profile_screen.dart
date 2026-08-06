@@ -1,0 +1,413 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+
+import '../services/auth_service.dart';
+import '../services/paper_license.dart';
+import '../theme/app_theme.dart';
+
+/// প্রোফাইল ট্যাব — ইমেইল OTP লগইন + অ্যাকাউন্ট কার্ড + Pro সিংক
+///
+/// লগইন ধারা (পুরোটা এই পর্দায়):
+///   ইমেইল লেখো → [OTP পাঠাও] → ইমেইলে ৬-সংখ্যার কোড → কোড লেখো →
+///   যাচাই → (প্রথমবার হলে) শিক্ষক/শিক্ষার্থী বাছাই → প্রোফাইল + Pro সিংক।
+///
+/// Supabase কনফিগ না থাকলে শুধু তথ্যমূলক কার্ড দেখায়; অ্যাপ ক্র্যাশ করে না।
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final _emailCtrl = TextEditingController();
+  final _codeCtrl = TextEditingController();
+
+  bool _busy = false;
+  bool _otpSent = false; // কোড-ধাপে আছি কিনা
+  String? _msg; // সবুজ সফল-বার্তা
+  String? _err; // লাল error-বার্তা
+  Map<String, dynamic>? _profile;
+  bool _devicePro = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
+  Future<void> _refresh() async {
+    final pro = await PaperLicense.isPro();
+    Map<String, dynamic>? p;
+    if (AuthService.isLoggedIn) {
+      p = await AuthService.fetchProfile();
+      // সার্ভারে Pro থাকলে এই ডিভাইসেও চালু করো
+      if (await AuthService.syncProFromServer()) {
+        // সিংক হয়ে গেলে Pro পতাকা আবার পড়ো
+        final pro2 = await PaperLicense.isPro();
+        if (mounted) setState(() => _devicePro = pro2);
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _profile = p;
+      _devicePro = pro || _devicePro;
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _codeCtrl.dispose();
+    super.dispose();
+  }
+
+  // ত্রুটি বার্তা বাংলায়
+  String _bnError(Object e) {
+    final s = e.toString();
+    if (s.contains('পাঠাও') || s.contains('লেখো') || s.contains('মেলেনি')) {
+      return e is AuthException ? e.message : s;
+    }
+    if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
+      return 'একটু বেশিবার চেষ্টা হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করো।';
+    }
+    if (s.contains('SocketException') ||
+        s.contains('Failed host lookup') ||
+        s.contains('Network')) {
+      return 'ইন্টারনেট সংযোগ নেই বা দুর্বল — সংযোগ দেখে আবার চেষ্টা করো।';
+    }
+    if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
+      return 'কোডটি সঠিক নয় বা মেয়াদ শেষ — নতুন কোড নাও।';
+    }
+    return 'সমস্যা হয়েছে, আবার চেষ্টা করো।';
+  }
+
+  Future<void> _sendOtp() async {
+    setState(() {
+      _busy = true;
+      _err = null;
+      _msg = null;
+    });
+    try {
+      await AuthService.sendOtp(_emailCtrl.text);
+      if (!mounted) return;
+      setState(() {
+        _otpSent = true;
+        _msg = '✅ ইমেইল পাঠানো হয়েছে! ইনবক্স (না পেলে স্প্যাম) দেখে ৬-সংখ্যার কোডটি লেখো।';
+      });
+    } catch (e) {
+      if (mounted) setState(() => _err = _bnError(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    setState(() {
+      _busy = true;
+      _err = null;
+      _msg = null;
+    });
+    try {
+      await AuthService.verifyOtp(_emailCtrl.text, _codeCtrl.text);
+      // প্রথমবার লগইন হলে (প্রোফাইল নেই) ভূমিকা জিজ্ঞেস করো
+      var p = await AuthService.fetchProfile();
+      if (p == null && mounted) {
+        final role = await _askRole();
+        if (role != null) p = await AuthService.ensureProfile(role);
+      }
+      await AuthService.syncProFromServer();
+      if (!mounted) return;
+      setState(() {
+        _otpSent = false;
+        _profile = p;
+        _msg = null;
+      });
+      await _refresh();
+    } catch (e) {
+      if (mounted) setState(() => _err = _bnError(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<String?> _askRole() {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('আপনি কে?'),
+        content: const Text(
+          'আপনার অ্যাকাউন্টের ধরন বাছাই করো (পরে বদলানো যাবে না):',
+          style: TextStyle(fontSize: 13.5, height: 1.5),
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () => Navigator.pop(context, 'teacher'),
+            icon: const Icon(Icons.school_outlined),
+            label: const Text('শিক্ষক'),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.pop(context, 'student'),
+            icon: const Icon(Icons.menu_book_outlined),
+            label: const Text('শিক্ষার্থী'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _logout() async {
+    await AuthService.signOut();
+    if (!mounted) return;
+    setState(() {
+      _profile = null;
+      _otpSent = false;
+      _codeCtrl.clear();
+      _msg = 'লগ আউট হয়েছে।';
+    });
+  }
+
+  // ── UI ───────────────────────────────────────────────────────────
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('প্রোফাইল ও লগইন')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (!AuthService.ready)
+            _infoCard(
+              Icons.settings_suggest_outlined,
+              'লগইন ব্যবস্থা এখনো কনফিগার হয়নি।\nঅ্যাপের বাকি সব সুবিধা আগের মতোই চলবে।',
+            )
+          else if (AuthService.isLoggedIn)
+            _accountCard()
+          else
+            _loginCard(),
+          const SizedBox(height: 14),
+          if (_msg != null) _banner(_msg!, Colors.green.shade700),
+          if (_err != null) _banner(_err!, Colors.red.shade600),
+        ],
+      ),
+    );
+  }
+
+  Widget _card({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _infoCard(IconData icon, String text) {
+    return _card(
+      child: Column(
+        children: [
+          Icon(icon, size: 44, color: Colors.grey.shade400),
+          const SizedBox(height: 10),
+          Text(text,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, height: 1.6, color: Colors.grey.shade700)),
+        ],
+      ),
+    );
+  }
+
+  Widget _loginCard() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _otpSent ? 'কোডটি লেখো' : 'ইমেইল দিয়ে লগইন',
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            _otpSent
+                ? 'তোমার ইমেইলে ৬-সংখ্যার একটি কোড পাঠানো হয়েছে (মেয়াদ ~১ ঘণ্টা)।'
+                : 'পাসওয়ার্ড লাগবে না — ইমেইলে যাওয়া OTP কোড দিয়েই লগইন।',
+            style: TextStyle(fontSize: 12.5, height: 1.5, color: Colors.grey.shade700),
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _emailCtrl,
+            enabled: !_otpSent,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: 'ইমেইল',
+              hintText: 'tumi@example.com',
+              prefixIcon: Icon(Icons.alternate_email),
+              border: OutlineInputBorder(),
+            ),
+          ),
+          if (_otpSent) ...[
+            const SizedBox(height: 12),
+            TextField(
+              controller: _codeCtrl,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+              decoration: const InputDecoration(
+                labelText: '৬-সংখ্যার কোড',
+                counterText: '',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _busy ? null : (_otpSent ? _verifyOtp : _sendOtp),
+              icon: _busy
+                  ? const SizedBox(
+                      width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Icon(_otpSent ? Icons.verified_user_outlined : Icons.mark_email_read_outlined),
+              label: Text(_busy ? 'অপেক্ষা করো...' : (_otpSent ? 'যাচাই করো' : 'OTP পাঠাও')),
+            ),
+          ),
+          if (_otpSent)
+            Center(
+              child: TextButton(
+                onPressed: _busy
+                    ? null
+                    : () => setState(() {
+                          _otpSent = false;
+                          _err = null;
+                          _msg = null;
+                          _codeCtrl.clear();
+                        }),
+                child: const Text('ইমেইল বদলাতে / নতুন কোড নিতে ফিরে যাও'),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _accountCard() {
+    final role = _profile?['role']?.toString() ?? '—';
+    final roleBn = role == 'teacher' ? 'শিক্ষক' : (role == 'student' ? 'শিক্ষার্থী' : '—');
+    final serverPro = _profile?['is_pro'] == true;
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: AppTheme.primary.withOpacity(0.12),
+                child: Icon(Icons.person, color: AppTheme.primary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AuthService.email ?? '',
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text('ভূমিকা: $roleBn',
+                        style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _chip(
+                serverPro ? 'সার্ভারে Pro ✓' : 'সার্ভারে Pro নেই',
+                serverPro ? Colors.green.shade700 : Colors.grey.shade600,
+              ),
+              _chip(
+                _devicePro ? 'এই ফোনে Pro চালু ✓' : 'এই ফোনে DEMO',
+                _devicePro ? AppTheme.accent : Colors.grey.shade600,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'টিউটর অ্যাডমিন তোমার ইমেইলে Pro চালু করলে এখানে "সিংক" চাপলেই এই ফোনে Pro চালু হবে।',
+            style: TextStyle(fontSize: 12, height: 1.5, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _busy
+                      ? null
+                      : () async {
+                          setState(() => _busy = true);
+                          final ok = await AuthService.syncProFromServer();
+                          await _refresh();
+                          if (!mounted) return;
+                          setState(() {
+                            _busy = false;
+                            _msg = ok ? '🎉 Pro সিংক হয়ে গেছে!' : 'সার্ভারে এখনো Pro চালু হয়নি।';
+                          });
+                        },
+                  icon: const Icon(Icons.sync),
+                  label: const Text('Pro সিংক'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.tonalIcon(
+                  onPressed: _busy ? null : _logout,
+                  icon: const Icon(Icons.logout),
+                  label: const Text('লগ আউট'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Text(text, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
+    );
+  }
+
+  Widget _banner(String text, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Text(text, style: TextStyle(fontSize: 12.5, height: 1.5, color: color)),
+    );
+  }
+}

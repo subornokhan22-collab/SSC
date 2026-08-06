@@ -3,6 +3,7 @@ import 'home_screen.dart';
 import 'subjects_screen.dart';
 import 'ai_tutor_screen.dart';
 import 'pdf_resource_screen.dart';
+import 'profile_screen.dart';
 
 class MainHomeScreen extends StatefulWidget {
   const MainHomeScreen({super.key});
@@ -32,7 +33,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           _visitedTabs.contains(1) ? const SubjectsScreen() : const SizedBox.shrink(),
           _visitedTabs.contains(2) ? const PdfResourceScreen() : const SizedBox.shrink(),
           _visitedTabs.contains(3) ? const AITutorScreen() : const SizedBox.shrink(),
-          const Center(child: Text('User Profile & Settings')),
+          _visitedTabs.contains(4) ? const ProfileScreen() : const SizedBox.shrink(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
