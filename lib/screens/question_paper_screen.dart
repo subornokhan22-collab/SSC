@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
+import '../services/auth_service.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
+import 'subscription_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import 'subjects_screen.dart';
@@ -33,7 +35,11 @@ class _PaperPattern {
 }
 
 class QuestionPaperScreen extends StatefulWidget {
-  const QuestionPaperScreen({super.key});
+  const QuestionPaperScreen({super.key, this.initialSubjectId, this.initialMode});
+
+  /// টিউটর-হোম থেকে সরাসরি মোড বেছে দেওয়া যায় ('chapter' | 'full')
+  final String? initialSubjectId;
+  final String? initialMode;
 
   @override
   State<QuestionPaperScreen> createState() => _QuestionPaperScreenState();
@@ -47,6 +53,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   bool _busy = false;
   bool _generated = false;
   bool _isPro = false;
+  bool _notTeacher = false; // প্রিন্ট ফিচার শিক্ষকদের — শিক্ষার্থী হলে true
   bool _showAnswerKey = false;
   String? _apiKey;
   String? _note;
@@ -66,9 +73,21 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
     final pro = await PaperLicense.isPro();
+    // প্রিন্ট ফিচার শুধু শিক্ষকদের জন্য — শিক্ষার্থী হলে পর্দাটা লক থাকবে
+    final role = await AuthService.role(refresh: true);
+    SubjectInfo? subj = _subject;
+    if (widget.initialSubjectId != null) {
+      for (final s in allSubjects) {
+        if (s.id == widget.initialSubjectId) subj = s;
+      }
+    }
+    if (!mounted) return;
     setState(() {
       _apiKey = prefs.getString('gemini_api_key');
       _isPro = pro;
+      if (role != null && role != 'teacher') _notTeacher = true;
+      if (subj != null) _subject = subj;
+      if (widget.initialMode != null) _mode = widget.initialMode!;
     });
   }
 
@@ -418,6 +437,39 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   // ── UI ────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    // শিক্ষার্থী অ্যাকাউন্টে প্রিন্ট পর্দা বন্ধ
+    if (_notTeacher) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('প্রশ্নপত্র প্রিন্ট')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(26),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.lock_outline, size: 56, color: Colors.grey.shade400),
+                const SizedBox(height: 14),
+                const Text(
+                  'প্রশ্নপত্র প্রিন্ট ফিচারটি শিক্ষক (টিউটর) অ্যাকাউন্টের জন্য সংরক্ষিত।',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 15, height: 1.6),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const SubscriptionScreen()),
+                  ),
+                  icon: const Icon(Icons.workspace_premium_outlined),
+                  label: const Text('সাবস্ক্রিপশন দেখো'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('প্রশ্নপত্র (প্রিন্ট-রেডি)'),

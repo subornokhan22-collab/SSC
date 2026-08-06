@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import '../services/auth_service.dart';
 import '../services/paper_license.dart';
+import 'subscription_screen.dart';
 import '../theme/app_theme.dart';
 
 /// প্রোফাইল ট্যাব — ইমেইল OTP লগইন + অ্যাকাউন্ট কার্ড + Pro সিংক
@@ -79,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
       return 'কোডটি সঠিক নয় বা মেয়াদ শেষ — নতুন কোড নাও।';
     }
-      return 'সমস্যা হয়েছে, আবার চেষ্টা করো।\n\n(বিস্তারিত: $s)';
+    return 'সমস্যা হয়েছে, আবার চেষ্টা করো।';
   }
 
   Future<void> _sendOtp() async {
@@ -114,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       var p = await AuthService.fetchProfile();
       if (p == null && mounted) {
         final role = await _askRole();
-        if (role != null) p = await AuthService.ensureProfile(role);
+        if (role != null) p = await AuthService.ensureProfile(role: role);
       }
       await AuthService.syncProFromServer();
       if (!mounted) return;
@@ -185,6 +186,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _accountCard()
           else
             _loginCard(),
+          if (AuthService.isLoggedIn && !_devicePro) ...[
+            const SizedBox(height: 14),
+            _subscriptionCard(),
+          ],
           const SizedBox(height: 14),
           if (_msg != null) _banner(_msg!, Colors.green.shade700),
           if (_err != null) _banner(_err!, Colors.red.shade600),
@@ -300,7 +305,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _subscriptionCard() {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF17130A), Color(0xFF2A230F)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: const Color(0xFFF7C948).withOpacity(0.65)),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.workspace_premium, color: Color(0xFFF7C948), size: 30),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('সাবস্ক্রিপশন কিনো',
+                      style: TextStyle(
+                          color: Color(0xFFFFE08A),
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w800)),
+                  Text('Pro সুবিধা সম্পূর্ণ আনলক করো',
+                      style: TextStyle(color: Colors.white70, fontSize: 12)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: Color(0xFFF7C948)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _accountCard() {
+    final name = _profile?['name']?.toString() ?? '';
+    final phone = _profile?['phone']?.toString() ?? '';
     final role = _profile?['role']?.toString() ?? '—';
     final roleBn = role == 'teacher' ? 'শিক্ষক' : (role == 'student' ? 'শিক্ষার্থী' : '—');
     final serverPro = _profile?['is_pro'] == true;
@@ -320,11 +370,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (name.isNotEmpty)
+                      Text(name,
+                          style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800)),
                     Text(AuthService.email ?? '',
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 2),
-                    Text('ভূমিকা: $roleBn',
-                        style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700)),
+                    Text(
+                      'ভূমিকা: $roleBn${phone.isNotEmpty ? '  •  $phone' : ''}',
+                      style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700),
+                    ),
                   ],
                 ),
               ),
