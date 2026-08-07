@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../data/extra_questions.dart';
 import '../data/questions_data.dart';
 
 /// একটি স্ট্যাকড ভগ্নাংশ (লব উপরে, দাগ মাঝে, হর নিচে)
@@ -522,6 +523,233 @@ class PaperPdf {
       );
     }
 
+    // ── চিত্র/সারণি (ফিগার) রেন্ডারার ─────────────────────────────
+    // প্রশ্ন বা উদ্দীপকের সাথে দরকারি ছক-তালিকা, ত্রিভুজ চিত্র ও বার-চার্ট
+    // সরাসরি পেজে আঁকে। figH ও paintFig সবসময় একই উচ্চতা হিসেব করে।
+    double figH(QuestionFigure f, double w) {
+      final pad = (f.caption != null ? 19.0 : 5.0) * _k;
+      switch (f.kind) {
+        case FigureKind.table:
+          final rows = (f.headers.isEmpty ? 0 : 1) + f.rows.length;
+          return rows * 15 * _k + pad;
+        case FigureKind.triangle:
+          return 120 * _k + pad;
+        case FigureKind.barChart:
+          return 132 * _k + pad;
+      }
+    }
+
+    void paintFig(QuestionFigure f, double x, double y0, double w) {
+      final line = Paint()
+        ..color = const Color(0xFF000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.9 * _k;
+      double bodyH = 0;
+
+      if (f.kind == FigureKind.table) {
+        final headerRow = f.headers.isNotEmpty;
+        final grid = <List<String>>[
+          if (headerRow) f.headers,
+          ...f.rows,
+        ];
+        if (grid.isNotEmpty) {
+          final nCol = grid.first.length;
+          final cellH = 15 * _k;
+          // কলামের প্রস্থ: সব ঘরের লেখা মেপে সর্বোচ্চ + প্যাডিং
+          final colW = List<double>.filled(nCol, 0);
+          for (int c = 0; c < nCol; c++) {
+            for (int r = 0; r < grid.length; r++) {
+              if (c >= grid[r].length) continue;
+              final tp = makePainter(_safe(grid[r][c]), 9.5,
+                  isBold: headerRow && r == 0);
+              tp.layout();
+              if (tp.width > colW[c]) colW[c] = tp.width;
+            }
+            colW[c] += 10 * _k;
+          }
+          var totalW = colW.fold<double>(0, (a, b) => a + b);
+          final maxW = w * 0.92;
+          if (totalW > maxW) {
+            final s = maxW / totalW;
+            for (int c = 0; c < nCol; c++) {
+              colW[c] *= s;
+            }
+            totalW = maxW;
+          }
+          final startX = x + (w - totalW) / 2;
+          bodyH = grid.length * cellH;
+          strokeRect(Rect.fromLTWH(startX, y0, totalW, bodyH), thick: 1.1);
+          double vx = startX;
+          for (int c = 0; c < nCol - 1; c++) {
+            vx += colW[c];
+            canvas.drawLine(Offset(vx, y0), Offset(vx, y0 + bodyH), line);
+          }
+          for (int r = 1; r < grid.length; r++) {
+            final hy = y0 + r * cellH;
+            canvas.drawLine(Offset(startX, hy), Offset(startX + totalW, hy), line);
+          }
+          for (int r = 0; r < grid.length; r++) {
+            double cx = startX;
+            for (int c = 0; c < nCol; c++) {
+              if (c >= grid[r].length) break;
+              final tp = makePainter(_safe(grid[r][c]), 9.5,
+                  isBold: headerRow && r == 0);
+              tp.layout(maxWidth: colW[c] - 4 * _k);
+              tp.paint(
+                canvas,
+                Offset(cx + (colW[c] - tp.width) / 2,
+                    y0 + r * cellH + (cellH - tp.height) / 2),
+              );
+              cx += colW[c];
+            }
+          }
+        }
+      } else if (f.kind == FigureKind.triangle) {
+        bodyH = 120 * _k;
+        final cx = x + w / 2;
+        var halfW = w * 0.26;
+        final maxHw = 100 * _k;
+        final minHw = 50 * _k;
+        if (halfW > maxHw) halfW = maxHw;
+        if (halfW < minHw) halfW = minHw;
+        final top = y0 + 16 * _k;
+        final base = y0 + bodyH - 20 * _k;
+        final a = Offset(cx, top); // শীর্ষবিন্দু (উপরে)
+        final b = Offset(cx - halfW, base); // বামে-নিচ
+        final c = Offset(cx + halfW, base); // ডানে-নিচ
+        final tri = Paint()
+          ..color = const Color(0xFF000000)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.3 * _k;
+        canvas.drawLine(a, b, tri);
+        canvas.drawLine(b, c, tri);
+        canvas.drawLine(c, a, tri);
+        final v = f.headers; // শীর্ষের লেবেল
+        if (v.isNotEmpty && v[0].isNotEmpty) {
+          final tp = makePainter(_safe(v[0]), 10.5, isBold: true);
+          tp.layout();
+          tp.paint(
+              canvas, Offset(a.dx - tp.width / 2, a.dy - tp.height - 1.5 * _k));
+        }
+        if (v.length > 1 && v[1].isNotEmpty) {
+          final tp = makePainter(_safe(v[1]), 10.5, isBold: true);
+          tp.layout();
+          tp.paint(canvas, Offset(b.dx - tp.width - 2 * _k, b.dy + 1 * _k));
+        }
+        if (v.length > 2 && v[2].isNotEmpty) {
+          final tp = makePainter(_safe(v[2]), 10.5, isBold: true);
+          tp.layout();
+          tp.paint(canvas, Offset(c.dx + 2 * _k, c.dy + 1 * _k));
+        }
+        final s = f.sides; // বাহুর লেবেল
+        if (s.isNotEmpty && s[0].isNotEmpty) {
+          final tp = makePainter(_safe(s[0]), 9.5);
+          tp.layout();
+          final mx2 = (a.dx + b.dx) / 2;
+          final my2 = (a.dy + b.dy) / 2;
+          tp.paint(
+              canvas, Offset(mx2 - tp.width - 2.5 * _k, my2 - tp.height / 2));
+        }
+        if (s.length > 1 && s[1].isNotEmpty) {
+          final tp = makePainter(_safe(s[1]), 9.5);
+          tp.layout();
+          final mx2 = (b.dx + c.dx) / 2;
+          final my2 = (b.dy + c.dy) / 2;
+          tp.paint(canvas, Offset(mx2 - tp.width / 2, my2 + 1.5 * _k));
+        }
+        if (s.length > 2 && s[2].isNotEmpty) {
+          final tp = makePainter(_safe(s[2]), 9.5);
+          tp.layout();
+          final mx2 = (c.dx + a.dx) / 2;
+          final my2 = (c.dy + a.dy) / 2;
+          tp.paint(
+              canvas, Offset(mx2 + 2.5 * _k, my2 - tp.height / 2));
+        }
+        final an = f.angles; // কোণের লেবেল
+        if (an.isNotEmpty && an[0].isNotEmpty) {
+          final tp = makePainter(_safe(an[0]), 9);
+          tp.layout();
+          tp.paint(canvas, Offset(a.dx + 2 * _k, a.dy + 4 * _k));
+        }
+        if (an.length > 1 && an[1].isNotEmpty) {
+          final tp = makePainter(_safe(an[1]), 9);
+          tp.layout();
+          tp.paint(
+              canvas, Offset(b.dx + 3.5 * _k, b.dy - tp.height - 2 * _k));
+        }
+        if (an.length > 2 && an[2].isNotEmpty) {
+          final tp = makePainter(_safe(an[2]), 9);
+          tp.layout();
+          tp.paint(
+              canvas, Offset(c.dx - tp.width - 3.5 * _k, c.dy - tp.height - 2 * _k));
+        }
+        // সমকোণ চিহ্ন
+        final ra = f.rightAngleAt;
+        if (ra != null && ra.isNotEmpty) {
+          final sz = 7 * _k;
+          if (v.length > 1 && ra == v[1]) {
+            canvas.drawLine(Offset(b.dx + sz, b.dy), Offset(b.dx + sz, b.dy - sz), tri);
+            canvas.drawLine(Offset(b.dx + sz, b.dy - sz), Offset(b.dx, b.dy - sz), tri);
+          } else if (v.length > 2 && ra == v[2]) {
+            canvas.drawLine(Offset(c.dx - sz, c.dy), Offset(c.dx - sz, c.dy - sz), tri);
+            canvas.drawLine(Offset(c.dx - sz, c.dy - sz), Offset(c.dx, c.dy - sz), tri);
+          } else if (v.isNotEmpty && ra == v[0]) {
+            canvas.drawLine(Offset(a.dx - sz, a.dy + sz), Offset(a.dx, a.dy + sz), tri);
+            canvas.drawLine(Offset(a.dx, a.dy + sz), Offset(a.dx + sz, a.dy + sz), tri);
+          }
+        }
+      } else if (f.kind == FigureKind.barChart) {
+        bodyH = 132 * _k;
+        var maxV = 0;
+        for (final e in f.values) {
+          if (e > maxV) maxV = e;
+        }
+        if (maxV > 0) {
+          final base = y0 + bodyH - 18 * _k;
+          final top = y0 + 8 * _k;
+          var chartW = w * 0.6;
+          final maxCw = 240 * _k;
+          if (chartW > maxCw) chartW = maxCw;
+          if (chartW > w) chartW = w;
+          final startX = x + (w - chartW) / 2;
+          canvas.drawLine(Offset(startX - 4 * _k, top - 2 * _k),
+              Offset(startX - 4 * _k, base), line); // y-অক্ষ
+          canvas.drawLine(Offset(startX - 4 * _k, base),
+              Offset(startX + chartW, base), line); // x-অক্ষ
+          final n = f.values.length;
+          final slot = chartW / n;
+          final barW = slot * 0.5;
+          final fill = Paint()..color = const Color(0xFFDDDDDD);
+          for (int i = 0; i < n; i++) {
+            final bh = (f.values[i] / maxV) * (base - top);
+            final bx = startX + slot * i + (slot - barW) / 2;
+            final rect = Rect.fromLTWH(bx, base - bh, barW, bh);
+            canvas.drawRect(rect, fill);
+            canvas.drawRect(rect, line);
+            final vt = makePainter(_bn(f.values[i]), 9);
+            vt.layout();
+            vt.paint(canvas,
+                Offset(bx + (barW - vt.width) / 2, base - bh - vt.height - 1 * _k));
+            if (i < f.headers.length) {
+              final lt = makePainter(_safe(f.headers[i]), 8.5);
+              lt.layout(maxWidth: slot);
+              lt.paint(
+                  canvas,
+                  Offset(startX + slot * i + (slot - lt.width) / 2,
+                      base + 2 * _k));
+            }
+          }
+        }
+      }
+
+      // ক্যাপশন (থাকলে) বডির নিচে মাঝখানে
+      if (f.caption != null) {
+        final tp = makePainter(_safe(f.caption!), 9.5, align: TextAlign.center);
+        tp.layout(maxWidth: w);
+        tp.paint(canvas, Offset(x + (w - tp.width) / 2, y0 + bodyH + 3 * _k));
+      }
+    }
+
     // ── বেসিক প্যারাগ্রাফ ──
     Future<void> para(
       String text,
@@ -730,6 +958,16 @@ class PaperPdf {
       for (int i = 0; i < cqs.length; i++) {
         final cq = cqs[i];
         await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
+        if (cq.figure != null) {
+          final fh = figH(cq.figure!, contentW);
+          if (y + fh > bottomY + 1) {
+            await commit();
+            begin();
+          }
+          y += 2 * _k;
+          paintFig(cq.figure!, _margin, y, contentW);
+          y += fh;
+        }
         // গণিত/উচ্চতর গণিত (নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ;
         // অন্য বিষয়: আগের মতো ব্যাংকের মান হিসেবে ৪ ভাগ পর্যন্ত।
         await paraMark(
@@ -790,6 +1028,7 @@ class PaperPdf {
       int cur = 0;
 
       Future<void> placeMcq(int no, Question q) async {
+        final fh = q.figure != null ? figH(q.figure!, colW) : 0.0;
         final qt = rich('${_bn(no)}। ${q.questionText}', 10.5, maxWidth: colW);
         final opts = <_RichLine>[];
         for (int o = 0; o < q.options.length; o++) {
@@ -808,7 +1047,7 @@ class PaperPdf {
         } else {
           optH = opts.fold<double>(0, (a, o) => a + o.tp.height + 0.6 * _k);
         }
-        final need = qt.tp.height + 2 * _k + optH + 4 * _k;
+        final need = qt.tp.height + fh + 2 * _k + optH + 4 * _k;
         if (colY[cur] + need > bottomY) {
           if (cur == 0) {
             cur = 1;
@@ -823,6 +1062,10 @@ class PaperPdf {
         double yy = colY[cur];
         paintRich(qt, x, yy);
         yy += qt.tp.height + 2 * _k;
+        if (q.figure != null) {
+          paintFig(q.figure!, x, yy, colW);
+          yy += fh;
+        }
         if (grid) {
           paintRich(opts[0], x + 7 * _k, yy);
           paintRich(opts[1], x + 7 * _k + half, yy);
