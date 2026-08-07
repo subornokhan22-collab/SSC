@@ -1,3 +1,5 @@
+import 'extra_questions.dart';
+
 enum QuestionSource { ai, board }
 
 class Question {
@@ -10,6 +12,7 @@ class Question {
   final String explanation;
   final QuestionSource source;
   final String? sourceLabel;
+  final QuestionFigure? figure;
 
   const Question({
     required this.id,
@@ -21,6 +24,7 @@ class Question {
     required this.explanation,
     this.source = QuestionSource.ai,
     this.sourceLabel,
+    this.figure,
   });
 }
 
@@ -36,6 +40,7 @@ class CreativeQuestion {
   final List<int> marks;
   final QuestionSource source;
   final String? sourceLabel;
+  final QuestionFigure? figure;
 
   const CreativeQuestion({
     required this.id,
@@ -49,10 +54,12 @@ class CreativeQuestion {
     this.marks = const [1, 2, 3, 4],
     this.source = QuestionSource.ai,
     this.sourceLabel,
+    this.figure,
   });
 }
 
 const List<Question> allMCQs = [
+  ...extraMCQs,
   // --- AI-generated template questions (Physics) ---
   Question(id: 'phy_c1_1', subjectId: 'physics', chapter: 'অধ্যায় ১: ভৌত রাশি ও পরিমাপ', questionText: 'দৈর্ঘ্যের মৌলিক একক কোনটি?', options: ['সেন্টিমিটার', 'মিটার', 'কিলোমিটার', 'ইঞ্চি'], correctIndex: 1, explanation: 'SI পদ্ধতিতে দৈর্ঘ্যের মৌলিক একক মিটার (m)।'),
   Question(id: 'phy_c1_2', subjectId: 'physics', chapter: 'অধ্যায় ১: ভৌত রাশি ও পরিমাপ', questionText: 'ভরের মাত্রা কোনটি?', options: ['[M]', '[L]', '[T]', '[MLT]'], correctIndex: 0, explanation: 'ভরের মাত্রা হলো [M]।'),
@@ -655,6 +662,7 @@ const List<Question> allMCQs = [
 ];
 
 const List<CreativeQuestion> allCQs = [
+  ...extraCQs,
   // --- AI-generated template CQs ---
   CreativeQuestion(
     id: 'phy_cq_1', subjectId: 'physics', chapter: 'অধ্যায় ২: গতি',
