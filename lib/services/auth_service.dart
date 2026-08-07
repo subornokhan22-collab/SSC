@@ -76,7 +76,8 @@ class AuthService {
   }
 
   /// প্রথম লগইনে প্রোফাইল সারি তৈরি করে (নাম/ফোন/ভূমিকা-সহ)।
-  /// আগে থেকে থাকলে পুরনোটাই ফেরত দেয় (তথ্য নষ্ট করে না)।
+  /// আগে থেকে সারি থাকলে শুধু **ফাঁকা** ঘরগুলো (নাম/ফোন) পূরণ করে —
+  /// পুরনো তথ্য কখনো মুছে ফেলে না।
   static Future<Map<String, dynamic>> ensureProfile({
     required String role,
     String name = '',
@@ -85,27 +86,55 @@ class AuthService {
     final u = _c.auth.currentUser;
     if (u == null) throw const AuthException('লগইন নেই');
     final existing = await fetchProfile();
-    if (existing != null) {
-      _roleCache = existing['role']?.toString();
-      return existing;
-    }
     try {
-      await _c.from('profiles').upsert(
-        {
+      if (existing == null) {
+        // একদম নতুন — পুরো সারি তৈরি করো
+        await _c.from('profiles').insert({
           'id': u.id,
           'email': u.email ?? '',
           'role': role,
           'name': name,
           'phone': phone,
-        },
-        onConflict: 'id',
-        ignoreDuplicates: true,
-      );
+        });
+      } else {
+        // আগের সারি আছে — শুধু ফাঁকা ঘরগুলো পূরণ করো
+        final patch = <String, dynamic>{};
+        if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
+          patch['name'] = name;
+        }
+        if ((existing['phone']?.toString() ?? '').isEmpty && phone.isNotEmpty) {
+          patch['phone'] = phone;
+        }
+        if ((existing['role']?.toString() ?? '').isEmpty && role.isNotEmpty) {
+          patch['role'] = role;
+        }
+        if (patch.isNotEmpty) {
+          await _c.from('profiles').update(patch).eq('id', u.id);
+        }
+      }
     } catch (_) {}
     final p = await fetchProfile() ??
-        {'email': u.email ?? '', 'role': role, 'name': name, 'phone': phone, 'is_pro': false};
+        {
+          'email': u.email ?? '',
+          'role': role,
+          'name': name,
+          'phone': phone,
+          'is_pro': false,
+        };
     _roleCache = p['role']?.toString();
     return p;
+  }
+
+  /// নাম/ফোন পরে বদলানো (প্রোফাইল সম্পাদনা) — শুধু দেওয়া ঘরগুলো আপডেট হয়।
+  /// (email/role/is_pro এখানে ছোঁয়া হয় না)
+  static Future<void> updateProfile({String? name, String? phone}) async {
+    final u = _c.auth.currentUser;
+    if (u == null) throw const AuthException('লগইন নেই');
+    final patch = <String, dynamic>{};
+    if (name != null) patch['name'] = name.trim();
+    if (phone != null) patch['phone'] = phone;
+    if (patch.isEmpty) return;
+    await _c.from('profiles').update(patch).eq('id', u.id);
   }
 
   /// সার্ভারে is_pro থাকলে এই ডিভাইসে Pro চালু করে true ফেরত দেয়।
