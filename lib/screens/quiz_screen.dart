@@ -1,9 +1,10 @@
+FILE: SSC-main/lib/screens/quiz_screen.dart
+================================================================================
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/questions_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
-import '../widgets/question_figure_view.dart';
 
 class QuizScreen extends StatefulWidget {
   final String? subjectId;
@@ -103,62 +104,48 @@ class _QuizScreenState extends State<QuizScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(q.chapter, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                    const SizedBox(height: 8),
-                    Text(q.questionText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                    if (q.figure != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: QuestionFigureView(figure: q.figure!),
-                      ),
-                    const SizedBox(height: 20),
-                    ...List.generate(q.options.length, (i) {
-                      final selected = _answers[_current] == i;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(14),
-                          onTap: () => setState(() => _answers[_current] = i),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 180),
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: selected ? AppTheme.primary : Colors.grey.shade300, width: selected ? 1.6 : 1),
-                              borderRadius: BorderRadius.circular(14),
-                              color: selected ? AppTheme.primary.withOpacity(0.08) : Colors.white,
-                              boxShadow: selected
-                                  ? [BoxShadow(color: AppTheme.primary.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))]
-                                  : [],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 22, height: 22,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: selected ? AppTheme.primary : Colors.transparent,
-                                    border: Border.all(color: selected ? AppTheme.primary : Colors.grey.shade400, width: 1.6),
-                                  ),
-                                  child: selected ? const Icon(Icons.check, size: 15, color: Colors.white) : null,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(child: Text(q.options[i])),
-                              ],
-                            ),
+            Text(q.chapter, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            const SizedBox(height: 8),
+            Text(q.questionText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 20),
+            ...List.generate(q.options.length, (i) {
+              final selected = _answers[_current] == i;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () => setState(() => _answers[_current] = i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: selected ? AppTheme.primary : Colors.grey.shade300, width: selected ? 1.6 : 1),
+                      borderRadius: BorderRadius.circular(14),
+                      color: selected ? AppTheme.primary.withOpacity(0.08) : Colors.white,
+                      boxShadow: selected
+                          ? [BoxShadow(color: AppTheme.primary.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))]
+                          : [],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 22, height: 22,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: selected ? AppTheme.primary : Colors.transparent,
+                            border: Border.all(color: selected ? AppTheme.primary : Colors.grey.shade400, width: 1.6),
                           ),
+                          child: selected ? const Icon(Icons.check, size: 15, color: Colors.white) : null,
                         ),
-                      );
-                    }),
-                  ],
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(q.options[i])),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 10),
+              );
+            }),
+            const Spacer(),
             Row(
               children: [
                 if (_current > 0)
@@ -230,11 +217,6 @@ class _QuizScreenState extends State<QuizScreen> {
                         Expanded(child: Text('${i + 1}. ${q.questionText}', style: const TextStyle(fontWeight: FontWeight.w600))),
                       ],
                     ),
-                    if (q.figure != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: QuestionFigureView(figure: q.figure!),
-                      ),
                     const SizedBox(height: 8),
                     Text('সঠিক উত্তর: ${q.options[q.correctIndex]}', style: const TextStyle(color: Colors.green)),
                     if (userAns != null && !correct) Text('আপনার উত্তর: ${q.options[userAns]}', style: const TextStyle(color: Colors.red)),
@@ -251,3 +233,6 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 }
+
+================================================================================
+FILE: SSC-main/lib/screens/splash_screen.dart
