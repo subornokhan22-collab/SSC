@@ -28,14 +28,49 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   String? _apiKey;
   bool _mixAi = false; // 🤖 AI প্রশ্ন ব্যাংকের সাথে মেশাবে কি না
   int _aiShare = 50;   // পেপারে AI প্রশ্নের শতাংশ (25/50/75)
+  final TextEditingController _titleCtrl =
+      TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
+  String _setLetter = 'ক';
+  static const _setLetters = ['ক', 'খ', 'গ', 'ঘ'];
+  static const _subjectCodes = {
+    'general_math': '১০৯',
+    'physics': '১৩৬',
+    'chemistry': '১৩৭',
+    'biology': '১৩৮',
+    'higher_math': '১২৬',
+    'ict': '১৫৪',
+  };
 
   @override
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((p) {
-      if (mounted) setState(() => _apiKey = p.getString('gemini_api_key'));
+      if (!mounted) return;
+      setState(() {
+        _apiKey = p.getString('gemini_api_key');
+        final idx = p.getInt('paper_set_idx') ?? 0;
+        _setLetter = _setLetters[idx % _setLetters.length];
+      });
     });
   }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    super.dispose();
+  }
+
+  /// প্রতিবার পেপার তৈরিতে সেট কোড পরেরটায় সরে যায় (ক→খ→গ→ঘ→ক...)
+  Future<void> _advanceSetCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idx = _setLetters.indexOf(_setLetter);
+    final next = ((idx < 0 ? 0 : idx) + 1) % _setLetters.length;
+    await prefs.setInt('paper_set_idx', next);
+  }
+
+  String get _titleText => _titleCtrl.text.trim().isEmpty
+      ? 'মডেল পরীক্ষা — ২০২৭'
+      : _titleCtrl.text.trim();
 
   // প্রিন্ট-অযোগ্য MCQ বাদ দেওয়ার ছাঁক (question_paper_screen-এর মতোই)
   static const _saqBad = [
@@ -231,7 +266,21 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
               !usedIds.contains(q.id) &&
               !_saqBad.any((b) => q.questionText.contains(b)))
           .toList();
-      final saqs = saqPool.take(_saqN).toList();
+      // জটিল SQ আগে: কঠিন নতুন সেট (_x) + গাণিতিক টোকেন + দীর্ঘ প্রশ্ন
+      int saqScore(Question q) {
+        var s = 0;
+        if (q.id.contains('_x')) s += 2;
+        if (RegExp(r'[০-৯0-9√°²=^x]').hasMatch(q.questionText)) s += 1;
+        if (q.questionText.length > 42) s += 1;
+        return s;
+      }
+
+      final hardSaq = saqPool.where((q) => saqScore(q) >= 3).toList()..shuffle();
+      final easySaq = saqPool.where((q) => saqScore(q) < 3).toList()..shuffle();
+      final saqs = [...hardSaq, ...easySaq].take(_saqN).toList();
+
+      // সেট কোড পরের পেপারের জন্য এক ঘর সরে যাবে
+      _advanceSetCode();
 
       final wMin = cqs.length * 12 + saqs.length * 3;
       final mMin = mcqs.length;
@@ -240,8 +289,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       await PaperPdf.printPaper(
         title: '${_subject!.name} (${_subject!.bengaliName})',
         modeLine: _chapters.isEmpty
-            ? 'কাস্টম টেস্ট পেপার'
-            : 'কাস্টম টেস্ট — ${_chapters.length <= 2 ? _chapters.join(", ") : "${_bn(_chapters.length)}টি অধ্যায়"}',
+            ? 'ফুল সিলেবাস'
+            : (_chapters.length <= 2
+                ? _chapters.join(', ')
+                : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
         mcqs: mcqs,
         cqs: cqs,
         saqs: saqs,
@@ -257,6 +308,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         time: _timeLine(wMin + mMin),
         marks: _bn(cqs.length * 10 + saqs.length * 2 + mcqs.length),
         mathCqThreePart: isMath,
+        headerLine1: _titleText,
+        subjectCode: _subjectCodes[sid],
+        setCode: _setLetter,
       );
     } catch (e) {
       if (mounted) {
@@ -457,6 +511,20 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                       ],
                     ),
                   ],
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _titleCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'প্রশ্নপত্রের শিরোনাম',
+                      hintText: 'মডেল পরীক্ষা — ২০২৭',
+                    ),
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'বিষয় কোডঃ ${_subjectCodes[_subject?.id] ?? '—'}    •    সেট কোডঃ $_setLetter (প্রতিবার নিজে বদলাবে)',
+                    style: TextStyle(fontSize: 11.5, color: Colors.grey.shade700),
+                  ),
                 ],
               ),
             ),
