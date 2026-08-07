@@ -169,6 +169,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  // ── ফোন নম্বর বদলানো ─────────────────────────────────────────────
+  String _digitsOnly(String s) {
+    var p = s.replaceAll(RegExp(r'[^\d]'), '');
+    if (p.startsWith('880')) p = p.substring(3);
+    if (p.startsWith('0')) p = p.substring(1);
+    return p;
+  }
+
+  Future<void> _editPhone() async {
+    final phoneCtrl = TextEditingController(
+        text: _digitsOnly(_profile?['phone']?.toString() ?? ''));
+    String? err;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setD) => AlertDialog(
+          title: const Text('ফোন নম্বর বদলাও'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: phoneCtrl,
+                keyboardType: TextInputType.phone,
+                maxLength: 13,
+                decoration: const InputDecoration(
+                  labelText: 'নতুন মোবাইল নম্বর',
+                  hintText: '1XXXXXXXXX',
+                  counterText: '',
+                  prefix: Text('+880  ',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              if (err != null) ...[
+                const SizedBox(height: 8),
+                Text(err!,
+                    style:
+                        TextStyle(fontSize: 12.5, color: Colors.red.shade600)),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('বাতিল'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (!RegExp(r'^1\d{9}$')
+                    .hasMatch(_digitsOnly(phoneCtrl.text))) {
+                  setD(() => err = 'সঠিক মোবাইল নম্বর দাও (যেমন: 1XXXXXXXXX)');
+                  return;
+                }
+                Navigator.pop(context, true);
+              },
+              child: const Text('সংরক্ষণ'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (saved == true && mounted) {
+      setState(() {
+        _busy = true;
+        _err = null;
+        _msg = null;
+      });
+      try {
+        await AuthService.updateProfile(
+            phone: '+880${_digitsOnly(phoneCtrl.text)}');
+        await _refresh();
+        if (mounted) setState(() => _msg = '✅ ফোন নম্বর সংরক্ষণ হয়েছে!');
+      } catch (_) {
+        if (mounted) {
+          setState(
+              () => _err = 'সংরক্ষণ হয়নি — ইন্টারনেট দেখে আবার চেষ্টা করো।');
+        }
+      } finally {
+        if (mounted) setState(() => _busy = false);
+      }
+    }
+    phoneCtrl.dispose();
+  }
+
   // ── UI ───────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -435,6 +519,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _busy ? null : _editPhone,
+              icon: const Icon(Icons.phone_iphone),
+              label: const Text('ফোন নম্বর বদলাও'),
+            ),
           ),
         ],
       ),
