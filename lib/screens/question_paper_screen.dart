@@ -57,6 +57,8 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   bool _showAnswerKey = false;
   String? _apiKey;
   String? _note;
+  bool _mixAi = false; // 🤖 AI প্রশ্ন ব্যাংকের সাথে মেশাবে কি না
+  int _aiShare = 50;   // পেপারে AI প্রশ্নের শতাংশ (25/50/75)
 
   List<Question> _mcqs = [];
   List<CreativeQuestion> _cqs = [];
@@ -256,10 +258,52 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       cqs = List<CreativeQuestion>.from(bankCqs)..shuffle();
     }
 
-    // ভান্ডারে কম থাকলে AI দিয়ে পূরণ (Gemini key থাকলে)
+    // ── AI ব্যবহার ──
     final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-    if ((mcqs.length < mcqNeed || cqs.length < cqNeed) && hasKey) {
-      final chapterLabel = _mode == 'chapter' ? (_chapter ?? 'সাধারণ') : 'সব অধ্যায়';
+    final chapterLabel = _mode == 'chapter' ? (_chapter ?? 'সাধারণ') : 'সব অধ্যায় মিলিয়ে';
+
+    if (_mixAi && hasKey) {
+      // 🤖 মিক্স মোড: পেপারের নির্দিষ্ট অংশ AI-এর নতুন প্রশ্ন, বাকিটা ব্যাংকের
+      try {
+        final aiMcqNeed = (mcqNeed * _aiShare / 100).round();
+        if (aiMcqNeed > 0) {
+          final gen = await AiQuestionGenerator.generateMcqs(
+            apiKey: _apiKey!,
+            subjectName: _subject!.name,
+            chapter: chapterLabel,
+            sourceText: '',
+            count: aiMcqNeed,
+          );
+          var rest = mcqNeed - gen.length;
+          if (rest < 0) rest = 0;
+          mcqs = [...mcqs.take(rest), ...gen]..shuffle();
+        }
+      } catch (e) {
+        _note = 'AI MCQ মেশা যায়নি: ${e.toString().replaceFirst('Exception: ', '')} — এবার শুধু ব্যাংকের প্রশ্ন।';
+      }
+      try {
+        final aiCqNeed = (cqNeed * _aiShare / 100).round();
+        if (aiCqNeed > 0) {
+          final gen = await AiQuestionGenerator.generateCqs(
+            apiKey: _apiKey!,
+            subjectName: _subject!.name,
+            chapter: chapterLabel,
+            sourceText: '',
+            count: aiCqNeed,
+          );
+          var rest = cqNeed - gen.length;
+          if (rest < 0) rest = 0;
+          cqs = [...cqs.take(rest), ...gen]..shuffle();
+        }
+      } catch (e) {
+        _note = 'AI সৃজনশীল মেশা যায়নি: ${e.toString().replaceFirst('Exception: ', '')} — এবার শুধু ব্যাংকের প্রশ্ন।';
+      }
+    } else if (_mixAi && !hasKey) {
+      _note = 'AI প্রশ্ন মেশাতে প্রথমে 🔑 Gemini API key সংরক্ষণ করো — এবার ব্যাংকের প্রশ্ন দিয়েই পেপার।';
+    }
+
+    // মিক্স বন্ধ থাকলে আগের নিয়মে: ভান্ডারে কম থাকলে AI দিয়ে পূরণ
+    if (!_mixAi && (mcqs.length < mcqNeed || cqs.length < cqNeed) && hasKey) {
       try {
         if (mcqs.length < mcqNeed) {
           final gen = await AiQuestionGenerator.generateMcqs(
@@ -595,6 +639,8 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
               hint: const Text('অধ্যায় বাছাই করো'),
             ),
           ],
+          const SizedBox(height: 10),
+          _aiMixSection(),
           const SizedBox(height: 8),
           Text(
             _mode == 'chapter'
@@ -611,6 +657,120 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ],
       ),
     );
+  }
+
+  // ── 🤖 AI মিক্স নিয়ন্ত্রণ ──────────────────────────────────────
+  Widget _aiMixSection() {
+    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
+    if (!hasKey) {
+      return SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: _showApiKeyDialog,
+          icon: const Icon(Icons.vpn_key_outlined, size: 18),
+          label: const Text('🔑 Gemini API key বসাও (AI প্রশ্ন মেশাতে)'),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+          value: _mixAi,
+          onChanged: (v) => setState(() {
+            _mixAi = v;
+            _generated = false;
+          }),
+          title: const Text('🤖 AI প্রশ্ন ব্যাংকের সাথে মেশান',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          subtitle: Text(
+            'প্রতিটি পেপারে AI-এর নতুন প্রশ্ন + ব্যাংকের প্রশ্ন মিশে আসবে',
+            style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600),
+          ),
+        ),
+        if (_mixAi) ...[
+          const Text('AI কত শতাংশ হবে:',
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          SegmentedButton<int>(
+            segments: const [
+              ButtonSegment(value: 25, label: Text('২৫%')),
+              ButtonSegment(value: 50, label: Text('৫০%')),
+              ButtonSegment(value: 75, label: Text('৭৫%')),
+            ],
+            selected: {_aiShare},
+            onSelectionChanged: (s) => setState(() {
+              _aiShare = s.first;
+              _generated = false;
+            }),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'AI মেশা থাকলে internet লাগবে এবং পেপার বানাতে ২০–৪০ সেকেন্ড লাগতে পারে। প্রিন্টের আগে প্রশ্নগুলো পড়ে নেওয়া ভালো।',
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade600, height: 1.4),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _showApiKeyDialog() async {
+    final controller = TextEditingController(text: _apiKey ?? '');
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('🔑 Gemini API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '১) ফোনের ব্রাউজারে যাও: aistudio.google.com\n'
+              '২) Google একাউন্ট দিয়ে লগইন করো\n'
+              '৩) "Get API key" → "Create API key" চাপো\n'
+              '৪) ফ্রি key-টি কপি করে নিচে বসাও — একবারই লাগবে।',
+              style: TextStyle(fontSize: 13, height: 1.6),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                hintText: 'AIza... দিয়ে শুরু হওয়া key এখানে বসাও',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('বাতিল'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('সংরক্ষণ'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && mounted) {
+      final prefs = await SharedPreferences.getInstance();
+      final key = controller.text.trim();
+      await prefs.setString('gemini_api_key', key);
+      if (!mounted) return;
+      setState(() {
+        _apiKey = key.isEmpty ? null : key;
+        _mixAi = key.isNotEmpty;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(key.isEmpty
+                ? 'Key মুছে ফেলা হয়েছে।'
+                : '✅ Key সংরক্ষিত! AI প্রশ্ন মেশানো চালু হলো — এবার পেপার তৈরি করো।')),
+      );
+    }
   }
 
   Widget _noteCard() {
