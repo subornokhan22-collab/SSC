@@ -116,7 +116,28 @@ class PaperPdf {
       '⟂': '⊥', // U+27C2 কোনো ফন্টেই নেই — সমার্থক ⊥ (লম্ব) দিয়ে
     };
     single.forEach((k, v) => s = s.replaceAll(k, v));
+    s = _caretToSup(s);
     return preserveSpaces ? s : s.replaceAll(RegExp(' +'), ' ');
+  }
+
+  /// টাইপ করা/AI লেখা "x^2", "y^-2", "10^(n+1)", "x∧2" → আসল সুপারস্ক্রিপ্ট
+  static String _caretToSup(String s) {
+    const sup = {
+      '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+      '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+      '০': '⁰', '১': '¹', '২': '²', '৩': '³', '৪': '⁴',
+      '৫': '⁵', '৬': '⁶', '৭': '⁷', '৮': '⁸', '৯': '⁹',
+      '-': '⁻', '+': '⁺', '−': '⁻', 'n': 'ⁿ', 'm': 'ᵐ',
+    };
+    String mapRun(String run) =>
+        run.split('').map((c) => sup[c] ?? '').join();
+    // ^(n+1) ধরনের বন্ধনী-ঘাত আগে
+    s = s.replaceAllMapped(
+        RegExp(r'[\^∧]\(([^()]{1,15})\)'), (m) => mapRun(m.group(1)!));
+    // তারপর ^2, ^-2, ^১০ ধরনের সাধারণ ঘাত
+    s = s.replaceAllMapped(
+        RegExp(r'[\^∧]\s*(-?[0-9০-৯nm]{1,6})'), (m) => mapRun(m.group(1)!));
+    return s;
   }
 
   // ═══════════ স্ট্যাকড ভগ্নাংশ বিভাজক ═══════════
@@ -178,11 +199,39 @@ class PaperPdf {
         i++;
         continue;
       }
-      final ls = i - 1;
-      if (ls < 0 || s[ls] == ' ' || i + 1 >= s.length || s[i + 1] == ' ') {
+      final rawLs = i - 1;
+      if (rawLs < 0 || i + 1 >= s.length) {
         buf.write('/');
         i++;
         continue;
+      }
+      // স্পেস-ঘেরা '/': দুই পাশ প্যারেন্থেসিস-বন্ধ গাণিতিক রাশি হলেই ভগ্নাংশ,
+      // যেমন (2y + 1) / (2y - 1); নাহলে (m / s টাইপ) প্লেইন রাখা হয়
+      var ls = rawLs;
+      var rs = i + 1;
+      var spaced = false;
+      while (ls >= 0 && s[ls] == ' ') {
+        ls--;
+        spaced = true;
+      }
+      while (rs < s.length && s[rs] == ' ') {
+        rs++;
+        spaced = true;
+      }
+      if (ls < 0 || rs >= s.length) {
+        buf.write('/');
+        i++;
+        continue;
+      }
+      if (spaced && !(s[ls] == ')' && s[rs] == '(')) {
+        buf.write('/');
+        i++;
+        continue;
+      }
+      if (spaced) {
+        final t = buf.toString();
+        buf.clear();
+        buf.write(t.trimRight());
       }
       // ── বাম পাশ (লব) ──
       String num;
@@ -225,7 +274,7 @@ class PaperPdf {
       // ── ডান পাশ (হর) ──
       String den;
       int rightEnd;
-      final r = i + 1;
+      final r = rs;
       if (s[r] == '(') {
         var depth = 0;
         var j = r;
@@ -298,6 +347,8 @@ class PaperPdf {
     String? mcqTime,
     String? mcqMarks,
     bool mathCqThreePart = false, // গণিত: সৃজনশীল ক(২)+খ(৪)+গ(৪)
+    String? subjectCode, // বিষয় কোড বাক্সে আগে থেকে লেখা (যেমন '১০৯')
+    String? setCode, // সেট কোড বাক্সে (যেমন 'ক')
   }) async {
     await _loadFonts();
 
@@ -319,6 +370,8 @@ class PaperPdf {
       mcqTime: mcqTime,
       mcqMarks: mcqMarks,
       mathCqThreePart: mathCqThreePart,
+      subjectCode: subjectCode,
+      setCode: setCode,
     );
 
     // রাস্টার পেজগুলো PDF এ বসাও
@@ -363,6 +416,8 @@ class PaperPdf {
     String? mcqTime,
     String? mcqMarks,
     bool mathCqThreePart = false,
+    String? subjectCode,
+    String? setCode,
   }) async {
     final pages = <Uint8List>[];
     const double sw = 1654.0;
@@ -855,16 +910,32 @@ class PaperPdf {
       final t1 = makePainter('প্রাপ্ত নম্বরঃ', 9);
       t1.layout(maxWidth: leftW - 6 * _k);
       t1.paint(canvas, Offset(_margin + 4 * _k, y + (h - t1.height) / 2));
-      // ডানে: বিষয় কোড / সেট কোড বাক্স
+      // ডানে: বিষয় কোড / সেট কোড বাক্স (কোড থাকলে আগে থেকেই লেখা)
       final rightW = 62 * _k;
       final rx = sw - _margin - rightW;
       strokeRect(Rect.fromLTWH(rx, y, rightW, h), thick: 1.0);
       final t2 = makePainter('বিষয় কোডঃ', 9);
-      t2.layout(maxWidth: rightW - 6 * _k);
+      t2.layout(maxWidth: rightW - 10 * _k);
       t2.paint(canvas, Offset(rx + 4 * _k, y + 4 * _k));
+      if (subjectCode != null && subjectCode!.isNotEmpty) {
+        final c1 = makePainter(_safe(subjectCode!), 9.5, isBold: true);
+        c1.layout();
+        c1.paint(
+            canvas,
+            Offset(rx + 6 * _k + t2.width,
+                y + 4 * _k + (t2.height - c1.height) / 2));
+      }
       final t3 = makePainter('সেট কোডঃ', 9);
-      t3.layout(maxWidth: rightW - 6 * _k);
+      t3.layout(maxWidth: rightW - 10 * _k);
       t3.paint(canvas, Offset(rx + 4 * _k, y + h - t3.height - 4 * _k));
+      if (setCode != null && setCode!.isNotEmpty) {
+        final c2 = makePainter(_safe(setCode!), 10.5, isBold: true);
+        c2.layout();
+        c2.paint(
+            canvas,
+            Offset(rx + 6 * _k + t3.width,
+                y + h - t3.height - 4 * _k + (t3.height - c2.height) / 2));
+      }
       y += h;
     }
 
