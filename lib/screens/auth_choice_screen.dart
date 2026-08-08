@@ -83,7 +83,7 @@ class _AuthChoiceScreenState extends State<AuthChoiceScreen>
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'SSC 2027 — প্রশ্নব্যাংক, মডেল টেস্ট ও AI টিউটর',
+                            'SSC 2027 — Question Bank, Model Tests & AI Tutor',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 13.5,
@@ -100,7 +100,7 @@ class _AuthChoiceScreenState extends State<AuthChoiceScreen>
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Text(
-                                'লগইন ব্যবস্থা এখনো কনফিগার হয়নি।\nঅফলাইন সুবিধাগুলো ব্যবহার চালিয়ে যেতে নিচের বোতাম চাপো।',
+                                'Login is not configured yet.\nYou can keep using the offline features.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.white, fontSize: 13, height: 1.5),
                               ),
@@ -121,7 +121,7 @@ class _AuthChoiceScreenState extends State<AuthChoiceScreen>
                                   MaterialPageRoute(builder: (_) => const SignInScreen()),
                                 ),
                                 icon: const Icon(Icons.login_rounded),
-                                label: const Text('সাইন ইন'),
+                                label: const Text('Sign In'),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -140,7 +140,7 @@ class _AuthChoiceScreenState extends State<AuthChoiceScreen>
                                   MaterialPageRoute(builder: (_) => const SignUpScreen()),
                                 ),
                                 icon: const Icon(Icons.person_add_alt_1_rounded),
-                                label: const Text('সাইন আপ (নতুন অ্যাকাউন্ট)'),
+                                label: const Text('Sign Up (New Account)'),
                               ),
                             ),
                           ],

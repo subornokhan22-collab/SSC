@@ -44,17 +44,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   String? _validate() {
-    if (_nameCtrl.text.trim().length < 3) return 'পুরো নামটা লেখো (কমপক্ষে ৩ অক্ষর)';
+    if (_nameCtrl.text.trim().length < 3) return 'Please enter your full name (at least 3 characters)';
     // +880 এর পরে 1 দিয়ে শুরু ১০ সংখ্যা (মোট ১১ সংখ্যা মোবাইল দিলেও মেনে নিই)
     var p = _phoneCtrl.text.replaceAll(RegExp(r'[^\d]'), '');
     if (p.startsWith('880')) p = p.substring(3);
     if (p.startsWith('0')) p = p.substring(1);
     if (!RegExp(r'^1\d{9}$').hasMatch(p)) {
-      return 'সঠিক মোবাইল নম্বর দাও (যেমন: 1XXXXXXXXX)';
+      return 'Enter a valid mobile number (e.g. 1XXXXXXXXX)';
     }
     final e = _emailCtrl.text.trim();
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(e)) {
-      return 'সঠিক ইমেইল ঠিকানা লেখো';
+      return 'Enter a valid email address';
     }
     return null;
   }
@@ -70,15 +70,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final s = e.toString();
     if (e is AuthException && e.message.isNotEmpty) return e.message;
     if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
-      return 'একটু বেশিবার চেষ্টা হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করো।';
+      return 'Too many attempts — please try again later.';
     }
     if (s.contains('SocketException') || s.contains('Failed host lookup')) {
-      return 'ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করো।';
+      return 'No internet — please check your connection and try again.';
     }
     if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
-      return 'কোডটি সঠিক নয় বা মেয়াদ শেষ — নতুন কোড নাও।';
+      return 'The code is wrong or expired — request a new one.';
     }
-    return 'সমস্যা হয়েছে, আবার চেষ্টা করো।';
+    return 'Something went wrong — please try again.';
   }
 
   Future<void> _next() async {
@@ -97,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       setState(() {
         _otpSent = true;
-        _msg = '✅ যাচাইকরণ কোড পাঠানো হয়েছে! ইনবক্স (না পেলে স্প্যাম) দেখো।';
+        _msg = '✅ Verification code sent! Check your inbox (or spam).';
       });
     } catch (e) {
       if (mounted) setState(() => _err = _bnError(e));
@@ -131,13 +131,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_otpSent ? 'কোড যাচাই' : 'সাইন আপ')),
+      appBar: AppBar(title: Text(_otpSent ? 'Verify Code' : 'Sign Up')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           if (!_otpSent) ...[
             Text(
-              'তোমার তথ্য দাও — পরের ধাপে ইমেইলে কোড গিয়ে যাচাই হবে।',
+              'Fill in your details — a code will be sent to your email for verification.',
               style: TextStyle(fontSize: 13.5, height: 1.5, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 16),
@@ -145,13 +145,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _nameCtrl,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
-                labelText: 'পুরো নাম',
+                labelText: 'Full Name',
                 prefixIcon: Icon(Icons.badge_outlined),
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 14),
-            const Text('পেশা',
+            const Text('Who are you?',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             SegmentedButton<String>(
@@ -159,11 +159,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ButtonSegment(
                     value: 'student',
                     icon: Icon(Icons.menu_book_outlined),
-                    label: Text('শিক্ষার্থী')),
+                    label: Text('Student')),
                 ButtonSegment(
                     value: 'teacher',
                     icon: Icon(Icons.school_outlined),
-                    label: Text('শিক্ষক')),
+                    label: Text('Teacher')),
               ],
               selected: {_profession},
               onSelectionChanged: (s) => setState(() => _profession = s.first),
@@ -174,7 +174,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.phone,
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d+]'))],
               decoration: const InputDecoration(
-                labelText: 'মোবাইল নম্বর',
+                labelText: 'Mobile Number',
                 hintText: '1XXXXXXXXX',
                 prefix: Text('+880  ',
                     style: TextStyle(fontWeight: FontWeight.bold)),
@@ -187,7 +187,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
-                labelText: 'ইমেইল ঠিকানা',
+                labelText: 'Email Address',
                 hintText: 'tumi@example.com',
                 prefixIcon: Icon(Icons.alternate_email),
                 border: OutlineInputBorder(),
@@ -205,12 +205,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.arrow_forward_rounded),
-                label: Text(_busy ? 'অপেক্ষা করো...' : 'পরবর্তী ধাপ'),
+                label: Text(_busy ? 'Please wait...' : 'Next'),
               ),
             ),
           ] else ...[
             Text(
-              '${_emailCtrl.text.trim()} ঠিকানায় কোড পাঠানো হয়েছে। কোডটি নিচে লেখো:',
+              'A code has been sent to ${_emailCtrl.text.trim()}. Enter it below:',
               style: TextStyle(fontSize: 13.5, height: 1.6, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 14),
@@ -222,7 +222,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: const TextStyle(
                   fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
               decoration: const InputDecoration(
-                labelText: 'ইমেইলে যাওয়া কোড',
+                labelText: 'Code from your email',
                 counterText: '',
                 border: OutlineInputBorder(),
               ),
@@ -239,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.verified_user_outlined),
-                label: Text(_busy ? 'অপেক্ষা করো...' : 'যাচাই করে অ্যাকাউন্ট তৈরি করো'),
+                label: Text(_busy ? 'Please wait...' : 'Verify & Create Account'),
               ),
             ),
             TextButton(
@@ -251,7 +251,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         _msg = null;
                         _codeCtrl.clear();
                       }),
-              child: const Text('তথ্য বদলাতে / নতুন কোড নিতে ফিরে যাও'),
+              child: const Text('Back to edit details / get a new code'),
             ),
           ],
           if (_msg != null) ...[

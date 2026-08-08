@@ -46,7 +46,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (await AuthService.syncProFromServer()) {
         // সিংক হয়ে গেলে Pro পতাকা আবার পড়ো
         final pro2 = await PaperLicense.isPro();
-        if (mounted) setState(() => _devicePro = pro2);
+        if (mounted) {
+          setState(() {
+            _devicePro = pro2;
+            // ✅ Pro নতুন করে চালু হলে স্পষ্ট বার্তা
+            if (pro2 && !pro) _msg = '🎉 You are now using the Pro version!';
+          });
+        }
       }
     }
     if (!mounted) return;
@@ -70,17 +76,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return e is AuthException ? e.message : s;
     }
     if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
-      return 'একটু বেশিবার চেষ্টা হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করো।';
+      return 'Too many attempts — please try again later.';
     }
     if (s.contains('SocketException') ||
         s.contains('Failed host lookup') ||
         s.contains('Network')) {
-      return 'ইন্টারনেট সংযোগ নেই বা দুর্বল — সংযোগ দেখে আবার চেষ্টা করো।';
+      return 'No internet — please check your connection and try again.';
     }
     if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
-      return 'কোডটি সঠিক নয় বা মেয়াদ শেষ — নতুন কোড নাও।';
+      return 'The code is wrong or expired — request a new one.';
     }
-    return 'সমস্যা হয়েছে, আবার চেষ্টা করো।';
+    return 'Something went wrong — please try again.';
   }
 
   Future<void> _sendOtp() async {
@@ -94,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (!mounted) return;
       setState(() {
         _otpSent = true;
-        _msg = '✅ ইমেইল পাঠানো হয়েছে! ইনবক্স (না পেলে স্প্যাম) দেখে ৬-সংখ্যার কোডটি লেখো।';
+        _msg = '✅ Email sent! Check your inbox (or spam) for the 6-digit code.';
       });
     } catch (e) {
       if (mounted) setState(() => _err = _bnError(e));
@@ -137,21 +143,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('আপনি কে?'),
+        title: const Text('Who are you?'),
         content: const Text(
-          'আপনার অ্যাকাউন্টের ধরন বাছাই করো (পরে বদলানো যাবে না):',
+          'Choose your account type (it cannot be changed later):',
           style: TextStyle(fontSize: 13.5, height: 1.5),
         ),
         actions: [
           TextButton.icon(
             onPressed: () => Navigator.pop(context, 'teacher'),
             icon: const Icon(Icons.school_outlined),
-            label: const Text('শিক্ষক'),
+            label: const Text('Teacher'),
           ),
           FilledButton.icon(
             onPressed: () => Navigator.pop(context, 'student'),
             icon: const Icon(Icons.menu_book_outlined),
-            label: const Text('শিক্ষার্থী'),
+            label: const Text('Student'),
           ),
         ],
       ),
@@ -165,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _profile = null;
       _otpSent = false;
       _codeCtrl.clear();
-      _msg = 'লগ আউট হয়েছে।';
+      _msg = 'Signed out.';
     });
   }
 
@@ -185,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setD) => AlertDialog(
-          title: const Text('ফোন নম্বর বদলাও'),
+          title: const Text('Change Phone Number'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -194,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 keyboardType: TextInputType.phone,
                 maxLength: 13,
                 decoration: const InputDecoration(
-                  labelText: 'নতুন মোবাইল নম্বর',
+                  labelText: 'New mobile number',
                   hintText: '1XXXXXXXXX',
                   counterText: '',
                   prefix: Text('+880  ',
@@ -213,18 +219,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('বাতিল'),
+              child: const Text('Cancel'),
             ),
             FilledButton(
               onPressed: () {
                 if (!RegExp(r'^1\d{9}$')
                     .hasMatch(_digitsOnly(phoneCtrl.text))) {
-                  setD(() => err = 'সঠিক মোবাইল নম্বর দাও (যেমন: 1XXXXXXXXX)');
+                  setD(() => err = 'Enter a valid number (e.g. 1XXXXXXXXX)');
                   return;
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('সংরক্ষণ'),
+              child: const Text('Save'),
             ),
           ],
         ),
@@ -240,11 +246,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await AuthService.updateProfile(
             phone: '+880${_digitsOnly(phoneCtrl.text)}');
         await _refresh();
-        if (mounted) setState(() => _msg = '✅ ফোন নম্বর সংরক্ষণ হয়েছে!');
+        if (mounted) setState(() => _msg = '✅ Phone number saved!');
       } catch (_) {
         if (mounted) {
           setState(
-              () => _err = 'সংরক্ষণ হয়নি — ইন্টারনেট দেখে আবার চেষ্টা করো।');
+              () => _err = 'Could not save — check your internet and try again.');
         }
       } finally {
         if (mounted) setState(() => _busy = false);
@@ -257,14 +263,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('প্রোফাইল ও লগইন')),
+      appBar: AppBar(title: const Text('Profile & Login')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           if (!AuthService.ready)
             _infoCard(
               Icons.settings_suggest_outlined,
-              'লগইন ব্যবস্থা এখনো কনফিগার হয়নি।\nঅ্যাপের বাকি সব সুবিধা আগের মতোই চলবে।',
+              'Login is not configured yet.\nAll other features keep working as usual.',
             )
           else if (AuthService.isLoggedIn)
             _accountCard()
@@ -321,14 +327,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _otpSent ? 'কোডটি লেখো' : 'ইমেইল দিয়ে লগইন',
+            _otpSent ? 'Enter the Code' : 'Sign in with Email',
             style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
           Text(
             _otpSent
-                ? 'তোমার ইমেইলে ৬-সংখ্যার একটি কোড পাঠানো হয়েছে (মেয়াদ ~১ ঘণ্টা)।'
-                : 'পাসওয়ার্ড লাগবে না — ইমেইলে যাওয়া OTP কোড দিয়েই লগইন।',
+                ? 'A 6-digit code has been sent to your email (valid for ~1 hour).'
+                : 'No password needed — sign in with the OTP code from your email.',
             style: TextStyle(fontSize: 12.5, height: 1.5, color: Colors.grey.shade700),
           ),
           const SizedBox(height: 14),
@@ -337,8 +343,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             enabled: !_otpSent,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-              labelText: 'ইমেইল',
-              hintText: 'tumi@example.com',
+              labelText: 'Email',
+              hintText: 'you@example.com',
               prefixIcon: Icon(Icons.alternate_email),
               border: OutlineInputBorder(),
             ),
@@ -352,7 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
               decoration: const InputDecoration(
-                labelText: '৬-সংখ্যার কোড',
+                labelText: '6-digit code',
                 counterText: '',
                 border: OutlineInputBorder(),
               ),
@@ -367,7 +373,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ? const SizedBox(
                       width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : Icon(_otpSent ? Icons.verified_user_outlined : Icons.mark_email_read_outlined),
-              label: Text(_busy ? 'অপেক্ষা করো...' : (_otpSent ? 'যাচাই করো' : 'OTP পাঠাও')),
+              label: Text(_busy ? 'Please wait...' : (_otpSent ? 'Verify' : 'Send OTP')),
             ),
           ),
           if (_otpSent)
@@ -381,7 +387,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _msg = null;
                           _codeCtrl.clear();
                         }),
-                child: const Text('ইমেইল বদলাতে / নতুন কোড নিতে ফিরে যাও'),
+                child: const Text('Back to change email / get a new code'),
               ),
             ),
         ],
@@ -415,12 +421,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('সাবস্ক্রিপশন কিনো',
+                  Text('Buy Subscription',
                       style: TextStyle(
                           color: Color(0xFFFFE08A),
                           fontSize: 15.5,
                           fontWeight: FontWeight.w800)),
-                  Text('Pro সুবিধা সম্পূর্ণ আনলক করো',
+                  Text('Unlock all Pro features',
                       style: TextStyle(color: Colors.white70, fontSize: 12)),
                 ],
               ),
@@ -436,7 +442,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
     final role = _profile?['role']?.toString() ?? '—';
-    final roleBn = role == 'teacher' ? 'শিক্ষক' : (role == 'student' ? 'শিক্ষার্থী' : '—');
+    final roleBn = role == 'teacher' ? 'Teacher' : (role == 'student' ? 'Student' : '—');
     final serverPro = _profile?['is_pro'] == true;
     return _card(
       child: Column(
@@ -461,7 +467,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 2),
                     Text(
-                      'ভূমিকা: $roleBn${phone.isNotEmpty ? '  •  $phone' : ''}',
+                      'Role: $roleBn${phone.isNotEmpty ? '  •  $phone' : ''}',
                       style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700),
                     ),
                   ],
@@ -475,18 +481,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             runSpacing: 8,
             children: [
               _chip(
-                serverPro ? 'সার্ভারে Pro ✓' : 'সার্ভারে Pro নেই',
+                serverPro ? 'Pro on server ✓' : 'No Pro on server',
                 serverPro ? Colors.green.shade700 : Colors.grey.shade600,
               ),
               _chip(
-                _devicePro ? 'এই ফোনে Pro চালু ✓' : 'এই ফোনে DEMO',
+                _devicePro ? 'Pro active on this phone ✓' : 'DEMO on this phone',
                 _devicePro ? AppTheme.accent : Colors.grey.shade600,
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            'টিউটর অ্যাডমিন তোমার ইমেইলে Pro চালু করলে এখানে "সিংক" চাপলেই এই ফোনে Pro চালু হবে।',
+            'When the tutor admin enables Pro on your email, tap \"Sync Pro\" to activate it on this phone.',
             style: TextStyle(fontSize: 12, height: 1.5, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 12),
@@ -503,11 +509,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           if (!mounted) return;
                           setState(() {
                             _busy = false;
-                            _msg = ok ? '🎉 Pro সিংক হয়ে গেছে!' : 'সার্ভারে এখনো Pro চালু হয়নি।';
+                            _msg = ok ? '🎉 You are now using the Pro version!' : 'Pro is not enabled on the server yet.';
                           });
                         },
                   icon: const Icon(Icons.sync),
-                  label: const Text('Pro সিংক'),
+                  label: const Text('Sync Pro'),
                 ),
               ),
               const SizedBox(width: 10),
@@ -515,7 +521,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: FilledButton.tonalIcon(
                   onPressed: _busy ? null : _logout,
                   icon: const Icon(Icons.logout),
-                  label: const Text('লগ আউট'),
+                  label: const Text('Sign Out'),
                 ),
               ),
             ],
@@ -526,7 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: OutlinedButton.icon(
               onPressed: _busy ? null : _editPhone,
               icon: const Icon(Icons.phone_iphone),
-              label: const Text('ফোন নম্বর বদলাও'),
+              label: const Text('Change Phone Number'),
             ),
           ),
         ],

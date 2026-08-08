@@ -147,20 +147,20 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   String _timeLine(int minutes) {
     if (minutes <= 0) return '—';
     final h = minutes ~/ 60, m = minutes % 60;
-    if (h == 0) return '${_bn(m)} মিনিট';
-    if (m == 0) return '${_bn(h)} ঘণ্টা';
-    return '${_bn(h)} ঘণ্টা ${_bn(m)} মিনিট';
+    if (h == 0) return '$m min';
+    if (m == 0) return '$h hr';
+    return '$h hr $m min';
   }
 
   Future<void> _print() async {
     if (_subject == null) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('আগে বিষয় বাছাই করো')));
+          .showSnackBar(const SnackBar(content: Text('Choose a subject first')));
       return;
     }
     if (_mcqN == 0 && _saqN == 0 && _cqN == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('কমপক্ষে এক ধরনের প্রশ্ন রাখো')));
+          const SnackBar(content: Text('Keep at least one question type')));
       return;
     }
     final pro = await PaperLicense.isPro();
@@ -169,13 +169,13 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Pro প্রয়োজন'),
+          title: const Text('Pro Required'),
           content: const Text(
-              'কাস্টম পেপার প্রিন্ট Pro সাবস্ক্রিপশনের সুবিধা — আগে Pro আনলক করো।'),
+              'Custom paper printing is a Pro feature — unlock Pro first.'),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('বাতিল')),
+                child: const Text('Cancel')),
             FilledButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -184,7 +184,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     MaterialPageRoute(
                         builder: (_) => const SubscriptionScreen()));
               },
-              child: const Text('সাবস্ক্রিপশন'),
+              child: const Text('Subscription'),
             ),
           ],
         ),
@@ -227,7 +227,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
-                    'AI MCQ মেশা যায়নি — ব্যাংকের প্রশ্ন দিয়েই হচ্ছে। ($e)')));
+                    'AI MCQs could not be mixed — using bank questions. ($e)')));
           }
         }
         try {
@@ -245,7 +245,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
-                    'AI সৃজনশীল মেশা যায়নি — ব্যাংকের প্রশ্ন দিয়েই হচ্ছে। ($e)')));
+                    'AI creative questions could not be mixed — using bank questions. ($e)')));
           }
         }
       }
@@ -315,7 +315,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('সমস্যা: $e')));
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -335,7 +335,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           ),
           onPressed: _showApiKeyDialog,
           icon: const Icon(Icons.vpn_key_outlined, size: 18),
-          label: const Text('🔑 Gemini API key বসাও (AI প্রশ্ন মেশাতে)'),
+          label: const Text('🔑 Set a Gemini API key (to mix AI questions)'),
         ),
       );
     }
@@ -360,27 +360,27 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             dense: true,
             value: _mixAi,
             onChanged: (v) => setState(() => _mixAi = v),
-            title: const Text('🤖 AI প্রশ্ন ব্যাংকের সাথে মেশান',
+            title: const Text('🤖 Mix AI questions with the bank',
                 style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-            subtitle: Text('নতুন AI প্রশ্ন + ব্যাংকের প্রশ্ন মিশে পেপার হবে',
+            subtitle: Text('Fresh AI questions blended with the bank',
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
           ),
           if (_mixAi) ...[
-            const Text('AI কত শতাংশ:',
+            const Text('How much AI content:',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             SegmentedButton<int>(
               segments: const [
-                ButtonSegment(value: 25, label: Text('২৫%')),
-                ButtonSegment(value: 50, label: Text('৫০%')),
-                ButtonSegment(value: 75, label: Text('৭৫%')),
+                ButtonSegment(value: 25, label: Text('25%')),
+                ButtonSegment(value: 50, label: Text('50%')),
+                ButtonSegment(value: 75, label: Text('75%')),
               ],
               selected: {_aiShare},
               onSelectionChanged: (s) => setState(() => _aiShare = s.first),
             ),
             const SizedBox(height: 6),
             Text(
-              'AI মেশা থাকলে internet লাগবে ও প্রিন্টের আগে ২০–৪০ সেকেন্ড সময় লাগতে পারে। প্রিন্টের আগে প্রশ্নগুলো পড়ে নিন।',
+              'With AI mixing, internet is required — generation may take 20–40 seconds. Review the questions before printing.',
               style: TextStyle(
                   fontSize: 10.5, color: Colors.grey.shade600, height: 1.4),
             ),
@@ -401,17 +401,17 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '১) ফোনের ব্রাউজারে যাও: aistudio.google.com\n'
-              '২) Google একাউন্ট দিয়ে লগইন করো\n'
-              '৩) "Get API key" → "Create API key" চাপো\n'
-              '৪) ফ্রি key-টি কপি করে নিচে বসাও — একবারই লাগবে।',
+              '1) Open your phone browser: aistudio.google.com\n'
+              '2) Sign in with your Google account\n'
+              '3) Tap \"Get API key\" → \"Create API key\"\n'
+              '4) Copy the free key and paste it below — needed only once.',
               style: TextStyle(fontSize: 13, height: 1.6),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: controller,
               decoration: const InputDecoration(
-                hintText: 'AIza... দিয়ে শুরু হওয়া key এখানে বসাও',
+                hintText: 'Paste the key that starts with AIza...',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -420,11 +420,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('বাতিল'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('সংরক্ষণ'),
+            child: const Text('Save'),
           ),
         ],
       ),
@@ -441,8 +441,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(key.isEmpty
-                ? 'Key মুছে ফেলা হয়েছে।'
-                : '✅ Key সংরক্ষিত! AI প্রশ্ন মেশানো চালু হলো।')),
+                ? 'Key removed.'
+                : '✅ Key saved! AI question mixing is on.')),
       );
     }
   }
@@ -453,7 +453,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final total = _cqN * 10 + _saqN * 2 + _mcqN;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('কাস্টমাইজড টেস্ট পেপার'),
+        title: const Text('Customised Test Paper'),
         backgroundColor: const Color(0xFF17130A),
         foregroundColor: const Color(0xFFFFE08A),
       ),
@@ -479,7 +479,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                 children: [
                   DropdownButtonFormField<SubjectInfo>(
                     value: _subject,
-                    decoration: const InputDecoration(labelText: 'বিষয়'),
+                    decoration: const InputDecoration(labelText: 'Subject'),
                     items: allSubjects
                         .map((s) => DropdownMenuItem(
                             value: s, child: Text('${s.icon}  ${s.name}')))
@@ -488,11 +488,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                       _subject = s;
                       _chapters.clear();
                     }),
-                    hint: const Text('বিষয় বাছাই করো'),
+                    hint: const Text('Choose a subject'),
                   ),
                   if (chapters.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    Text('অধ্যায় (কিছু না বাছলে সব অধ্যায় থেকে আসবে)',
+                    Text('Chapters (leave empty to use all)',
                         style: TextStyle(
                             fontSize: 12.5, color: Colors.grey.shade700)),
                     const SizedBox(height: 6),
@@ -515,25 +515,25 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                   TextField(
                     controller: _titleCtrl,
                     decoration: const InputDecoration(
-                      labelText: 'প্রশ্নপত্রের শিরোনাম',
+                      labelText: 'Paper Title',
                       hintText: 'মডেল পরীক্ষা — ২০২৭',
                     ),
                     onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'বিষয় কোডঃ ${_subjectCodes[_subject?.id] ?? '—'}    •    সেট কোডঃ $_setLetter (প্রতিবার নিজে বদলাবে)',
+                    'Subject Code: ${_subjectCodes[_subject?.id] ?? '—'}   •   Set Code: $_setLetter (changes each time)',
                     style: TextStyle(fontSize: 11.5, color: Colors.grey.shade700),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 14),
-            _stepper('বহুনির্বাচনি (MCQ) সংখ্যা', _mcqN, (v) => setState(() => _mcqN = v)),
+            _stepper('Number of MCQs', _mcqN, (v) => setState(() => _mcqN = v)),
             const SizedBox(height: 10),
-            _stepper('সংক্ষিপ্ত-উত্তর সংখ্যা', _saqN, (v) => setState(() => _saqN = v)),
+            _stepper('Number of short-answer questions', _saqN, (v) => setState(() => _saqN = v)),
             const SizedBox(height: 10),
-            _stepper('সৃজনশীল (CQ) সংখ্যা', _cqN, (v) => setState(() => _cqN = v)),
+            _stepper('Number of creative questions (CQ)', _cqN, (v) => setState(() => _cqN = v)),
             const SizedBox(height: 10),
             _aiMixCard(),
             const SizedBox(height: 14),
@@ -550,7 +550,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'পূর্ণমান: ${_bn(total)}  •  সময়: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} (MCQ)',
+                      'Marks: $total  •  Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} (MCQ)',
                       style: const TextStyle(
                           color: Color(0xFFFFE08A), fontSize: 13, height: 1.5),
                     ),
@@ -574,12 +574,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.print_rounded),
-                label: Text(_busy ? 'পেপার বানানো হচ্ছে...' : 'পেপার বানাও ও প্রিন্ট'),
+                label: Text(_busy ? 'Building paper...' : 'Build & Print Paper'),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'মান নিজে ঠিক করতে হবে না — সৃজনশীল ১০, সংক্ষিপ্ত ২, MCQ ১ ধরেই সময় ও পূর্ণমান অ্যাপই গুনে দেয়।',
+              'No need to set marks — Creative = 10, Short-answer = 2, MCQ = 1; time and marks are calculated automatically.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600, height: 1.5),
             ),

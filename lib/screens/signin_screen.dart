@@ -33,15 +33,15 @@ class _SignInScreenState extends State<SignInScreen> {
     final s = e.toString();
     if (e is AuthException) return e.message;
     if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
-      return 'একটু বেশিবার চেষ্টা হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করো।';
+      return 'Too many attempts — please try again later.';
     }
     if (s.contains('SocketException') || s.contains('Failed host lookup')) {
-      return 'ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করো।';
+      return 'No internet — please check your connection and try again.';
     }
     if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
-      return 'কোডটি সঠিক নয় বা মেয়াদ শেষ — নতুন কোড নাও।';
+      return 'The code is wrong or expired — request a new one.';
     }
-    return 'সমস্যা হয়েছে, আবার চেষ্টা করো।';
+    return 'Something went wrong — please try again.';
   }
 
   Future<void> _sendOtp() async {
@@ -55,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (!mounted) return;
       setState(() {
         _otpSent = true;
-        _msg = '✅ ইমেইল পাঠানো হয়েছে! ইনবক্স (না পেলে স্প্যাম) দেখে কোডটি লেখো।';
+        _msg = '✅ Code sent! Check your inbox (or spam) and enter the code.';
       });
     } catch (e) {
       if (mounted) setState(() => _err = _bnError(e));
@@ -76,7 +76,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (p == null) {
         // পুরনো অ্যাকাউন্টে প্রোফাইল নেই → সাইন-আপ ফর্মে নিয়ে যাও
         setState(() {
-          _err = 'এই ইমেইলে প্রোফাইল পাওয়া যায়নি — নতুন করে সাইন আপ করো।';
+          _err = 'No profile found for this email — please sign up instead.';
         });
         await Future.delayed(const Duration(milliseconds: 800));
         if (!mounted) return;
@@ -101,12 +101,12 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('সাইন ইন')),
+      appBar: AppBar(title: const Text('Sign In')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'আগে যে ইমেইল দিয়ে অ্যাকাউন্ট খুলেছো সেটা লেখো — কোড পাঠিয়ে দেব।',
+            'Enter the email you used for your account — we will send you a code.',
             style: TextStyle(fontSize: 13.5, height: 1.5, color: Colors.grey.shade700),
           ),
           const SizedBox(height: 16),
@@ -115,7 +115,7 @@ class _SignInScreenState extends State<SignInScreen> {
             enabled: !_otpSent,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-              labelText: 'ইমেইল',
+              labelText: 'Email',
               hintText: 'tumi@example.com',
               prefixIcon: Icon(Icons.alternate_email),
               border: OutlineInputBorder(),
@@ -131,7 +131,7 @@ class _SignInScreenState extends State<SignInScreen> {
               style: const TextStyle(
                   fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
               decoration: const InputDecoration(
-                labelText: 'ইমেইলে যাওয়া কোড',
+                labelText: 'Code from your email',
                 counterText: '',
                 border: OutlineInputBorder(),
               ),
@@ -152,8 +152,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       ? Icons.verified_user_outlined
                       : Icons.mark_email_read_outlined),
               label: Text(_busy
-                  ? 'অপেক্ষা করো...'
-                  : (_otpSent ? 'যাচাই করে প্রবেশ' : 'OTP পাঠাও')),
+                  ? 'Please wait...'
+                  : (_otpSent ? 'Verify & Sign In' : 'Send OTP')),
             ),
           ),
           if (_otpSent)
@@ -166,7 +166,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         _msg = null;
                         _codeCtrl.clear();
                       }),
-              child: const Text('ইমেইল বদলাতে / নতুন কোড নিতে ফিরে যাও'),
+              child: const Text('Back to change email / get a new code'),
             ),
           if (_msg != null) ...[
             const SizedBox(height: 10),

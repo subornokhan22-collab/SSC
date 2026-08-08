@@ -7,12 +7,12 @@ class SubscriptionScreen extends StatelessWidget {
 
   // ⚠️ এখানে নিজের তথ্য বসাও
   static const String hotline = '01XXXXXXXXX'; // তোমার WhatsApp/মোবাইল
-  static const String priceLine = 'মাসিক ১০০ টাকা / বার্ষিক ১০০০ টাকা';
+  static const String priceLine = 'BDT 100 per month / BDT 1,000 per year';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('সাবস্ক্রিপশন কিনো')),
+      appBar: AppBar(title: const Text('Buy Subscription')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -42,7 +42,7 @@ class SubscriptionScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '• সম্পূর্ণ প্রশ্নপত্র প্রিন্ট (PDF)\n• কাস্টম টেস্ট পেপার\n• কোনো ওয়াটারমার্ক নেই\n• নতুন ফিচার সবার আগে',
+                  '• Full question-paper printing (PDF)\n• Custom test papers\n• No watermark\n• New features first',
                   style: TextStyle(color: Colors.white, fontSize: 14, height: 1.8),
                 ),
               ],
@@ -64,18 +64,18 @@ class SubscriptionScreen extends StatelessWidget {
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('মূল্য',
+                Text('Price',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 6),
                 Text(priceLine, style: TextStyle(fontSize: 14.5, height: 1.5)),
                 SizedBox(height: 14),
                 Divider(),
                 SizedBox(height: 10),
-                Text('কীভাবে কিনবে?',
+                Text('How to buy?',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 6),
                 Text(
-                  'নিচের নম্বরে WhatsApp এ নক করো — পেমেন্ট (bKash) সম্পন্ন হলে তোমার ইমেইলে Pro চালু করে দেওয়া হবে। তারপর অ্যাপের Profile ট্যাবে "Pro সিংক" চাপলেই হয়ে যাবে!',
+                  'Knock on WhatsApp at the number below — once your bKash payment is done, Pro will be activated on YOUR EMAIL. Then open the Profile tab and tap \"Sync Pro\" — done!',
                   style: TextStyle(fontSize: 13.5, height: 1.6),
                 ),
                 SizedBox(height: 10),

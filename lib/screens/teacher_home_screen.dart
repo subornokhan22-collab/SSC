@@ -94,7 +94,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                                         fontWeight: FontWeight.w900,
                                         letterSpacing: 1)),
                                 Text(
-                                  _name.isEmpty ? 'টিউটর মোড' : 'স্বাগতম, $_name',
+                                  _name.isEmpty ? 'Tutor Mode' : 'Welcome, $_name',
                                   style: TextStyle(
                                       color: Colors.white.withOpacity(0.75),
                                       fontSize: 12.5),
@@ -110,7 +110,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: gold.withOpacity(0.6)),
                             ),
-                            child: const Text('শিক্ষক',
+                            child: const Text('Teacher',
                                 style: TextStyle(
                                     color: gold,
                                     fontSize: 12,
@@ -121,8 +121,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       const SizedBox(height: 22),
                       _goldButton(
                         icon: Icons.menu_book_outlined,
-                        title: 'অধ্যায়ভিত্তিক মডেল টেস্ট প্রিন্ট',
-                        sub: 'নির্দিষ্ট অধ্যায় থেকে প্রশ্নপত্র তৈরি + PDF',
+                        title: 'Chapter-wise Model Test (Print)',
+                        sub: 'Build a paper from a chosen chapter + PDF',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -133,8 +133,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       ),
                       _goldButton(
                         icon: Icons.description_rounded,
-                        title: 'ফুল মডেল টেস্ট পেপার প্রিন্ট',
-                        sub: 'SSC-2027 কাঠামোতে পূর্ণাঙ্গ পেপার',
+                        title: 'Full Model Test Paper (Print)',
+                        sub: 'Complete paper in the SSC-2027 format',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -145,8 +145,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       ),
                       _goldButton(
                         icon: Icons.tune_rounded,
-                        title: 'কাস্টমাইজড টেস্ট পেপার',
-                        sub: 'অধ্যায় ও MCQ/সংক্ষিপ্ত/CQ সংখ্যা নিজের মতো',
+                        title: 'Customised Test Paper',
+                        sub: 'Choose chapters & MCQ / short-answer / CQ counts',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -155,8 +155,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       ),
                       _goldButton(
                         icon: Icons.person_outline_rounded,
-                        title: 'প্রোফাইল',
-                        sub: 'অ্যাকাউন্ট, Pro সিংক, লগ আউট',
+                        title: 'Profile',
+                        sub: 'Account, Pro sync, sign out',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const ProfileScreen()),
@@ -164,8 +164,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       ),
                       _goldButton(
                         icon: Icons.workspace_premium_outlined,
-                        title: 'সাবস্ক্রিপশন কিনো',
-                        sub: 'Pro সুবিধা সম্পূর্ণ আনলক করো',
+                        title: 'Buy Subscription',
+                        sub: 'Unlock all Pro features',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -29,7 +29,7 @@ class RootGate extends StatelessWidget {
                 children: [
                   CircularProgressIndicator(color: AppTheme.primary),
                   const SizedBox(height: 14),
-                  const Text('প্রোফাইল লোড হচ্ছে...'),
+                  const Text('Loading profile...'),
                 ],
               ),
             ),
