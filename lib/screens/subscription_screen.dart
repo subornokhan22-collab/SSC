@@ -10,8 +10,8 @@ class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
 
   // ⚠️ এখানে নিজের তথ্য বসাও
-  static const String hotline = '01XXXXXXXXX'; // তোমার WhatsApp/মোবাইল
-  static const String priceLine = 'BDT 100 per month / BDT 1,000 per year';
+  static const String hotline = '01715041725; // তোমার WhatsApp/মোবাইল
+  static const String priceLine = 'BDT 200 per month / BDT 2,000 per year';
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
