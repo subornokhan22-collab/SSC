@@ -23,9 +23,8 @@ class EnglishPaperAdapter {
         '',
         s.q1Passage,
       ]),
-      EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]', [
-        for (final r in s.q2) '${r.a}   |   ${r.b}   |   ${r.c}',
-      ]),
+      EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]', const [],
+          table: [for (final r in s.q2) [r.a, r.b, r.c]]),
       EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]', [
         s.q3Box.join('      '),
         '',
@@ -72,15 +71,11 @@ class EnglishPaperAdapter {
         s.q3Cloze,
       ]),
       EnglishSection(s.passage2Intro, [s.passage2]),
-      EnglishSection('4. ${s.q4Instr}   —   [1 × 5 = 5]', [
-        for (final row in s.q4Table) row.join('   |   '),
-      ]),
+      EnglishSection('4. ${s.q4Instr}   —   [1 × 5 = 5]', const [],
+          table: s.q4Table),
       const EnglishSection('5. $ef1Q5Instr   —   [10]', [' ']),
-      EnglishSection('6. $ef1Q6Instr   —   [1 × 5 = 5]', [
-        if (s.q6A.isNotEmpty) 'A :  ${s.q6A.join('   |   ')}',
-        if (s.q6B.isNotEmpty) 'B :  ${s.q6B.join('   |   ')}',
-        if (s.q6C.isNotEmpty) 'C :  ${s.q6C.join('   |   ')}',
-      ]),
+      EnglishSection('6. $ef1Q6Instr   —   [1 × 5 = 5]', const [],
+          table: _matchTable(s.q6A, s.q6B, s.q6C)),
       EnglishSection('7. $ef1Q7Instr   —   [1 × 8 = 8]', [
         for (var i = 0; i < s.q7.length; i++) '${_ltr[i]}) ${s.q7[i]}',
       ]),
@@ -89,6 +84,19 @@ class EnglishPaperAdapter {
       const EnglishSection('Part–B : Writing [30 Marks]', []),
       EnglishSection('10. ${s.q10Instr}   —   [15]', [s.q10Starter]),
       EnglishSection('11. ${s.q11}   —   [15]', [' ']),
+    ];
+  }
+
+  /// তিন কলামের ম্যাচিং-টেবিল (হেডার A | B | C)।
+  static List<List<String>> _matchTable(
+      List<String> a, List<String> b, List<String> c) {
+    var n = a.length;
+    if (b.length > n) n = b.length;
+    if (c.length > n) n = c.length;
+    String cell(List<String> col, int i) => i < col.length ? col[i] : '';
+    return [
+      const ['A', 'B', 'C'],
+      for (var i = 0; i < n; i++) [cell(a, i), cell(b, i), cell(c, i)],
     ];
   }
 

@@ -111,6 +111,11 @@ class PaperPdf {
   // DejaVu-তে থাকা সব চিহ্ন এখন আর বদলানো হয় না — সরাসরি ছাপে।
   // শুধু যেগুলো কোনো ফন্টেই নেই/ভগ্নাংশে রূপান্তর দরকার সেগুলোই বদলায়।
   static String _safe(String s, {bool preserveSpaces = false}) {
+    // ইউজার-চাহিদা: সব পেপারে সংখ্যা English (0-9) — বাংলা অঙ্ক → Latin অঙ্ক।
+    const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    for (var i = 0; i < 10; i++) {
+      s = s.replaceAll(bnDigits[i], '$i');
+    }
     const single = <String, String>{
       '½': '1/2', '¼': '1/4', '¾': '3/4', // ভগ্নাংশ রেন্ডারারে যাবে
       '⟂': '⊥', // U+27C2 কোনো ফন্টেই নেই — সমার্থক ⊥ (লম্ব) দিয়ে
@@ -1417,9 +1422,11 @@ class PaperPdf {
 }
 
 /// English (as-usual) পেপারের একেকটা প্রশ্ন/সেকশন —
-/// [head] = বোল্ড শিরোনাম; [lines] খালি হলে head মাঝখানে পার্ট-শিরোনাম হয়।
+/// [head] = বোল্ড শিরোনাম; [lines] ও [table] দুটোই খালি থাকলে
+/// head মাঝখানে পার্ট-শিরোনাম হয়। [table] দিলে বর্ডারওয়ালা ঘর আঁকা হয়।
 class EnglishSection {
   final String head;
   final List<String> lines;
-  const EnglishSection(this.head, this.lines);
+  final List<List<String>>? table;
+  const EnglishSection(this.head, this.lines, {this.table});
 }
