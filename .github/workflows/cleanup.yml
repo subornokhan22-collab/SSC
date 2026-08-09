@@ -1,0 +1,42 @@
+name: Cleanup old runs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete ALL old artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          while :; do
+            resp=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/actions/artifacts?per_page=100&page=1")
+            ids=$(echo "$resp" | jq -r '.artifacts[]?.id // empty')
+            if [ -z "$ids" ]; then echo "no artifacts left"; break; fi
+            for id in $ids; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/actions/artifacts/$id")
+              echo "deleted artifact $id -> $code"
+            done
+          done
+      - name: Delete ALL workflow runs (except this one)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SELF: ${{ github.run_id }}
+        run: |
+          while :; do
+            resp=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/actions/runs?per_page=100&page=1")
+            ids=$(echo "$resp" | jq -r '.workflow_runs[]?.id // empty' | grep -v "^$SELF$" || true)
+            if [ -z "$ids" ]; then echo "no runs left"; break; fi
+            for id in $ids; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/actions/runs/$id")
+              echo "deleted run $id -> $code"
+            done
+          done
