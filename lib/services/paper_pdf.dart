@@ -504,7 +504,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v23',
+            text: 'AL·v24',
             style: TextStyle(
                 fontFamily: _regular,
                 fontSize: 7 * _k,
@@ -1290,7 +1290,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v23',
+            text: 'AL·v24',
             style: st(7, false, 1.0)
                 .copyWith(color: const Color(0xFFAAAAAA))),
         textDirection: TextDirection.ltr,
@@ -1371,7 +1371,8 @@ class PaperPdf {
     }
 
     // ── বর্ডারওয়ালা আসল টেবিল (Q2/Q4/Q6 ম্যাচিং-টেবিলের জন্য) ──
-    Future<void> drawTable(List<List<String>> rows, {double indent = 10}) async {
+    Future<void> drawTable(List<List<String>> rows,
+        {double indent = 10, bool centered = false}) async {
       if (rows.isEmpty) return;
       var cols = 0;
       for (final r in rows) {
@@ -1494,5 +1495,9 @@ class EnglishSection {
   final String head;
   final List<String> lines;
   final List<List<String>>? table;
-  const EnglishSection(this.head, this.lines, {this.table});
+
+  /// word-box (Q1/Q3)-এর মতো টেবিলে লেখা মাঝখানে রাখতে true করুন।
+  final bool centerTable;
+  const EnglishSection(this.head, this.lines,
+      {this.table, this.centerTable = false});
 }
