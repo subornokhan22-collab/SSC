@@ -174,7 +174,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                               builder: (_) => const SubscriptionScreen()),
                         ),
                       ),
-                      _optionsCard(),
                     ],
                   ),
                 ],
@@ -254,83 +253,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // ── ⚙️ Options — অ্যাপ ব্যাকগ্রাউন্ড (সব স্ক্রিনে লাগে) ─────────────
-  Widget _optionsCard() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2A230F), Color(0xFF1B1708)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: gold.withOpacity(0.45), width: 1.2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: const [
-              Icon(Icons.palette_outlined, color: gold, size: 20),
-              SizedBox(width: 8),
-              Text('Options — App Background',
-                  style: TextStyle(
-                      color: Color(0xFFFFE08A),
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w800)),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text('পছন্দমতো ব্যাকগ্রাউন্ড বেছে নিন — সব স্ক্রিনেই প্রযোজ্য হবে।',
-              style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 11.5,
-                  height: 1.4)),
-          const SizedBox(height: 12),
-          AnimatedBuilder(
-            animation: AppStyle.bgIndex,
-            builder: (context, _) {
-              return Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  for (var i = 0; i < AppStyle.colors.length; i++)
-                    GestureDetector(
-                      onTap: () => AppStyle.set(i),
-                      child: Container(
-                        width: 58,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppStyle.colors[i],
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: AppStyle.bgIndex.value == i
-                                ? gold
-                                : Colors.white24,
-                            width: AppStyle.bgIndex.value == i ? 2.4 : 1,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          AppStyle.bgIndex.value == i ? '✓' : '',
-                          style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF17130A)),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
       ),
     );
   }

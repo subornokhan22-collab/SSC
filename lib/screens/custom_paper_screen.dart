@@ -6,7 +6,7 @@ import '../data/english_first_data.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/app_style.dart';
-import '../services/english_board_pdf.dart';
+import '../services/english_paper_adapter.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import 'subscription_screen.dart';
@@ -242,14 +242,29 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     'AI mixing needs a saved 🔑 Gemini API key — printing board questions only.')));
           }
         }
+        final ttl = _titleCtrl.text.trim().isEmpty
+            ? 'Model Test'
+            : _titleCtrl.text.trim();
         if (_isEnglish2nd(sid)) {
           final m = EnglishBoardMixer.mix();
-          await EnglishBoardPdf.printSet(m.set,
-              isPro: true, aiMcqs: aiMcqs);
+          await PaperPdf.printEnglishPaper(
+            paperTitle: ttl,
+            subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
+            sections: [
+              ...EnglishPaperAdapter.second(m.set),
+              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs),
+            ],
+          );
         } else {
           final m = EnglishFirstMixer.mix();
-          await EnglishFirstPaperPdf.printSet(m.set,
-              isPro: true, aiMcqs: aiMcqs);
+          await PaperPdf.printEnglishPaper(
+            paperTitle: ttl,
+            subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
+            sections: [
+              ...EnglishPaperAdapter.first(m.set),
+              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs),
+            ],
+          );
         }
         return;
       }

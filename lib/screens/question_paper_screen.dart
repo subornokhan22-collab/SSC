@@ -14,7 +14,7 @@ import '../widgets/app_button.dart';
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
 import '../data/english_answers_data.dart';
-import '../services/english_board_pdf.dart';
+import '../services/english_paper_adapter.dart';
 import 'subjects_screen.dart';
 
 /// SSC-2027 অফিসিয়াল প্রশ্ন-কাঠামো (জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড)
@@ -306,8 +306,15 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       // 🔀 প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে — প্রতিবার নতুন পেপার
       final m = EnglishBoardMixer.mix();
       final ai = await _englishAiMcqs('English Second Paper–2024 (Board style)');
-      final pages = await _buildEnglishPages(() async =>
-          EnglishBoardPdf.buildSet(m.set, isPro: _isPro, aiMcqs: ai));
+      final pages = await PaperPdf.renderEnglishPages(
+        paperTitle: _titleText,
+        subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
+        sections: [
+          ...EnglishPaperAdapter.second(m.set),
+          if (ai.isNotEmpty) EnglishPaperAdapter.aiSection(ai),
+        ],
+        setCode: _setLetter,
+      );
       if (!mounted) return;
       setState(() {
         _busy = false;
@@ -330,9 +337,15 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (_isEnglish1st(sid)) {
       final m = EnglishFirstMixer.mix();
       final ai = await _englishAiMcqs('English First Paper–2024 (Board style)');
-      final pages = await _buildEnglishPages(
-          () async => EnglishFirstPaperPdf.buildSet(m.set,
-              isPro: _isPro, aiMcqs: ai));
+      final pages = await PaperPdf.renderEnglishPages(
+        paperTitle: _titleText,
+        subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
+        sections: [
+          ...EnglishPaperAdapter.first(m.set),
+          if (ai.isNotEmpty) EnglishPaperAdapter.aiSection(ai),
+        ],
+        setCode: _setLetter,
+      );
       if (!mounted) return;
       setState(() {
         _busy = false;
@@ -576,17 +589,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     }
   }
 
-  /// 👁️ English PDF বাইটস → স্ক্রিন-পেজ (PNG) — প্রিন্ট-এক্স্যাক্ট প্রিভিউ।
-  Future<List<Uint8List>> _buildEnglishPages(
-      Future<Uint8List> Function() build) async {
-    try {
-      final bytes = await build();
-      return await EnglishBoardPdf.rasterizePages(bytes);
-    } catch (_) {
-      return const [];
-    }
-  }
-
   // ── প্রো আনলক ডায়ালগ ─────────────────────────────────────────────
   Future<void> _showUnlockDialog() async {
     final controller = TextEditingController();
@@ -644,13 +646,27 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (!_generated) return;
     // English 2nd Paper: exact board-paper layout (boxes, columns, rows)
     if (_isEnglish2nd(_subject!.id) && _englishSet != null) {
-      await EnglishBoardPdf.printSet(_englishSet!,
-          isPro: _isPro, aiMcqs: _eAiMcqs);
+      await PaperPdf.printEnglishPaper(
+        paperTitle: _titleText,
+        subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
+        sections: [
+          ...EnglishPaperAdapter.second(_englishSet!),
+          if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs),
+        ],
+        setCode: _setLetter,
+      );
       return;
     }
     if (_isEnglish1st(_subject!.id) && _firstSet != null) {
-      await EnglishFirstPaperPdf.printSet(_firstSet!,
-          isPro: _isPro, aiMcqs: _eAiMcqs);
+      await PaperPdf.printEnglishPaper(
+        paperTitle: _titleText,
+        subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
+        sections: [
+          ...EnglishPaperAdapter.first(_firstSet!),
+          if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs),
+        ],
+        setCode: _setLetter,
+      );
       return;
     }
     final isFull = _mode == 'full';
@@ -698,7 +714,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         builder: (context) => AlertDialog(
           title: const Text('Could not start printing'),
           content: Text(
-            'Error: $e\n\nCheck that assets/fonts/ contains: NotoSerifBengali-Regular.ttf, NotoSerifBengali-Bold.ttf, HindSiliguri-Regular.ttf, DejaVuSans.ttf, DejaVuSans-Bold.ttf',
+            'Error: $e\n\nTip: অনেক ফোনে system print service বন্ধ থাকলে এমন হয়। আবার চেষ্টা করুন — না হলে ফোন restart দিন।',
             style: const TextStyle(fontSize: 13, height: 1.5),
           ),
           actions: [
@@ -802,9 +818,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     );
   }
 
-  String get _titleText => _titleCtrl.text.trim().isEmpty
-      ? 'মডেল পরীক্ষা — ২০২৭'
-      : _titleCtrl.text.trim();
+  String get _titleText => _titleCtrl.text.trim().isNotEmpty
+      ? _titleCtrl.text.trim()
+      : (_isEnglish ? 'Model Test' : 'মডেল পরীক্ষা — ২০২৭');
 
   String _patternInfoLine() {
     final p = _patternFor(_subject?.id ?? 'general_math');
@@ -1639,7 +1655,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('উত্তরমালা (Mixed Board Papers–2024)',
+          const Text('উত্তরমালা',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const Divider(height: 16),
           ...children,
