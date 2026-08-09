@@ -502,6 +502,14 @@ class PaperPdf {
     }
 
     Future<void> commit() async {
+      final stamp = TextPainter(
+        text: TextSpan(
+            text: 'AL·v21',
+            style: st(7, false, 1.0)
+                .copyWith(color: const Color(0xFFAAAAAA))),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      stamp.paint(canvas, Offset(_margin, sh - 6 * _k));
       final img = await rec.endRecording().toImage(_W, _H);
       final bd = await img.toByteData(format: ui.ImageByteFormat.png);
       pages.add(bd!.buffer.asUint8List());
@@ -1278,6 +1286,14 @@ class PaperPdf {
     }
 
     Future<void> commit() async {
+      final stamp = TextPainter(
+        text: TextSpan(
+            text: 'AL·v21',
+            style: st(7, false, 1.0)
+                .copyWith(color: const Color(0xFFAAAAAA))),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      stamp.paint(canvas, Offset(_margin, sh - 6 * _k));
       final img = await rec.endRecording().toImage(_W, _H);
       final bd = await img.toByteData(format: ui.ImageByteFormat.png);
       pages.add(bd!.buffer.asUint8List());

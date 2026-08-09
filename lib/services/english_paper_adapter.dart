@@ -23,8 +23,10 @@ class EnglishPaperAdapter {
         '',
         s.q1Passage,
       ]),
-      EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]', const [],
-          table: [for (final r in s.q2) [r.a, r.b, r.c]]),
+      EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]',
+          s.q2.isEmpty ? const ['(Table data missing in this set)'] : const [],
+          table:
+              s.q2.isEmpty ? null : [for (final r in s.q2) [r.a, r.b, r.c]]),
       EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]', [
         s.q3Box.join('      '),
         '',
@@ -48,6 +50,7 @@ class EnglishPaperAdapter {
 
   // ═══════════ English First Paper (Reading 70 + Writing 30) ═══════════
   static List<EnglishSection> first(EnglishFirstSet s) {
+    final q6Empty = s.q6A.isEmpty && s.q6B.isEmpty && s.q6C.isEmpty;
     return [
       const EnglishSection('Part–A : Reading [70 Marks]', []),
       const EnglishSection(ef1BengaliNote, []),
@@ -71,11 +74,15 @@ class EnglishPaperAdapter {
         s.q3Cloze,
       ]),
       EnglishSection(s.passage2Intro, [s.passage2]),
-      EnglishSection('4. ${s.q4Instr}   —   [1 × 5 = 5]', const [],
-          table: s.q4Table),
+      EnglishSection('4. ${s.q4Instr}   —   [1 × 5 = 5]',
+          s.q4Table.isEmpty
+              ? const ['(Table data missing in this set)']
+              : const [],
+          table: s.q4Table.isEmpty ? null : s.q4Table),
       const EnglishSection('5. $ef1Q5Instr   —   [10]', [' ']),
-      EnglishSection('6. $ef1Q6Instr   —   [1 × 5 = 5]', const [],
-          table: _matchTable(s.q6A, s.q6B, s.q6C)),
+      EnglishSection('6. $ef1Q6Instr   —   [1 × 5 = 5]',
+          q6Empty ? const ['(Table data missing in this set)'] : const [],
+          table: q6Empty ? null : _matchTable(s.q6A, s.q6B, s.q6C)),
       EnglishSection('7. $ef1Q7Instr   —   [1 × 8 = 8]', [
         for (var i = 0; i < s.q7.length; i++) '${_ltr[i]}) ${s.q7[i]}',
       ]),
