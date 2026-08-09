@@ -335,7 +335,7 @@ class EnglishBoardPdf {
       {int maxPages = 8, int dpi = 85}) async {
     final pages = <Uint8List>[];
     var i = 0;
-    await for (final r in Printing.raster(bytes, dpi: dpi)) {
+    await for (final r in Printing.raster(bytes, dpi: dpi.toDouble())) {
       final img = await r.toImage();
       final bd = await img.toByteData(format: ui.ImageByteFormat.png);
       if (bd != null) pages.add(bd.buffer.asUint8List());
