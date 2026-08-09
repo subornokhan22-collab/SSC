@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/english_board_data.dart';
+import '../data/english_first_data.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
+import '../services/app_style.dart';
+import '../services/english_board_pdf.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import 'subscription_screen.dart';
@@ -41,9 +45,28 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     'ict': '১৫৪',
   };
 
+  static const _gold = Color(0xFFF7C948);
+
+  // ── English বিষয় শনাক্তকরণ (id-সহনশীল) ────────────────────────
+  static bool _isEnglish2nd(String? id) {
+    if (id == null) return false;
+    final s = id.toLowerCase().replaceAll(RegExp('[^a-z0-9]'), '');
+    return s.contains('english') && (s.contains('2') || s.contains('second'));
+  }
+
+  static bool _isEnglish1st(String? id) {
+    if (id == null) return false;
+    final s = id.toLowerCase().replaceAll(RegExp('[^a-z0-9]'), '');
+    return s.contains('english') && (s.contains('1') || s.contains('first'));
+  }
+
+  bool get _isEnglish =>
+      _isEnglish1st(_subject?.id) || _isEnglish2nd(_subject?.id);
+
   @override
   void initState() {
     super.initState();
+    AppStyle.load();
     SharedPreferences.getInstance().then((p) {
       if (!mounted) return;
       setState(() {
@@ -88,8 +111,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       return (code >= 48 && code <= 57) ? d[code - 48] : c;
     }).join();
   }
-
-  static const _gold = Color(0xFFF7C948);
 
   List<String> get _availableChapters {
     if (_subject == null) return [];
@@ -195,6 +216,44 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     setState(() => _busy = true);
     try {
       final sid = _subject!.id;
+
+      // ── English 1st/2nd: mixed board paper (প্রতিটি প্রশ্ন আলাদা বোর্ডের)
+      // + ঐচ্ছিক AI অতিরিক্ত — সংখ্যা-সিলেক্টরের দরকার নেই ──
+      if (_isEnglish) {
+        List<Question> aiMcqs = const [];
+        final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
+        if (_mixAi && hasKey) {
+          try {
+            final n = _aiShare == 25 ? 3 : (_aiShare == 75 ? 8 : 5);
+            aiMcqs = await AiQuestionGenerator.generateMcqs(
+              apiKey: _apiKey!,
+              subjectName: _isEnglish2nd(sid)
+                  ? 'English Second Paper (Board-2024 style)'
+                  : 'English First Paper (Board-2024 style)',
+              chapter: 'Board-style mixed paper 2024',
+              sourceText: '',
+              count: n,
+            );
+          } catch (_) {/* ব্যাংক-প্রশ্নেই থাকুক */}
+        } else if (_mixAi && !hasKey) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                    'AI mixing needs a saved 🔑 Gemini API key — printing board questions only.')));
+          }
+        }
+        if (_isEnglish2nd(sid)) {
+          final m = EnglishBoardMixer.mix();
+          await EnglishBoardPdf.printSet(m.set,
+              isPro: true, aiMcqs: aiMcqs);
+        } else {
+          final m = EnglishFirstMixer.mix();
+          await EnglishFirstPaperPdf.printSet(m.set,
+              isPro: true, aiMcqs: aiMcqs);
+        }
+        return;
+      }
+
       bool ok(String ch) => _chapters.isEmpty || _chapters.contains(ch);
       final mcqPool = allMCQs
           .where((q) => q.subjectId == sid && ok(q.chapter))
@@ -457,9 +516,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         backgroundColor: const Color(0xFF17130A),
         foregroundColor: const Color(0xFFFFE08A),
       ),
-      body: Container(
-        color: const Color(0xFFF7F3EA),
-        child: ListView(
+      body: AnimatedBuilder(
+        animation: AppStyle.bgIndex,
+        builder: (context, _) => Container(
+          color: AppStyle.bg,
+          child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Container(
@@ -529,35 +590,55 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            _stepper('Number of MCQs', _mcqN, (v) => setState(() => _mcqN = v)),
-            const SizedBox(height: 10),
-            _stepper('Number of short-answer questions', _saqN, (v) => setState(() => _saqN = v)),
-            const SizedBox(height: 10),
-            _stepper('Number of creative questions (CQ)', _cqN, (v) => setState(() => _cqN = v)),
-            const SizedBox(height: 10),
+            if (!_isEnglish) ...[
+              _stepper('Number of MCQs', _mcqN, (v) => setState(() => _mcqN = v)),
+              const SizedBox(height: 10),
+              _stepper('Number of short-answer questions', _saqN, (v) => setState(() => _saqN = v)),
+              const SizedBox(height: 10),
+              _stepper('Number of creative questions (CQ)', _cqN, (v) => setState(() => _cqN = v)),
+              const SizedBox(height: 10),
+            ],
+            if (_isEnglish)
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.teal.shade100),
+                ),
+                child: Text(
+                  _isEnglish2nd(_subject?.id)
+                      ? '📋 English 2nd Paper builds a MIXED board paper (Grammar Q1–9 + Composition Q10–12, Marks 100) — every question from a DIFFERENT board, shuffled each time. AI mixing (optional) adds fresh MCQs at the end.'
+                      : '📋 English 1st Paper builds a MIXED board paper (Reading Q1–9 + Writing Q10–11, Marks 100) — every question from a DIFFERENT board, shuffled each time. AI mixing (optional) adds fresh MCQs at the end.',
+                  style: TextStyle(
+                      fontSize: 12, height: 1.55, color: Colors.teal.shade900),
+                ),
+              ),
             _aiMixCard(),
             const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFF17130A),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: _gold.withOpacity(0.5)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.calculate_outlined, color: _gold),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Marks: $total  •  Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} (MCQ)',
-                      style: const TextStyle(
-                          color: Color(0xFFFFE08A), fontSize: 13, height: 1.5),
+            if (!_isEnglish)
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF17130A),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: _gold.withOpacity(0.5)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calculate_outlined, color: _gold),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Marks: $total  •  Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} (MCQ)',
+                        style: const TextStyle(
+                            color: Color(0xFFFFE08A), fontSize: 13, height: 1.5),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -586,6 +667,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           ],
         ),
       ),
+        ),
     );
   }
 }

@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
+import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
@@ -85,6 +88,17 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
 
   /// Chapter-dropdown label for a 1st-paper set.
   static String _ef1Label(EnglishFirstSet s) => '${s.serial} • ${s.board}';
+
+  /// English বিষয়ে প্রতিবার নতুন মিক্স — Chapter ড্রপডাউনে একটাই আইটেম।
+  static const _mixedLabel = '🔀 Mixed Board Papers–2024 (shuffle)';
+
+  /// Mixed English পেপারে প্রতিটি প্রশ্ন-গ্রুপের উৎস-সিরিয়াল।
+  List<int> _e2Src = []; // 2nd paper: 12 গ্রুপ (Q1..Q12)
+  List<int> _e1Src = []; // 1st paper: 9 গ্রুপ
+  List<Question> _eAiMcqs = const []; // 🤖 English AI-অতিরিক্ত প্রশ্ন
+
+  /// 👁️ প্রিভিউ পেজগুলো — printed PDF-এর হুবহু রূপ।
+  List<Uint8List>? _pagePngs;
   bool _isPro = false;
   bool _notTeacher = false; // প্রিন্ট ফিচার শিক্ষকদের — শিক্ষার্থী হলে true
   bool _showAnswerKey = false;
@@ -118,6 +132,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   }
 
   Future<void> _init() async {
+    await AppStyle.load();
     final prefs = await SharedPreferences.getInstance();
     final pro = await PaperLicense.isPro();
     // প্রিন্ট ফিচার শুধু শিক্ষকদের জন্য — শিক্ষার্থী হলে পর্দাটা লক থাকবে
@@ -258,11 +273,8 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
 
   List<String> get _chapters {
     if (_subject == null) return [];
-    if (_isEnglish2nd(_subject!.id)) {
-      return englishBoardSets2024.map(_ebLabel).toList();
-    }
-    if (_isEnglish1st(_subject!.id)) {
-      return englishFirstSets2024.map(_ef1Label).toList();
+    if (_isEnglish2nd(_subject!.id) || _isEnglish1st(_subject!.id)) {
+      return const [_mixedLabel];
     }
     final set = <String>{
       ...allMCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
@@ -291,15 +303,11 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     // ── English 2nd Paper: fixed board set from the bank — no AI mix,
     // no random pick; the paper prints same-to-same as the board paper ──
     if (_isEnglish2nd(sid)) {
-      EnglishBoardSet? found;
-      final label = _chapter ?? '';
-      for (final st in englishBoardSets2024) {
-        if (_ebLabel(st) == label) {
-          found = st;
-          break;
-        }
-      }
-      found ??= englishBoardSets2024.first;
+      // 🔀 প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে — প্রতিবার নতুন পেপার
+      final m = EnglishBoardMixer.mix();
+      final ai = await _englishAiMcqs('English Second Paper–2024 (Board style)');
+      final pages = await _buildEnglishPages(() async =>
+          EnglishBoardPdf.buildSet(m.set, isPro: _isPro, aiMcqs: ai));
       if (!mounted) return;
       setState(() {
         _busy = false;
@@ -308,24 +316,23 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         _mcqs = [];
         _cqs = [];
         _saqs = [];
-        _englishSet = found;
+        _englishSet = m.set;
         _firstSet = null;
-        _note = null;
+        _e2Src = m.sources;
+        _e1Src = [];
+        _eAiMcqs = ai;
+        _pagePngs = pages;
       });
       return;
     }
     // ── English 1st Paper: fixed board set from the bank — no AI mix,
     // no random pick; the paper prints same-to-same as the board paper ──
     if (_isEnglish1st(sid)) {
-      EnglishFirstSet? found;
-      final label = _chapter ?? '';
-      for (final st in englishFirstSets2024) {
-        if (_ef1Label(st) == label) {
-          found = st;
-          break;
-        }
-      }
-      found ??= englishFirstSets2024.first;
+      final m = EnglishFirstMixer.mix();
+      final ai = await _englishAiMcqs('English First Paper–2024 (Board style)');
+      final pages = await _buildEnglishPages(
+          () async => EnglishFirstPaperPdf.buildSet(m.set,
+              isPro: _isPro, aiMcqs: ai));
       if (!mounted) return;
       setState(() {
         _busy = false;
@@ -335,8 +342,11 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         _cqs = [];
         _saqs = [];
         _englishSet = null;
-        _firstSet = found;
-        _note = null;
+        _e2Src = [];
+        _e1Src = m.sources;
+        _eAiMcqs = ai;
+        _firstSet = m.set;
+        _pagePngs = pages;
       });
       return;
     }
@@ -497,6 +507,84 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         _note = 'No banked questions for this subject. To build with AI, save a Gemini API key from the 🔑 on the AI Tutor page.';
       }
     });
+    await _buildPreviewPages();
+  }
+
+  /// 👁️ প্রিভিউ: প্রিন্ট-পাইপলাইনের ***ঠিক একই*** পেজ স্ক্রিনে (সব বিষয়ে)।
+  Future<void> _buildPreviewPages() async {
+    if (_subject == null) return;
+    try {
+      final isFull = _mode == 'full';
+      final pat = _patternFor(_subject!.id);
+      final int wMarks = _mode == 'chapter'
+          ? _cqs.length * 10
+          : pat.cqAnswerCount * 10 + pat.saqAnswerCount * 2;
+      final int mMarks = _mode == 'chapter' ? _mcqs.length : pat.mcqCount;
+      final String wTime = _mode == 'chapter'
+          ? '৪০ মিনিট'
+          : (pat.totalMarks == 75 ? '২ ঘণ্টা' : '২ ঘণ্টা ৩০ মিনিট');
+      final String mTime = _mode == 'chapter'
+          ? '২০ মিনিট'
+          : (pat.totalMarks == 75 ? '২৫ মিনিট' : '৩০ মিনিট');
+      final pages = await PaperPdf.renderPages(
+        title: '${_subject!.name} (${_subject!.bengaliName})',
+        modeLine: _mode == 'chapter' ? (_chapter ?? '') : 'ফুল মডেল টেস্ট পেপার',
+        mcqs: _mcqs,
+        cqs: _cqs,
+        saqs: _saqs,
+        time: _mode == 'chapter' ? '১ ঘণ্টা' : '৩ ঘণ্টা',
+        marks: _mode == 'chapter' ? _bn(30) : _bn(pat.totalMarks),
+        cqAnswerCount: _mode == 'chapter' ? _cqs.length : pat.cqAnswerCount,
+        saqAnswerCount: pat.saqAnswerCount,
+        cqNote: (isFull && pat.mathDivisions)
+            ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
+            : null,
+        writtenTime: wTime,
+        writtenMarks: _bn(wMarks),
+        mcqTime: mTime,
+        mcqMarks: _bn(mMarks),
+        mathCqThreePart:
+            _subject!.id == 'general_math' || _subject!.id == 'higher_math',
+        headerLine1: _titleText,
+        subjectCode: _subjectCodes[_subject!.id],
+        setCode: _setLetter,
+      );
+      if (mounted) setState(() => _pagePngs = pages);
+    } catch (_) {}
+  }
+
+  /// 🤖 English বিষয়ে AI-অতিরিক্ত MCQ (toggle + API key থাকলে; 25→3, 50→5, 75→8)
+  Future<List<Question>> _englishAiMcqs(String subjectName) async {
+    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
+    if (!_mixAi) return const [];
+    if (!hasKey) {
+      _note = 'To add AI questions, first save a 🔑 Gemini API key below.';
+      return const [];
+    }
+    try {
+      final n = _aiShare == 25 ? 3 : (_aiShare == 75 ? 8 : 5);
+      return await AiQuestionGenerator.generateMcqs(
+        apiKey: _apiKey!,
+        subjectName: subjectName,
+        chapter: 'Board-style mixed paper 2024',
+        sourceText: '',
+        count: n,
+      );
+    } catch (_) {
+      _note = 'AI questions could not be added — showing board questions only.';
+      return const [];
+    }
+  }
+
+  /// 👁️ English PDF বাইটস → স্ক্রিন-পেজ (PNG) — প্রিন্ট-এক্স্যাক্ট প্রিভিউ।
+  Future<List<Uint8List>> _buildEnglishPages(
+      Future<Uint8List> Function() build) async {
+    try {
+      final bytes = await build();
+      return await EnglishBoardPdf.rasterizePages(bytes);
+    } catch (_) {
+      return const [];
+    }
   }
 
   // ── প্রো আনলক ডায়ালগ ─────────────────────────────────────────────
@@ -556,11 +644,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (!_generated) return;
     // English 2nd Paper: exact board-paper layout (boxes, columns, rows)
     if (_isEnglish2nd(_subject!.id) && _englishSet != null) {
-      await EnglishBoardPdf.printSet(_englishSet!, isPro: _isPro);
+      await EnglishBoardPdf.printSet(_englishSet!,
+          isPro: _isPro, aiMcqs: _eAiMcqs);
       return;
     }
     if (_isEnglish1st(_subject!.id) && _firstSet != null) {
-      await EnglishFirstPaperPdf.printSet(_firstSet!, isPro: _isPro);
+      await EnglishFirstPaperPdf.printSet(_firstSet!,
+          isPro: _isPro, aiMcqs: _eAiMcqs);
       return;
     }
     final isFull = _mode == 'full';
@@ -677,9 +767,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(14),
-        children: [
+      body: AnimatedBuilder(
+        animation: AppStyle.bgIndex,
+        builder: (context, _) => Container(
+          color: AppStyle.bg,
+          child: ListView(
+            padding: const EdgeInsets.all(14),
+            children: [
           _configCard(),
           const SizedBox(height: 14),
           if (_note != null) _noteCard(),
@@ -701,7 +795,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             ..._paperPages()
           else
             _hintCard('Pick a subject and mode, then tap "Generate Paper".'),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -740,10 +836,8 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
                 .toList(),
             onChanged: (s) {
               final List<String> set;
-              if (_isEnglish2nd(s!.id)) {
-                set = englishBoardSets2024.map(_ebLabel).toList();
-              } else if (_isEnglish1st(s.id)) {
-                set = englishFirstSets2024.map(_ef1Label).toList();
+              if (_isEnglish2nd(s!.id) || _isEnglish1st(s.id)) {
+                set = const [_mixedLabel];
               } else {
                 set = <String>{
                   ...allMCQs.where((q) => q.subjectId == s!.id).map((q) => q.chapter),
@@ -809,13 +903,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             style: TextStyle(fontSize: 11.5, color: Colors.grey.shade700),
           ),
           const SizedBox(height: 10),
-          if (!_isEnglish) _aiMixSection(),
+          _aiMixSection(),
           const SizedBox(height: 8),
           Text(
             _isEnglish2nd(_subject?.id)
-                ? '📋 Board Paper 2024 — Part–A: Grammar (Q1–9, 60) + Part–B: Composition (Q10–12, 40)  •  printed same-to-same'
+                ? '📋 Mixed Board Papers 2024 — Part–A: Grammar (Q1–9, 60) + Part–B: Composition (Q10–12, 40)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + ঐচ্ছিক AI'
                 : _isEnglish1st(_subject?.id)
-                    ? '📋 Board Paper 2024 — Part–A: Reading (Q1–9, 70) + Part–B: Writing (Q10–11, 30)  •  printed same-to-same'
+                    ? '📋 Mixed Board Papers 2024 — Part–A: Reading (Q1–9, 70) + Part–B: Writing (Q10–11, 30)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + ঐচ্ছিক AI'
                     : (_mode == 'chapter'
                         ? '📋 Structure: MCQ 10 + Creative 2  •  Marks 30  •  1 hour'
                         : _patternInfoLine()),
@@ -986,19 +1080,62 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       TextStyle(fontFamily: 'serif', fontSize: 12, color: Colors.grey.shade800, height: 1.5);
 
   List<Widget> _paperPages() {
-    // ── English 2nd Paper: structure preview (the full paper is in the PDF) ──
-    if (_isEnglish2nd(_subject?.id)) {
+    // ── 👁️ EXACT preview: প্রিন্ট-পাইপলাইনের হুবহু পেজ-ছবি (সব বিষয়) ──
+    final pages = _pagePngs;
+    if (pages != null && pages.isNotEmpty) {
       return [
-        _englishBoardPreview(),
+        for (var i = 0; i < pages.length; i++)
+          Container(
+            margin: const EdgeInsets.only(bottom: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.black26),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.20),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8))
+              ],
+            ),
+            child: Image.memory(pages[i], fit: BoxFit.fitWidth),
+          ),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              'প্রিভিউ = প্রিন্ট হওয়া PDF-এর হুবহু রূপ (সব বিষয়ের ক্ষেত্রে)',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 11.5,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.grey.shade600),
+            ),
+          ),
+        ),
         _actionRow(),
-        if (_showAnswerKey) _englishAnswerCard(),
+        if (_showAnswerKey) ...[
+          if (_isEnglish) _englishAnswerCard() else _answerKeyCard(),
+        ],
         const SizedBox(height: 30),
       ];
     }
-    // ── English 1st Paper: structure preview (the full paper is in the PDF) ──
-    if (_isEnglish1st(_subject?.id)) {
+    // ── English (প্রিভিউ ব্যর্থ হলে): ছোট নোট + বাটন ──
+    if (_isEnglish) {
       return [
-        _englishFirstPreview(),
+        Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black12),
+          ),
+          child: Text(
+            'প্রিভিউ বানাতে সমস্যা হয়েছে — PDF / Print চাপলেই পুরো পেপার দেখা যাবে (বোর্ড-লেআউট একই থাকবে)।',
+            style: _serifSmall,
+          ),
+        ),
         _actionRow(),
         if (_showAnswerKey) _englishAnswerCard(),
         const SizedBox(height: 30),
@@ -1166,162 +1303,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   }
 
   /// English 2nd Paper — board set structure card (exact paper prints in PDF).
-  Widget _englishBoardPreview() {
-    final s = _englishSet;
-    if (s == null) return const SizedBox.shrink();
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 22),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.16),
-              blurRadius: 18,
-              offset: const Offset(0, 8))
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Center(
-              child: Text('${s.serial}  ${s.board.toUpperCase()}',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5)),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Center(
-              child: Text('English (Compulsory)–Second Paper',
-                  style: _serifSmall)),
-          Center(
-              child: Text('Full Marks : 100     Time : 3 hours',
-                  style: _serifSmall)),
-          const SizedBox(height: 10),
-          _doubleDivider(),
-          const SizedBox(height: 10),
-          Text('Part–A : Grammar  [60 Marks]',
-              style: _serifBody.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(
-            '1. Fill in the blanks with the words from the box (word-box table) — 1 × 10 = 10\n'
-            '2. Make five sentences … each column of the table (3-column table) — 1 × 5 = 5\n'
-            '3. Right forms of the verbs given in the box — 1 × 10 = 10\n'
-            '4. Change the sentences according to directions — 1 × 10 = 10\n'
-            '5. Make tag questions — 1 × 5 = 5\n'
-            '6. Suffixes / prefixes with root words — 1 × 5 = 5\n'
-            '7. Fill in the blanks with prepositions — 1 × 5 = 5\n'
-            '8. Complete the passage using suitable connectors — 1 × 5 = 5\n'
-            '9. Capitals and punctuation — 5',
-            style: _serifBody.copyWith(fontSize: 12.5, height: 1.7),
-          ),
-          const SizedBox(height: 10),
-          Text('Part–B : Composition  [40 Marks]',
-              style: _serifBody.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text('10. ${s.q10}\n11. ${s.q11}\n12. ${s.q12}',
-              style: _serifBody.copyWith(fontSize: 12.5, height: 1.6)),
-          const SizedBox(height: 12),
-          _doubleDivider(),
-          const SizedBox(height: 6),
-          Center(
-            child: Text(
-              'The PDF prints the full paper SAME-TO-SAME — word boxes, columns, rows and marks.',
-              textAlign: TextAlign.center,
-              style: _serifSmall.copyWith(fontStyle: FontStyle.italic),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _englishFirstPreview() {
-    final s = _firstSet;
-    if (s == null) return const SizedBox.shrink();
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 22),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.16),
-              blurRadius: 18,
-              offset: const Offset(0, 8))
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Center(
-              child: Text('${s.serial}  ${s.board.toUpperCase()}',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5)),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Center(
-              child: Text('English (Compulsory)–First Paper',
-                  style: _serifSmall)),
-          Center(
-              child: Text('Full Marks : 100     Time : 3 hours',
-                  style: _serifSmall)),
-          const SizedBox(height: 10),
-          _doubleDivider(),
-          const SizedBox(height: 10),
-          Text('Part–A : Reading Test  [70 Marks]',
-              style: _serifBody.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(
-            '1. Multiple choice questions — 1 × 7 = 7\n'
-            '2. Answering questions (open ended) — 2 × 5 = 10\n'
-            '3. Cloze test without clues — 1 × 5 = 5\n'
-            '4. Information transfer (table) — 1 × 5 = 5\n'
-            '5. Summary writing — 10\n'
-            '6. Matching parts of sentences — 1 × 5 = 5\n'
-            '7. Rearranging sentences — 1 × 8 = 8\n'
-            '8. Answering questions on poems — 2 × 5 = 10\n'
-            '9. Answering questions on stories — 2 × 5 = 10',
-            style: _serifBody.copyWith(fontSize: 12.5, height: 1.7),
-          ),
-          const SizedBox(height: 10),
-          Text('Part–B : Writing Test  [30 Marks]',
-              style: _serifBody.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text('10. Completing a story — 15\n11. Writing a dialogue — 15',
-              style: _serifBody.copyWith(fontSize: 12.5, height: 1.6)),
-          const SizedBox(height: 12),
-          _doubleDivider(),
-          const SizedBox(height: 6),
-          Center(
-            child: Text(
-              'The PDF prints the full paper SAME-TO-SAME — word boxes, 3-column tables, columns, rows and marks.',
-              textAlign: TextAlign.center,
-              style: _serifSmall.copyWith(fontStyle: FontStyle.italic),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _doubleDivider() {
     return Column(
       children: [
@@ -1512,7 +1493,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       return b.toString();
     }
 
-    void sec(String title, String body) {
+    void sec(String title, String body, [String? from]) {
       children.add(Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: Column(
@@ -1521,50 +1502,129 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             Text(title,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 13.5)),
+            if (from != null)
+              Text('from: $from',
+                  style: TextStyle(
+                      fontSize: 10.5, color: Colors.teal.shade700)),
             const SizedBox(height: 3),
             Text(body,
-                style:
-                    _serifBody.copyWith(fontSize: 12.5, height: 1.6)),
+                style: _serifBody.copyWith(fontSize: 12.5, height: 1.6)),
           ],
         ),
       ));
     }
 
-    void secList(String title, List<String> lines) =>
-        sec(title, lines.join('\n'));
+    void secList(String title, List<String> lines, [String? from]) =>
+        sec(title, lines.join('\n'), from);
 
-    if (_isEnglish2nd(_subject?.id) && _englishSet != null) {
-      final a = english2Answers2024[_englishSet!.serial];
-      if (a != null) {
-        sec('1. Fill in the gaps (word box)', letters(a.q1));
-        secList('2. Making sentences', a.q2);
-        sec('3. Right form of verbs', letters(a.q3));
-        secList('4. Changing sentences', a.q4);
-        secList('5. Tag questions', a.q5);
-        sec('6. Suffix & prefix', letters(a.q6, 'abcde'));
-        sec('7. Prepositions', letters(a.q7, 'abcde'));
-        sec('8. Connectors', letters(a.q8, 'abcde'));
-        sec('9. Capitalization & punctuation', a.q9);
-        sec('10. Paragraph', a.q10);
-        sec('11. Application / Email / Letter', a.q11);
-        sec('12. Composition', a.q12);
+    String boardOf(int serial, List<EnglishBoardSet> sets) {
+      for (final st in sets) {
+        if (st.serial == serial) return st.board;
       }
-    } else if (_isEnglish1st(_subject?.id) && _firstSet != null) {
-      final a = english1Answers2024[_firstSet!.serial];
-      if (a != null) {
-        secList('1. Multiple choice (correct options)', a.q1);
-        secList('2. Answering questions', a.q2);
-        sec('3. Cloze test without clues', letters(a.q3, 'abcde'));
-        secList('4. Information transfer', a.q4);
-        sec('5. Summary', a.q5);
-        secList('6. Matching parts of sentences', a.q6);
-        sec('7. Arrangement of sentences', a.q7);
-        secList('8. Poem-based questions', a.q8);
-        secList('9. Story-based questions', a.q9);
-        sec('10. Completing story — ${a.q10Title}', a.q10);
-        sec('11. Dialogue', a.q11);
+      return 'Set $serial';
+    }
+
+    String boardOf1(int serial) {
+      for (final st in englishFirstSets2024) {
+        if (st.serial == serial) return st.board;
+      }
+      return 'Set $serial';
+    }
+
+    if (_isEnglish2nd(_subject?.id) && _e2Src.isNotEmpty) {
+      final src = _e2Src;
+      for (var i = 0; i < src.length && i < 12; i++) {
+        final an = english2Answers2024[src[i]];
+        if (an == null) continue;
+        final from = '${src[i]} • ${boardOf(src[i], englishBoardSets2024)}';
+        switch (i) {
+          case 0:
+            sec('1. Fill in the gaps (word box)', letters(an.q1), from);
+            break;
+          case 1:
+            secList('2. Making sentences', an.q2, from);
+            break;
+          case 2:
+            sec('3. Right form of verbs', letters(an.q3), from);
+            break;
+          case 3:
+            secList('4. Changing sentences', an.q4, from);
+            break;
+          case 4:
+            secList('5. Tag questions', an.q5, from);
+            break;
+          case 5:
+            sec('6. Suffix & prefix', letters(an.q6, 'abcde'), from);
+            break;
+          case 6:
+            sec('7. Prepositions', letters(an.q7, 'abcde'), from);
+            break;
+          case 7:
+            sec('8. Connectors', letters(an.q8, 'abcde'), from);
+            break;
+          case 8:
+            sec('9. Capitalization & punctuation', an.q9, from);
+            break;
+          case 9:
+            sec('10. Paragraph', an.q10, from);
+            break;
+          case 10:
+            sec('11. Application / Email / Letter', an.q11, from);
+            break;
+          case 11:
+            sec('12. Composition', an.q12, from);
+            break;
+        }
+      }
+    } else if (_isEnglish1st(_subject?.id) && _e1Src.isNotEmpty) {
+      final src = _e1Src;
+      for (var i = 0; i < src.length && i < 9; i++) {
+        final an = english1Answers2024[src[i]];
+        if (an == null) continue;
+        final from = '${src[i]} • ${boardOf1(src[i])}';
+        switch (i) {
+          case 0:
+            secList('1. Multiple choice (correct options)', an.q1, from);
+            secList('2. Answering questions', an.q2, from);
+            break;
+          case 1:
+            sec('3. Cloze test without clues', letters(an.q3, 'abcde'), from);
+            break;
+          case 2:
+            secList('4. Information transfer', an.q4, from);
+            sec('5. Summary', an.q5, from);
+            break;
+          case 3:
+            secList('6. Matching parts of sentences', an.q6, from);
+            break;
+          case 4:
+            sec('7. Arrangement of sentences', an.q7, from);
+            break;
+          case 5:
+            secList('8. Poem-based questions', an.q8, from);
+            break;
+          case 6:
+            secList('9. Story-based questions', an.q9, from);
+            break;
+          case 7:
+            sec('10. Completing story — ${an.q10Title}', an.q10, from);
+            break;
+          case 8:
+            sec('11. Dialogue', an.q11, from);
+            break;
+        }
       }
     }
+
+    if (_eAiMcqs.isNotEmpty) {
+      const opL = ['a', 'b', 'c', 'd'];
+      final b = StringBuffer();
+      for (var i = 0; i < _eAiMcqs.length; i++) {
+        b.write('${i + 1}. ${opL[_eAiMcqs[i].correctIndex]}    ');
+      }
+      sec('🤖 AI Extra Practice — MCQ answers', b.toString(), 'AI-generated');
+    }
+
     if (children.isEmpty) {
       children.add(Text('এই সেটের উত্তরমালা তৈরি হচ্ছে…', style: _serifSmall));
     }
@@ -1579,7 +1639,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('উত্তরমালা (Board Paper 2024)',
+          const Text('উত্তরমালা (Mixed Board Papers–2024)',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const Divider(height: 16),
           ...children,
