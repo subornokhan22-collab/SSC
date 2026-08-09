@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// English (Compulsory) — First Paper : Board Questions 2024.
 ///
 /// Transcribed SAME-TO-SAME from the teacher's scanned board-question book
@@ -1927,3 +1929,54 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'tree plantation.',
   ),
 ];
+
+// ════════════════════════════════════════════════════════════════════════
+//  🔀 English First Paper MIXER
+//  প্রতিটি প্রশ্ন-গ্রুপ (passage1+Q1-Q2, Q3-cloze, passage2+Q4-Q5, Q6..Q11)
+//  আলাদা আলাদা বোর্ড থেকে — passage ও তার প্রশ্নগুলো একই সেটের থাকে।
+// ════════════════════════════════════════════════════════════════════════
+class MixedFirstPaper {
+  final EnglishFirstSet set;
+  final List<int> sources; // ৯টি গ্রুপের উৎস-সিরিয়াল
+  const MixedFirstPaper(this.set, this.sources);
+}
+
+class EnglishFirstMixer {
+  EnglishFirstMixer._();
+
+  static MixedFirstPaper mix({Random? rng}) {
+    rng ??= Random();
+    EnglishFirstSet pick() =>
+        englishFirstSets2024[rng.nextInt(englishFirstSets2024.length)];
+    final g = List<EnglishFirstSet>.generate(9, (_) => pick());
+    final set = EnglishFirstSet(
+      serial: 0,
+      board: 'Mixed Board Set–2024',
+      passage1Intro: g[0].passage1Intro,
+      passage1Unit: g[0].passage1Unit,
+      passage1: g[0].passage1,
+      q1Instr: g[0].q1Instr,
+      q1: g[0].q1,
+      q2: g[0].q2,
+      q3Instr: g[1].q3Instr,
+      q3Source: g[1].q3Source,
+      q3Unit: g[1].q3Unit,
+      q3Cloze: g[1].q3Cloze,
+      passage2Intro: g[2].passage2Intro,
+      passage2: g[2].passage2,
+      q4Instr: g[2].q4Instr,
+      q4Table: g[2].q4Table,
+      q4BoldRows: g[2].q4BoldRows,
+      q6A: g[3].q6A,
+      q6B: g[3].q6B,
+      q6C: g[3].q6C,
+      q7: g[4].q7,
+      q8: g[5].q8,
+      q9: g[6].q9,
+      q10Instr: g[7].q10Instr,
+      q10Starter: g[7].q10Starter,
+      q11: g[8].q11,
+    );
+    return MixedFirstPaper(set, g.map((e) => e.serial).toList());
+  }
+}

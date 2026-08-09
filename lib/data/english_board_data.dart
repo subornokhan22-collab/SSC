@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// English (Compulsory) — Second Paper : Board Questions 2024.
 ///
 /// Transcribed SAME-TO-SAME from the teacher's scanned board-question book
@@ -1040,3 +1042,48 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     q12: 'Write a composition on The Season You Like Most.',
   ),
 ];
+
+// ════════════════════════════════════════════════════════════════════════
+//  🔀 English Second Paper MIXER
+//  প্রতিবার Generate = প্রতিটি প্রশ্ন আলাদা আলাদা বোর্ড থেকে (একই সেট কখনোই
+//  একবারে আসে না)। sources-এ 12টি গ্রুপের (Q1..Q12) উৎস-সিরিয়াল থাকে।
+// ════════════════════════════════════════════════════════════════════════
+class MixedSecondPaper {
+  final EnglishBoardSet set;
+  final List<int> sources;
+  const MixedSecondPaper(this.set, this.sources);
+}
+
+class EnglishBoardMixer {
+  EnglishBoardMixer._();
+
+  static MixedSecondPaper mix({Random? rng}) {
+    rng ??= Random();
+    EnglishBoardSet pick() =>
+        englishBoardSets2024[rng.nextInt(englishBoardSets2024.length)];
+    final g = List<EnglishBoardSet>.generate(12, (_) => pick());
+    final set = EnglishBoardSet(
+      serial: 0,
+      board: 'Mixed Board Set–2024',
+      headerExtra: const [
+        'English (Compulsory)–Second Paper',
+        'Full Marks : 100          Time : 3 hours',
+      ],
+      q1Box: g[0].q1Box,
+      q1Passage: g[0].q1Passage,
+      q2: g[1].q2,
+      q3Box: g[2].q3Box,
+      q3Passage: g[2].q3Passage,
+      q4: g[3].q4,
+      q5: g[4].q5,
+      q6Passage: g[5].q6Passage,
+      q7Passage: g[6].q7Passage,
+      q8Passage: g[7].q8Passage,
+      q9Text: g[8].q9Text,
+      q10: g[9].q10,
+      q11: g[10].q11,
+      q12: g[11].q12,
+    );
+    return MixedSecondPaper(set, g.map((e) => e.serial).toList());
+  }
+}
