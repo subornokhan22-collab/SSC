@@ -391,7 +391,14 @@ class PaperPdf {
         ),
       );
     }
-    await Printing.layoutPdf(onLayout: (format) async => doc.save());
+    final bytes = await doc.save();
+    try {
+      await Printing.layoutPdf(onLayout: (format) async => bytes);
+    } catch (_) {
+      // কিছু ফোনে system print dialog খোলে না (print service off/incompatible)।
+      // তখন PDF সরাসরি Share/Save sheet-এ পাঠাই — সেখান থেকে save/print যায়।
+      await Printing.sharePdf(bytes: bytes, filename: 'a_learning_paper.pdf');
+    }
   }
 
   /// 👁️ স্ক্রিন-প্রিভিউর জন্য: প্রিন্টের ***ঠিক সেই*** রাস্টার পেজগুলো
@@ -1218,4 +1225,201 @@ class PaperPdf {
       return (code >= 48 && code <= 57) ? d[code - 48] : c;
     }).join();
   }
+
+  // ══════════════ English পেপার — "as usual like other subjects" ══════════════
+  /// পুরোটা ফ্লাটার-ইঞ্জিনে আঁকা (printing প্লাগিনের raster না) — তাই যে ফোনে
+  /// Printing.raster/layoutPdf ভাঙে সেখানেও প্রিভিউ ও প্রিন্ট দুটোই চলে।
+  static Future<List<Uint8List>> renderEnglishPages({
+    required String paperTitle, // ইউজারের লেখা টাইটেল / 'Model Test'
+    required String subTitle, // 'English (Compulsory)–First Paper …'
+    required List<EnglishSection> sections,
+    String setCode = 'ক',
+    String classLine = 'Class Ten (SSC Exam–2027)',
+    String time = 'Time: 3 hours',
+    String marks = 'Full Marks: 100',
+    String answerNote =
+        'Answer all the questions. Figures in the right margin indicate full marks.',
+  }) async {
+    await _loadFonts();
+
+    final pages = <Uint8List>[];
+    const double sw = 1654.0;
+    const double sh = 2339.0;
+    final double bottomY = sh - _margin;
+    final double contentW = sw - 2 * _margin;
+
+    late ui.PictureRecorder rec;
+    late Canvas canvas;
+    late double y;
+
+    TextStyle st(double size, bool isBold, double lh) => TextStyle(
+          fontFamily: isBold ? (_bold ?? _regular) : _regular,
+          fontFamilyFallback: _fb(isBold),
+          fontWeight:
+              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+          fontSize: size * _k,
+          height: lh,
+          color: const Color(0xFF000000),
+        );
+
+    void begin() {
+      rec = ui.PictureRecorder();
+      canvas = Canvas(rec, Rect.fromLTWH(0, 0, sw, sh));
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, sw, sh),
+        Paint()..color = const Color(0xFFFFFFFF),
+      );
+      y = _margin;
+    }
+
+    Future<void> commit() async {
+      final img = await rec.endRecording().toImage(_W, _H);
+      final bd = await img.toByteData(format: ui.ImageByteFormat.png);
+      pages.add(bd!.buffer.asUint8List());
+    }
+
+    Future<void> para(String text, double size,
+        {bool isBold = false,
+        double indent = 0,
+        double gapBefore = 0,
+        double gapAfter = 2,
+        TextAlign align = TextAlign.left}) async {
+      final tp = TextPainter(
+        text: TextSpan(text: _safe(text), style: st(size, isBold, 1.45)),
+        textDirection: TextDirection.ltr,
+        textAlign: align,
+      )..layout(maxWidth: contentW - indent);
+      if (y + gapBefore * _k + tp.height > bottomY + 1) {
+        await commit();
+        begin();
+      }
+      y += gapBefore * _k;
+      tp.paint(canvas, Offset(_margin + indent, y));
+      y += tp.height + gapAfter * _k;
+    }
+
+    void hline(double t) => canvas.drawLine(
+          Offset(_margin, y),
+          Offset(_margin + contentW, y),
+          Paint()
+            ..color = const Color(0xFF000000)
+            ..strokeWidth = t,
+        );
+
+    Future<void> doubleRule() async {
+      y += 3 * _k;
+      hline(1.4 * _k);
+      y += 2.2 * _k;
+      hline(0.8 * _k);
+      y += 4 * _k;
+    }
+
+    // ── হেডার (অন্যান্য বিষয়ের মতোই স্টাইল) ──
+    begin();
+    if (setCode.isNotEmpty) {
+      await para('Set Code:  $setCode', 11,
+          isBold: true, align: TextAlign.right, gapAfter: 1);
+    }
+    await para(paperTitle.isEmpty ? 'Model Test' : paperTitle, 17,
+        isBold: true, align: TextAlign.center, gapAfter: 1);
+    await para(classLine, 12, align: TextAlign.center, gapAfter: 1);
+    await para(subTitle, 12.5,
+        isBold: true, align: TextAlign.center, gapAfter: 2);
+    final tl = TextPainter(
+      text: TextSpan(text: _safe(time), style: st(10.5, true, 1.2)),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: contentW / 2 - 6 * _k);
+    final tr = TextPainter(
+      text: TextSpan(text: _safe(marks), style: st(10.5, true, 1.2)),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.right,
+    )..layout(maxWidth: contentW / 2 - 6 * _k);
+    final rowH = tl.height > tr.height ? tl.height : tr.height;
+    if (y + rowH > bottomY) {
+      await commit();
+      begin();
+    }
+    tl.paint(canvas, Offset(_margin, y));
+    tr.paint(canvas, Offset(_margin + contentW / 2 + 6 * _k, y));
+    y += rowH + 1 * _k;
+    await doubleRule();
+    if (answerNote.isNotEmpty) {
+      await para(answerNote, 9.8, align: TextAlign.center, gapAfter: 4);
+    }
+
+    // ── সেকশনগুলো ──
+    for (final s in sections) {
+      if (s.lines.isEmpty) {
+        await para(s.head, 12.5,
+            isBold: true, align: TextAlign.center, gapBefore: 8, gapAfter: 3);
+        continue;
+      }
+      await para(s.head, 11.3, isBold: true, gapBefore: 8, gapAfter: 2);
+      for (final l in s.lines) {
+        if (l.trim().isEmpty) {
+          y += 4 * _k;
+          continue;
+        }
+        await para(l, 10.3, indent: 10, gapAfter: 1.5);
+      }
+    }
+
+    await commit();
+    return pages;
+  }
+
+  /// 🖨️ English পেপার প্রিন্ট — প্রিভিউ-এর ঠিক সেই পেজ (share-fallback সহ)।
+  static Future<void> printEnglishPaper({
+    required String paperTitle,
+    required String subTitle,
+    required List<EnglishSection> sections,
+    String setCode = 'ক',
+    String classLine = 'Class Ten (SSC Exam–2027)',
+    String time = 'Time: 3 hours',
+    String marks = 'Full Marks: 100',
+    String answerNote =
+        'Answer all the questions. Figures in the right margin indicate full marks.',
+  }) async {
+    final pages = await renderEnglishPages(
+      paperTitle: paperTitle,
+      subTitle: subTitle,
+      sections: sections,
+      setCode: setCode,
+      classLine: classLine,
+      time: time,
+      marks: marks,
+      answerNote: answerNote,
+    );
+    final doc = pw.Document();
+    for (final png in pages) {
+      final img = pw.MemoryImage(png);
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.zero,
+          build: (_) => pw.Image(
+            img,
+            width: PdfPageFormat.a4.width,
+            height: PdfPageFormat.a4.height,
+            fit: pw.BoxFit.fill,
+          ),
+        ),
+      );
+    }
+    final bytes = await doc.save();
+    try {
+      await Printing.layoutPdf(onLayout: (format) async => bytes);
+    } catch (_) {
+      // ফোনের system print dialog না খুললে PDF সরাসরি Share/Save sheet-এ।
+      await Printing.sharePdf(bytes: bytes, filename: 'english_paper.pdf');
+    }
+  }
+}
+
+/// English (as-usual) পেপারের একেকটা প্রশ্ন/সেকশন —
+/// [head] = বোল্ড শিরোনাম; [lines] খালি হলে head মাঝখানে পার্ট-শিরোনাম হয়।
+class EnglishSection {
+  final String head;
+  final List<String> lines;
+  const EnglishSection(this.head, this.lines);
 }
