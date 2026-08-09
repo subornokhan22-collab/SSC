@@ -1058,9 +1058,9 @@ class EnglishBoardMixer {
   EnglishBoardMixer._();
 
   static MixedSecondPaper mix({Random? rng}) {
-    rng ??= Random();
+    final r = rng ?? Random();
     EnglishBoardSet pick() =>
-        englishBoardSets2024[rng.nextInt(englishBoardSets2024.length)];
+        englishBoardSets2024[r.nextInt(englishBoardSets2024.length)];
     final g = List<EnglishBoardSet>.generate(12, (_) => pick());
     final set = EnglishBoardSet(
       serial: 0,

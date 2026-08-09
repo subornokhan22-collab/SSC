@@ -1945,9 +1945,9 @@ class EnglishFirstMixer {
   EnglishFirstMixer._();
 
   static MixedFirstPaper mix({Random? rng}) {
-    rng ??= Random();
+    final r = rng ?? Random();
     EnglishFirstSet pick() =>
-        englishFirstSets2024[rng.nextInt(englishFirstSets2024.length)];
+        englishFirstSets2024[r.nextInt(englishFirstSets2024.length)];
     final g = List<EnglishFirstSet>.generate(9, (_) => pick());
     final set = EnglishFirstSet(
       serial: 0,
