@@ -394,7 +394,52 @@ class PaperPdf {
     await Printing.layoutPdf(onLayout: (format) async => doc.save());
   }
 
-  // ── স্কুল-স্টাইল পেজ রেন্ডারিং ইঞ্জিন ─────────────────────────
+  /// 👁️ স্ক্রিন-প্রিভিউর জন্য: প্রিন্টের ***ঠিক সেই*** রাস্টার পেজগুলো
+  /// (PNG bytes) ফেরত দেয় — প্রিভিউ ১০০% মিলে যায় PDF-এর সঙ্গে।
+  static Future<List<Uint8List>> renderPages({
+    required String title,
+    required String modeLine,
+    required List<Question> mcqs,
+    required List<CreativeQuestion> cqs,
+    String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
+    String headerLine2 = 'দশম শ্রেণি',
+    String time = '৩ ঘণ্টা',
+    String marks = '১০০',
+    int cqAnswerCount = 7,
+    List<Question> saqs = const [],
+    int saqAnswerCount = 10,
+    String? cqNote,
+    String? writtenTime,
+    String? writtenMarks,
+    String? mcqTime,
+    String? mcqMarks,
+    bool mathCqThreePart = false,
+    String? subjectCode,
+    String? setCode,
+  }) async {
+    await _loadFonts();
+    return _renderPages(
+      title: title,
+      modeLine: modeLine,
+      mcqs: mcqs,
+      cqs: cqs,
+      headerLine1: headerLine1,
+      headerLine2: headerLine2,
+      time: time,
+      marks: marks,
+      cqAnswerCount: cqAnswerCount,
+      saqs: saqs,
+      saqAnswerCount: saqAnswerCount,
+      cqNote: cqNote,
+      writtenTime: writtenTime,
+      writtenMarks: writtenMarks,
+      mcqTime: mcqTime,
+      mcqMarks: mcqMarks,
+      mathCqThreePart: mathCqThreePart,
+      subjectCode: subjectCode,
+      setCode: setCode,
+    );
+  }
   // ১ম অংশ (লিখিত পত্র): সৃজনশীল + সংক্ষিপ্ত-উত্তর, মান ডান কলামে।
   // ২য় অংশ (বহুনির্বাচনি পত্র): স্কুল-বোর্ড স্টাইল হেডার (প্রাপ্ত নম্বর ও
   // কোড বাক্স, নাম/রোল/শাখা লাইন, দ্রষ্টব্য বাক্স) + দুই কলাম MCQ।

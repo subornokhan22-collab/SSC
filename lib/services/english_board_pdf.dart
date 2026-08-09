@@ -9,6 +9,7 @@ import 'package:printing/printing.dart';
 
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
+import '../data/questions_data.dart' show Question;
 
 /// English Second Paper (Board Questions 2024) → PDF / printer.
 ///
@@ -95,12 +96,16 @@ class EnglishBoardPdf {
   // ── building blocks ─────────────────────────────────────────────────────
 
   static pw.Widget _banner(EnglishBoardSet s) {
+    // serial 0/-1 ⇒ মিক্সড পেপার: শুধু বোর্ড-লাইন দেখাও
+    final label = s.serial <= 0
+        ? s.board.toUpperCase()
+        : '${s.serial}   ${s.board.toUpperCase()}';
     return pw.Container(
       color: PdfColors.black,
       padding: const pw.EdgeInsets.symmetric(vertical: 3, horizontal: 10),
       child: pw.Center(
         child: pw.Text(
-          '${s.serial}   ${s.board.toUpperCase()}',
+          label,
           style: pw.TextStyle(
             font: _bold,
             fontFallback: [if (_dv != null) _dv!],
@@ -317,16 +322,82 @@ class EnglishBoardPdf {
 
   // ── document ────────────────────────────────────────────────────────────
 
-  /// Build + open the system print/share dialog for one board set.
-  static Future<void> printSet(EnglishBoardSet s, {required bool isPro}) async {
+  /// 👁️ প্রিভিউর জন্য বাইটস (প্রিন্ট-ডায়ালগ ছাড়া)।
+  static Future<Uint8List> buildSet(EnglishBoardSet s,
+      {required bool isPro, List<Question> aiMcqs = const []}) async {
     await _loadFonts();
     final noteImg = await _bengaliLine(ebBengaliNote);
-    final Uint8List bytes = await _build(s, isPro: isPro, noteImg: noteImg);
+    return _build(s, isPro: isPro, noteImg: noteImg, aiMcqs: aiMcqs);
+  }
+
+  /// PDF বাইটস → A4 পেজ (PNG) — প্রিভিউ প্রিন্ট-এক্স্যাক্ট রাখতে।
+  static Future<List<Uint8List>> rasterizePages(Uint8List bytes,
+      {int maxPages = 8, int dpi = 85}) async {
+    final pages = <Uint8List>[];
+    var i = 0;
+    await for (final r in Printing.raster(bytes, dpi: dpi)) {
+      final img = await r.toImage();
+      final bd = await img.toByteData(format: ui.ImageByteFormat.png);
+      if (bd != null) pages.add(bd.buffer.asUint8List());
+      if (++i >= maxPages) break;
+    }
+    return pages;
+  }
+
+  /// 🤖 AI-তৈরি অতিরিক্ত MCQ ব্লক — বোর্ড-লেআউটের সাথেই থাকে।
+  static pw.Widget _aiBlock(List<Question> mcqs) {
+    const lt = ['a', 'b', 'c', 'd'];
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 6),
+        pw.Container(
+          color: PdfColors.black,
+          padding:
+              const pw.EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+          child: pw.Center(
+            child: pw.Text('AI Extra Practice (fresh AI-generated questions)',
+                style: pw.TextStyle(
+                    font: _bold,
+                    fontFallback: [if (_dv != null) _dv!],
+                    fontSize: 11,
+                    color: PdfColors.white)),
+          ),
+        ),
+        pw.SizedBox(height: 6),
+        for (var i = 0; i < mcqs.length; i++) ...[
+          pw.Text('${i + 1}. ${mcqs[i].questionText}',
+              style: _style(9.8, bold: true)),
+          pw.Padding(
+            padding: const pw.EdgeInsets.only(left: 16, top: 2, bottom: 5),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                for (var j = 0; j < mcqs[i].options.length && j < 4; j++)
+                  pw.Text('${lt[j]}.  ${mcqs[i].options[j]}',
+                      style: _style(9.5)),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Build + open the system print/share dialog for one board set.
+  static Future<void> printSet(EnglishBoardSet s,
+      {required bool isPro, List<Question> aiMcqs = const []}) async {
+    await _loadFonts();
+    final noteImg = await _bengaliLine(ebBengaliNote);
+    final Uint8List bytes =
+        await _build(s, isPro: isPro, noteImg: noteImg, aiMcqs: aiMcqs);
     await Printing.layoutPdf(onLayout: (format) async => bytes);
   }
 
   static Future<Uint8List> _build(EnglishBoardSet s,
-      {required bool isPro, pw.MemoryImage? noteImg}) async {
+      {required bool isPro,
+      pw.MemoryImage? noteImg,
+      List<Question> aiMcqs = const []}) async {
     final doc = pw.Document();
     final w = <pw.Widget>[];
 
@@ -381,6 +452,7 @@ class EnglishBoardPdf {
     w.add(_compositionItem('10.', s.q10, '10'));
     w.add(_compositionItem('11.', s.q11, '10'));
     w.add(_compositionItem('12.', s.q12, '20'));
+    if (aiMcqs.isNotEmpty) w.add(_aiBlock(aiMcqs));
 
     doc.addPage(
       pw.MultiPage(
@@ -522,12 +594,15 @@ class EnglishFirstPaperPdf {
   // ── pieces ──────────────────────────────────────────────────────────────
 
   static pw.Widget _banner(EnglishFirstSet s) {
+    final label = s.serial <= 0
+        ? s.board.toUpperCase()
+        : '${s.serial}   ${s.board.toUpperCase()}';
     return pw.Container(
       color: PdfColors.black,
       padding: const pw.EdgeInsets.symmetric(vertical: 3, horizontal: 10),
       child: pw.Center(
         child: pw.Text(
-          '${s.serial}   ${s.board.toUpperCase()}',
+          label,
           style: pw.TextStyle(
             font: EnglishBoardPdf._bold,
             fontFallback: [
@@ -750,18 +825,30 @@ class EnglishFirstPaperPdf {
 
   // ── document ────────────────────────────────────────────────────────────
 
-  /// Build + open the system print/share dialog for one first-paper set.
-  static Future<void> printSet(EnglishFirstSet s,
-      {required bool isPro}) async {
+  /// 👁️ প্রিভিউর জন্য বাইটস (প্রিন্ট-ডায়ালগ ছাড়া)।
+  static Future<Uint8List> buildSet(EnglishFirstSet s,
+      {required bool isPro, List<Question> aiMcqs = const []}) async {
     await EnglishBoardPdf._loadFonts();
     await _prerenderSet(s);
     final noteImg = _imgCache[ef1BengaliNote];
-    final Uint8List bytes = await _build(s, isPro: isPro, noteImg: noteImg);
+    return _build(s, isPro: isPro, noteImg: noteImg, aiMcqs: aiMcqs);
+  }
+
+  /// Build + open the system print/share dialog for one first-paper set.
+  static Future<void> printSet(EnglishFirstSet s,
+      {required bool isPro, List<Question> aiMcqs = const []}) async {
+    await EnglishBoardPdf._loadFonts();
+    await _prerenderSet(s);
+    final noteImg = _imgCache[ef1BengaliNote];
+    final Uint8List bytes =
+        await _build(s, isPro: isPro, noteImg: noteImg, aiMcqs: aiMcqs);
     await Printing.layoutPdf(onLayout: (format) async => bytes);
   }
 
   static Future<Uint8List> _build(EnglishFirstSet s,
-      {required bool isPro, _LineImg? noteImg}) async {
+      {required bool isPro,
+      _LineImg? noteImg,
+      List<Question> aiMcqs = const []}) async {
     final doc = pw.Document();
     final w = <pw.Widget>[];
 
@@ -846,6 +933,7 @@ class EnglishFirstPaperPdf {
       child: pw.Text(s.q10Starter, style: _style(9.8)),
     ));
     w.add(EnglishBoardPdf._qHead('11.', s.q11, '15'));
+    if (aiMcqs.isNotEmpty) w.add(EnglishBoardPdf._aiBlock(aiMcqs));
 
     doc.addPage(
       pw.MultiPage(
