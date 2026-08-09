@@ -505,8 +505,10 @@ class PaperPdf {
       final stamp = TextPainter(
         text: TextSpan(
             text: 'AL·v21',
-            style: st(7, false, 1.0)
-                .copyWith(color: const Color(0xFFAAAAAA))),
+            style: TextStyle(
+                fontFamily: _regular,
+                fontSize: 7 * _k,
+                color: const Color(0xFFAAAAAA))),
         textDirection: TextDirection.ltr,
       )..layout();
       stamp.paint(canvas, Offset(_margin, sh - 6 * _k));
