@@ -12,9 +12,28 @@ class EnglishPaperAdapter {
 
   static const _ltr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
+  /// টেবিল "সত্যিই ফাঁকা" কিনা (row নেই, বা সব row/cell ফাঁকা)।
+  static bool _emptyTable(List<List<String>> rows) {
+    for (final r in rows) {
+      for (final c in r) {
+        if (c.trim().isNotEmpty) return false;
+      }
+    }
+    return true;
+  }
+
+  static bool _emptyCols(List<String> a, List<String> b, List<String> c) {
+    for (final s in [...a, ...b, ...c]) {
+      if (s.trim().isNotEmpty) return false;
+    }
+    return true;
+  }
+
   // ═══════════ English Second Paper (Grammar 60 + Composition 40) ═══════════
   static List<EnglishSection> second(EnglishBoardSet s) {
     String strip(String t) => t.replaceAll('{', '').replaceAll('}', '');
+    final q2Rows = [for (final r in s.q2) [r.a, r.b, r.c]];
+    final q2Empty = _emptyTable(q2Rows);
     return [
       const EnglishSection(ebPartAHeader, []),
       const EnglishSection(ebBengaliNote, []),
@@ -24,9 +43,8 @@ class EnglishPaperAdapter {
         s.q1Passage,
       ]),
       EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]',
-          s.q2.isEmpty ? const ['(Table data missing in this set)'] : const [],
-          table:
-              s.q2.isEmpty ? null : [for (final r in s.q2) [r.a, r.b, r.c]]),
+          q2Empty ? const ['⧉ v22-check: Q2 টেবিল-ডেটা ফাঁকা!'] : const [],
+          table: q2Empty ? null : q2Rows),
       EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]', [
         s.q3Box.join('      '),
         '',
@@ -50,7 +68,8 @@ class EnglishPaperAdapter {
 
   // ═══════════ English First Paper (Reading 70 + Writing 30) ═══════════
   static List<EnglishSection> first(EnglishFirstSet s) {
-    final q6Empty = s.q6A.isEmpty && s.q6B.isEmpty && s.q6C.isEmpty;
+    final q4Empty = _emptyTable(s.q4Table);
+    final q6Empty = _emptyCols(s.q6A, s.q6B, s.q6C);
     return [
       const EnglishSection('Part–A : Reading [70 Marks]', []),
       const EnglishSection(ef1BengaliNote, []),
@@ -75,13 +94,11 @@ class EnglishPaperAdapter {
       ]),
       EnglishSection(s.passage2Intro, [s.passage2]),
       EnglishSection('4. ${s.q4Instr}   —   [1 × 5 = 5]',
-          s.q4Table.isEmpty
-              ? const ['(Table data missing in this set)']
-              : const [],
-          table: s.q4Table.isEmpty ? null : s.q4Table),
+          q4Empty ? const ['⧉ v22-check: Q4 টেবিল-ডেটা ফাঁকা!'] : const [],
+          table: q4Empty ? null : s.q4Table),
       const EnglishSection('5. $ef1Q5Instr   —   [10]', [' ']),
       EnglishSection('6. $ef1Q6Instr   —   [1 × 5 = 5]',
-          q6Empty ? const ['(Table data missing in this set)'] : const [],
+          q6Empty ? const ['⧉ v22-check: Q6 টেবিল-ডেটা ফাঁকা!'] : const [],
           table: q6Empty ? null : _matchTable(s.q6A, s.q6B, s.q6C)),
       EnglishSection('7. $ef1Q7Instr   —   [1 × 8 = 8]', [
         for (var i = 0; i < s.q7.length; i++) '${_ltr[i]}) ${s.q7[i]}',

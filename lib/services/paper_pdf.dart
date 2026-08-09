@@ -504,7 +504,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v21',
+            text: 'AL·v22',
             style: TextStyle(
                 fontFamily: _regular,
                 fontSize: 7 * _k,
@@ -1290,7 +1290,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v21',
+            text: 'AL·v22',
             style: st(7, false, 1.0)
                 .copyWith(color: const Color(0xFFAAAAAA))),
         textDirection: TextDirection.ltr,
@@ -1370,9 +1370,55 @@ class PaperPdf {
       await para(answerNote, 9.8, align: TextAlign.center, gapAfter: 4);
     }
 
+    // ── বর্ডারওয়ালা আসল টেবিল (Q2/Q4/Q6 ম্যাচিং-টেবিলের জন্য) ──
+    Future<void> drawTable(List<List<String>> rows, {double indent = 10}) async {
+      if (rows.isEmpty) return;
+      var cols = 0;
+      for (final r in rows) {
+        if (r.length > cols) cols = r.length;
+      }
+      if (cols == 0) return;
+      final tableW = contentW - indent;
+      final colW = tableW / cols;
+      final cellPad = 2.2 * _k;
+      final border = Paint()
+        ..color = const Color(0xFF000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.9 * _k;
+      for (var ri = 0; ri < rows.length; ri++) {
+        final cps = <TextPainter>[];
+        var rowH = 0.0;
+        for (var ci = 0; ci < cols; ci++) {
+          final txt = ci < rows[ri].length ? rows[ri][ci] : '';
+          final tp = TextPainter(
+            text: TextSpan(text: _safe(txt), style: st(9.6, ri == 0, 1.35)),
+            textDirection: TextDirection.ltr,
+          )..layout(maxWidth: colW - 2 * cellPad);
+          cps.add(tp);
+          if (tp.height > rowH) rowH = tp.height;
+        }
+        rowH += 2 * cellPad;
+        if (y + rowH > bottomY + 1) {
+          await commit();
+          begin();
+        }
+        canvas.drawRect(
+            Rect.fromLTWH(_margin + indent, y, tableW, rowH), border);
+        for (var ci = 0; ci < cols; ci++) {
+          final x = _margin + indent + colW * ci;
+          if (ci > 0) {
+            canvas.drawLine(Offset(x, y), Offset(x, y + rowH), border);
+          }
+          cps[ci].paint(canvas, Offset(x + cellPad, y + cellPad));
+        }
+        y += rowH;
+      }
+      y += 2 * _k;
+    }
+
     // ── সেকশনগুলো ──
     for (final s in sections) {
-      if (s.lines.isEmpty) {
+      if (s.lines.isEmpty && s.table == null) {
         await para(s.head, 12.5,
             isBold: true, align: TextAlign.center, gapBefore: 8, gapAfter: 3);
         continue;
@@ -1385,6 +1431,7 @@ class PaperPdf {
         }
         await para(l, 10.3, indent: 10, gapAfter: 1.5);
       }
+      if (s.table != null) await drawTable(s.table!);
     }
 
     await commit();
