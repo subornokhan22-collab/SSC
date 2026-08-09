@@ -504,7 +504,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v22',
+            text: 'AL·v23',
             style: TextStyle(
                 fontFamily: _regular,
                 fontSize: 7 * _k,
@@ -1290,7 +1290,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v22',
+            text: 'AL·v23',
             style: st(7, false, 1.0)
                 .copyWith(color: const Color(0xFFAAAAAA))),
         textDirection: TextDirection.ltr,
@@ -1393,6 +1393,7 @@ class PaperPdf {
           final tp = TextPainter(
             text: TextSpan(text: _safe(txt), style: st(9.6, ri == 0, 1.35)),
             textDirection: TextDirection.ltr,
+            textAlign: cols == 1 ? TextAlign.center : TextAlign.left,
           )..layout(maxWidth: colW - 2 * cellPad);
           cps.add(tp);
           if (tp.height > rowH) rowH = tp.height;

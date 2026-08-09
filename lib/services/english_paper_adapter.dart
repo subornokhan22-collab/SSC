@@ -37,19 +37,19 @@ class EnglishPaperAdapter {
     return [
       const EnglishSection(ebPartAHeader, []),
       const EnglishSection(ebBengaliNote, []),
-      EnglishSection('1. $ebInstrQ1   —   [1 × 10 = 10]', [
-        s.q1Box.join('      '),
-        '',
-        s.q1Passage,
-      ]),
+      EnglishSection('1. $ebInstrQ1   —   [1 × 10 = 10]',
+          ['', s.q1Passage],
+          table: [
+            [s.q1Box.join('      ')]
+          ]),
       EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]',
           q2Empty ? const ['⧉ v22-check: Q2 টেবিল-ডেটা ফাঁকা!'] : const [],
           table: q2Empty ? null : q2Rows),
-      EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]', [
-        s.q3Box.join('      '),
-        '',
-        s.q3Passage,
-      ]),
+      EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]',
+          ['', s.q3Passage],
+          table: [
+            [s.q3Box.join('      ')]
+          ]),
       EnglishSection('4. $ebInstrQ4   —   [1 × 10 = 10]', [
         for (var i = 0; i < s.q4.length; i++)
           '${i + 1}. ${s.q4[i].sentence}   (${s.q4[i].direction})',
