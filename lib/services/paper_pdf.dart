@@ -504,7 +504,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v24',
+            text: 'AL·v25',
             style: TextStyle(
                 fontFamily: _regular,
                 fontSize: 7 * _k,
@@ -1290,7 +1290,7 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v24',
+            text: 'AL·v25',
             style: st(7, false, 1.0)
                 .copyWith(color: const Color(0xFFAAAAAA))),
         textDirection: TextDirection.ltr,
@@ -1394,7 +1394,8 @@ class PaperPdf {
           final tp = TextPainter(
             text: TextSpan(text: _safe(txt), style: st(9.6, ri == 0, 1.35)),
             textDirection: TextDirection.ltr,
-            textAlign: cols == 1 ? TextAlign.center : TextAlign.left,
+            textAlign:
+                (centered || cols == 1) ? TextAlign.center : TextAlign.left,
           )..layout(maxWidth: colW - 2 * cellPad);
           cps.add(tp);
           if (tp.height > rowH) rowH = tp.height;
@@ -1426,6 +1427,7 @@ class PaperPdf {
         continue;
       }
       await para(s.head, 11.3, isBold: true, gapBefore: 8, gapAfter: 2);
+      if (s.table != null) await drawTable(s.table!, centered: s.centerTable);
       for (final l in s.lines) {
         if (l.trim().isEmpty) {
           y += 4 * _k;
@@ -1433,7 +1435,6 @@ class PaperPdf {
         }
         await para(l, 10.3, indent: 10, gapAfter: 1.5);
       }
-      if (s.table != null) await drawTable(s.table!);
     }
 
     await commit();
