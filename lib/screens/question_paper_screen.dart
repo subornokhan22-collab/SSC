@@ -17,17 +17,28 @@ import '../data/english_answers_data.dart';
 import '../services/english_paper_adapter.dart';
 import 'subjects_screen.dart';
 
-/// SSC-2027 অফিসিয়াল প্রশ্ন-কাঠামো (জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড)
-/// গণিত: সৃজনশীল ৮ (৫×১০) + সংক্ষিপ্ত-উত্তর ১৫ (১০×২) + MCQ ৩০ = ১০০
-/// বিজ্ঞান/উচ্চতর গণিত (তত্ত্বীয় ৭৫): সৃজনশীল ৭ (৪×১০) + সংক্ষিপ্ত ৭ (৫×২) + MCQ ২৫
-/// অন্যান্য: সৃজনশীল ৮ (৫×১০) + সংক্ষিপ্ত ১৫ (১০×২) + MCQ ৩০ = ১০০
+/// SSC-2027 অফিসিয়াল প্রশ্ন-কাঠামো — PDF যাচাইকৃত (Lalmonirhat Govt Girls, ব্যবসায় বিভাগ) + NCTB Sep-2025 সংশোধনী
+/// Reference PDF pages: 101 বাংলা ১ম 70(50+20)+30, 102 বাংলা ২য় 70(10+10+10+10+10+20 নতুন সংবাদ প্রতিবেদন)+30,
+/// 107 English 1st Reading 70+Writing30=100, 108 English 2nd Grammar60+Writing40=100,
+/// 109 গণিত 70(50+20)+30 – বিভাগ-কোটা: বীজগণিত 2, জ্যামিতি 2, ত্রিকোণ/পরিমিতি 2, পরিসংখ্যান 2,
+/// 127 বিজ্ঞান 70+30=100, 143 ব্যবসায় উদ্যোগ 70+30, 152 ফিন্যান্স 70+30 (ফিন্যান্স 5/ব্যাংকিং 3 কোটা, সংক্ষিপ্ত 8+7 কোটা),
+/// 146 হিসাববিজ্ঞান 70(7 CQ উত্তর 4×10=40 + বাধ্যতামূলক আর্থিক বিবরণী 20 + 7 SAQ উত্তর 5×2=10)+30=100,
+/// 134 কৃষি 50(7 CQ উত্তর4=40+7 SAQ উত্তর5=10)+25 MCQ+25 ব্যবহারিক=100,
+/// 154 ICT নতুন সার্কুলার (Sep 2025): তত্ত্বীয় 25 MCQ only + ব্যবহারিক 25 =50,
+/// 147 শারীরিক ও 156 ক্যারিয়ার: ধারাবাহিক মূল্যায়ন 50 (তাত্ত্বিক/ব্যবহারিক অভিক্ষা),
+/// বিজ্ঞান বিভাগ (Physics/Chem/Bio/Higher Math): তত্ত্বীয় 75 (CQ 4×10=40 + SAQ 5×2=10 + MCQ 25) + ব্যবহারিক 25 =100
 class _PaperPattern {
   final int mcqCount;
   final int cqCount;
   final int saqCount;
   final int cqAnswerCount;
   final int saqAnswerCount;
+  final int compulsoryCount; // e.g., accounting compulsory financial statement
+  final int compulsoryMarks; // 20 for accounting
   final bool mathDivisions;
+  final bool financeDivisions;
+  final int practicalMarks;
+  final String note; // UI explanation
 
   const _PaperPattern({
     required this.mcqCount,
@@ -35,10 +46,16 @@ class _PaperPattern {
     required this.saqCount,
     required this.cqAnswerCount,
     required this.saqAnswerCount,
+    this.compulsoryCount = 0,
+    this.compulsoryMarks = 0,
     this.mathDivisions = false,
+    this.financeDivisions = false,
+    this.practicalMarks = 0,
+    this.note = '',
   });
 
-  int get totalMarks => cqAnswerCount * 10 + saqAnswerCount * 2 + mcqCount;
+  int get theoryMarks => cqAnswerCount * 10 + compulsoryMarks + saqAnswerCount * 2 + mcqCount;
+  int get totalMarks => theoryMarks + practicalMarks;
 }
 
 class QuestionPaperScreen extends StatefulWidget {
@@ -110,13 +127,29 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
   String _setLetter = 'ক';
   static const _setLetters = ['ক', 'খ', 'গ', 'ঘ'];
+  // PDF যাচাইকৃত বিষয় কোড – Page-1 সূচিপত্র
   static const _subjectCodes = {
-    'general_math': '১০৯',
+    'bangla_1st': '১০১',
+    'bangla_2nd': '১০২',
+    'english_1st': '১০৭',
+    'english_2nd': '১০৮',
+    'general_math': '১০৯', // গণিত 109
+    'religion': '১১১', // ইসলাম 111 (হিন্দু 112)
+    'general_science': '১২৭', // বিজ্ঞান 127
+    'agriculture': '১৩৪', // কৃষিশিক্ষা 134
+    'higher_math': '১২৬',
     'physics': '১৩৬',
     'chemistry': '১৩৭',
     'biology': '১৩৮',
-    'higher_math': '১২৬',
-    'ict': '১৫৪',
+    'business_ent': '১৪৩', // ব্যবসায় উদ্যোগ 143
+    'accounting': '১৪৬', // হিসাববিজ্ঞান 146
+    'physical_edu': '১৪৭', // শারীরিক শিক্ষা 147
+    'finance': '১৫২', // ফিন্যান্স ও ব্যাংকিং 152
+    'ict': '১৫৪', // ICT 154
+    'career': '১৫৬', // ক্যারিয়ার 156
+    'bgs': '১৫০',
+    'history': '১১০',
+    'civics': '১৪০',
   };
 
   List<Question> _mcqs = [];
@@ -178,25 +211,118 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     }).join();
   }
 
-  // ── বিষয় অনুযায়ী SSC-2027 প্যাটার্ন ─────────────────────────────
+  // ── বিষয় অনুযায়ী SSC-2027 প্যাটার্ন — PDF + Sep-2025 Circular যাচাইকৃত ──
   _PaperPattern _patternFor(String sid) {
-    const science = {'physics', 'chemistry', 'higher_math', 'biology'};
-    if (sid == 'general_math') {
-      return const _PaperPattern(
-        mcqCount: 30, cqCount: 8, saqCount: 15,
-        cqAnswerCount: 5, saqAnswerCount: 10, mathDivisions: true,
-      );
+    // Science with practical 25
+    const sciencePractical = {'physics', 'chemistry', 'higher_math', 'biology', 'agriculture'};
+    // 100 marks without practical: 70 written (50 CQ +20 SAQ) +30 MCQ
+    const general100 = {'general_math', 'bgs', 'religion', 'history', 'civics', 'business_ent', 'general_science', 'finance'};
+
+    switch (sid) {
+      // ——— গণিত 109: PDF Page-14 — 8 CQ (2 per division) answer 5 + 15 SAQ answer10 +30 MCQ =100
+      case 'general_math':
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 8, saqCount: 15,
+          cqAnswerCount: 5, saqAnswerCount: 10,
+          mathDivisions: true,
+          note: 'বিভাগ-কোটা: বীজ 12, জ্যামিতি 11, ত্রিকোণ+পরিমিতি 4, পরিসংখ্যান 3 (MCQ); CQ প্রতি বিভাগে 2টি করে',
+        );
+
+      // ——— বিজ্ঞান বিভাগ তত্ত্বীয় 75 + ব্যবহারিক 25 — Page 20, RisingBD source
+      case 'physics':
+      case 'chemistry':
+      case 'biology':
+      case 'higher_math':
+        return const _PaperPattern(
+          mcqCount: 25, cqCount: 7, saqCount: 7,
+          cqAnswerCount: 4, saqAnswerCount: 5,
+          practicalMarks: 25,
+          note: 'তত্ত্বীয় 75 (CQ 40 + SAQ 10 + MCQ 25) + ব্যবহারিক 25 =100',
+        );
+
+      // ——— কৃষিশিক্ষা 134: PDF Page-21/22 — তত্ত্বীয় 50 (CQ 40+SAQ10) + MCQ 25 + ব্যবহারিক 25 =100
+      case 'agriculture':
+        return const _PaperPattern(
+          mcqCount: 25, cqCount: 7, saqCount: 7,
+          cqAnswerCount: 4, saqAnswerCount: 5,
+          practicalMarks: 25,
+          note: 'তত্ত্বীয় 50 (CQ 4×10=40 + SAQ 5×2=10) + MCQ 25 =75 + ব্যবহারিক 25 =100 (PDF Page-21)',
+        );
+
+      // ——— হিসাববিজ্ঞান 146: PDF Page-24 — 7 CQ answer4 (40) + বাধ্যতামূলক আর্থিক বিবরণী 20 + SAQ 10 =70 + MCQ30=100
+      case 'accounting':
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 7, saqCount: 7,
+          cqAnswerCount: 4, saqAnswerCount: 5,
+          compulsoryCount: 1, compulsoryMarks: 20,
+          note: '7 CQ → উত্তর 4টি (40) + 1টি বাধ্যতামূলক আর্থিক বিবরণী (20, বিকল্প নেই) + SAQ 5×2=10 =70 + MCQ30=100',
+        );
+
+      // ——— ফিন্যান্স ও ব্যাংকিং 152: PDF Page-26 + Sep-2025 circular — CQ 8 (ফিন্যান্স 5+ব্যাংকিং3, উত্তর 5, প্রতি অংশে কমপক্ষে 2) + SAQ 15 (8+7, উত্তর10, কমপক্ষে 4 যেকোনো অংশে) + MCQ30
+      case 'finance':
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 8, saqCount: 15,
+          cqAnswerCount: 5, saqAnswerCount: 10,
+          financeDivisions: true,
+          note: 'ফিন্যান্স 5+ব্যাংকিং 3 (CQ), উত্তর 5 (প্রতি অংশে ≥2); SAQ 8+7, উত্তর 10 (≥4 যেকোনো অংশে) – Sep-2025 সংশোধনী',
+        );
+
+      // ——— ICT 154: PDF Page-27/28 + Sep-2025 circular — নতুন: MCQ 25 only + ব্যবহারিক 25 =50 (SAQ বাতিল)
+      case 'ict':
+        return const _PaperPattern(
+          mcqCount: 25, cqCount: 0, saqCount: 0,
+          cqAnswerCount: 0, saqAnswerCount: 0,
+          practicalMarks: 25,
+          note: 'Sep-2025 সংশোধনী: সংক্ষিপ্ত বাতিল, MCQ 25 + ব্যবহারিক 25 =50 (আগে 15 MCQ+10 SAQ=25 তত্ত্বীয়)',
+        );
+
+      // ——— ব্যবসায় উদ্যোগ 143, বিজ্ঞান 127, BGS, Religion ইত্যাদি — 70+30=100
+      case 'business_ent':
+      case 'general_science':
+      case 'bgs':
+      case 'religion':
+      case 'history':
+      case 'civics':
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 8, saqCount: 15,
+          cqAnswerCount: 5, saqAnswerCount: 10,
+          note: 'লিখিত 70 (CQ 50 + SAQ 20) + MCQ 30 =100 (PDF Page-23 বিজ্ঞান/উদ্যোগ)',
+        );
+
+      // ——— বাংলা ১ম 101: Page-3 — গদ্য 4+পদ্য 4=8 CQ উত্তর5=50 + উপন্যাস 2+নাটক2=4 বর্ণনামূলক উত্তর2=20 (Ka3 Kha7) + MCQ30=100
+      case 'bangla_1st':
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 8, saqCount: 4,
+          cqAnswerCount: 5, saqAnswerCount: 2,
+          note: 'গদ্য 4+পদ্য 4=8 CQ (উত্তর5, প্রতি অংশে ≥2) =50 + সহপাঠ 4 (উপন্যাস2+নাটক2) উত্তর2=20 (Ka3 Kha7) + MCQ30=100',
+        );
+
+      // ——— বাংলা ২য় 102: Page-5 + Sep-2025 — রচনামূলক 70 (অনুচ্ছেদ10+চিঠি/প্রতিবেদন10+সারাংশ10+ভাব10+সংবাদ প্রতিবেদন10 (অনুবাদ বাতিল Sep-2025)+প্রবন্ধ20) + MCQ30=100
+      case 'bangla_2nd':
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 6, saqCount: 0,
+          cqAnswerCount: 6, saqAnswerCount: 0,
+          note: 'রচনামূলক 70: অনুচ্ছেদ10+পত্র/প্রতিবেদন10+সারাংশ10+ভাব10+সংবাদ প্রতিবেদন10 (অনুবাদ বাতিল Sep-2025)+প্রবন্ধ20 + MCQ30=100',
+        );
+
+      // ——— শারীরিক শিক্ষা 147 ও ক্যারিয়ার 156 — ধারাবাহিক মূল্যায়ন 50
+      case 'physical_edu':
+      case 'career':
+        return const _PaperPattern(
+          mcqCount: 0, cqCount: 0, saqCount: 0,
+          cqAnswerCount: 0, saqAnswerCount: 0,
+          practicalMarks: 0,
+          note: 'ধারাবাহিক মূল্যায়ন 50 – শ্রেণি অভীক্ষা + অ্যাসাইনমেন্ট/খেলাধুলা (PDF Page-25/29)',
+        );
+
+      default:
+        // fallback general 70+30
+        return const _PaperPattern(
+          mcqCount: 30, cqCount: 8, saqCount: 15,
+          cqAnswerCount: 5, saqAnswerCount: 10,
+          note: 'সাধারণ: লিখিত 70 (CQ 50 + SAQ 20) + MCQ 30 =100',
+        );
     }
-    if (science.contains(sid)) {
-      return const _PaperPattern(
-        mcqCount: 25, cqCount: 7, saqCount: 7,
-        cqAnswerCount: 4, saqAnswerCount: 5,
-      );
-    }
-    return const _PaperPattern(
-      mcqCount: 30, cqCount: 8, saqCount: 15,
-      cqAnswerCount: 5, saqAnswerCount: 10,
-    );
   }
 
   // ── সাধারণ গণিতের অধ্যায় → বিভাগ (বোর্ডের নির্দেশনা অনুযায়ী) ────
@@ -529,16 +655,41 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     try {
       final isFull = _mode == 'full';
       final pat = _patternFor(_subject!.id);
+      // PDF যাচাই + compulsory (Accounting 20) অন্তর্ভুক্ত
       final int wMarks = _mode == 'chapter'
           ? _cqs.length * 10
-          : pat.cqAnswerCount * 10 + pat.saqAnswerCount * 2;
+          : pat.cqAnswerCount * 10 + pat.compulsoryMarks + pat.saqAnswerCount * 2;
       final int mMarks = _mode == 'chapter' ? _mcqs.length : pat.mcqCount;
-      final String wTime = _mode == 'chapter'
-          ? '৪০ মিনিট'
-          : (pat.totalMarks == 75 ? '২ ঘণ্টা' : '২ ঘণ্টা ৩০ মিনিট');
-      final String mTime = _mode == 'chapter'
-          ? '২০ মিনিট'
-          : (pat.totalMarks == 75 ? '২৫ মিনিট' : '৩০ মিনিট');
+      String wTime;
+      String mTime;
+      if (_subject!.id == 'ict') {
+        wTime = _mode == 'chapter' ? '৪০ মিনিট' : '১ ঘণ্টা'; // PDF Page-27: তত্ত্বীয় 1 ঘণ্টা পূর্ণমান 25
+        mTime = _mode == 'chapter' ? '২০ মিনিট' : '১ ঘণ্টা';
+      } else if (pat.practicalMarks == 25 && pat.mcqCount == 25) {
+        wTime = _mode == 'chapter' ? '৪০ মিনিট' : '২ ঘণ্টা'; // science 75 theory = 2h? Actually PDF says বিজ্ঞান 2h30 but theory 75
+        mTime = _mode == 'chapter' ? '২০ মিনিট' : '২৫ মিনিট';
+      } else {
+        wTime = _mode == 'chapter' ? '৪০ মিনিট' : '২ ঘণ্টা ৩০ মিনিট';
+        mTime = _mode == 'chapter' ? '২০ মিনিট' : '৩০ মিনিট';
+      }
+      if (pat.totalMarks == 50 || pat.totalMarks == 25) {
+        wTime = '১ ঘণ্টা';
+        mTime = '১ ঘণ্টা';
+      }
+      String? cqNote;
+      if (isFull) {
+        if (pat.mathDivisions) {
+          cqNote = '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০) – PDF Page-14';
+        } else if (pat.financeDivisions) {
+          cqNote = '(ফিন্যান্স অংশ থেকে 5টি ও ব্যাংকিং অংশ থেকে 3টি নিয়ে মোট 8টি CQ থাকবে। প্রতিটি অংশ থেকে কমপক্ষে 2টি করে নিয়ে মোট ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও) – PDF Page-26 + Sep-2025 সংশোধনী, SAQ 8+7 থেকে উত্তর 10 (≥4 যেকোনো অংশে)';
+        } else if (_subject!.id == 'accounting') {
+          cqNote = '(৭টি সৃজনশীল প্রশ্ন থেকে যেকোনো ৪টির উত্তর দাও (40) + ৮নং প্রশ্নে 1টি বাধ্যতামূলক আর্থিক বিবরণী প্রস্তুতকরণ (20, বিকল্প নেই) =70) – PDF Page-24';
+        } else if (_subject!.id == 'bangla_1st') {
+          cqNote = '(গদ্য অংশ থেকে 4টি ও কবিতা অংশ থেকে 4টি নিয়ে মোট 8টি সৃজনশীল প্রশ্ন থাকবে। গদ্য থেকে কমপক্ষে 2টি ও কবিতা থেকে কমপক্ষে 2টি নিয়ে মোট 5টি প্রশ্নের উত্তর দাও। সহপাঠ থেকে 4টি বর্ণনামূলক (উপন্যাস2+নাটক2) থেকে উত্তর 2টি (প্রতি প্রশ্নে ক=3+খ=7)) – PDF Page-3';
+        } else {
+          cqNote = null;
+        }
+      }
       final pages = await PaperPdf.renderPages(
         title: '${_subject!.name} (${_subject!.bengaliName})',
         modeLine: _mode == 'chapter' ? (_chapter ?? '') : 'ফুল মডেল টেস্ট পেপার',
@@ -549,9 +700,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         marks: _mode == 'chapter' ? _bn(30) : _bn(pat.totalMarks),
         cqAnswerCount: _mode == 'chapter' ? _cqs.length : pat.cqAnswerCount,
         saqAnswerCount: pat.saqAnswerCount,
-        cqNote: (isFull && pat.mathDivisions)
-            ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
-            : null,
+        cqNote: cqNote,
         writtenTime: wTime,
         writtenMarks: _bn(wMarks),
         mcqTime: mTime,
@@ -671,17 +820,39 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     }
     final isFull = _mode == 'full';
     final pat = _patternFor(_subject!.id);
-    // স্কুল-বোর্ড স্টাইল: লিখিত পত্র ও বহুনির্বাচনি পত্রের আলাদা সময়/মান
+    // স্কুল-বোর্ড স্টাইল: লিখিত পত্র ও বহুনির্বাচনি পত্রের আলাদা সময়/মান – PDF + Sep-2025 যাচাই
     final int wMarks = _mode == 'chapter'
         ? _cqs.length * 10
-        : pat.cqAnswerCount * 10 + pat.saqAnswerCount * 2;
+        : pat.cqAnswerCount * 10 + pat.compulsoryMarks + pat.saqAnswerCount * 2;
     final int mMarks = _mode == 'chapter' ? _mcqs.length : pat.mcqCount;
-    final String wTime = _mode == 'chapter'
-        ? '৪০ মিনিট'
-        : (pat.totalMarks == 75 ? '২ ঘণ্টা' : '২ ঘণ্টা ৩০ মিনিট');
-    final String mTime = _mode == 'chapter'
-        ? '২০ মিনিট'
-        : (pat.totalMarks == 75 ? '২৫ মিনিট' : '৩০ মিনিট');
+    String wTime;
+    String mTime;
+    if (_subject!.id == 'ict') {
+      wTime = _mode == 'chapter' ? '৪০ মিনিট' : '১ ঘণ্টা'; // PDF Page-27 theory 1h, practical 2h
+      mTime = _mode == 'chapter' ? '২০ মিনিট' : '১ ঘণ্টা';
+    } else if (pat.practicalMarks == 25 && pat.mcqCount == 25) {
+      wTime = _mode == 'chapter' ? '৪০ মিনিট' : '২ ঘণ্টা ৩০ মিনিট'; // Page-20/21: লিখিত 2h30
+      mTime = _mode == 'chapter' ? '২০ মিনিট' : '২৫ মিনিট';
+    } else {
+      wTime = _mode == 'chapter' ? '৪০ মিনিট' : '২ ঘণ্টা ৩০ মিনিট';
+      mTime = _mode == 'chapter' ? '২০ মিনিট' : '৩০ মিনিট';
+    }
+    if (pat.totalMarks == 50) {
+      wTime = '১ ঘণ্টা'; // ICT theory 1h
+      mTime = '১ ঘণ্টা';
+    }
+    String? printCqNote;
+    if (isFull) {
+      if (pat.mathDivisions) {
+        printCqNote = '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০) – PDF Page-14';
+      } else if (pat.financeDivisions) {
+        printCqNote = '(ফিন্যান্স 5+ব্যাংকিং 3=8 CQ, উত্তর 5 (প্রতি অংশে ≥2); SAQ 8+7=15, উত্তর 10 (≥4 যেকোনো অংশে)) – Sep-2025 সংশোধনী';
+      } else if (_subject!.id == 'accounting') {
+        printCqNote = '(7 CQ থেকে 4টি (40) + বাধ্যতামূলক আর্থিক বিবরণী 20 =60, SAQ 5×2=10 => লিখিত 70) – PDF Page-24';
+      } else if (_subject!.id == 'bangla_1st') {
+        printCqNote = '(গদ্য 4+পদ্য 4=8 CQ, উত্তর 5 (প্রতি অংশে ≥2)=50 + সহপাঠ 4 থেকে উত্তর2=20 (Ka3 Kha7))';
+      }
+    }
     try {
       await PaperPdf.printPaper(
         title: '${_subject!.name} (${_subject!.bengaliName})',
@@ -693,9 +864,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         marks: _mode == 'chapter' ? _bn(30) : _bn(pat.totalMarks),
         cqAnswerCount: _mode == 'chapter' ? _cqs.length : pat.cqAnswerCount,
         saqAnswerCount: pat.saqAnswerCount,
-        cqNote: (isFull && pat.mathDivisions)
-            ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
-            : null,
+        cqNote: printCqNote,
         writtenTime: wTime,
         writtenMarks: _bn(wMarks),
         mcqTime: mTime,
@@ -824,12 +993,21 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
 
   String _patternInfoLine() {
     final p = _patternFor(_subject?.id ?? 'general_math');
-    final line =
-        'Creative ×${p.cqCount} (${p.cqAnswerCount}×10 = ${p.cqAnswerCount * 10})'
-        ' + Short-answer ×${p.saqCount} (${p.saqAnswerCount}×2 = ${p.saqAnswerCount * 2})'
-        ' + MCQ ${p.mcqCount}';
-    final extra = p.totalMarks == 75 ? ' (theory; practical 25 separate)' : '';
-    return '📄 SSC-2027 new structure: $line • Total ${p.totalMarks}$extra • 3 hours';
+    String line;
+    if (_subject?.id == 'ict') {
+      line = 'MCQ ${p.mcqCount} (তত্ত্বীয় 25) + ব্যবহারিক ${p.practicalMarks} =50 (Sep-2025: SAQ বাতিল)';
+    } else if (_subject?.id == 'accounting') {
+      line = 'Creative ${p.cqCount} (উত্তর ${p.cqAnswerCount}=40) + বাধ্যতামূলক ${p.compulsoryCount}×${p.compulsoryMarks}=20 + SAQ ${p.saqCount} (উত্তর ${p.saqAnswerCount}×2=10) + MCQ ${p.mcqCount}=30 => 100';
+    } else if (p.financeDivisions) {
+      line = 'Creative ${p.cqCount} (Fin5+Bank3, উত্তর5≥2) =50 + SAQ ${p.saqCount} (8+7, উত্তর10≥4)=20 + MCQ ${p.mcqCount}=30 =>100';
+    } else if (p.practicalMarks == 25 && p.mcqCount == 25) {
+      line = 'Creative ${p.cqCount} (উত্তর${p.cqAnswerCount}=${p.cqAnswerCount*10}) + SAQ ${p.saqCount} (উত্তর${p.saqAnswerCount}=${p.saqAnswerCount*2}) + MCQ ${p.mcqCount}=25 => তত্ত্বীয় ${p.theoryMarks} + ব্যবহারিক ${p.practicalMarks}=${p.totalMarks}';
+    } else {
+      line = 'Creative ×${p.cqCount} (${p.cqAnswerCount}×10=${p.cqAnswerCount*10}) + SAQ ×${p.saqCount} (${p.saqAnswerCount}×2=${p.saqAnswerCount*2}) + MCQ ${p.mcqCount}=${p.mcqCount} => ${p.theoryMarks}';
+    }
+    final extra = p.practicalMarks > 0 ? ' + ব্যবহারিক ${p.practicalMarks}' : '';
+    final note = p.note.isNotEmpty ? '\n📝 ${p.note}' : '';
+    return '📄 SSC-2027 (PDF Page-14/24/26 যাচাই): $line • Total ${p.totalMarks}$extra • ${p.totalMarks==50?"1h+2h practical":"3h"}$note';
   }
 
   Widget _configCard() {
@@ -1162,9 +1340,18 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     final time = _mode == 'chapter' ? '১ ঘণ্টা' : '৩ ঘণ্টা';
     final marks = _mode == 'chapter' ? _bn(30) : _bn(pat.totalMarks);
     final cqAnswerCount = _mode == 'chapter' ? _cqs.length : pat.cqAnswerCount;
-    final cqNote = (isFull && pat.mathDivisions)
-        ? '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'
-        : '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)';
+    String cqNote;
+    if (isFull && pat.mathDivisions) {
+      cqNote = '(ক, খ, গ ও ঘ — প্রত্যেক বিভাগ থেকে ন্যূনতম ১টি সহ যেকোনো ${_bn(pat.cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০) – PDF Page-14';
+    } else if (isFull && pat.financeDivisions) {
+      cqNote = '(ফিন্যান্স 5+ব্যাংকিং 3=8 CQ, উত্তর 5 (≥2 প্রতি অংশে); SAQ 8+7=15, উত্তর10 (≥4 যেকোনো অংশে)) – PDF Page-26';
+    } else if (isFull && _subject!.id == 'accounting') {
+      cqNote = '(7 CQ থেকে 4টি=40 + বাধ্যতামূলক আর্থিক বিবরণী 20 =60, SAQ 5×2=10) – PDF Page-24';
+    } else if (isFull && _subject!.id == 'bangla_1st') {
+      cqNote = '(গদ্য 4+পদ্য 4=8 CQ উত্তর5=50 + সহপাঠ 4 থেকে উত্তর2=20) – PDF Page-3';
+    } else {
+      cqNote = '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)';
+    }
 
     String divLetter() {
       if (_saqs.isNotEmpty) return 'গ';
