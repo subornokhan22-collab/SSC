@@ -1,3 +1,5 @@
+FILE: SSC-main/lib/services/paper_pdf.dart
+====================================================================================================
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -1230,252 +1232,128 @@ class PaperPdf {
     await para('- শেষ -', 10, align: TextAlign.center, gapBefore: 4);
     await commit();
 
-    // ══════════════ OMR SHEET (HSC/SSC 50/30 format from your PDF) ══════════════
-    // User uploaded OMR-Sheet-For-HSC-50-Answer.pdf – now auto-generated as last page
+    // ══════════════ OMR SHEET — fixed two-zone layout (no overlap) ══════════════
     if (mcqs.isNotEmpty) {
-      // OMR page(s) – pink theme, roll/reg/set/subject bubbles
       begin();
-      final pink = const Color(0xFFE91E63);
-      final pinkLight = const Color(0xFFFCE4EC);
-      final black = const Color(0xFF000000);
+      const pink = Color(0xFFE91E63);
+      const pinkLight = Color(0xFFFCE4EC);
+      const black = Color(0xFF000000);
+      final borderPink = Paint()
+        ..color = pink
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.9 * _k;
 
-      // Top corner black squares (alignment marks)
-      canvas.drawRect(Rect.fromLTWH(_margin - 20*_k, _margin - 20*_k, 12*_k, 12*_k), Paint()..color=black);
-      canvas.drawRect(Rect.fromLTWH(sw - _margin + 8*_k, _margin - 20*_k, 12*_k, 12*_k), Paint()..color=black);
-      canvas.drawRect(Rect.fromLTWH(_margin - 20*_k, sh - _margin + 8*_k, 12*_k, 12*_k), Paint()..color=black);
-      canvas.drawRect(Rect.fromLTWH(sw - _margin + 8*_k, sh - _margin + 8*_k, 12*_k, 12*_k), Paint()..color=black);
-
-      // Left timing marks (black bars)
-      final barPaint = Paint()..color=black;
-      for(int i=0;i<28;i++){
-        double by = _margin + 35*_k + i* (sh*0.028);
-        if(i%2==0) canvas.drawRect(Rect.fromLTWH(_margin-15*_k, by, 8*_k, 4*_k), barPaint);
+      // Scanner alignment marks.
+      for (final p in [
+        Offset(_margin - 16 * _k, _margin - 16 * _k),
+        Offset(sw - _margin + 5 * _k, _margin - 16 * _k),
+        Offset(_margin - 16 * _k, sh - _margin + 5 * _k),
+        Offset(sw - _margin + 5 * _k, sh - _margin + 5 * _k),
+      ]) {
+        canvas.drawRect(Rect.fromLTWH(p.dx, p.dy, 10 * _k, 10 * _k), Paint()..color = black);
       }
 
       y = _margin;
-      // Title
-      await para('মাধ্যমিক ও উচ্চমাধ্যমিক শিক্ষাবোর্ড', 14, isBold: true, align: TextAlign.center);
-      await para('এস.এস.সি/এইচ.এস.সি পরীক্ষা- ২০২৭', 11, isBold: true, align: TextAlign.center, gapBefore: 1);
-      await para('নৈর্ব্যক্তিক অভীক্ষার উত্তরপত্র', 12.5, isBold: true, align: TextAlign.center, gapBefore: 1);
+      await para('মাধ্যমিক ও উচ্চমাধ্যমিক শিক্ষাবোর্ড', 13.5, isBold: true, align: TextAlign.center);
+      await para('এস.এস.সি পরীক্ষা — ২০২৭', 10.5, isBold: true, align: TextAlign.center, gapBefore: 1);
+      await para('নৈর্ব্যক্তিক অভীক্ষার উত্তরপত্র', 12, isBold: true, align: TextAlign.center, gapBefore: 1);
+      await para('নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।', 8.2,
+          isBold: true, align: TextAlign.center, gapBefore: 3, gapAfter: 4);
+      await rule(gapBefore: 1, gapAfter: 5);
 
-      // Pink warning boxes
-      y += 3*_k;
-      final warnH = 10*_k;
-      final warnW = contentW;
-      canvas.drawRect(Rect.fromLTWH(_margin, y, warnW, warnH), Paint()..color=pink);
-      var tpWarn1 = makePainter('উত্তরপত্রে নির্ধারিত স্থান ব্যতীত কোনো অবাঞ্ছিত দাগ দেয়া বা কোনো কিছু লেখা যাবে না', 9, isBold: true, align: TextAlign.center);
-      tpWarn1.layout(maxWidth: warnW);
-      tpWarn1.paint(canvas, Offset(_margin + (warnW - tpWarn1.width)/2, y + (warnH - tpWarn1.height)/2));
-      y += warnH + 0.8*_k;
-      final warnW2 = contentW;
-      final warnH2 = 8*_k;
-      canvas.drawRect(Rect.fromLTWH(_margin, y, warnW2, warnH2), Paint()..color=Colors.white..style=PaintingStyle.stroke..strokeWidth=0.9*_k);
-      final borderPink = Paint()..color=pink..style=PaintingStyle.stroke..strokeWidth=0.9*_k;
-      canvas.drawRect(Rect.fromLTWH(_margin, y, warnW2, warnH2), borderPink);
-      var tpWarn2 = makePainter('অবশ্যই কালো কালির বল-পয়েন্ট কলম দিয়ে বৃত্ত ভরাট করতে হবে', 9, isBold: true, align: TextAlign.center);
-      tpWarn2.layout(maxWidth: warnW2);
-      tpWarn2.paint(canvas, Offset(_margin + (warnW2 - tpWarn2.width)/2, y + (warnH2 - tpWarn2.height)/2));
-      y += warnH2 + 6*_k;
+      // IMPORTANT: Questions and identity fields use separate fixed zones.
+      // Never calculate an identity panel from a question-panel width.
+      final leftX = _margin;
+      final leftW = contentW * .42;
+      final gap = contentW * .035;
+      final rightX = leftX + leftW + gap;
+      final rightW = contentW - leftW - gap;
 
-      // Layout divisions
-      final leftQWidth = contentW * 0.52;
-      final rightInfoWidth = contentW * 0.46;
-      final gutter = contentW * 0.02;
-      final qLeftX = _margin;
-      final qRightAreaX = _margin + leftQWidth + gutter;
-
-      // Helper to draw bubble
-      void drawBubble(double cx, double cy, String label, {bool filled=false}) {
-        final r = 5.8*_k;
-        final stroke = Paint()..color=pink..style=PaintingStyle.stroke..strokeWidth=0.9*_k;
-        final fill = Paint()..color=pink..style=PaintingStyle.fill;
-        if (filled) canvas.drawCircle(Offset(cx, cy), r, fill);
-        canvas.drawCircle(Offset(cx, cy), r, stroke);
-        var tpLab = makePainter(label, 7.5, isBold: false, align: TextAlign.center);
-        tpLab.layout();
-        tpLab.paint(canvas, Offset(cx - tpLab.width/2, cy - tpLab.height/2));
+      void bubble(double x, double yy, String value, {bool selected = false}) {
+        final r = 4.8 * _k;
+        canvas.drawCircle(Offset(x, yy), r, Paint()..color = selected ? pink : Colors.white);
+        canvas.drawCircle(Offset(x, yy), r, Paint()
+          ..color = pink
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = .8 * _k);
+        final t = makePainter(value, 6.4, isBold: selected, align: TextAlign.center)..layout();
+        t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
       }
 
-      // Question columns
-      int totalQ = mcqs.length;
-      if (totalQ > 50) totalQ = 50;
-      int leftCount = totalQ <= 25 ? totalQ : 25;
-      int rightCount = totalQ > 25 ? totalQ - 25 : 0;
-
-      double qRowH = 12.5*_k;
-      // Headers for questions
-      var tpQHead1 = makePainter('প্রশ্ন নম্বর', 8, isBold: true, align: TextAlign.center);
-      tpQHead1.layout();
-      var tpAnsHead1 = makePainter('উত্তর', 8, isBold: true, align: TextAlign.center);
-      tpAnsHead1.layout();
-
-      // Draw question area boxes (pink border)
-      final qBoxH = (leftCount+1)*qRowH + 4*_k;
-      final qBoxW1 = leftQWidth/2 - 4*_k;
-      final qBoxW2 = leftQWidth/2 - 4*_k;
-      // Left Q box (1-25)
-      canvas.drawRect(Rect.fromLTWH(qLeftX, y, qBoxW1, qBoxH), borderPink);
-      canvas.drawRect(Rect.fromLTWH(qLeftX + qBoxW1 + 8*_k, y, qBoxW2, qBoxH), rightCount>0 ? borderPink : borderPink..color=Colors.grey.shade300);
-      // Header
-      tpQHead1.paint(canvas, Offset(qLeftX + 6*_k, y+1*_k));
-      tpAnsHead1.paint(canvas, Offset(qLeftX + 22*_k, y+1*_k));
-      var tpQHead2 = makePainter('প্রশ্ন নম্বর', 8, isBold: true, align: TextAlign.center);
-      tpQHead2.layout();
-      var tpAnsHead2 = makePainter('উত্তর', 8, isBold: true, align: TextAlign.center);
-      tpAnsHead2.layout();
-      tpQHead2.paint(canvas, Offset(qLeftX + qBoxW1 + 14*_k, y+1*_k));
-      tpAnsHead2.paint(canvas, Offset(qLeftX + qBoxW1 + 30*_k, y+1*_k));
-
-      double qY = y + 11*_k;
-      // Left column 1..leftCount
-      for(int i=0;i<leftCount;i++){
-        double yy = qY + i*qRowH;
-        var tpNo = makePainter(_bn(i+1), 8.5);
-        tpNo.layout();
-        tpNo.paint(canvas, Offset(qLeftX + 3*_k, yy+1.5*_k));
-        // 4 bubbles ক খ গ ঘ
-        double bx = qLeftX + 16*_k;
-        for(int o=0;o<4;o++){
-          drawBubble(bx + o*14*_k, yy+5.5*_k, _optionLetters[o]);
-        }
-        // light alternate background
-        if(i%2==0){
-          canvas.drawRect(Rect.fromLTWH(qLeftX, yy, qBoxW1, qRowH), Paint()..color=pinkLight.withOpacity(0.35));
-        }
-      }
-      // Right column 26..25+rightCount
-      if(rightCount>0){
-        for(int i=0;i<rightCount;i++){
-          double yy = qY + i*qRowH;
-          int qNo = 26 + i;
-          var tpNo = makePainter(_bn(qNo), 8.5);
-          tpNo.layout();
-          tpNo.paint(canvas, Offset(qLeftX + qBoxW1 + 11*_k, yy+1.5*_k));
-          double bx = qLeftX + qBoxW1 + 24*_k;
-          for(int o=0;o<4;o++){
-            drawBubble(bx + o*14*_k, yy+5.5*_k, _optionLetters[o]);
+      // Question area: 1–25 and 26–50 are stacked, so it cannot collide with metadata.
+      final total = mcqs.length.clamp(0, 50).toInt();
+      const maxPerBox = 25;
+      final rowH = 11.2 * _k;
+      void questionBox(int first, int count, double top) {
+        final h = (count + 1) * rowH + 3 * _k;
+        canvas.drawRect(Rect.fromLTWH(leftX, top, leftW, h), borderPink);
+        final head = makePainter('প্রশ্ন নং        উত্তর', 8, isBold: true)..layout();
+        head.paint(canvas, Offset(leftX + 4 * _k, top + 1 * _k));
+        for (var i = 0; i < count; i++) {
+          final yy = top + (i + 1) * rowH + 4.8 * _k;
+          if (i.isEven) {
+            canvas.drawRect(Rect.fromLTWH(leftX + .5 * _k, yy - 5.6 * _k, leftW - _k, rowH),
+                Paint()..color = pinkLight.withOpacity(.32));
           }
-          if(i%2==0){
-            canvas.drawRect(Rect.fromLTWH(qLeftX + qBoxW1 + 8*_k, yy, qBoxW2, qRowH), Paint()..color=pinkLight.withOpacity(0.35));
-          }
+          final n = makePainter(_bn(first + i), 7.8)..layout();
+          n.paint(canvas, Offset(leftX + 4 * _k, yy - n.height / 2));
+          final bx = leftX + 18 * _k;
+          for (var o = 0; o < 4; o++) bubble(bx + o * 13.2 * _k, yy, _optionLetters[o]);
         }
       }
 
-      // Right side info panels
-      double rx = qRightAreaX;
-      double ry = y;
-      // Roll number – 6 columns
-      var tpRoll = makePainter('রোল নম্বর', 9, isBold: true, align: TextAlign.center);
-      tpRoll.layout();
-      final rollW = rightInfoWidth * 0.72;
-      final rollH = 10*13*_k + 12*_k;
-      canvas.drawRect(Rect.fromLTWH(rx, ry, rollW, rollH), borderPink);
-      tpRoll.paint(canvas, Offset(rx + (rollW - tpRoll.width)/2, ry+1*_k));
-      double rgy = ry + 10*_k;
-      for(int col=0;col<6;col++){
-        double cx = rx + 6*_k + col* (rollW-12*_k)/6;
-        for(int d=0; d<10; d++){
-          double cy = rgy + d*12.5*_k + 6*_k;
-          drawBubble(cx, cy, '$d');
-        }
-      }
-      // Set code
-      var tpSet = makePainter('সেট কোড', 9, isBold: true, align: TextAlign.center);
-      tpSet.layout();
-      double setX = rx + rollW + 8*_k;
-      double setW = rightInfoWidth - rollW - 10*_k;
-      double setH = 6*13*_k + 12*_k;
-      canvas.drawRect(Rect.fromLTWH(setX, ry, setW, setH), borderPink);
-      tpSet.paint(canvas, Offset(setX + (setW - tpSet.width)/2, ry+1*_k));
-      double sgy = ry + 10*_k;
-      bool hasSet = setCode != null && setCode!.isNotEmpty;
-      String sc = setCode ?? '';
-      for(int i=0;i<4;i++){
-        double cy = sgy + i*13*_k + 6*_k;
-        bool filled = hasSet && _optionLetters[i] == sc;
-        // vertical single column
-        drawBubble(setX + setW/2, cy, _optionLetters[i], filled: filled);
+      final top = y;
+      final firstCount = total > maxPerBox ? maxPerBox : total;
+      questionBox(1, firstCount, top);
+      if (total > maxPerBox) {
+        questionBox(26, total - maxPerBox, top + (firstCount + 1) * rowH + 10 * _k);
       }
 
-      // Registration number – 10 columns below roll
-      ry += rollH + 14*_k;
-      var tpReg = makePainter('রেজিস্ট্রেশন নম্বর', 9, isBold: true, align: TextAlign.center);
-      tpReg.layout();
-      final regW = rightInfoWidth * 0.95;
-      final regH = 10*13*_k + 12*_k;
-      canvas.drawRect(Rect.fromLTWH(rx, ry, regW, regH), borderPink);
-      tpReg.paint(canvas, Offset(rx + (regW - tpReg.width)/2, ry+1*_k));
-      double rgy2 = ry + 10*_k;
-      for(int col=0;col<10;col++){
-        double cx = rx + 6*_k + col* (regW-12*_k)/10;
-        for(int d=0; d<10; d++){
-          double cy = rgy2 + d*12.5*_k + 6*_k;
-          drawBubble(cx, cy, '$d');
+      void digitPanel(String title, int columns, double top, double width, {String digits = ''}) {
+        final h = 10 * 10.8 * _k + 13 * _k;
+        canvas.drawRect(Rect.fromLTWH(rightX, top, width, h), borderPink);
+        final label = makePainter(title, 8.5, isBold: true, align: TextAlign.center)..layout(maxWidth: width - 4 * _k);
+        label.paint(canvas, Offset(rightX + (width - label.width) / 2, top + 1.5 * _k));
+        for (var c = 0; c < columns; c++) {
+          final cx = rightX + 7 * _k + c * (width - 14 * _k) / (columns - 1 == 0 ? 1 : columns - 1);
+          final wanted = c < digits.length ? digits[c] : '';
+          for (var d = 0; d < 10; d++) bubble(cx, top + 12 * _k + d * 10.8 * _k, '$d', selected: wanted == '$d');
         }
       }
 
-      // Subject code – 3 columns
-      double subX = rx + regW + 8*_k;
-      if (subX + 45*_k > sw) {
-        // move below if not fit
-        ry += regH + 14*_k;
-        subX = rx;
-      }
-      var tpSub = makePainter('বিষয় কোড', 9, isBold: true, align: TextAlign.center);
-      tpSub.layout();
-      double subW = 48*_k;
-      double subH = 10*13*_k + 12*_k;
-      canvas.drawRect(Rect.fromLTWH(subX, ry, subW, subH), borderPink);
-      tpSub.paint(canvas, Offset(subX + (subW - tpSub.width)/2, ry+1*_k));
-      double sgy2 = ry + 10*_k;
-      // Pre-fill subject code digits if available
-      String subjDigits = '';
-      if (subjectCode != null) {
-        // subjectCode is like '১০৯' -> convert to english digits via _safe already does, but we need mapping
-        const bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-        String s = subjectCode!;
-        for(int i=0;i<10;i++) s = s.replaceAll(bnDigits[i], '$i');
-        subjDigits = s.replaceAll(RegExp(r'[^0-9]'), '');
-      }
-      for(int col=0;col<3;col++){
-        double cx = subX + 6*_k + col* (subW-12*_k)/3;
-        String targetDigit = (col < subjDigits.length) ? subjDigits[col] : '';
-        for(int d=0; d<10; d++){
-          double cy = sgy2 + d*12.5*_k + 6*_k;
-          bool filled = targetDigit.isNotEmpty && targetDigit == '$d';
-          drawBubble(cx, cy, '$d', filled: filled);
-        }
+      // These panels share only the right zone. Their x/y positions are explicit.
+      final rollW = rightW * .68;
+      digitPanel('রোল নম্বর', 6, top, rollW);
+      final setX = rightX + rollW + 5 * _k;
+      final setW = rightW - rollW - 5 * _k;
+      final setH = 4 * 13 * _k + 13 * _k;
+      canvas.drawRect(Rect.fromLTWH(setX, top, setW, setH), borderPink);
+      final setTitle = makePainter('সেট কোড', 8.2, isBold: true, align: TextAlign.center)..layout(maxWidth: setW);
+      setTitle.paint(canvas, Offset(setX + (setW - setTitle.width) / 2, top + 1.5 * _k));
+      for (var i = 0; i < 4; i++) {
+        bubble(setX + setW / 2, top + 12 * _k + i * 13 * _k, _optionLetters[i], selected: setCode == _optionLetters[i]);
       }
 
-      // Signature boxes on right edge (like original)
-      double sigX = sw - _margin - 62*_k;
-      double sigY = y + 28*_k;
-      canvas.drawRect(Rect.fromLTWH(sigX, sigY, 58*_k, 42*_k), borderPink);
-      var tpSig = makePainter('কক্ষ পরিদর্শকের স্বাক্ষর ও তারিখ', 7, isBold: false, align: TextAlign.center);
-      tpSig.layout(maxWidth: 56*_k);
-      tpSig.paint(canvas, Offset(sigX+2*_k, sigY+4*_k));
+      final regTop = top + 10 * 10.8 * _k + 20 * _k;
+      digitPanel('রেজিস্ট্রেশন নম্বর', 10, regTop, rightW);
+      String code = (subjectCode ?? '').replaceAll('০','0').replaceAll('১','1').replaceAll('২','2').replaceAll('৩','3').replaceAll('৪','4').replaceAll('৫','5').replaceAll('৬','6').replaceAll('৭','7').replaceAll('৮','8').replaceAll('৯','9').replaceAll(RegExp(r'[^0-9]'), '');
+      final subjectTop = regTop + 10 * 10.8 * _k + 20 * _k;
+      digitPanel('বিষয় কোড', 3, subjectTop, rightW * .48, digits: code);
 
-      // Bottom rules
-      double ruleY = sh - _margin - 90*_k;
-      var tpRuleHead = makePainter('নিয়মাবলি:', 10, isBold: true);
-      tpRuleHead.layout();
-      tpRuleHead.paint(canvas, Offset(rx, ruleY));
-      ruleY += 14*_k;
+      final rulesTop = subjectTop + 10 * 10.8 * _k + 19 * _k;
       final rules = [
-        '১। বৃত্তাকার ঘরগুলো এমনভাবে ভরাট করতে হবে যাতে ভিতরের লেখাটি দেখা না যায়। সঠিক পদ্ধতি ●  ভুল পদ্ধতি ✕  ○  ✓  ✕',
-        '২। বৃত্তাকার ঘরগুলো অবশ্যই কালো কালির বল-পয়েন্ট কলম দিয়ে ভরাট করতে হবে।',
-        '৩। উত্তরপত্রে কোনো অবাঞ্ছিত দাগ দেয়া এবং ভাঁজ করা যাবে না।',
-        '৪। পরীক্ষার পরিচ্ছন্ন ও ভাঁজবিহীন উত্তরপত্র মেশিনে মূল্যায়নের জন্য অপরিহার্য।',
-        '৫। সেট কোড না লিখলে / ভুল ভরাট না করলে উত্তরপত্র বাতিল হবে।',
+        'নিয়মাবলি:',
+        '১। বৃত্তের ভেতরের লেখা দেখা না যায় এমনভাবে ভরাট করো।',
+        '২। কালো কালির বল-পয়েন্ট কলম ব্যবহার করো; পেন্সিল ব্যবহার কোরো না।',
+        '৩। উত্তরপত্র ভাঁজ করা বা অপ্রয়োজনীয় দাগ দেওয়া যাবে না।',
+        '৪। সেট কোড ভুল হলে উত্তরপত্র মূল্যায়ন করা যাবে না।',
       ];
-      for(final r in rules){
-        var tpR = makePainter(r, 8);
-        tpR.layout(maxWidth: contentW - (rx - _margin) - 4*_k);
-        if(ruleY + tpR.height > bottomY) break;
-        tpR.paint(canvas, Offset(rx, ruleY));
-        ruleY += tpR.height + 2*_k;
+      var rulesY = rulesTop;
+      for (var i = 0; i < rules.length; i++) {
+        final t = makePainter(rules[i], i == 0 ? 9 : 7.5, isBold: i == 0)..layout(maxWidth: rightW);
+        t.paint(canvas, Offset(rightX, rulesY));
+        rulesY += t.height + 2 * _k;
       }
-
       await commit();
     }
 
@@ -1751,3 +1629,11 @@ class EnglishSection {
   const EnglishSection(this.head, this.lines,
       {this.table, this.centerTable = false});
 }
+
+====================================================================================================
+FILE: SSC-main/lib/services/supabase_config.dart
+====================================================================================================
+/// Supabase কনফিগারেশন — লগইন/OTP চালু করতে নিচের দুটো ঘর পূরণ করো।
+///
+/// কোথায় পাবে (SUPABASE_SETUP.md গাইড দেখো):
+///   supabase.com → তোমার প্রজেক্ট → Project Settings → API
