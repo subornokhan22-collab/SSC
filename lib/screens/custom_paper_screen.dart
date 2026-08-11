@@ -11,6 +11,7 @@ import '../services/english_paper_adapter.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
+import '../services/chapter_source_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import 'subscription_screen.dart';
@@ -30,7 +31,9 @@ class CustomPaperScreen extends StatefulWidget {
 
 class _CustomPaperScreenState extends State<CustomPaperScreen> {
   SubjectInfo? _subject;
-  final Set<String> _chapters = {}; // খালি থাকলে সব অধ্যায়
+  final Set<String> _chapters = {};
+  // Custom MCQ test: one independent quantity for every selected chapter.
+  final Map<String, int> _chapterMcqCounts = {};
   int _mcqN = 15;
   int _saqN = 5;
   int _cqN = 3;
@@ -179,6 +182,67 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     );
   }
 
+  int get _requestedMcqTotal => _chapterMcqCounts.values.fold(0, (sum, n) => sum + n);
+
+  void _toggleChapter(String chapter, bool selected) {
+    setState(() {
+      if (selected) {
+        _chapters.add(chapter);
+        // Start at 10, but never claim more stored questions than we have.
+        final available = allMCQs.where((q) => q.subjectId == _subject!.id && q.chapter == chapter).length;
+        _chapterMcqCounts[chapter] = available == 0 ? 1 : (available < 10 ? available : 10);
+      } else {
+        _chapters.remove(chapter);
+        _chapterMcqCounts.remove(chapter);
+      }
+      _generated = false;
+      _pagePngs = null;
+    });
+  }
+
+  void _setChapterMcqCount(String chapter, int next) {
+    final current = _chapterMcqCounts[chapter] ?? 0;
+    final proposedTotal = _requestedMcqTotal - current + next;
+    if (next < 1 || proposedTotal > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('একটি কাস্টম MCQ টেস্টে সর্বোচ্চ ১০০টি প্রশ্ন রাখা যাবে।'),
+      ));
+      return;
+    }
+    setState(() {
+      _chapterMcqCounts[chapter] = next;
+      _generated = false;
+      _pagePngs = null;
+    });
+  }
+
+  Widget _chapterMcqRow(String chapter) {
+    final selected = _chapterMcqCounts.containsKey(chapter);
+    final count = _chapterMcqCounts[chapter] ?? 0;
+    final available = allMCQs.where((q) => q.subjectId == _subject!.id && q.chapter == chapter).length;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: selected ? const Color(0xFFFFF8E5) : Colors.white,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: selected ? _gold : Colors.black12),
+      ),
+      child: Row(children: [
+        Checkbox(value: selected, activeColor: _gold, onChanged: (v) => _toggleChapter(chapter, v ?? false)),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(chapter, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+          Text('ব্যাংকে $available টি MCQ', style: TextStyle(fontSize: 10.5, color: Colors.grey.shade700)),
+        ])),
+        if (selected) ...[
+          IconButton(onPressed: count > 1 ? () => _setChapterMcqCount(chapter, count - 1) : null, icon: const Icon(Icons.remove_circle_outline)),
+          SizedBox(width: 30, child: Text('$count', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800))),
+          IconButton(onPressed: count < 100 ? () => _setChapterMcqCount(chapter, count + 1) : null, icon: const Icon(Icons.add_circle_outline)),
+        ],
+      ]),
+    );
+  }
+
   String _timeLine(int minutes) {
     if (minutes <= 0) return '—';
     final h = minutes ~/ 60, m = minutes % 60;
@@ -205,7 +269,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         cqNote = '(ক, খ, গ, ঘ – প্রত্যেক বিভাগ থেকে ≥1 সহ ${_bn(_cqN)}টি উত্তর) – PDF Page-14';
       }
       final pages = await PaperPdf.renderPages(
-        title: '${_subject!.name} (${_subject!.bengaliName})',
+        title: _titleText,
         modeLine: _chapters.isEmpty ? 'ফুল সিলেবাস' : (_chapters.length <= 2 ? _chapters.join(', ') : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
         mcqs: _mcqs,
         cqs: _cqs,
@@ -236,8 +300,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Choose a subject first')));
       return;
     }
-    if (_mcqN == 0 && _saqN == 0 && _cqN == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Keep at least one question type')));
+    if (!_isEnglish && _chapterMcqCounts.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
+      return;
+    }
+    if (_requestedMcqTotal > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
       return;
     }
     setState(() {
@@ -311,6 +379,40 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             _generated = true;
           });
         }
+        return;
+      }
+
+      // Custom MCQ PDF + OMR: keep each chapter quantity exactly as the user requested.
+      if (_chapterMcqCounts.isNotEmpty) {
+        final customMcqs = <Question>[];
+        final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
+        for (final entry in _chapterMcqCounts.entries) {
+          final pool = allMCQs.where((q) => q.subjectId == sid && q.chapter == entry.key).toList()..shuffle();
+          customMcqs.addAll(pool.take(entry.value));
+          final shortage = entry.value - pool.length;
+          if (shortage > 0) {
+            if (!hasKey) {
+              throw Exception('${entry.key}-এ $shortage টি প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
+            }
+            final source = await ChapterSourceService.getSource(sid, entry.key);
+            final ai = await AiQuestionGenerator.generateMcqs(
+              apiKey: _apiKey!, subjectName: _subject!.name, chapter: entry.key,
+              sourceText: source, count: shortage,
+            );
+            customMcqs.addAll(ai);
+          }
+        }
+        customMcqs.shuffle();
+        _advanceSetCode();
+        if (!mounted) return;
+        setState(() {
+          _mcqs = _isPro ? customMcqs : customMcqs.take(PaperLicense.demoMcqLimit).toList();
+          _cqs = [];
+          _saqs = [];
+          _busy = false;
+          _generated = true;
+        });
+        await _buildPreviewPages();
         return;
       }
 
@@ -405,7 +507,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       final mMin = _mcqs.length;
       final isMath = sid == 'general_math' || sid == 'higher_math';
       await PaperPdf.printPaper(
-        title: '${_subject!.name} (${_subject!.bengaliName})',
+        title: _titleText,
         modeLine: _chapters.isEmpty ? 'ফুল সিলেবাস' : (_chapters.length <= 2 ? _chapters.join(', ') : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
         mcqs: _mcqs,
         cqs: _cqs,
@@ -462,7 +564,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   @override
   Widget build(BuildContext context) {
     final chapters = _availableChapters;
-    final total = _cqN * 10 + _saqN * 2 + _mcqN;
+    final total = _isEnglish ? (_cqN * 10 + _saqN * 2 + _mcqN) : _requestedMcqTotal;
     return Scaffold(
       appBar: AppBar(title: const Text('Custom Paper + Preview'), backgroundColor: const Color(0xFF17130A), foregroundColor: const Color(0xFFFFE08A)),
       // This screen intentionally uses light paper-style cards. Force a local
@@ -489,12 +591,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0,4))]),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   DropdownButtonFormField<SubjectInfo>(value: _subject, decoration: const InputDecoration(labelText: 'Subject'), items: allSubjects.map((s) => DropdownMenuItem(value: s, child: Text('${s.icon} ${s.name}'))).toList(), onChanged: (s)=>setState((){_subject=s; _chapters.clear(); _generated=false; _pagePngs=null;}), hint: const Text('Choose subject')),
-                  if (chapters.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text('Chapters (empty = all)', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700)),
-                    const SizedBox(height: 6),
-                    Wrap(spacing: 8, runSpacing: 4, children: [for (final c in chapters) FilterChip(label: Text(c, style: const TextStyle(fontSize: 12)), selected: _chapters.contains(c), onSelected: (v)=>setState((){v?_chapters.add(c):_chapters.remove(c); _generated=false; _pagePngs=null;}))]),
-                  ],
                   const SizedBox(height: 12),
                   TextField(controller: _titleCtrl, decoration: const InputDecoration(labelText: 'Paper Title'), onChanged: (_)=>setState((){})),
                   const SizedBox(height: 6),
@@ -503,11 +599,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
               ),
               const SizedBox(height: 14),
               if (!_isEnglish) ...[
-                _stepper('MCQs', _mcqN, (v){setState(()=>_mcqN=v); _generated=false; _pagePngs=null;}),
+                const Text('Custom MCQ test', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text('অধ্যায় নির্বাচন করো, তারপর প্রতিটি অধ্যায়ের পাশে MCQ সংখ্যা নির্ধারণ করো।', style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
                 const SizedBox(height: 10),
-                _stepper('Short answer', _saqN, (v){setState(()=>_saqN=v); _generated=false; _pagePngs=null;}),
-                const SizedBox(height: 10),
-                _stepper('Creative (CQ)', _cqN, (v){setState(()=>_cqN=v); _generated=false; _pagePngs=null;}),
+                for (final chapter in chapters) _chapterMcqRow(chapter),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                  decoration: BoxDecoration(color: const Color(0xFF17130A), borderRadius: BorderRadius.circular(14)),
+                  child: Row(children: [const Icon(Icons.fact_check_outlined, color: _gold), const SizedBox(width: 9), Expanded(child: Text('মোট MCQ: $_requestedMcqTotal / 100', style: const TextStyle(color: Color(0xFFFFE08A), fontWeight: FontWeight.w800))),]),
+                ),
                 const SizedBox(height: 10),
               ],
               if (_isEnglish) Container(margin: const EdgeInsets.only(bottom:10), padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.teal.shade50, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.teal.shade100)), child: Text(_isEnglish2nd(_subject?.id) ? 'English 2nd: Grammar 60 + Composition 40 (mixed boards)' : 'English 1st: Reading 70 + Writing 30 (mixed boards)', style: TextStyle(fontSize:12, color: Colors.teal.shade900))),
@@ -516,7 +617,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(color: const Color(0xFF17130A), borderRadius: BorderRadius.circular(16), border: Border.all(color: _gold.withOpacity(0.5))),
-                child: Row(children: [const Icon(Icons.calculate_outlined, color: _gold), const SizedBox(width:10), Expanded(child: Text('Marks: $total • Time: ${_timeLine(_cqN*12+_saqN*3)} + ${_timeLine(_mcqN)} MCQ', style: const TextStyle(color: Color(0xFFFFE08A), fontSize:13)))]),
+                child: Row(children: [const Icon(Icons.calculate_outlined, color: _gold), const SizedBox(width:10), Expanded(child: Text(_isEnglish ? 'Marks: $total • Time: ${_timeLine(_cqN*12+_saqN*3)} + ${_timeLine(_mcqN)} MCQ' : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}', style: const TextStyle(color: Color(0xFFFFE08A), fontSize:13)))]),
               ),
               const SizedBox(height: 16),
               // Generate button (now shows preview too)
