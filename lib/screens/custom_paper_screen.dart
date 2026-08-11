@@ -465,8 +465,19 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final total = _cqN * 10 + _saqN * 2 + _mcqN;
     return Scaffold(
       appBar: AppBar(title: const Text('Custom Paper + Preview'), backgroundColor: const Color(0xFF17130A), foregroundColor: const Color(0xFFFFE08A)),
-      body: AnimatedBuilder(
-        animation: AppStyle.bgIndex,
+      // This screen intentionally uses light paper-style cards. Force a local
+      // light text/input theme so the global dark+gold app theme cannot fade text on white cards.
+      body: Theme(
+        data: ThemeData.light(useMaterial3: true).copyWith(
+          colorScheme: ColorScheme.fromSeed(seedColor: _gold, brightness: Brightness.light),
+          textTheme: ThemeData.light().textTheme.apply(bodyColor: const Color(0xFF17130A), displayColor: const Color(0xFF17130A)),
+          inputDecorationTheme: const InputDecorationTheme(
+            labelStyle: TextStyle(color: Color(0xFF5E574B)),
+            hintStyle: TextStyle(color: Color(0xFF756E63)),
+          ),
+        ),
+        child: AnimatedBuilder(
+          animation: AppStyle.bgIndex,
         builder: (context, _) => Container(
           color: AppStyle.bg,
           child: ListView(
@@ -536,7 +547,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           ),
         ),
       ),
+      ),
     );
   }
 }
-
