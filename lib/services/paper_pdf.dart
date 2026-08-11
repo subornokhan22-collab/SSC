@@ -1,5 +1,3 @@
-FILE: SSC-main/lib/services/paper_pdf.dart
-====================================================================================================
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
