@@ -1,3 +1,4 @@
+====================================================================================================
 import 'package:flutter/material.dart';
 
 import '../services/app_style.dart';
@@ -11,7 +12,7 @@ class SubscriptionScreen extends StatefulWidget {
 
   // ⚠️ এখানে নিজের তথ্য বসাও
   static const String hotline = '01715041725'; // তোমার WhatsApp/মোবাইল
-  static const String priceLine = 'BDT 200 per month / BDT 2,000 per year';
+  static const String priceLine = '৳799 — one-time Pro unlock';
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -167,7 +168,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 6),
               Text(
-                'Knock on WhatsApp at the number below — once your bKash payment is done, Pro will be activated on YOUR EMAIL. Then open the Profile tab and tap "Sync Pro" — done!',
+                'bKash online payment is being configured securely. For now, contact support after payment; never collect bKash credentials inside the app. Your Pro access will be activated on your email, then use Profile → Sync Pro.',
                 style: TextStyle(fontSize: 13.5, height: 1.6),
               ),
               SizedBox(height: 10),
