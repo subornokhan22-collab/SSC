@@ -1252,9 +1252,9 @@ class PaperPdf {
       }
 
       y = _margin;
-      await para('মাধ্যমিক ও উচ্চমাধ্যমিক শিক্ষাবোর্ড', 13.5, isBold: true, align: TextAlign.center);
-      await para('এস.এস.সি পরীক্ষা — ২০২৭', 10.5, isBold: true, align: TextAlign.center, gapBefore: 1);
-      await para('নৈর্ব্যক্তিক অভীক্ষার উত্তরপত্র', 12, isBold: true, align: TextAlign.center, gapBefore: 1);
+      // Use exactly the title entered in the Paper Title box; do not print a fixed board/SSC/HSC heading.
+      await para(title.trim().isEmpty ? 'Question Paper' : title, 14,
+          isBold: true, align: TextAlign.center);
       await para('নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।', 8.2,
           isBold: true, align: TextAlign.center, gapBefore: 3);
       y += 4 * _k;
