@@ -23,7 +23,9 @@ import 'subjects_screen.dart';
 /// - Pattern notes for Accounting/Finance/ICT
 /// - Same rendering engine as Question Paper Screen (100% match print vs preview)
 class CustomPaperScreen extends StatefulWidget {
-  const CustomPaperScreen({super.key});
+  /// Opens directly from the Teacher dashboard for a chapter-quantity MCQ PDF + OMR.
+  final bool mcqOnly;
+  const CustomPaperScreen({super.key, this.mcqOnly = false});
 
   @override
   State<CustomPaperScreen> createState() => _CustomPaperScreenState();
@@ -566,7 +568,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final chapters = _availableChapters;
     final total = _isEnglish ? (_cqN * 10 + _saqN * 2 + _mcqN) : _requestedMcqTotal;
     return Scaffold(
-      appBar: AppBar(title: const Text('Custom Paper + Preview'), backgroundColor: const Color(0xFF17130A), foregroundColor: const Color(0xFFFFE08A)),
+      appBar: AppBar(title: Text(widget.mcqOnly ? 'Custom MCQ Test + OMR' : 'Custom Paper + Preview'), backgroundColor: const Color(0xFF17130A), foregroundColor: const Color(0xFFFFE08A)),
       // This screen intentionally uses light paper-style cards. Force a local
       // light text/input theme so the global dark+gold app theme cannot fade text on white cards.
       body: Theme(

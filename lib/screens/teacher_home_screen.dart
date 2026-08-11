@@ -146,6 +146,16 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         ),
                       ),
                       _goldButton(
+                        icon: Icons.quiz_rounded,
+                        title: 'Custom MCQ Test + OMR',
+                        sub: 'Chapter-wise quantity • Max 100 • PDF / Print',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const CustomPaperScreen(mcqOnly: true)),
+                        ),
+                      ),
+                      _goldButton(
                         icon: Icons.tune_rounded,
                         title: 'Customised Test Paper',
                         sub: 'Choose chapters & MCQ / short-answer / CQ counts',
@@ -271,3 +281,4 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     );
   }
 }
+
