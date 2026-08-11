@@ -1,0 +1,55 @@
+/// One source of truth for chapter ribbons/dropdowns.
+/// Textbook order is numeric; combined/generated chapter labels stay hidden.
+class ChapterCatalog {
+  ChapterCatalog._();
+
+  static const _bn = {'০': 0, '১': 1, '২': 2, '৩': 3, '৪': 4, '৫': 5, '৬': 6, '৭': 7, '৮': 8, '৯': 9};
+
+  /// Official Physics chapter sequence supplied from the current contents page.
+  static const physics = <String>[
+    'অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ',
+    'অধ্যায় ২: গতি',
+    'অধ্যায় ৩: বল',
+    'অধ্যায় ৪: কাজ, ক্ষমতা ও শক্তি',
+    'অধ্যায় ৫: পদার্থের অবস্থা ও চাপ',
+    'অধ্যায় ৬: বস্তুর ওপর তাপের প্রভাব',
+    'অধ্যায় ৭: তরঙ্গ ও শব্দ',
+    'অধ্যায় ৮: আলোর প্রতিফলন',
+    'অধ্যায় ৯: আলোর প্রতিসরণ',
+    'অধ্যায় ১০: স্থির বিদ্যুৎ',
+    'অধ্যায় ১১: চল বিদ্যুৎ',
+    'অধ্যায় ১২: বিদ্যুতের চৌম্বক ক্রিয়া',
+    'অধ্যায় ১৩: তেজস্ক্রিয়তা ও ইলেকট্রনিকস',
+  ];
+
+  static bool isSingleChapter(String raw) {
+    final v = raw.trim();
+    if (v.isEmpty) return false;
+    final lower = v.toLowerCase();
+    if (v.contains(' ও ') || v.contains('মিলিয়ে') || lower.contains('mixed') || lower.contains('board-style')) return false;
+    return RegExp(r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+', caseSensitive: false).hasMatch(v);
+  }
+
+  static int numberOf(String raw) {
+    final hit = RegExp(r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)', caseSensitive: false).firstMatch(raw);
+    if (hit == null) return 9999;
+    var value = 0;
+    for (final c in hit.group(1)!.split('')) {
+      final digit = int.tryParse(c) ?? _bn[c];
+      if (digit == null) return 9999;
+      value = value * 10 + digit;
+    }
+    return value;
+  }
+
+  static List<String> ordered(Iterable<String> values, {String? subjectId}) {
+    // Show the complete official Physics syllabus even before every chapter has questions.
+    if (subjectId == 'physics') return List<String>.from(physics);
+    final clean = values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
+    clean.sort((a, b) {
+      final byNumber = numberOf(a).compareTo(numberOf(b));
+      return byNumber != 0 ? byNumber : a.compareTo(b);
+    });
+    return clean;
+  }
+}
