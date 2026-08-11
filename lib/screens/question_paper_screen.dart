@@ -8,6 +8,7 @@ import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
+import '../services/chapter_catalog.dart';
 import 'subscription_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
@@ -406,7 +407,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       ...allMCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
       ...allCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
     };
-    return set.toList()..sort();
+    return ChapterCatalog.ordered(set, subjectId: _subject!.id);
   }
 
   // ── পেপার তৈরি ────────────────────────────────────────────────────
@@ -1851,3 +1852,4 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     );
   }
 }
+

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/questions_data.dart';
 import '../widgets/animations.dart';
+import '../services/chapter_catalog.dart';
 import 'subjects_screen.dart';
 import 'quiz_screen.dart';
 import 'cq_screen.dart';
@@ -14,7 +15,7 @@ class SubjectDetailScreen extends StatelessWidget {
       ...allMCQs.where((q) => q.subjectId == subject.id).map((q) => q.chapter),
       ...allCQs.where((q) => q.subjectId == subject.id).map((q) => q.chapter),
     };
-    return chapters.toList()..sort();
+    return ChapterCatalog.ordered(chapters, subjectId: subject.id);
   }
 
   @override
@@ -275,3 +276,4 @@ class SubjectDetailScreen extends StatelessWidget {
     );
   }
 }
+

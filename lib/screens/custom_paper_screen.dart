@@ -10,6 +10,7 @@ import '../services/app_style.dart';
 import '../services/english_paper_adapter.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
+import '../services/chapter_catalog.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import 'subscription_screen.dart';
@@ -155,7 +156,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       ...allMCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
       ...allCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
     };
-    return set.toList()..sort();
+    return ChapterCatalog.ordered(set, subjectId: _subject!.id);
   }
 
   Widget _stepper(String label, int value, void Function(int) onChanged,
@@ -538,3 +539,4 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     );
   }
 }
+
