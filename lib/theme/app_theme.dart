@@ -1,116 +1,129 @@
 import 'package:flutter/material.dart';
 import '../widgets/animations.dart';
 
+/// Premium dark + gold system used consistently across the app.
 class AppTheme {
-  static const Color primary = Color(0xFF0D4782);
-  static const Color secondary = Color(0xFF10828C);
-  static const Color accent = Color(0xFFFFC107);
-  static const Color surface = Color(0xFFF7F9FC);
-  static const Color textDark = Color(0xFF1A2634);
+  static const Color primary = Color(0xFFD4A72C); // gold
+  static const Color secondary = Color(0xFF7B5A14); // antique gold
+  static const Color accent = Color(0xFFFFD86B); // bright highlight
+  static const Color surface = Color(0xFF12151D);
+  static const Color textDark = Color(0xFFF5F0E5);
+  static const Color canvas = Color(0xFF080A0F);
+  static const Color card = Color(0xFF171B25);
+  static const Color muted = Color(0xFF9EA7B8);
 
   static ThemeData light() {
-    final base = ThemeData(useMaterial3: true);
+    final base = ThemeData(useMaterial3: true, brightness: Brightness.dark);
+    final scheme = ColorScheme.fromSeed(
+      seedColor: primary,
+      brightness: Brightness.dark,
+      primary: primary,
+      onPrimary: const Color(0xFF201806),
+      secondary: accent,
+      surface: surface,
+      onSurface: textDark,
+      error: const Color(0xFFFF7B7B),
+    );
     return base.copyWith(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primary,
-        primary: primary,
-        secondary: secondary,
-        tertiary: accent,
-        surface: surface,
-      ),
-      // Transparent so the global AnimatedBackground (painted once, behind
-      // every route via MaterialApp.builder) shows through every screen.
+      colorScheme: scheme,
       scaffoldBackgroundColor: Colors.transparent,
-      // Solid canvas so DropdownButton menus (which default to the theme's
-      // canvasColor) and Drawers get a readable background.
-      canvasColor: Colors.white,
-      // Smooth slide+fade transition for EVERY Navigator.push app-wide.
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: SmoothPageTransitionsBuilder(),
-          TargetPlatform.iOS: SmoothPageTransitionsBuilder(),
-          TargetPlatform.linux: SmoothPageTransitionsBuilder(),
-          TargetPlatform.macOS: SmoothPageTransitionsBuilder(),
-          TargetPlatform.windows: SmoothPageTransitionsBuilder(),
-        },
-      ),
+      canvasColor: canvas,
+      splashColor: primary.withOpacity(.14),
+      highlightColor: primary.withOpacity(.08),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: SmoothPageTransitionsBuilder(),
+        TargetPlatform.iOS: SmoothPageTransitionsBuilder(),
+        TargetPlatform.linux: SmoothPageTransitionsBuilder(),
+        TargetPlatform.macOS: SmoothPageTransitionsBuilder(),
+        TargetPlatform.windows: SmoothPageTransitionsBuilder(),
+      }),
       textTheme: base.textTheme.apply(
         bodyColor: textDark,
         displayColor: textDark,
+        fontFamily: 'Hind Siliguri',
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: primary,
-        foregroundColor: Colors.white,
+        backgroundColor: Color(0xEE10131B),
+        foregroundColor: textDark,
         elevation: 0,
         centerTitle: false,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
       ),
       cardTheme: CardThemeData(
-        elevation: 1.5,
-        shadowColor: Colors.black.withOpacity(0.08),
-        color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 0,
+        color: card,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black.withOpacity(.35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.white.withOpacity(.07)),
+        ),
         margin: EdgeInsets.zero,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          foregroundColor: const Color(0xFF211806),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primary,
-          side: const BorderSide(color: primary, width: 1.4),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          foregroundColor: accent,
+          side: BorderSide(color: primary.withOpacity(.65), width: 1.2),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: const Color(0xFF1B202B),
+        hintStyle: const TextStyle(color: muted),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: Colors.white.withOpacity(.08)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: Colors.white.withOpacity(.10)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: primary, width: 1.6),
+          borderSide: const BorderSide(color: primary, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
+      dividerTheme: DividerThemeData(color: Colors.white.withOpacity(.09)),
       tabBarTheme: const TabBarThemeData(
-        labelColor: primary,
-        unselectedLabelColor: Colors.grey,
-        labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-        unselectedLabelStyle:
-            TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+        labelColor: accent,
+        unselectedLabelColor: muted,
+        indicatorColor: primary,
+        labelStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: card,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       ),
       snackBarTheme: SnackBarThemeData(
+        backgroundColor: const Color(0xFF242B38),
+        contentTextStyle: const TextStyle(color: textDark),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: primary,
-        linearTrackColor: Color(0xFFE3E9F0),
+        linearTrackColor: Color(0xFF2A303C),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: primary,
-        unselectedItemColor: Colors.grey,
-        elevation: 8,
+        backgroundColor: Color(0xFF10131B),
+        selectedItemColor: accent,
+        unselectedItemColor: muted,
+        elevation: 16,
         type: BottomNavigationBarType.fixed,
       ),
     );
