@@ -893,7 +893,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                                 .map((s) => DropdownMenuItem(
                                     value: s,
                                     child: Text(
-                                        '${s.icon} ${s.id == 'chemistry' ? s.bengaliName : s.name}')))
+                                        '${s.icon} ${s.id == 'chemistry' || s.id == 'biology' ? s.bengaliName : s.name}')))
                                 .toList(),
                             onChanged: (s) => setState(() {
                                   _subject = s;
