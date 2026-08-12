@@ -1,3 +1,6 @@
+import 'chemistry/chemistry_cqs.dart';
+import 'chemistry/chemistry_mcqs.dart';
+import 'chemistry/chemistry_saqs.dart';
 import 'extra_questions.dart';
 import 'physics/physics_cqs.dart';
 import 'physics/physics_mcqs.dart';
@@ -5895,6 +5898,7 @@ const List<Question> allMCQs = [
       explanation: 'মধ্যমান 12, 17, 22; (24+51+110) ÷ 10 = 185 ÷ 10 = 18.5।',
       sourceLabel: 'A-Learning Original'),
   ...physicsMcqs,
+  ...chemistryMcqs,
 ];
 
 const List<CreativeQuestion> allCQs = [
@@ -7065,8 +7069,12 @@ const List<CreativeQuestion> allCQs = [
       questionGh: 'প্রচুরক শ্রেণি চিহ্নিত করে উপাত্তের প্রকৃতি বিশ্লেষণ করো।',
       sourceLabel: 'A-Learning Original'),
   ...physicsCqs,
+  ...chemistryCqs,
 ];
 
 /// Short-answer questions. Additive aggregate; `allMCQs` and `allCQs` above
 /// keep their original names and contents.
-const List<ShortQuestion> allSAQs = [...physicsSAQs];
+const List<ShortQuestion> allSAQs = [
+  ...physicsSAQs,
+  ...chemistrySaqs,
+];
