@@ -139,7 +139,8 @@ void main() {
       const expected = <String, int>{
         'general_math': 513,
         'higher_math': 7,
-        'chemistry': 1,
+        // Chemistry now has its own additive bank plus the pre-existing item.
+        'chemistry': 605,
         'biology': 1,
         'finance': 1,
         'accounting': 1,
