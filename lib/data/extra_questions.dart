@@ -50,7 +50,8 @@ class QuestionFigure {
     required List<String> labels,
     required List<int> values,
     String? caption,
-  }) : this._(FigureKind.barChart, headers: labels, values: values, caption: caption);
+  }) : this._(FigureKind.barChart,
+            headers: labels, values: values, caption: caption);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -62,7 +63,8 @@ const List<Question> extraMCQs = [
     id: 'phy_fig_table_1',
     subjectId: 'physics',
     chapter: 'অধ্যায় ২: গতি',
-    questionText: 'নিচের সারণিতে একটি গাড়ির সময় বনাম দূরত্ব দেয়া হলো। 0-4s এ গড় বেগ কত?',
+    questionText:
+        'নিচের সারণিতে একটি গাড়ির সময় বনাম দূরত্ব দেয়া হলো। 0-4s এ গড় বেগ কত?',
     options: ['5 m/s', '7.5 m/s', '10 m/s', '20 m/s'],
     correctIndex: 1,
     explanation: '0-4s এ মোট দূরত্ব 30m, সময় 4s, গড় বেগ = 30/4=7.5 m/s।',
@@ -78,10 +80,12 @@ const List<Question> extraMCQs = [
     id: 'phy_fig_tri_1',
     subjectId: 'physics',
     chapter: 'অধ্যায় ৮: আলোর প্রতিফলন',
-    questionText: 'চিত্রে একটি সমকোণী ত্রিভুজ আয়নার সামনে বস্তু। প্রতিবিম্বের দূরত্ব কত?',
+    questionText:
+        'চিত্রে একটি সমকোণী ত্রিভুজ আয়নার সামনে বস্তু। প্রতিবিম্বের দূরত্ব কত?',
     options: ['5 cm', '12 cm', '13 cm', '17 cm'],
     correctIndex: 2,
-    explanation: 'সমকোণী ত্রিভুজে অতিভুজ 13 cm, বস্তু দূরত্ব = 12 cm হলে প্রতিবিম্বও 12 cm, কিন্তু চিত্রে অতিভুজই উত্তর।',
+    explanation:
+        'সমকোণী ত্রিভুজে অতিভুজ 13 cm, বস্তু দূরত্ব = 12 cm হলে প্রতিবিম্বও 12 cm, কিন্তু চিত্রে অতিভুজই উত্তর।',
     figure: QuestionFigure.triangle(
       vertices: ['A', 'B', 'C'],
       sides: ['5 cm', '12 cm', '13 cm'],
@@ -113,15 +117,16 @@ const List<Question> extraMCQs = [
   Question(
     id: 'bio_fig_bar_1',
     subjectId: 'biology',
-    chapter: 'অধ্যায় ৪: রক্ত',
+    chapter: 'অধ্যায় ৬: জীবে পরিবহন',
     questionText: 'চিত্রে রক্তকণিকার সংখ্যার চার্ট দেয়া। কোনটি সবচেয়ে বেশি?',
     options: ['লোহিত', 'শ্বেত', 'অণুচক্রিকা', 'প্লাজমা'],
     correctIndex: 0,
-    explanation: 'বার চার্টে লোহিত কণিকার বার সবচেয়ে উঁচু (50 লাখ)।',
+    explanation:
+        'প্রতি ঘন মিমি রক্তে লোহিত কণিকার সংখ্যা প্রায় 50 লাখ, যা শ্বেত কণিকা ও অণুচক্রিকার তুলনায় বেশি।',
     figure: QuestionFigure.barChart(
       labels: ['লোহিত', 'শ্বেত', 'অণুচক্রিকা'],
-      values: [50, 8, 3],
-      caption: 'প্রতি ঘন মিমি রক্তে কণিকার সংখ্যা (লাখ)',
+      values: [5000, 8, 300],
+      caption: 'প্রতি ঘন মিমি রক্তে আনুমানিক কণিকা সংখ্যা (হাজারে)',
     ),
   ),
   // ─── General Math: triangle ───
@@ -160,7 +165,8 @@ const List<Question> extraMCQs = [
     id: 'gm_fig_bar_1',
     subjectId: 'general_math',
     chapter: 'অধ্যায় ১৭: পরিসংখ্যান',
-    questionText: 'বার চিত্রে ২০২০-২০২৩ সালের পরীক্ষার্থীর সংখ্যা দেখানো। কোন সালে সর্বোচ্চ?',
+    questionText:
+        'বার চিত্রে ২০২০-২০২৩ সালের পরীক্ষার্থীর সংখ্যা দেখানো। কোন সালে সর্বোচ্চ?',
     options: ['২০২০', '২০২১', '২০২২', '২০২৩'],
     correctIndex: 3,
     explanation: '২০২৩ সালে বার সবচেয়ে উঁচু (60)।',
@@ -228,12 +234,14 @@ const List<CreativeQuestion> extraCQs = [
     id: 'phy_cq_fig_1',
     subjectId: 'physics',
     chapter: 'অধ্যায় ৮: আলোর প্রতিফলন',
-    stem: 'একটি সমকোণী ত্রিভুজাকৃতি আয়নার চিত্র দেয়া হলো। A শীর্ষে বস্তু রাখা হয়েছে।',
+    stem:
+        'একটি সমকোণী ত্রিভুজাকৃতি আয়নার চিত্র দেয়া হলো। A শীর্ষে বস্তু রাখা হয়েছে।',
     questionK: 'প্রতিফলনের সূত্র লেখো।',
     questionKh: 'দর্পণে প্রতিবিম্বের অবস্থান নির্ণয় করো।',
     questionG: 'চিত্রে AB=6 cm, BC=8 cm হলে AC নির্ণয় করো।',
-    questionGh: 'যদি বস্তুকে 2 cm ডানে সরানো হয়, নতুন প্রতিবিম্বের দূরত্ব কত হবে?',
-    marks: [1,2,3,4],
+    questionGh:
+        'যদি বস্তুকে 2 cm ডানে সরানো হয়, নতুন প্রতিবিম্বের দূরত্ব কত হবে?',
+    marks: [1, 2, 3, 4],
     figure: QuestionFigure.triangle(
       vertices: ['A', 'B', 'C'],
       sides: ['6 cm', '8 cm', ''],
@@ -245,12 +253,13 @@ const List<CreativeQuestion> extraCQs = [
     id: 'gm_cq_fig_table_1',
     subjectId: 'general_math',
     chapter: 'অধ্যায় ১৭: পরিসংখ্যান',
-    stem: 'নিচে একটি শ্রেণির 30 জন শিক্ষার্থীর প্রাপ্ত নম্বরের গণসংখ্যা সারণি দেয়া হলো।',
+    stem:
+        'নিচে একটি শ্রেণির 30 জন শিক্ষার্থীর প্রাপ্ত নম্বরের গণসংখ্যা সারণি দেয়া হলো।',
     questionK: 'গণসংখ্যা সারণি কাকে বলে?',
     questionKh: 'সারণি থেকে মধ্যক শ্রেণি নির্ণয় করো।',
     questionG: 'গড় নির্ণয় করো।',
     questionGh: 'আয়তলেখ অঙ্কন করে বহুভুজ ব্যাখ্যা করো।',
-    marks: [1,2,3,4],
+    marks: [1, 2, 3, 4],
     figure: QuestionFigure.table(
       headers: ['নম্বর', '0-10', '10-20', '20-30', '30-40', '40-50'],
       rows: [

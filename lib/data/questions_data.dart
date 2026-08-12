@@ -1,3 +1,6 @@
+import 'biology/biology_cqs.dart';
+import 'biology/biology_mcqs.dart';
+import 'biology/biology_saqs.dart';
 import 'chemistry/chemistry_cqs.dart';
 import 'chemistry/chemistry_mcqs.dart';
 import 'chemistry/chemistry_saqs.dart';
@@ -5899,6 +5902,7 @@ const List<Question> allMCQs = [
       sourceLabel: 'A-Learning Original'),
   ...physicsMcqs,
   ...chemistryMcqs,
+  ...biologyMcqs,
 ];
 
 const List<CreativeQuestion> allCQs = [
@@ -7070,6 +7074,7 @@ const List<CreativeQuestion> allCQs = [
       sourceLabel: 'A-Learning Original'),
   ...physicsCqs,
   ...chemistryCqs,
+  ...biologyCqs,
 ];
 
 /// Short-answer questions. Additive aggregate; `allMCQs` and `allCQs` above
@@ -7077,4 +7082,5 @@ const List<CreativeQuestion> allCQs = [
 const List<ShortQuestion> allSAQs = [
   ...physicsSAQs,
   ...chemistrySaqs,
+  ...biologySaqs,
 ];
