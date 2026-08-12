@@ -23,7 +23,7 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 
   void _startExam() {
-    final shuffled = List<Question>.from(sampleQuestions)..shuffle();
+    final shuffled = List<Question>.from(allMCQs)..shuffle();
     setState(() {
       _questions = shuffled.take(20).toList();
       _userAnswers.clear();
@@ -58,7 +58,7 @@ class _ExamScreenState extends State<ExamScreen> {
   int _calculateScore() {
     int score = 0;
     _userAnswers.forEach((index, selected) {
-      if (_questions[index].correctOptionIndex == selected) {
+      if (_questions[index].correctIndex == selected) {
         score++;
       }
     });
@@ -75,7 +75,8 @@ class _ExamScreenState extends State<ExamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('লাইভ পরীক্ষা', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('লাইভ পরীক্ষা',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF1A82BB),
         foregroundColor: Colors.white,
         actions: [
@@ -85,7 +86,8 @@ class _ExamScreenState extends State<ExamScreen> {
                 padding: const EdgeInsets.only(right: 16.0),
                 child: Text(
                   _formatTime(_secondsRemaining),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -110,7 +112,8 @@ class _ExamScreenState extends State<ExamScreen> {
                             children: [
                               Text(
                                 '${index + 1}. ${q.questionText}',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
                               ...List.generate(q.options.length, (optIndex) {
@@ -122,7 +125,8 @@ class _ExamScreenState extends State<ExamScreen> {
                                       ? null
                                       : (val) {
                                           setState(() {
-                                            if (val != null) _userAnswers[index] = val;
+                                            if (val != null)
+                                              _userAnswers[index] = val;
                                           });
                                         },
                                 );
@@ -143,7 +147,10 @@ class _ExamScreenState extends State<ExamScreen> {
                       if (_isSubmitted)
                         Text(
                           'স্কোর: ${_calculateScore()} / ${_questions.length}',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A82BB)),
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1A82BB)),
                         ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -151,7 +158,8 @@ class _ExamScreenState extends State<ExamScreen> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: _isSubmitted ? _startExam : _submitExam,
-                        child: Text(_isSubmitted ? 'পুনরায় পরীক্ষা দাও' : 'জমা দাও'),
+                        child: Text(
+                            _isSubmitted ? 'পুনরায় পরীক্ষা দাও' : 'জমা দাও'),
                       ),
                     ],
                   ),

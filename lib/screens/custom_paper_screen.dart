@@ -50,7 +50,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
   String _setLetter = 'ক';
   static const _setLetters = ['ক', 'খ', 'গ', 'ঘ'];
-  
+
   // PDF verified subject codes – same as question_paper_screen
   static const _subjectCodes = {
     'bangla_1st': '১০১',
@@ -84,11 +84,13 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final s = id.toLowerCase().replaceAll(RegExp('[^a-z0-9]'), '');
     return s.contains('english') && (s.contains('2') || s.contains('second'));
   }
+
   static bool _isEnglish1st(String? id) {
     if (id == null) return false;
     final s = id.toLowerCase().replaceAll(RegExp('[^a-z0-9]'), '');
     return s.contains('english') && (s.contains('1') || s.contains('first'));
   }
+
   bool get _isEnglish =>
       _isEnglish1st(_subject?.id) || _isEnglish2nd(_subject?.id);
 
@@ -139,12 +141,50 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       ? 'মডেল পরীক্ষা — ২০২৭'
       : _titleCtrl.text.trim();
 
+  /// Renders a curated [ShortQuestion] through the existing [Question]-based
+  /// paper pipeline. Only `questionText` is read when printing SAQs, so the
+  /// option fields are inert placeholders.
+  static Question _saqAsQuestion(ShortQuestion q) => Question(
+        id: q.id,
+        subjectId: q.subjectId,
+        chapter: q.chapter,
+        questionText: q.questionText,
+        options: const ['', '', '', ''],
+        correctIndex: 0,
+        explanation: q.explanation.isNotEmpty ? q.explanation : q.answer,
+        source: q.source,
+        sourceLabel: q.sourceLabel,
+        figure: q.figure,
+      );
+
   static const _saqBad = [
-    'কোনটি', 'কোনটির', 'কোন বাক্য', 'নিচের', 'নিচে', 'কোন সূত্র', 'কোন শ্রেণি',
-    'কোন চতুর্ভুজ', 'কোন সেটটি', 'কোন জোড়া', 'কোন অনুক্রম', 'কোন ধারা',
-    'কোন বিন্দুতে', 'কোন জোট', 'কোন ক্ষেত্রে', 'কোন প্রকার', 'কোন ধরনের',
-    'কোন সংখ্যা', 'কোন অংশে', 'উল্লেখ করো', '—', 'কোন অবস্থান', 'কোন বিন্দু',
-    'কোন ত্রিভুজ', 'কোন চতুর্ভুজের', 'কোন ভগ্নাংশ', 'কোন সমীকরণ',
+    'কোনটি',
+    'কোনটির',
+    'কোন বাক্য',
+    'নিচের',
+    'নিচে',
+    'কোন সূত্র',
+    'কোন শ্রেণি',
+    'কোন চতুর্ভুজ',
+    'কোন সেটটি',
+    'কোন জোড়া',
+    'কোন অনুক্রম',
+    'কোন ধারা',
+    'কোন বিন্দুতে',
+    'কোন জোট',
+    'কোন ক্ষেত্রে',
+    'কোন প্রকার',
+    'কোন ধরনের',
+    'কোন সংখ্যা',
+    'কোন অংশে',
+    'উল্লেখ করো',
+    '—',
+    'কোন অবস্থান',
+    'কোন বিন্দু',
+    'কোন ত্রিভুজ',
+    'কোন চতুর্ভুজের',
+    'কোন ভগ্নাংশ',
+    'কোন সমীকরণ',
   ];
 
   static String _bn(int n) {
@@ -158,7 +198,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   List<String> get _availableChapters {
     if (_subject == null) return [];
     final set = <String>{
-      ...allMCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
+      ...allMCQs
+          .where((q) => q.subjectId == _subject!.id)
+          .map((q) => q.chapter),
       ...allCQs.where((q) => q.subjectId == _subject!.id).map((q) => q.chapter),
     };
     return ChapterCatalog.ordered(set, subjectId: _subject!.id);
@@ -171,28 +213,51 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 4))
+        ],
       ),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600))),
-          IconButton(onPressed: value > 0 ? () => onChanged(value - 1) : null, icon: const Icon(Icons.remove_circle_outline), visualDensity: VisualDensity.compact),
-          SizedBox(width: 34, child: Center(child: Text(_bn(value), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)))),
-          IconButton(onPressed: value < max ? () => onChanged(value + 1) : null, icon: const Icon(Icons.add_circle_outline), visualDensity: VisualDensity.compact),
+          Expanded(
+              child: Text(label,
+                  style: const TextStyle(
+                      fontSize: 14.5, fontWeight: FontWeight.w600))),
+          IconButton(
+              onPressed: value > 0 ? () => onChanged(value - 1) : null,
+              icon: const Icon(Icons.remove_circle_outline),
+              visualDensity: VisualDensity.compact),
+          SizedBox(
+              width: 34,
+              child: Center(
+                  child: Text(_bn(value),
+                      style: const TextStyle(
+                          fontSize: 17, fontWeight: FontWeight.w800)))),
+          IconButton(
+              onPressed: value < max ? () => onChanged(value + 1) : null,
+              icon: const Icon(Icons.add_circle_outline),
+              visualDensity: VisualDensity.compact),
         ],
       ),
     );
   }
 
-  int get _requestedMcqTotal => _chapterMcqCounts.values.fold(0, (sum, n) => sum + n);
+  int get _requestedMcqTotal =>
+      _chapterMcqCounts.values.fold(0, (sum, n) => sum + n);
 
   void _toggleChapter(String chapter, bool selected) {
     setState(() {
       if (selected) {
         _chapters.add(chapter);
         // Start at 10, but never claim more stored questions than we have.
-        final available = allMCQs.where((q) => q.subjectId == _subject!.id && q.chapter == chapter).length;
-        _chapterMcqCounts[chapter] = available == 0 ? 1 : (available < 10 ? available : 10);
+        final available = allMCQs
+            .where((q) => q.subjectId == _subject!.id && q.chapter == chapter)
+            .length;
+        _chapterMcqCounts[chapter] =
+            available == 0 ? 1 : (available < 10 ? available : 10);
       } else {
         _chapters.remove(chapter);
         _chapterMcqCounts.remove(chapter);
@@ -207,7 +272,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final proposedTotal = _requestedMcqTotal - current + next;
     if (next < 1 || proposedTotal > 100) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('একটি কাস্টম MCQ টেস্টে সর্বোচ্চ ১০০টি প্রশ্ন রাখা যাবে।'),
+        content:
+            Text('একটি কাস্টম MCQ টেস্টে সর্বোচ্চ ১০০টি প্রশ্ন রাখা যাবে।'),
       ));
       return;
     }
@@ -221,7 +287,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   Widget _chapterMcqRow(String chapter) {
     final selected = _chapterMcqCounts.containsKey(chapter);
     final count = _chapterMcqCounts[chapter] ?? 0;
-    final available = allMCQs.where((q) => q.subjectId == _subject!.id && q.chapter == chapter).length;
+    final available = allMCQs
+        .where((q) => q.subjectId == _subject!.id && q.chapter == chapter)
+        .length;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -231,15 +299,36 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         border: Border.all(color: selected ? _gold : Colors.black12),
       ),
       child: Row(children: [
-        Checkbox(value: selected, activeColor: _gold, onChanged: (v) => _toggleChapter(chapter, v ?? false)),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(chapter, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-          Text('ব্যাংকে $available টি MCQ', style: TextStyle(fontSize: 10.5, color: Colors.grey.shade700)),
+        Checkbox(
+            value: selected,
+            activeColor: _gold,
+            onChanged: (v) => _toggleChapter(chapter, v ?? false)),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(chapter,
+              style:
+                  const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+          Text('ব্যাংকে $available টি MCQ',
+              style: TextStyle(fontSize: 10.5, color: Colors.grey.shade700)),
         ])),
         if (selected) ...[
-          IconButton(onPressed: count > 1 ? () => _setChapterMcqCount(chapter, count - 1) : null, icon: const Icon(Icons.remove_circle_outline)),
-          SizedBox(width: 30, child: Text('$count', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800))),
-          IconButton(onPressed: count < 100 ? () => _setChapterMcqCount(chapter, count + 1) : null, icon: const Icon(Icons.add_circle_outline)),
+          IconButton(
+              onPressed: count > 1
+                  ? () => _setChapterMcqCount(chapter, count - 1)
+                  : null,
+              icon: const Icon(Icons.remove_circle_outline)),
+          SizedBox(
+              width: 30,
+              child: Text('$count',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w800))),
+          IconButton(
+              onPressed: count < 100
+                  ? () => _setChapterMcqCount(chapter, count + 1)
+                  : null,
+              icon: const Icon(Icons.add_circle_outline)),
         ],
       ]),
     );
@@ -261,24 +350,35 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       if (_isEnglish) return;
       final wMin = _cqs.length * 12 + _saqs.length * 3;
       final mMin = _mcqs.length;
-      final isMath = _subject!.id == 'general_math' || _subject!.id == 'higher_math';
+      final isMath =
+          _subject!.id == 'general_math' || _subject!.id == 'higher_math';
       String? cqNote;
       if (_subject!.id == 'accounting') {
-        cqNote = '(৭টি থেকে ৪টি=40 + বাধ্যতামূলক আর্থিক বিবরণী 20=60, SAQ 5×2=10) – PDF Page-24';
+        cqNote =
+            '(৭টি থেকে ৪টি=40 + বাধ্যতামূলক আর্থিক বিবরণী 20=60, SAQ 5×2=10) – PDF Page-24';
       } else if (_subject!.id == 'finance') {
-        cqNote = '(Fin 5+Bank 3=8 CQ, উত্তর 5≥2 প্রতি অংশে; SAQ 8+7=15 উত্তর10≥4) – Page-26';
+        cqNote =
+            '(Fin 5+Bank 3=8 CQ, উত্তর 5≥2 প্রতি অংশে; SAQ 8+7=15 উত্তর10≥4) – Page-26';
       } else if (isMath) {
-        cqNote = '(ক, খ, গ, ঘ – প্রত্যেক বিভাগ থেকে ≥1 সহ ${_bn(_cqN)}টি উত্তর) – PDF Page-14';
+        cqNote =
+            '(ক, খ, গ, ঘ – প্রত্যেক বিভাগ থেকে ≥1 সহ ${_bn(_cqN)}টি উত্তর) – PDF Page-14';
       }
       final pages = await PaperPdf.renderPages(
         title: _titleText,
-        modeLine: _chapters.isEmpty ? 'ফুল সিলেবাস' : (_chapters.length <= 2 ? _chapters.join(', ') : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
+        modeLine: _chapters.isEmpty
+            ? 'ফুল সিলেবাস'
+            : (_chapters.length <= 2
+                ? _chapters.join(', ')
+                : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
         mcqs: _mcqs,
         cqs: _cqs,
         saqs: _saqs,
         cqAnswerCount: _cqs.length,
         saqAnswerCount: _saqs.length,
-        cqNote: _cqs.isEmpty ? null : cqNote ?? '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)',
+        cqNote: _cqs.isEmpty
+            ? null
+            : cqNote ??
+                '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)',
         writtenTime: _timeLine(wMin),
         writtenMarks: _bn(_cqs.length * 10 + _saqs.length * 2),
         mcqTime: _timeLine(mMin),
@@ -299,15 +399,19 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   // ── Main generate (now with preview) ──
   Future<void> _generate() async {
     if (_subject == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Choose a subject first')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Choose a subject first')));
       return;
     }
     if (!_isEnglish && _chapterMcqCounts.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content:
+              Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
       return;
     }
     if (_requestedMcqTotal > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
       return;
     }
     setState(() {
@@ -328,7 +432,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             final n = _aiShare == 25 ? 3 : (_aiShare == 75 ? 8 : 5);
             aiMcqs = await AiQuestionGenerator.generateMcqs(
               apiKey: _apiKey!,
-              subjectName: _isEnglish2nd(sid) ? 'English Second Paper (Board-2024 style)' : 'English First Paper (Board-2024 style)',
+              subjectName: _isEnglish2nd(sid)
+                  ? 'English Second Paper (Board-2024 style)'
+                  : 'English First Paper (Board-2024 style)',
               chapter: 'Board-style mixed paper 2024',
               sourceText: '',
               count: n,
@@ -341,7 +447,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           final pages = await PaperPdf.renderEnglishPages(
             paperTitle: ttl,
             subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
-            sections: [...EnglishPaperAdapter.second(m.set), if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)],
+            sections: [
+              ...EnglishPaperAdapter.second(m.set),
+              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)
+            ],
             setCode: _setLetter,
           );
           if (!mounted) return;
@@ -363,7 +472,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           final pages = await PaperPdf.renderEnglishPages(
             paperTitle: ttl,
             subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
-            sections: [...EnglishPaperAdapter.first(m.set), if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)],
+            sections: [
+              ...EnglishPaperAdapter.first(m.set),
+              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)
+            ],
             setCode: _setLetter,
           );
           if (!mounted) return;
@@ -389,17 +501,24 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         final customMcqs = <Question>[];
         final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
         for (final entry in _chapterMcqCounts.entries) {
-          final pool = allMCQs.where((q) => q.subjectId == sid && q.chapter == entry.key).toList()..shuffle();
+          final pool = allMCQs
+              .where((q) => q.subjectId == sid && q.chapter == entry.key)
+              .toList()
+            ..shuffle();
           customMcqs.addAll(pool.take(entry.value));
           final shortage = entry.value - pool.length;
           if (shortage > 0) {
             if (!hasKey) {
-              throw Exception('${entry.key}-এ $shortage টি প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
+              throw Exception(
+                  '${entry.key}-এ $shortage টি প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
             }
             final source = await ChapterSourceService.getSource(sid, entry.key);
             final ai = await AiQuestionGenerator.generateMcqs(
-              apiKey: _apiKey!, subjectName: _subject!.name, chapter: entry.key,
-              sourceText: source, count: shortage,
+              apiKey: _apiKey!,
+              subjectName: _subject!.name,
+              chapter: entry.key,
+              sourceText: source,
+              count: shortage,
             );
             customMcqs.addAll(ai);
           }
@@ -408,7 +527,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         _advanceSetCode();
         if (!mounted) return;
         setState(() {
-          _mcqs = _isPro ? customMcqs : customMcqs.take(PaperLicense.demoMcqLimit).toList();
+          _mcqs = _isPro
+              ? customMcqs
+              : customMcqs.take(PaperLicense.demoMcqLimit).toList();
           _cqs = [];
           _saqs = [];
           _busy = false;
@@ -420,39 +541,79 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
       // General subjects
       bool ok(String ch) => _chapters.isEmpty || _chapters.contains(ch);
-      final mcqPool = allMCQs.where((q) => q.subjectId == sid && ok(q.chapter)).toList()..shuffle();
-      final cqPool = allCQs.where((q) => q.subjectId == sid && ok(q.chapter)).toList()..shuffle();
+      final mcqPool = allMCQs
+          .where((q) => q.subjectId == sid && ok(q.chapter))
+          .toList()
+        ..shuffle();
+      final cqPool = allCQs
+          .where((q) => q.subjectId == sid && ok(q.chapter))
+          .toList()
+        ..shuffle();
 
       List<Question> aiMcqs = const [];
       List<CreativeQuestion> aiCqs = const [];
       final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
       if (_mixAi && hasKey) {
-        final chapLabel = _chapters.isEmpty ? 'সব অধ্যায় মিলিয়ে' : _chapters.join(', ');
+        final chapLabel =
+            _chapters.isEmpty ? 'সব অধ্যায় মিলিয়ে' : _chapters.join(', ');
         try {
           final aiMcqNeed = (_mcqN * _aiShare / 100).round();
           if (aiMcqNeed > 0) {
-            aiMcqs = await AiQuestionGenerator.generateMcqs(apiKey: _apiKey!, subjectName: _subject!.name, chapter: chapLabel, sourceText: '', count: aiMcqNeed);
+            aiMcqs = await AiQuestionGenerator.generateMcqs(
+                apiKey: _apiKey!,
+                subjectName: _subject!.name,
+                chapter: chapLabel,
+                sourceText: '',
+                count: aiMcqNeed);
           }
         } catch (_) {}
         try {
           final aiCqNeed = (_cqN * _aiShare / 100).round();
           if (aiCqNeed > 0) {
-            aiCqs = await AiQuestionGenerator.generateCqs(apiKey: _apiKey!, subjectName: _subject!.name, chapter: chapLabel, sourceText: '', count: aiCqNeed);
+            aiCqs = await AiQuestionGenerator.generateCqs(
+                apiKey: _apiKey!,
+                subjectName: _subject!.name,
+                chapter: chapLabel,
+                sourceText: '',
+                count: aiCqNeed);
           }
         } catch (_) {}
       }
 
       final mcqBankN = _mcqN - aiMcqs.length;
       final cqBankN = _cqN - aiCqs.length;
-      final mcqs = [...mcqPool.take(mcqBankN < 0 ? 0 : mcqBankN), ...aiMcqs]..shuffle();
+      final mcqs = [...mcqPool.take(mcqBankN < 0 ? 0 : mcqBankN), ...aiMcqs]
+        ..shuffle();
       final cqs = [...cqPool.take(cqBankN < 0 ? 0 : cqBankN), ...aiCqs];
 
       final usedIds = mcqs.map((q) => q.id).toSet();
-      final saqPool = mcqPool.where((q) => !usedIds.contains(q.id) && !_saqBad.any((b) => q.questionText.contains(b))).toList();
-      int saqScore(Question q) { var s=0; if (q.id.contains('_x')) s+=2; if (RegExp(r'[০-৯0-9√°²=^x]').hasMatch(q.questionText)) s+=1; if (q.questionText.length>42) s+=1; return s; }
-      final hardSaq = saqPool.where((q) => saqScore(q) >=3).toList()..shuffle();
-      final easySaq = saqPool.where((q) => saqScore(q) <3).toList()..shuffle();
-      final saqs = [...hardSaq, ...easySaq].take(_saqN).toList();
+      final saqPool = mcqPool
+          .where((q) =>
+              !usedIds.contains(q.id) &&
+              !_saqBad.any((b) => q.questionText.contains(b)))
+          .toList();
+      int saqScore(Question q) {
+        var s = 0;
+        if (q.id.contains('_x')) s += 2;
+        if (RegExp(r'[০-৯0-9√°²=^x]').hasMatch(q.questionText)) s += 1;
+        if (q.questionText.length > 42) s += 1;
+        return s;
+      }
+
+      final hardSaq = saqPool.where((q) => saqScore(q) >= 3).toList()
+        ..shuffle();
+      final easySaq = saqPool.where((q) => saqScore(q) < 3).toList()..shuffle();
+      final derivedSaqs = [...hardSaq, ...easySaq].take(_saqN).toList();
+
+      // Prefer the curated short-answer bank when this subject/chapter set has
+      // one; otherwise keep the original leftover-MCQ derivation untouched.
+      final curatedSaqs = allSAQs
+          .where((q) => q.subjectId == sid && ok(q.chapter))
+          .toList()
+        ..shuffle();
+      final saqs = curatedSaqs.isNotEmpty
+          ? curatedSaqs.take(_saqN).map(_saqAsQuestion).toList()
+          : derivedSaqs;
 
       _advanceSetCode();
 
@@ -467,7 +628,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       await _buildPreviewPages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
         setState(() => _busy = false);
       }
     }
@@ -475,13 +637,24 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
   Future<void> _print() async {
     if (!_generated) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generate preview first!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Generate preview first!')));
       return;
     }
     final pro = await PaperLicense.isPro();
     if (!pro) {
       if (!mounted) return;
-      showDialog(context: context, builder: (c) => AlertDialog(title: const Text('Pro Required'), content: const Text('Custom paper printing is Pro – unlock first.'), actions: [TextButton(onPressed: ()=>Navigator.pop(c), child: const Text('OK'))]));
+      showDialog(
+          context: context,
+          builder: (c) => AlertDialog(
+                  title: const Text('Pro Required'),
+                  content: const Text(
+                      'Custom paper printing is Pro – unlock first.'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(c),
+                        child: const Text('OK'))
+                  ]));
       return;
     }
     if (_subject == null) return;
@@ -491,7 +664,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         await PaperPdf.printEnglishPaper(
           paperTitle: _titleText,
           subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
-          sections: [...EnglishPaperAdapter.second(_englishSet!), if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)],
+          sections: [
+            ...EnglishPaperAdapter.second(_englishSet!),
+            if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)
+          ],
           setCode: _setLetter,
         );
         return;
@@ -500,7 +676,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         await PaperPdf.printEnglishPaper(
           paperTitle: _titleText,
           subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
-          sections: [...EnglishPaperAdapter.first(_firstSet!), if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)],
+          sections: [
+            ...EnglishPaperAdapter.first(_firstSet!),
+            if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)
+          ],
           setCode: _setLetter,
         );
         return;
@@ -510,13 +689,23 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       final isMath = sid == 'general_math' || sid == 'higher_math';
       await PaperPdf.printPaper(
         title: _titleText,
-        modeLine: _chapters.isEmpty ? 'ফুল সিলেবাস' : (_chapters.length <= 2 ? _chapters.join(', ') : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
+        modeLine: _chapters.isEmpty
+            ? 'ফুল সিলেবাস'
+            : (_chapters.length <= 2
+                ? _chapters.join(', ')
+                : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে'),
         mcqs: _mcqs,
         cqs: _cqs,
         saqs: _saqs,
         cqAnswerCount: _cqs.length,
         saqAnswerCount: _saqs.length,
-        cqNote: _cqs.isEmpty ? null : (_subject!.id == 'accounting' ? '(৭টি থেকে ৪টি=40 + বাধ্যতামূলক 20=60, SAQ 10) – PDF Page-24' : _subject!.id == 'finance' ? '(Fin5+Bank3 উত্তর5≥2, SAQ 8+7 উত্তর10≥4) – Page-26' : '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'),
+        cqNote: _cqs.isEmpty
+            ? null
+            : (_subject!.id == 'accounting'
+                ? '(৭টি থেকে ৪টি=40 + বাধ্যতামূলক 20=60, SAQ 10) – PDF Page-24'
+                : _subject!.id == 'finance'
+                    ? '(Fin5+Bank3 উত্তর5≥2, SAQ 8+7 উত্তর10≥4) – Page-26'
+                    : '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'),
         writtenTime: _timeLine(wMin),
         writtenMarks: _bn(_cqs.length * 10 + _saqs.length * 2),
         mcqTime: _timeLine(mMin),
@@ -529,7 +718,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         setCode: _setLetter,
       );
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Print error: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Print error: $e')));
     }
   }
 
@@ -537,17 +728,50 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   Widget _aiMixCard() {
     final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
     if (!hasKey) {
-      return SizedBox(width: double.infinity, child: OutlinedButton.icon(style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF17130A), side: const BorderSide(color: Color(0xFF17130A))), onPressed: _showApiKeyDialog, icon: const Icon(Icons.vpn_key_outlined, size: 18), label: const Text('🔑 Set Gemini API key (to mix AI questions)')));
+      return SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF17130A),
+                  side: const BorderSide(color: Color(0xFF17130A))),
+              onPressed: _showApiKeyDialog,
+              icon: const Icon(Icons.vpn_key_outlined, size: 18),
+              label:
+                  const Text('🔑 Set Gemini API key (to mix AI questions)')));
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: _gold.withOpacity(0.7)), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0,3))]),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _gold.withOpacity(0.7)),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 3))
+          ]),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SwitchListTile(contentPadding: EdgeInsets.zero, dense: true, value: _mixAi, onChanged: (v)=>setState(()=>_mixAi=v), title: const Text('🤖 Mix AI questions', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)), subtitle: Text('Fresh AI + bank', style: TextStyle(fontSize: 11, color: Colors.grey.shade600))),
+        SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            value: _mixAi,
+            onChanged: (v) => setState(() => _mixAi = v),
+            title: const Text('🤖 Mix AI questions',
+                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+            subtitle: Text('Fresh AI + bank',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600))),
         if (_mixAi) ...[
-          const Text('AI %:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          const Text('AI %:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
-          SegmentedButton<int>(segments: const [ButtonSegment(value: 25, label: Text('25%')), ButtonSegment(value: 50, label: Text('50%')), ButtonSegment(value: 75, label: Text('75%'))], selected: {_aiShare}, onSelectionChanged: (s)=>setState(()=>_aiShare=s.first)),
+          SegmentedButton<int>(segments: const [
+            ButtonSegment(value: 25, label: Text('25%')),
+            ButtonSegment(value: 50, label: Text('50%')),
+            ButtonSegment(value: 75, label: Text('75%'))
+          ], selected: {
+            _aiShare
+          }, onSelectionChanged: (s) => setState(() => _aiShare = s.first)),
         ],
       ]),
     );
@@ -555,26 +779,52 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
   Future<void> _showApiKeyDialog() async {
     final controller = TextEditingController(text: _apiKey ?? '');
-    final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(title: const Text('🔑 Gemini API Key'), content: TextField(controller: controller, decoration: const InputDecoration(hintText: 'AIza...')), actions: [TextButton(onPressed: ()=>Navigator.pop(c,false), child: const Text('Cancel')), FilledButton(onPressed: ()=>Navigator.pop(c,true), child: const Text('Save'))]));
+    final ok = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(
+                title: const Text('🔑 Gemini API Key'),
+                content: TextField(
+                    controller: controller,
+                    decoration: const InputDecoration(hintText: 'AIza...')),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(c, false),
+                      child: const Text('Cancel')),
+                  FilledButton(
+                      onPressed: () => Navigator.pop(c, true),
+                      child: const Text('Save'))
+                ]));
     if (ok == true && mounted) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('gemini_api_key', controller.text.trim());
-      setState(() { _apiKey = controller.text.trim(); _mixAi = _apiKey!.isNotEmpty; });
+      setState(() {
+        _apiKey = controller.text.trim();
+        _mixAi = _apiKey!.isNotEmpty;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final chapters = _availableChapters;
-    final total = _isEnglish ? (_cqN * 10 + _saqN * 2 + _mcqN) : _requestedMcqTotal;
+    final total =
+        _isEnglish ? (_cqN * 10 + _saqN * 2 + _mcqN) : _requestedMcqTotal;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.mcqOnly ? 'Custom MCQ Test + OMR' : 'Custom Paper + Preview'), backgroundColor: const Color(0xFF17130A), foregroundColor: const Color(0xFFFFE08A)),
+      appBar: AppBar(
+          title: Text(widget.mcqOnly
+              ? 'Custom MCQ Test + OMR'
+              : 'Custom Paper + Preview'),
+          backgroundColor: const Color(0xFF17130A),
+          foregroundColor: const Color(0xFFFFE08A)),
       // This screen intentionally uses light paper-style cards. Force a local
       // light text/input theme so the global dark+gold app theme cannot fade text on white cards.
       body: Theme(
         data: ThemeData.light(useMaterial3: true).copyWith(
-          colorScheme: ColorScheme.fromSeed(seedColor: _gold, brightness: Brightness.light),
-          textTheme: ThemeData.light().textTheme.apply(bodyColor: const Color(0xFF17130A), displayColor: const Color(0xFF17130A)),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: _gold, brightness: Brightness.light),
+          textTheme: ThemeData.light().textTheme.apply(
+              bodyColor: const Color(0xFF17130A),
+              displayColor: const Color(0xFF17130A)),
           inputDecorationTheme: const InputDecorationTheme(
             labelStyle: TextStyle(color: Color(0xFF5E574B)),
             hintStyle: TextStyle(color: Color(0xFF756E63)),
@@ -582,74 +832,217 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         ),
         child: AnimatedBuilder(
           animation: AppStyle.bgIndex,
-        builder: (context, _) => Container(
-          color: AppStyle.bg,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // Config card
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0,4))]),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  DropdownButtonFormField<SubjectInfo>(value: _subject, decoration: const InputDecoration(labelText: 'Subject'), items: allSubjects.map((s) => DropdownMenuItem(value: s, child: Text('${s.icon} ${s.name}'))).toList(), onChanged: (s)=>setState((){_subject=s; _chapters.clear(); _generated=false; _pagePngs=null;}), hint: const Text('Choose subject')),
-                  const SizedBox(height: 12),
-                  TextField(controller: _titleCtrl, decoration: const InputDecoration(labelText: 'Paper Title'), onChanged: (_)=>setState((){})),
-                  const SizedBox(height: 6),
-                  Text('Code: ${_subjectCodes[_subject?.id] ?? '—'} • Set: $_setLetter', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade700)),
-                ]),
-              ),
-              const SizedBox(height: 14),
-              if (!_isEnglish) ...[
-                const Text('Custom MCQ test', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 4),
-                Text('অধ্যায় নির্বাচন করো, তারপর প্রতিটি অধ্যায়ের পাশে MCQ সংখ্যা নির্ধারণ করো।', style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
-                const SizedBox(height: 10),
-                for (final chapter in chapters) _chapterMcqRow(chapter),
+          builder: (context, _) => Container(
+            color: AppStyle.bg,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                // Config card
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                  decoration: BoxDecoration(color: const Color(0xFF17130A), borderRadius: BorderRadius.circular(14)),
-                  child: Row(children: [const Icon(Icons.fact_check_outlined, color: _gold), const SizedBox(width: 9), Expanded(child: Text('মোট MCQ: $_requestedMcqTotal / 100', style: const TextStyle(color: Color(0xFFFFE08A), fontWeight: FontWeight.w800))),]),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4))
+                      ]),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DropdownButtonFormField<SubjectInfo>(
+                            value: _subject,
+                            decoration:
+                                const InputDecoration(labelText: 'Subject'),
+                            items: allSubjects
+                                .map((s) => DropdownMenuItem(
+                                    value: s,
+                                    child: Text('${s.icon} ${s.name}')))
+                                .toList(),
+                            onChanged: (s) => setState(() {
+                                  _subject = s;
+                                  _chapters.clear();
+                                  _generated = false;
+                                  _pagePngs = null;
+                                }),
+                            hint: const Text('Choose subject')),
+                        const SizedBox(height: 12),
+                        TextField(
+                            controller: _titleCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'Paper Title'),
+                            onChanged: (_) => setState(() {})),
+                        const SizedBox(height: 6),
+                        Text(
+                            'Code: ${_subjectCodes[_subject?.id] ?? '—'} • Set: $_setLetter',
+                            style: TextStyle(
+                                fontSize: 11.5, color: Colors.grey.shade700)),
+                      ]),
                 ),
-                const SizedBox(height: 10),
-              ],
-              if (_isEnglish) Container(margin: const EdgeInsets.only(bottom:10), padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.teal.shade50, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.teal.shade100)), child: Text(_isEnglish2nd(_subject?.id) ? 'English 2nd: Grammar 60 + Composition 40 (mixed boards)' : 'English 1st: Reading 70 + Writing 30 (mixed boards)', style: TextStyle(fontSize:12, color: Colors.teal.shade900))),
-              _aiMixCard(),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: const Color(0xFF17130A), borderRadius: BorderRadius.circular(16), border: Border.all(color: _gold.withOpacity(0.5))),
-                child: Row(children: [const Icon(Icons.calculate_outlined, color: _gold), const SizedBox(width:10), Expanded(child: Text(_isEnglish ? 'Marks: $total • Time: ${_timeLine(_cqN*12+_saqN*3)} + ${_timeLine(_mcqN)} MCQ' : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}', style: const TextStyle(color: Color(0xFFFFE08A), fontSize:13)))]),
-              ),
-              const SizedBox(height: 16),
-              // Generate button (now shows preview too)
-              SizedBox(width: double.infinity, height: 50, child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF17130A), foregroundColor: const Color(0xFFFFE08A)), onPressed: _busy ? null : _generate, icon: _busy ? const SizedBox(width:16,height:16, child:CircularProgressIndicator(strokeWidth:2, color: Color(0xFFFFE08A))) : const Icon(Icons.visibility_rounded), label: Text(_busy ? 'Building...' : 'Generate & Preview'))),
-              const SizedBox(height: 12),
-              // Preview (NEW)
-              if (_busy) const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator())),
-              if (_generated && _pagePngs != null) ...[
-                for (var i=0;i<_pagePngs!.length;i++) Container(margin: const EdgeInsets.only(bottom:14), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: Colors.black26), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius:12, offset: Offset(0,6))]), child: Image.memory(_pagePngs![i], fit: BoxFit.fitWidth)),
-                const SizedBox(height:8),
-                Row(children: [
-                  Expanded(child: AppButton(label: _showAnswerKey ? 'Hide Answers' : 'Answers', icon: Icons.key_rounded, outlined: true, onPressed: ()=>setState(()=>_showAnswerKey=!_showAnswerKey))),
-                  const SizedBox(width:10),
-                  Expanded(child: AppButton(label: 'PDF / Print', icon: Icons.print_rounded, onPressed: _print)),
-                ]),
-                if (_showAnswerKey) ...[
-                  const SizedBox(height:12),
-                  Container(width: double.infinity, padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.secondary.withOpacity(0.3))), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    const Text('MCQ Answers', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height:6),
-                    Wrap(spacing:12, children: [for (var j=0;j<_mcqs.length;j++) Text('${_bn(j+1)}. ${['ক','খ','গ','ঘ'][_mcqs[j].correctIndex]}', style: const TextStyle(fontSize:13))]),
-                  ])),
+                const SizedBox(height: 14),
+                if (!_isEnglish) ...[
+                  const Text('Custom MCQ test',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  Text(
+                      'অধ্যায় নির্বাচন করো, তারপর প্রতিটি অধ্যায়ের পাশে MCQ সংখ্যা নির্ধারণ করো।',
+                      style:
+                          TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+                  const SizedBox(height: 10),
+                  for (final chapter in chapters) _chapterMcqRow(chapter),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 11),
+                    decoration: BoxDecoration(
+                        color: const Color(0xFF17130A),
+                        borderRadius: BorderRadius.circular(14)),
+                    child: Row(children: [
+                      const Icon(Icons.fact_check_outlined, color: _gold),
+                      const SizedBox(width: 9),
+                      Expanded(
+                          child: Text('মোট MCQ: $_requestedMcqTotal / 100',
+                              style: const TextStyle(
+                                  color: Color(0xFFFFE08A),
+                                  fontWeight: FontWeight.w800))),
+                    ]),
+                  ),
+                  const SizedBox(height: 10),
                 ],
+                if (_isEnglish)
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          color: Colors.teal.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.teal.shade100)),
+                      child: Text(
+                          _isEnglish2nd(_subject?.id)
+                              ? 'English 2nd: Grammar 60 + Composition 40 (mixed boards)'
+                              : 'English 1st: Reading 70 + Writing 30 (mixed boards)',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.teal.shade900))),
+                _aiMixCard(),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF17130A),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: _gold.withOpacity(0.5))),
+                  child: Row(children: [
+                    const Icon(Icons.calculate_outlined, color: _gold),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: Text(
+                            _isEnglish
+                                ? 'Marks: $total • Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} MCQ'
+                                : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}',
+                            style: const TextStyle(
+                                color: Color(0xFFFFE08A), fontSize: 13)))
+                  ]),
+                ),
+                const SizedBox(height: 16),
+                // Generate button (now shows preview too)
+                SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF17130A),
+                            foregroundColor: const Color(0xFFFFE08A)),
+                        onPressed: _busy ? null : _generate,
+                        icon: _busy
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Color(0xFFFFE08A)))
+                            : const Icon(Icons.visibility_rounded),
+                        label: Text(
+                            _busy ? 'Building...' : 'Generate & Preview'))),
+                const SizedBox(height: 12),
+                // Preview (NEW)
+                if (_busy)
+                  const Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: CircularProgressIndicator())),
+                if (_generated && _pagePngs != null) ...[
+                  for (var i = 0; i < _pagePngs!.length; i++)
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 14),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black26),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 12,
+                                  offset: Offset(0, 6))
+                            ]),
+                        child:
+                            Image.memory(_pagePngs![i], fit: BoxFit.fitWidth)),
+                  const SizedBox(height: 8),
+                  Row(children: [
+                    Expanded(
+                        child: AppButton(
+                            label: _showAnswerKey ? 'Hide Answers' : 'Answers',
+                            icon: Icons.key_rounded,
+                            outlined: true,
+                            onPressed: () => setState(
+                                () => _showAnswerKey = !_showAnswerKey))),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: AppButton(
+                            label: 'PDF / Print',
+                            icon: Icons.print_rounded,
+                            onPressed: _print)),
+                  ]),
+                  if (_showAnswerKey) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: AppTheme.secondary.withOpacity(0.3))),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('MCQ Answers',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 6),
+                              Wrap(spacing: 12, children: [
+                                for (var j = 0; j < _mcqs.length; j++)
+                                  Text(
+                                      '${_bn(j + 1)}. ${[
+                                        'ক',
+                                        'খ',
+                                        'গ',
+                                        'ঘ'
+                                      ][_mcqs[j].correctIndex]}',
+                                      style: const TextStyle(fontSize: 13))
+                              ]),
+                            ])),
+                  ],
+                ],
+                const SizedBox(height: 8),
+                Text(
+                    'Creative=10, SAQ=2, MCQ=1 – auto calculated. Preview = exact print.',
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 11.5, color: Colors.grey.shade600)),
               ],
-              const SizedBox(height:8),
-              Text('Creative=10, SAQ=2, MCQ=1 – auto calculated. Preview = exact print.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600)),
-            ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
