@@ -157,6 +157,24 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         figure: q.figure,
       );
 
+  /// Gemini's parser intentionally returns generic identities. Reattach the
+  /// exact selected subject/chapter before adding generated shortage items to
+  /// a custom test so downstream filtering and provenance remain correct.
+  static Question _generatedForChapter(
+          Question q, String subjectId, String chapter) =>
+      Question(
+        id: q.id,
+        subjectId: subjectId,
+        chapter: chapter,
+        questionText: q.questionText,
+        options: List<String>.unmodifiable(q.options),
+        correctIndex: q.correctIndex,
+        explanation: q.explanation,
+        source: QuestionSource.ai,
+        sourceLabel: 'Gemini • chapter-source grounded',
+        figure: q.figure,
+      );
+
   static const _saqBad = [
     'কোনটি',
     'কোনটির',
@@ -510,26 +528,41 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           if (shortage > 0) {
             if (!hasKey) {
               throw Exception(
-                  '${entry.key}-এ $shortage টি প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
+                  '${entry.key}-এ ${shortage}টি সংরক্ষিত প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
             }
             final source = await ChapterSourceService.getSource(sid, entry.key);
+            if (source.trim().isEmpty) {
+              throw Exception(
+                  '${entry.key}-এর নির্ভরযোগ্য অধ্যায়-উৎস পাঠ পাওয়া যায়নি। উৎস পাঠ যোগ করো অথবা MCQ সংখ্যা ${pool.length}-এর মধ্যে রাখো।');
+            }
             final ai = await AiQuestionGenerator.generateMcqs(
               apiKey: _apiKey!,
-              subjectName: _subject!.name,
+              subjectName: _subject!.bengaliName,
               chapter: entry.key,
               sourceText: source,
               count: shortage,
             );
-            customMcqs.addAll(ai);
+            if (ai.length != shortage) {
+              throw Exception(
+                  '${entry.key}-এর জন্য Gemini ${shortage}টির বদলে ${ai.length}টি বৈধ MCQ দিয়েছে। আবার চেষ্টা করো অথবা সংখ্যা কমাও।');
+            }
+            customMcqs.addAll(
+              ai.map((q) => _generatedForChapter(q, sid, entry.key)),
+            );
           }
         }
         customMcqs.shuffle();
+        if (customMcqs.length != _requestedMcqTotal) {
+          throw Exception(
+              'চাওয়া MCQ সংখ্যা ঠিকভাবে তৈরি হয়নি। আবার চেষ্টা করো।');
+        }
         _advanceSetCode();
         if (!mounted) return;
         setState(() {
-          _mcqs = _isPro
-              ? customMcqs
-              : customMcqs.take(PaperLicense.demoMcqLimit).toList();
+          // Custom chapter quantities are an explicit contract. Do not trim
+          // this list after generation; the existing print license gate still
+          // controls PDF/printing without corrupting requested quantities.
+          _mcqs = customMcqs;
           _cqs = [];
           _saqs = [];
           _busy = false;
@@ -859,11 +892,13 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                             items: allSubjects
                                 .map((s) => DropdownMenuItem(
                                     value: s,
-                                    child: Text('${s.icon} ${s.name}')))
+                                    child: Text(
+                                        '${s.icon} ${s.id == 'chemistry' ? s.bengaliName : s.name}')))
                                 .toList(),
                             onChanged: (s) => setState(() {
                                   _subject = s;
                                   _chapters.clear();
+                                  _chapterMcqCounts.clear();
                                   _generated = false;
                                   _pagePngs = null;
                                 }),
