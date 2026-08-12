@@ -1,3 +1,4 @@
+import '../data/biology/biology_chapter_catalog.dart';
 import '../data/chemistry/chemistry_chapter_catalog.dart';
 
 /// One source of truth for chapter ribbons/dropdowns.
@@ -66,6 +67,9 @@ class ChapterCatalog {
     if (subjectId == 'physics') return List<String>.from(physics);
     if (subjectId == ChemistryChapterCatalog.subjectId) {
       return List<String>.from(ChemistryChapterCatalog.chapters);
+    }
+    if (subjectId == BiologyChapterCatalog.subjectId) {
+      return List<String>.from(BiologyChapterCatalog.chapters);
     }
     final clean =
         values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
