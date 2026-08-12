@@ -141,7 +141,7 @@ void main() {
         'higher_math': 7,
         // Chemistry now has its own additive bank plus the pre-existing item.
         'chemistry': 605,
-        'biology': 1,
+        'biology': 701,
         'finance': 1,
         'accounting': 1,
       };

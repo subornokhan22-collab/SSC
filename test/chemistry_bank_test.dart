@@ -195,7 +195,7 @@ void main() {
       const expectedMcqs = <String, int>{
         'general_math': 513,
         'higher_math': 7,
-        'biology': 1,
+        'biology': 701,
         'finance': 1,
         'accounting': 1,
       };
