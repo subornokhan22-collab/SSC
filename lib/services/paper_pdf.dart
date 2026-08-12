@@ -66,8 +66,7 @@ class PaperPdf {
     _fontsTried = true;
     try {
       final lr = FontLoader('HSPDF-Regular')
-        ..addFont(
-            rootBundle.load('assets/fonts/NotoSerifBengali-Regular.ttf'));
+        ..addFont(rootBundle.load('assets/fonts/NotoSerifBengali-Regular.ttf'));
       await lr.load();
       _regular = 'HSPDF-Regular';
     } catch (_) {}
@@ -128,14 +127,33 @@ class PaperPdf {
   /// টাইপ করা/AI লেখা "x^2", "y^-2", "10^(n+1)", "x∧2" → আসল সুপারস্ক্রিপ্ট
   static String _caretToSup(String s) {
     const sup = {
-      '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
-      '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
-      '০': '⁰', '১': '¹', '২': '²', '৩': '³', '৪': '⁴',
-      '৫': '⁵', '৬': '⁶', '৭': '⁷', '৮': '⁸', '৯': '⁹',
-      '-': '⁻', '+': '⁺', '−': '⁻', 'n': 'ⁿ', 'm': 'ᵐ',
+      '0': '⁰',
+      '1': '¹',
+      '2': '²',
+      '3': '³',
+      '4': '⁴',
+      '5': '⁵',
+      '6': '⁶',
+      '7': '⁷',
+      '8': '⁸',
+      '9': '⁹',
+      '০': '⁰',
+      '১': '¹',
+      '২': '²',
+      '৩': '³',
+      '৪': '⁴',
+      '৫': '⁵',
+      '৬': '⁶',
+      '৭': '⁷',
+      '৮': '⁸',
+      '৯': '⁹',
+      '-': '⁻',
+      '+': '⁺',
+      '−': '⁻',
+      'n': 'ⁿ',
+      'm': 'ᵐ',
     };
-    String mapRun(String run) =>
-        run.split('').map((c) => sup[c] ?? '').join();
+    String mapRun(String run) => run.split('').map((c) => sup[c] ?? '').join();
     // ^(n+1) ধরনের বন্ধনী-ঘাত আগে
     s = s.replaceAllMapped(
         RegExp(r'[\^∧]\(([^()]{1,15})\)'), (m) => mapRun(m.group(1)!));
@@ -157,11 +175,25 @@ class PaperPdf {
       'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
       '0123456789০১২৩৪৫৬৭৮৯√πθ°';
   static const Set<String> _unitFracs = {
-    'm/s', 'm/s²', 'kg/m³', 'g/cm³', 'N/m²', 'N/kg',
-    'W/m²', 'km/h', 'kg·m/s', 'kg·m/s²',
+    'm/s',
+    'm/s²',
+    'kg/m³',
+    'g/cm³',
+    'N/m²',
+    'N/kg',
+    'W/m²',
+    'km/h',
+    'kg·m/s',
+    'kg·m/s²',
   };
   static const Set<String> _trigNames = {
-    'sin', 'cos', 'tan', 'sec', 'cosec', 'cot', 'log',
+    'sin',
+    'cos',
+    'tan',
+    'sec',
+    'cosec',
+    'cot',
+    'log',
   };
 
   static bool _hasMathChar(String t) {
@@ -452,6 +484,7 @@ class PaperPdf {
       setCode: setCode,
     );
   }
+
   // ১ম অংশ (লিখিত পত্র): সৃজনশীল + সংক্ষিপ্ত-উত্তর, মান ডান কলামে।
   // ২য় অংশ (বহুনির্বাচনি পত্র): স্কুল-বোর্ড স্টাইল হেডার (প্রাপ্ত নম্বর ও
   // কোড বাক্স, নাম/রোল/শাখা লাইন, দ্রষ্টব্য বাক্স) + দুই কলাম MCQ।
@@ -588,7 +621,8 @@ class PaperPdf {
           }
         }
         final tp = TextPainter(
-          text: TextSpan(style: st(size, isBold, lineHeight), children: children),
+          text:
+              TextSpan(style: st(size, isBold, lineHeight), children: children),
           textDirection: TextDirection.ltr,
           textAlign: align,
         );
@@ -708,7 +742,8 @@ class PaperPdf {
           }
           for (int r = 1; r < grid.length; r++) {
             final hy = y0 + r * cellH;
-            canvas.drawLine(Offset(startX, hy), Offset(startX + totalW, hy), line);
+            canvas.drawLine(
+                Offset(startX, hy), Offset(startX + totalW, hy), line);
           }
           for (int r = 0; r < grid.length; r++) {
             double cx = startX;
@@ -784,8 +819,7 @@ class PaperPdf {
           tp.layout();
           final mx2 = (c.dx + a.dx) / 2;
           final my2 = (c.dy + a.dy) / 2;
-          tp.paint(
-              canvas, Offset(mx2 + 2.5 * _k, my2 - tp.height / 2));
+          tp.paint(canvas, Offset(mx2 + 2.5 * _k, my2 - tp.height / 2));
         }
         final an = f.angles; // কোণের লেবেল
         if (an.isNotEmpty && an[0].isNotEmpty) {
@@ -796,28 +830,33 @@ class PaperPdf {
         if (an.length > 1 && an[1].isNotEmpty) {
           final tp = makePainter(_safe(an[1]), 9);
           tp.layout();
-          tp.paint(
-              canvas, Offset(b.dx + 3.5 * _k, b.dy - tp.height - 2 * _k));
+          tp.paint(canvas, Offset(b.dx + 3.5 * _k, b.dy - tp.height - 2 * _k));
         }
         if (an.length > 2 && an[2].isNotEmpty) {
           final tp = makePainter(_safe(an[2]), 9);
           tp.layout();
-          tp.paint(
-              canvas, Offset(c.dx - tp.width - 3.5 * _k, c.dy - tp.height - 2 * _k));
+          tp.paint(canvas,
+              Offset(c.dx - tp.width - 3.5 * _k, c.dy - tp.height - 2 * _k));
         }
         // সমকোণ চিহ্ন
         final ra = f.rightAngleAt;
         if (ra != null && ra.isNotEmpty) {
           final sz = 7 * _k;
           if (v.length > 1 && ra == v[1]) {
-            canvas.drawLine(Offset(b.dx + sz, b.dy), Offset(b.dx + sz, b.dy - sz), tri);
-            canvas.drawLine(Offset(b.dx + sz, b.dy - sz), Offset(b.dx, b.dy - sz), tri);
+            canvas.drawLine(
+                Offset(b.dx + sz, b.dy), Offset(b.dx + sz, b.dy - sz), tri);
+            canvas.drawLine(
+                Offset(b.dx + sz, b.dy - sz), Offset(b.dx, b.dy - sz), tri);
           } else if (v.length > 2 && ra == v[2]) {
-            canvas.drawLine(Offset(c.dx - sz, c.dy), Offset(c.dx - sz, c.dy - sz), tri);
-            canvas.drawLine(Offset(c.dx - sz, c.dy - sz), Offset(c.dx, c.dy - sz), tri);
+            canvas.drawLine(
+                Offset(c.dx - sz, c.dy), Offset(c.dx - sz, c.dy - sz), tri);
+            canvas.drawLine(
+                Offset(c.dx - sz, c.dy - sz), Offset(c.dx, c.dy - sz), tri);
           } else if (v.isNotEmpty && ra == v[0]) {
-            canvas.drawLine(Offset(a.dx - sz, a.dy + sz), Offset(a.dx, a.dy + sz), tri);
-            canvas.drawLine(Offset(a.dx, a.dy + sz), Offset(a.dx + sz, a.dy + sz), tri);
+            canvas.drawLine(
+                Offset(a.dx - sz, a.dy + sz), Offset(a.dx, a.dy + sz), tri);
+            canvas.drawLine(
+                Offset(a.dx, a.dy + sz), Offset(a.dx + sz, a.dy + sz), tri);
           }
         }
       } else if (f.kind == FigureKind.barChart) {
@@ -850,8 +889,10 @@ class PaperPdf {
             canvas.drawRect(rect, line);
             final vt = makePainter(_bn(f.values[i]), 9);
             vt.layout();
-            vt.paint(canvas,
-                Offset(bx + (barW - vt.width) / 2, base - bh - vt.height - 1 * _k));
+            vt.paint(
+                canvas,
+                Offset(bx + (barW - vt.width) / 2,
+                    base - bh - vt.height - 1 * _k));
             if (i < f.headers.length) {
               final lt = makePainter(_safe(f.headers[i]), 8.5);
               lt.layout(maxWidth: slot);
@@ -1086,13 +1127,15 @@ class PaperPdf {
 
     // ══════════════ ১ম অংশ: লিখিত পত্র ══════════════
     begin();
-    final subj =
-        'বিষয়ঃ $title${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
-    await partHeader(subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
+    final subj = 'বিষয়ঃ $title${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
+    await partHeader(
+        subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
 
     if (cqs.isNotEmpty) {
-      await sectionTitle('সৃজনশীল প্রশ্ন', cqNote ??
-          '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)');
+      await sectionTitle(
+          'সৃজনশীল প্রশ্ন',
+          cqNote ??
+              '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)');
       for (int i = 0; i < cqs.length; i++) {
         final cq = cqs[i];
         await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
@@ -1108,21 +1151,17 @@ class PaperPdf {
         }
         // গণিত/উচ্চতর গণিত (নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ;
         // অন্য বিষয়: আগের মতো ব্যাংকের মান হিসেবে ৪ ভাগ পর্যন্ত।
-        await paraMark(
-            'ক) ${cq.questionK}', 10.5,
+        await paraMark('ক) ${cq.questionK}', 10.5,
             mathCqThreePart ? '২' : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
             indent: 10, gapBefore: 2.5);
-        await paraMark(
-            'খ) ${cq.questionKh}', 10.5,
+        await paraMark('খ) ${cq.questionKh}', 10.5,
             mathCqThreePart ? '৪' : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
             indent: 10, gapBefore: 1.5);
-        await paraMark(
-            'গ) ${cq.questionG}', 10.5,
+        await paraMark('গ) ${cq.questionG}', 10.5,
             mathCqThreePart ? '৪' : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
             indent: 10, gapBefore: 1.5);
         if (!mathCqThreePart) {
-          await paraMark(
-              'ঘ) ${cq.questionGh}', 10.5,
+          await paraMark('ঘ) ${cq.questionGh}', 10.5,
               _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
               indent: 10, gapBefore: 1.5);
         }
@@ -1248,98 +1287,209 @@ class PaperPdf {
         Offset(_margin - 16 * _k, sh - _margin + 5 * _k),
         Offset(sw - _margin + 5 * _k, sh - _margin + 5 * _k),
       ]) {
-        canvas.drawRect(Rect.fromLTWH(p.dx, p.dy, 10 * _k, 10 * _k), Paint()..color = black);
+        canvas.drawRect(Rect.fromLTWH(p.dx, p.dy, 10 * _k, 10 * _k),
+            Paint()..color = black);
       }
 
       y = _margin;
       // Use exactly the title entered in the Paper Title box; do not print a fixed board/SSC/HSC heading.
       await para(title.trim().isEmpty ? 'Question Paper' : title, 14,
           isBold: true, align: TextAlign.center);
-      await para('নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।', 8.2,
-          isBold: true, align: TextAlign.center, gapBefore: 3);
+      await para(
+          'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
+          8.2,
+          isBold: true,
+          align: TextAlign.center,
+          gapBefore: 3);
       y += 4 * _k;
       await rule(gapBefore: 1, gapAfter: 5);
 
-      // IMPORTANT: Questions and identity fields use separate fixed zones.
-      // Never calculate an identity panel from a question-panel width.
-      final leftX = _margin;
-      final leftW = contentW * .42;
-      final gap = contentW * .035;
-      final rightX = leftX + leftW + gap;
-      final rightW = contentW - leftW - gap;
+      // OMR content uses two non-overlapping horizontal bands:
+      // up to four 25-question columns (1–100), then identity fields.
+      final sheetX = _margin;
 
       void bubble(double x, double yy, String value, {bool selected = false}) {
         final r = 4.8 * _k;
-        canvas.drawCircle(Offset(x, yy), r, Paint()..color = selected ? pink : Colors.white);
-        canvas.drawCircle(Offset(x, yy), r, Paint()
-          ..color = pink
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = .8 * _k);
-        final t = makePainter(value, 6.4, isBold: selected, align: TextAlign.center)..layout();
+        canvas.drawCircle(
+          Offset(x, yy),
+          r,
+          Paint()..color = selected ? pink : Colors.white,
+        );
+        canvas.drawCircle(
+          Offset(x, yy),
+          r,
+          Paint()
+            ..color = pink
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = .8 * _k,
+        );
+        final t = makePainter(
+          value,
+          6.4,
+          isBold: selected,
+          align: TextAlign.center,
+        )..layout();
         t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
       }
 
-      // Question area: 1–25 and 26–50 are stacked, so it cannot collide with metadata.
-      final total = mcqs.length.clamp(0, 50).toInt();
-      const maxPerBox = 25;
+      final total = mcqs.length.clamp(0, 100).toInt();
+      const maxPerColumn = 25;
+      final questionColumns = (total + maxPerColumn - 1) ~/ maxPerColumn;
+      final questionGap = 5 * _k;
+      final questionWidth =
+          (contentW - (questionColumns - 1) * questionGap) / questionColumns;
       final rowH = 11.2 * _k;
-      void questionBox(int first, int count, double top) {
+
+      void questionBox(
+        int first,
+        int count,
+        double x,
+        double top,
+        double width,
+      ) {
         final h = (count + 1) * rowH + 3 * _k;
-        canvas.drawRect(Rect.fromLTWH(leftX, top, leftW, h), borderPink);
-        final head = makePainter('প্রশ্ন নং        উত্তর', 8, isBold: true)..layout();
-        head.paint(canvas, Offset(leftX + 4 * _k, top + 1 * _k));
+        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderPink);
+        final head = makePainter(
+          'প্রশ্ন নং                 উত্তর',
+          7.4,
+          isBold: true,
+        )..layout(maxWidth: width - 8 * _k);
+        head.paint(canvas, Offset(x + 4 * _k, top + 1 * _k));
         for (var i = 0; i < count; i++) {
           final yy = top + (i + 1) * rowH + 4.8 * _k;
           if (i.isEven) {
-            canvas.drawRect(Rect.fromLTWH(leftX + .5 * _k, yy - 5.6 * _k, leftW - _k, rowH),
-                Paint()..color = pinkLight.withOpacity(.32));
+            canvas.drawRect(
+              Rect.fromLTWH(
+                x + .5 * _k,
+                yy - 5.6 * _k,
+                width - _k,
+                rowH,
+              ),
+              Paint()..color = pinkLight.withOpacity(.32),
+            );
           }
-          final n = makePainter(_bn(first + i), 7.8)..layout();
-          n.paint(canvas, Offset(leftX + 4 * _k, yy - n.height / 2));
-          final bx = leftX + 18 * _k;
-          for (var o = 0; o < 4; o++) bubble(bx + o * 13.2 * _k, yy, _optionLetters[o]);
+          final number = makePainter(_bn(first + i), 7.6)..layout();
+          number.paint(canvas, Offset(x + 4 * _k, yy - number.height / 2));
+          final firstBubbleX = x + 31 * _k;
+          final bubbleStep = (width - 38 * _k) / 3;
+          for (var option = 0; option < 4; option++) {
+            bubble(
+              firstBubbleX + option * bubbleStep,
+              yy,
+              _optionLetters[option],
+            );
+          }
         }
       }
 
-      final top = y;
-      final firstCount = total > maxPerBox ? maxPerBox : total;
-      questionBox(1, firstCount, top);
-      if (total > maxPerBox) {
-        questionBox(26, total - maxPerBox, top + (firstCount + 1) * rowH + 10 * _k);
+      final questionsTop = y;
+      for (var column = 0; column < questionColumns; column++) {
+        final first = column * maxPerColumn + 1;
+        final remaining = total - column * maxPerColumn;
+        final count = remaining > maxPerColumn ? maxPerColumn : remaining;
+        questionBox(
+          first,
+          count,
+          sheetX + column * (questionWidth + questionGap),
+          questionsTop,
+          questionWidth,
+        );
       }
+      final longestQuestionColumn = total > maxPerColumn ? maxPerColumn : total;
+      final questionsBottom =
+          questionsTop + (longestQuestionColumn + 1) * rowH + 3 * _k;
 
-      void digitPanel(String title, int columns, double top, double width, {String digits = ''}) {
+      void digitPanel(
+        String panelTitle,
+        int columns,
+        double x,
+        double top,
+        double width, {
+        String digits = '',
+      }) {
         final h = 10 * 10.8 * _k + 13 * _k;
-        canvas.drawRect(Rect.fromLTWH(rightX, top, width, h), borderPink);
-        final label = makePainter(title, 8.5, isBold: true, align: TextAlign.center)..layout(maxWidth: width - 4 * _k);
-        label.paint(canvas, Offset(rightX + (width - label.width) / 2, top + 1.5 * _k));
-        for (var c = 0; c < columns; c++) {
-          final cx = rightX + 7 * _k + c * (width - 14 * _k) / (columns - 1 == 0 ? 1 : columns - 1);
-          final wanted = c < digits.length ? digits[c] : '';
-          for (var d = 0; d < 10; d++) bubble(cx, top + 12 * _k + d * 10.8 * _k, '$d', selected: wanted == '$d');
+        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderPink);
+        final label = makePainter(
+          panelTitle,
+          8.5,
+          isBold: true,
+          align: TextAlign.center,
+        )..layout(maxWidth: width - 4 * _k);
+        label.paint(
+          canvas,
+          Offset(x + (width - label.width) / 2, top + 1.5 * _k),
+        );
+        for (var column = 0; column < columns; column++) {
+          final denominator = columns > 1 ? columns - 1 : 1;
+          final cx = x + 7 * _k + column * (width - 14 * _k) / denominator;
+          final wanted = column < digits.length ? digits[column] : '';
+          for (var digit = 0; digit < 10; digit++) {
+            bubble(
+              cx,
+              top + 12 * _k + digit * 10.8 * _k,
+              '$digit',
+              selected: wanted == '$digit',
+            );
+          }
         }
       }
 
-      // These panels share only the right zone. Their x/y positions are explicit.
-      final rollW = rightW * .68;
-      digitPanel('রোল নম্বর', 6, top, rollW);
-      final setX = rightX + rollW + 5 * _k;
-      final setW = rightW - rollW - 5 * _k;
-      final setH = 4 * 13 * _k + 13 * _k;
-      canvas.drawRect(Rect.fromLTWH(setX, top, setW, setH), borderPink);
-      final setTitle = makePainter('সেট কোড', 8.2, isBold: true, align: TextAlign.center)..layout(maxWidth: setW);
-      setTitle.paint(canvas, Offset(setX + (setW - setTitle.width) / 2, top + 1.5 * _k));
+      final identityTop = questionsBottom + 8 * _k;
+      final identityGap = 6 * _k;
+      final rollW = contentW * .29;
+      final registrationW = contentW * .47;
+      final subjectW = contentW - rollW - registrationW - 2 * identityGap;
+      digitPanel('রোল নম্বর', 6, sheetX, identityTop, rollW);
+      digitPanel(
+        'রেজিস্ট্রেশন নম্বর',
+        10,
+        sheetX + rollW + identityGap,
+        identityTop,
+        registrationW,
+      );
+      final code = (subjectCode ?? '')
+          .replaceAll('০', '0')
+          .replaceAll('১', '1')
+          .replaceAll('২', '2')
+          .replaceAll('৩', '3')
+          .replaceAll('৪', '4')
+          .replaceAll('৫', '5')
+          .replaceAll('৬', '6')
+          .replaceAll('৭', '7')
+          .replaceAll('৮', '8')
+          .replaceAll('৯', '9')
+          .replaceAll(RegExp(r'[^0-9]'), '');
+      digitPanel(
+        'বিষয় কোড',
+        3,
+        sheetX + rollW + registrationW + 2 * identityGap,
+        identityTop,
+        subjectW,
+        digits: code,
+      );
+
+      final identityBottom = identityTop + 10 * 10.8 * _k + 13 * _k;
+      final setTop = identityBottom + 6 * _k;
+      final setW = 94 * _k;
+      final setH = 18 * _k;
+      canvas.drawRect(
+        Rect.fromLTWH(sheetX, setTop, setW, setH),
+        borderPink,
+      );
+      final setTitle = makePainter('সেট কোড', 8.2, isBold: true)
+        ..layout(maxWidth: 25 * _k);
+      setTitle.paint(canvas, Offset(sheetX + 3 * _k, setTop + 3 * _k));
       for (var i = 0; i < 4; i++) {
-        bubble(setX + setW / 2, top + 12 * _k + i * 13 * _k, _optionLetters[i], selected: setCode == _optionLetters[i]);
+        bubble(
+          sheetX + 35 * _k + i * 17 * _k,
+          setTop + 9 * _k,
+          _optionLetters[i],
+          selected: setCode == _optionLetters[i],
+        );
       }
 
-      final regTop = top + 10 * 10.8 * _k + 20 * _k;
-      digitPanel('রেজিস্ট্রেশন নম্বর', 10, regTop, rightW);
-      String code = (subjectCode ?? '').replaceAll('০','0').replaceAll('১','1').replaceAll('২','2').replaceAll('৩','3').replaceAll('৪','4').replaceAll('৫','5').replaceAll('৬','6').replaceAll('৭','7').replaceAll('৮','8').replaceAll('৯','9').replaceAll(RegExp(r'[^0-9]'), '');
-      final subjectTop = regTop + 10 * 10.8 * _k + 20 * _k;
-      digitPanel('বিষয় কোড', 3, subjectTop, rightW * .48, digits: code);
-
-      final rulesTop = subjectTop + 10 * 10.8 * _k + 19 * _k;
+      final rulesX = sheetX + setW + 8 * _k;
+      final rulesW = contentW - setW - 8 * _k;
       final rules = [
         'নিয়মাবলি:',
         '১। বৃত্তের ভেতরের লেখা দেখা না যায় এমনভাবে ভরাট করো।',
@@ -1347,11 +1497,15 @@ class PaperPdf {
         '৩। উত্তরপত্র ভাঁজ করা বা অপ্রয়োজনীয় দাগ দেওয়া যাবে না।',
         '৪। সেট কোড ভুল হলে উত্তরপত্র মূল্যায়ন করা যাবে না।',
       ];
-      var rulesY = rulesTop;
+      var rulesY = setTop;
       for (var i = 0; i < rules.length; i++) {
-        final t = makePainter(rules[i], i == 0 ? 9 : 7.5, isBold: i == 0)..layout(maxWidth: rightW);
-        t.paint(canvas, Offset(rightX, rulesY));
-        rulesY += t.height + 2 * _k;
+        final ruleText = makePainter(
+          rules[i],
+          i == 0 ? 9 : 7.5,
+          isBold: i == 0,
+        )..layout(maxWidth: rulesW);
+        ruleText.paint(canvas, Offset(rulesX, rulesY));
+        rulesY += ruleText.height + 2 * _k;
       }
       await commit();
     }
@@ -1417,8 +1571,7 @@ class PaperPdf {
       final stamp = TextPainter(
         text: TextSpan(
             text: 'AL·v25',
-            style: st(7, false, 1.0)
-                .copyWith(color: const Color(0xFFAAAAAA))),
+            style: st(7, false, 1.0).copyWith(color: const Color(0xFFAAAAAA))),
         textDirection: TextDirection.ltr,
       )..layout();
       stamp.paint(canvas, Offset(_margin, sh - 6 * _k));
@@ -1628,4 +1781,3 @@ class EnglishSection {
   const EnglishSection(this.head, this.lines,
       {this.table, this.centerTable = false});
 }
-

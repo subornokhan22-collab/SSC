@@ -1,9 +1,22 @@
+import '../data/chemistry/chemistry_chapter_catalog.dart';
+
 /// One source of truth for chapter ribbons/dropdowns.
 /// Textbook order is numeric; combined/generated chapter labels stay hidden.
 class ChapterCatalog {
   ChapterCatalog._();
 
-  static const _bn = {'০': 0, '১': 1, '২': 2, '৩': 3, '৪': 4, '৫': 5, '৬': 6, '৭': 7, '৮': 8, '৯': 9};
+  static const _bn = {
+    '০': 0,
+    '১': 1,
+    '২': 2,
+    '৩': 3,
+    '৪': 4,
+    '৫': 5,
+    '৬': 6,
+    '৭': 7,
+    '৮': 8,
+    '৯': 9
+  };
 
   /// Official Physics chapter sequence supplied from the current contents page.
   static const physics = <String>[
@@ -26,12 +39,18 @@ class ChapterCatalog {
     final v = raw.trim();
     if (v.isEmpty) return false;
     final lower = v.toLowerCase();
-    if (v.contains(' ও ') || v.contains('মিলিয়ে') || lower.contains('mixed') || lower.contains('board-style')) return false;
-    return RegExp(r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+', caseSensitive: false).hasMatch(v);
+    if (v.contains(' ও ') ||
+        v.contains('মিলিয়ে') ||
+        lower.contains('mixed') ||
+        lower.contains('board-style')) return false;
+    return RegExp(r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+', caseSensitive: false)
+        .hasMatch(v);
   }
 
   static int numberOf(String raw) {
-    final hit = RegExp(r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)', caseSensitive: false).firstMatch(raw);
+    final hit =
+        RegExp(r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)', caseSensitive: false)
+            .firstMatch(raw);
     if (hit == null) return 9999;
     var value = 0;
     for (final c in hit.group(1)!.split('')) {
@@ -43,9 +62,13 @@ class ChapterCatalog {
   }
 
   static List<String> ordered(Iterable<String> values, {String? subjectId}) {
-    // Show the complete official Physics syllabus even before every chapter has questions.
+    // Show each complete official catalog even before every chapter has questions.
     if (subjectId == 'physics') return List<String>.from(physics);
-    final clean = values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
+    if (subjectId == ChemistryChapterCatalog.subjectId) {
+      return List<String>.from(ChemistryChapterCatalog.chapters);
+    }
+    final clean =
+        values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
     clean.sort((a, b) {
       final byNumber = numberOf(a).compareTo(numberOf(b));
       return byNumber != 0 ? byNumber : a.compareTo(b);
