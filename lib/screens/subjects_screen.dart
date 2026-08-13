@@ -72,7 +72,7 @@ const List<SubjectInfo> allSubjects = [
   SubjectInfo(
       id: 'bangla_2nd',
       name: 'Bangla 2nd',
-      bengaliName: 'বাংলা ২য় পত্র',
+      bengaliName: 'বাংলা দ্বিতীয় পত্র',
       icon: '📖',
       colorHex: 0xFFAD1457,
       group: SubjectGroup.general),
