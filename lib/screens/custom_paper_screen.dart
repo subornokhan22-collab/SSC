@@ -9,6 +9,7 @@ import '../services/ai_question_generator.dart';
 import '../services/app_style.dart';
 import '../services/english_paper_adapter.dart';
 import '../services/general_math_board_pattern.dart';
+import '../services/ict_board_pattern.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
@@ -47,6 +48,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   String? _apiKey;
   bool _mixAi = false;
   bool _mathBoardPattern = false;
+  bool _ictBoardPattern = false;
   int _aiShare = 50;
   final TextEditingController _titleCtrl =
       TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
@@ -98,6 +100,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
   bool get _isGeneralMath => _subject?.id == 'general_math';
   bool get _isMathBoardMode => _isGeneralMath && _mathBoardPattern;
+  bool get _isIct => _subject?.id == 'ict';
+  bool get _isIctBoardMode => _isIct && _ictBoardPattern;
+  bool get _usesAutomaticBoardPattern => _isMathBoardMode || _isIctBoardMode;
 
   // Preview state (NEW)
   List<Uint8List>? _pagePngs;
@@ -372,6 +377,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       // English handled separately – its preview built in _generate
       if (_isEnglish) return;
       final boardMath = _isMathBoardMode;
+      final boardIct = _isIctBoardMode;
       final wMin = boardMath ? 150 : _cqs.length * 12 + _saqs.length * 3;
       final mMin = boardMath ? 30 : _mcqs.length;
       final isMath =
@@ -392,13 +398,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       }
       final pages = await PaperPdf.renderPages(
         title: _titleText,
+        subjectName: _subject!.bengaliName,
         modeLine: boardMath
             ? 'গণিত বোর্ড প্যাটার্ন'
-            : (_chapters.isEmpty
-                ? 'ফুল সিলেবাস'
-                : (_chapters.length <= 2
-                    ? _chapters.join(', ')
-                    : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
+            : boardIct
+                ? 'ICT বোর্ড প্যাটার্ন'
+                : (_chapters.isEmpty
+                    ? 'ফুল সিলেবাস'
+                    : (_chapters.length <= 2
+                        ? _chapters.join(', ')
+                        : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
         mcqs: _mcqs,
         cqs: _cqs,
         saqs: _saqs,
@@ -415,12 +424,17 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         writtenTime: boardMath ? '২ ঘণ্টা ৩০ মিনিট' : _timeLine(wMin),
         writtenMarks:
             boardMath ? '৭০' : _bn(_cqs.length * 10 + _saqs.length * 2),
-        mcqTime: boardMath ? '৩০ মিনিট' : _timeLine(mMin),
-        mcqMarks: boardMath ? '৩০' : _bn(_mcqs.length),
-        time: boardMath ? '৩ ঘণ্টা' : _timeLine(wMin + mMin),
-        marks: boardMath
-            ? '১০০'
-            : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length),
+        mcqTime:
+            boardIct ? '১ ঘণ্টা' : (boardMath ? '৩০ মিনিট' : _timeLine(mMin)),
+        mcqMarks: boardIct ? '২৫' : (boardMath ? '৩০' : _bn(_mcqs.length)),
+        time: boardIct
+            ? '১ ঘণ্টা'
+            : (boardMath ? '৩ ঘণ্টা' : _timeLine(wMin + mMin)),
+        marks: boardIct
+            ? '২৫'
+            : (boardMath
+                ? '১০০'
+                : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length)),
         mathCqThreePart: isMath,
         headerLine1: _titleText,
         subjectCode: _subjectCodes[_subject!.id],
@@ -439,13 +453,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           const SnackBar(content: Text('Choose a subject first')));
       return;
     }
-    if (!_isEnglish && !_isMathBoardMode && _chapterMcqCounts.isEmpty) {
+    if (!_isEnglish &&
+        !_usesAutomaticBoardPattern &&
+        _chapterMcqCounts.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content:
               Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
       return;
     }
-    if (!_isMathBoardMode && _requestedMcqTotal > 100) {
+    if (!_usesAutomaticBoardPattern && _requestedMcqTotal > 100) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
       return;
@@ -544,6 +560,21 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           _mcqs = paper.mcqs;
           _saqs = paper.saqs.map(_saqAsQuestion).toList(growable: false);
           _cqs = paper.cqs;
+          _busy = false;
+          _generated = true;
+        });
+        await _buildPreviewPages();
+        return;
+      }
+
+      if (_isIctBoardMode) {
+        final mcqs = IctBoardPatternGenerator.generate(allMCQs);
+        _advanceSetCode();
+        if (!mounted) return;
+        setState(() {
+          _mcqs = mcqs;
+          _cqs = const <CreativeQuestion>[];
+          _saqs = const <Question>[];
           _busy = false;
           _generated = true;
         });
@@ -755,18 +786,22 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         return;
       }
       final boardMath = _isMathBoardMode;
+      final boardIct = _isIctBoardMode;
       final wMin = boardMath ? 150 : _cqs.length * 12 + _saqs.length * 3;
       final mMin = boardMath ? 30 : _mcqs.length;
       final isMath = sid == 'general_math' || sid == 'higher_math';
       await PaperPdf.printPaper(
         title: _titleText,
+        subjectName: _subject!.bengaliName,
         modeLine: boardMath
             ? 'গণিত বোর্ড প্যাটার্ন'
-            : (_chapters.isEmpty
-                ? 'ফুল সিলেবাস'
-                : (_chapters.length <= 2
-                    ? _chapters.join(', ')
-                    : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
+            : boardIct
+                ? 'ICT বোর্ড প্যাটার্ন'
+                : (_chapters.isEmpty
+                    ? 'ফুল সিলেবাস'
+                    : (_chapters.length <= 2
+                        ? _chapters.join(', ')
+                        : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
         mcqs: _mcqs,
         cqs: _cqs,
         saqs: _saqs,
@@ -788,12 +823,17 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         writtenTime: boardMath ? '২ ঘণ্টা ৩০ মিনিট' : _timeLine(wMin),
         writtenMarks:
             boardMath ? '৭০' : _bn(_cqs.length * 10 + _saqs.length * 2),
-        mcqTime: boardMath ? '৩০ মিনিট' : _timeLine(mMin),
-        mcqMarks: boardMath ? '৩০' : _bn(_mcqs.length),
-        time: boardMath ? '৩ ঘণ্টা' : _timeLine(wMin + mMin),
-        marks: boardMath
-            ? '১০০'
-            : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length),
+        mcqTime:
+            boardIct ? '১ ঘণ্টা' : (boardMath ? '৩০ মিনিট' : _timeLine(mMin)),
+        mcqMarks: boardIct ? '২৫' : (boardMath ? '৩০' : _bn(_mcqs.length)),
+        time: boardIct
+            ? '১ ঘণ্টা'
+            : (boardMath ? '৩ ঘণ্টা' : _timeLine(wMin + mMin)),
+        marks: boardIct
+            ? '২৫'
+            : (boardMath
+                ? '১০০'
+                : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length)),
         mathCqThreePart: isMath,
         headerLine1: _titleText,
         subjectCode: _subjectCodes[sid],
@@ -891,7 +931,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final chapters = _availableChapters;
     final total = _isMathBoardMode
         ? 100
-        : (_isEnglish ? (_cqN * 10 + _saqN * 2 + _mcqN) : _requestedMcqTotal);
+        : (_isIctBoardMode
+            ? 25
+            : (_isEnglish
+                ? (_cqN * 10 + _saqN * 2 + _mcqN)
+                : _requestedMcqTotal));
     return Scaffold(
       appBar: AppBar(
           title: Text(widget.mcqOnly
@@ -943,13 +987,14 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                                 .map((s) => DropdownMenuItem(
                                     value: s,
                                     child: Text(
-                                        '${s.icon} ${s.id == 'chemistry' || s.id == 'biology' || s.id == 'general_math' ? s.bengaliName : s.name}')))
+                                        '${s.icon} ${s.id == 'chemistry' || s.id == 'biology' || s.id == 'general_math' || s.id == 'ict' ? s.bengaliName : s.name}')))
                                 .toList(),
                             onChanged: (s) => setState(() {
                                   _subject = s;
                                   _chapters.clear();
                                   _chapterMcqCounts.clear();
                                   _mathBoardPattern = false;
+                                  _ictBoardPattern = false;
                                   _generated = false;
                                   _pagePngs = null;
                                 }),
@@ -997,6 +1042,70 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                   ),
                   const SizedBox(height: 12),
                 ],
+                if (_isIct) ...[
+                  const Text('ICT প্রশ্নপত্র মোড',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 8),
+                  SegmentedButton<bool>(
+                    segments: const <ButtonSegment<bool>>[
+                      ButtonSegment<bool>(
+                        value: false,
+                        icon: Icon(Icons.tune_rounded),
+                        label: Text('কাস্টম ICT MCQ টেস্ট'),
+                      ),
+                      ButtonSegment<bool>(
+                        value: true,
+                        icon: Icon(Icons.article_outlined),
+                        label: Text('ICT বোর্ড প্যাটার্ন'),
+                      ),
+                    ],
+                    selected: <bool>{_ictBoardPattern},
+                    onSelectionChanged: (selection) => setState(() {
+                      _ictBoardPattern = selection.first;
+                      _chapters.clear();
+                      _chapterMcqCounts.clear();
+                      _generated = false;
+                      _pagePngs = null;
+                    }),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                if (_isIctBoardMode) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF8E5),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: _gold),
+                    ),
+                    child: const Text(
+                      'পূর্ণমান ২৫ • সময় ১ ঘণ্টা\n'
+                      'মোট ২৫টি MCQ; সবগুলোর উত্তর দিতে হবে।\n'
+                      'প্রশ্নপত্রের সঙ্গে OMR স্বয়ংক্রিয়ভাবে তৈরি হবে।',
+                      style: TextStyle(fontSize: 12.5, height: 1.5),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 11),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF17130A),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Row(children: [
+                      Icon(Icons.fact_check_outlined, color: _gold),
+                      SizedBox(width: 9),
+                      Text('মোট MCQ: 25 / 100',
+                          style: TextStyle(
+                              color: Color(0xFFFFE08A),
+                              fontWeight: FontWeight.w800)),
+                    ]),
+                  ),
+                  const SizedBox(height: 10),
+                ],
                 if (_isMathBoardMode) ...[
                   Container(
                     width: double.infinity,
@@ -1034,7 +1143,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
-                if (!_isEnglish && !_isMathBoardMode) ...[
+                if (!_isEnglish && !_usesAutomaticBoardPattern) ...[
                   const Text('Custom MCQ test',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
@@ -1077,7 +1186,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                               : 'English 1st: Reading 70 + Writing 30 (mixed boards)',
                           style: TextStyle(
                               fontSize: 12, color: Colors.teal.shade900))),
-                if (!_isMathBoardMode) _aiMixCard(),
+                if (!_usesAutomaticBoardPattern) _aiMixCard(),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -1092,9 +1201,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                         child: Text(
                             _isMathBoardMode
                                 ? 'গণিত বোর্ড প্যাটার্ন: ১০০ নম্বর • ৩ ঘণ্টা'
-                                : (_isEnglish
-                                    ? 'Marks: $total • Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} MCQ'
-                                    : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}'),
+                                : _isIctBoardMode
+                                    ? 'ICT বোর্ড প্যাটার্ন: ২৫ নম্বর • ১ ঘণ্টা'
+                                    : (_isEnglish
+                                        ? 'Marks: $total • Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} MCQ'
+                                        : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}'),
                             style: const TextStyle(
                                 color: Color(0xFFFFE08A), fontSize: 13)))
                   ]),
