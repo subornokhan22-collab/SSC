@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/extra_questions.dart';
 import '../data/questions_data.dart';
 
@@ -369,8 +370,11 @@ class PaperPdf {
   static Future<void> printPaper({
     required String title,
     required String modeLine,
+    String? subjectName,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
     String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
     String headerLine2 = 'দশম শ্রেণি',
     String time = '৩ ঘণ্টা',
@@ -392,8 +396,11 @@ class PaperPdf {
     final pages = await _renderPages(
       title: title,
       modeLine: modeLine,
+      subjectName: subjectName,
       mcqs: mcqs,
       cqs: cqs,
+      literatureQuestions: literatureQuestions,
+      literatureNote: literatureNote,
       headerLine1: headerLine1,
       headerLine2: headerLine2,
       time: time,
@@ -443,8 +450,11 @@ class PaperPdf {
   static Future<List<Uint8List>> renderPages({
     required String title,
     required String modeLine,
+    String? subjectName,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
     String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
     String headerLine2 = 'দশম শ্রেণি',
     String time = '৩ ঘণ্টা',
@@ -465,8 +475,11 @@ class PaperPdf {
     return _renderPages(
       title: title,
       modeLine: modeLine,
+      subjectName: subjectName,
       mcqs: mcqs,
       cqs: cqs,
+      literatureQuestions: literatureQuestions,
+      literatureNote: literatureNote,
       headerLine1: headerLine1,
       headerLine2: headerLine2,
       time: time,
@@ -491,8 +504,11 @@ class PaperPdf {
   static Future<List<Uint8List>> _renderPages({
     required String title,
     required String modeLine,
+    String? subjectName,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
     required String headerLine1,
     required String headerLine2,
     required String time,
@@ -1125,68 +1141,123 @@ class PaperPdf {
       }
     }
 
-    // ══════════════ ১ম অংশ: লিখিত পত্র ══════════════
-    begin();
-    final subj = 'বিষয়ঃ $title${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
-    await partHeader(
-        subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
+    final subject =
+        subjectName?.trim().isNotEmpty == true ? subjectName!.trim() : title;
+    final subj =
+        'বিষয়ঃ $subject${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
+    final hasWritten =
+        cqs.isNotEmpty || saqs.isNotEmpty || literatureQuestions.isNotEmpty;
 
-    if (cqs.isNotEmpty) {
-      await sectionTitle(
-          'সৃজনশীল প্রশ্ন',
-          cqNote ??
-              '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)');
-      for (int i = 0; i < cqs.length; i++) {
-        final cq = cqs[i];
-        await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
-        if (cq.figure != null) {
-          final fh = figH(cq.figure!, contentW);
-          if (y + fh > bottomY + 1) {
-            await commit();
-            begin();
+    // ══════════════ ১ম অংশ: লিখিত পত্র ══════════════
+    if (hasWritten) {
+      begin();
+      await partHeader(
+          subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
+
+      if (cqs.isNotEmpty) {
+        await sectionTitle(
+            'সৃজনশীল প্রশ্ন',
+            cqNote ??
+                '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)');
+        for (int i = 0; i < cqs.length; i++) {
+          final cq = cqs[i];
+          await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
+          if (cq.figure != null) {
+            final fh = figH(cq.figure!, contentW);
+            if (y + fh > bottomY + 1) {
+              await commit();
+              begin();
+            }
+            y += 2 * _k;
+            paintFig(cq.figure!, _margin, y, contentW);
+            y += fh;
           }
-          y += 2 * _k;
-          paintFig(cq.figure!, _margin, y, contentW);
-          y += fh;
-        }
-        // গণিত/উচ্চতর গণিত (নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ;
-        // অন্য বিষয়: আগের মতো ব্যাংকের মান হিসেবে ৪ ভাগ পর্যন্ত।
-        await paraMark('ক) ${cq.questionK}', 10.5,
-            mathCqThreePart ? '২' : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
-            indent: 10, gapBefore: 2.5);
-        await paraMark('খ) ${cq.questionKh}', 10.5,
-            mathCqThreePart ? '৪' : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
-            indent: 10, gapBefore: 1.5);
-        await paraMark('গ) ${cq.questionG}', 10.5,
-            mathCqThreePart ? '৪' : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
-            indent: 10, gapBefore: 1.5);
-        if (!mathCqThreePart) {
-          await paraMark('ঘ) ${cq.questionGh}', 10.5,
-              _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
-              indent: 10, gapBefore: 1.5);
+          // গণিত/উচ্চতর গণিত (নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ;
+          // অন্য বিষয়: আগের মতো ব্যাংকের মান হিসেবে ৪ ভাগ পর্যন্ত।
+          await paraMark(
+              'ক) ${cq.questionK}',
+              10.5,
+              mathCqThreePart
+                  ? '২'
+                  : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
+              indent: 10,
+              gapBefore: 2.5);
+          await paraMark(
+              'খ) ${cq.questionKh}',
+              10.5,
+              mathCqThreePart
+                  ? '৪'
+                  : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
+              indent: 10,
+              gapBefore: 1.5);
+          await paraMark(
+              'গ) ${cq.questionG}',
+              10.5,
+              mathCqThreePart
+                  ? '৪'
+                  : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
+              indent: 10,
+              gapBefore: 1.5);
+          if (!mathCqThreePart) {
+            await paraMark('ঘ) ${cq.questionGh}', 10.5,
+                _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
+                indent: 10, gapBefore: 1.5);
+          }
         }
       }
-    }
 
-    if (saqs.isNotEmpty) {
-      await sectionTitle(
-        'সংক্ষিপ্ত-উত্তর প্রশ্ন',
-        '(যেকোনো ${_bn(saqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ২)',
-        gapBefore: 12,
-      );
-      for (int i = 0; i < saqs.length; i++) {
-        await paraMark(
-          '${_bn(cqs.length + i + 1)}। ${saqs[i].questionText}',
-          11,
-          _bn(2),
-          gapBefore: 7,
+      if (saqs.isNotEmpty) {
+        await sectionTitle(
+          'সংক্ষিপ্ত-উত্তর প্রশ্ন',
+          '(যেকোনো ${_bn(saqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ২)',
+          gapBefore: 12,
         );
+        for (int i = 0; i < saqs.length; i++) {
+          await paraMark(
+            '${_bn(cqs.length + i + 1)}। ${saqs[i].questionText}',
+            11,
+            _bn(2),
+            gapBefore: 7,
+          );
+        }
+      }
+
+      if (literatureQuestions.isNotEmpty) {
+        await sectionTitle(
+          'উপন্যাস ও নাটক',
+          literatureNote ??
+              '(উপন্যাস থেকে ১টি এবং নাটক থেকে ১টি প্রশ্নের উত্তর দাও। ক-এর মান ৩ এবং খ-এর মান ৭।)',
+          gapBefore: 12,
+        );
+        for (int i = 0; i < literatureQuestions.length; i++) {
+          final question = literatureQuestions[i];
+          final number = cqs.length + saqs.length + i + 1;
+          await para(
+            '${_bn(number)}। [${question.section}: ${question.sourceTitle}] ${question.stem}',
+            11,
+            gapBefore: 9,
+          );
+          await paraMark(
+            'ক) ${question.questionK}',
+            10.5,
+            _bn(question.marks.isNotEmpty ? question.marks[0] : 3),
+            indent: 10,
+            gapBefore: 2.5,
+          );
+          await paraMark(
+            'খ) ${question.questionKh}',
+            10.5,
+            _bn(question.marks.length > 1 ? question.marks[1] : 7),
+            indent: 10,
+            gapBefore: 1.5,
+          );
+        }
       }
     }
 
     // ══════════════ ২য় অংশ: বহুনির্বাচনি পত্র (দুই কলাম) ══════════════
     if (mcqs.isNotEmpty) {
-      await commit();
+      if (hasWritten) await commit();
       begin();
       await partHeader(
         subjLine: '$subj (বহুনির্বাচনি)',
