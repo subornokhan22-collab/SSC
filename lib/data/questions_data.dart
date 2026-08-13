@@ -1,3 +1,7 @@
+import 'bangla_1st/bangla_1st_cqs.dart';
+import 'bangla_1st/bangla_1st_mcqs.dart';
+import 'bangla_1st/bangla_1st_revision_questions.dart';
+import 'bangla_2nd/bangla_2nd_grammar_mcqs.dart';
 import 'biology/biology_cqs.dart';
 import 'biology/biology_mcqs.dart';
 import 'biology/biology_saqs.dart';
@@ -5909,6 +5913,8 @@ const List<Question> allMCQs = [
   ...biologyMcqs,
   ...generalMathMcqs,
   ...ictMcqs,
+  ...banglaFirstMcqs,
+  ...bangla2ndGrammarMcqs,
 ];
 
 const List<CreativeQuestion> allCQs = [
@@ -7082,6 +7088,7 @@ const List<CreativeQuestion> allCQs = [
   ...chemistryCqs,
   ...biologyCqs,
   ...generalMathCqs,
+  ...banglaFirstCqs,
 ];
 
 /// Short-answer questions. Additive aggregate; `allMCQs` and `allCQs` above
@@ -7091,4 +7098,5 @@ const List<ShortQuestion> allSAQs = [
   ...chemistrySaqs,
   ...biologySaqs,
   ...generalMathSaqs,
+  ...banglaFirstRevisionQuestions,
 ];
