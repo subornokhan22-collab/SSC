@@ -2,18 +2,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/bangla_1st/bangla_1st_literature_questions.dart';
-import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
-import '../services/bangla_first_board_pattern.dart';
-import '../services/bangla_second_board_pattern.dart';
 import '../services/app_style.dart';
 import '../services/english_paper_adapter.dart';
 import '../services/general_math_board_pattern.dart';
-import '../services/ict_board_pattern.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
@@ -52,9 +47,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   String? _apiKey;
   bool _mixAi = false;
   bool _mathBoardPattern = false;
-  bool _ictBoardPattern = false;
-  bool _banglaFirstBoardPattern = false;
-  bool _banglaSecondBoardPattern = false;
   int _aiShare = 50;
   final TextEditingController _titleCtrl =
       TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
@@ -106,27 +98,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
   bool get _isGeneralMath => _subject?.id == 'general_math';
   bool get _isMathBoardMode => _isGeneralMath && _mathBoardPattern;
-  bool get _isIct => _subject?.id == 'ict';
-  bool get _isIctBoardMode => _isIct && _ictBoardPattern;
-  bool get _isBanglaFirst => _subject?.id == 'bangla_1st';
-  bool get _isBanglaFirstBoardMode =>
-      _isBanglaFirst && _banglaFirstBoardPattern;
-  bool get _isBanglaSecond => _subject?.id == 'bangla_2nd';
-  bool get _isBanglaSecondBoardMode =>
-      _isBanglaSecond && _banglaSecondBoardPattern;
-  bool get _usesAutomaticBoardPattern =>
-      _isMathBoardMode ||
-      _isIctBoardMode ||
-      _isBanglaFirstBoardMode ||
-      _isBanglaSecondBoardMode;
 
   // Preview state (NEW)
   List<Uint8List>? _pagePngs;
   List<Question> _mcqs = [];
   List<CreativeQuestion> _cqs = [];
   List<Question> _saqs = [];
-  List<LiteratureQuestion> _literatureQuestions = [];
-  List<Bangla2WrittenQuestion> _bangla2WrittenQuestions = [];
   EnglishBoardSet? _englishSet;
   EnglishFirstSet? _firstSet;
   List<Question> _eAiMcqs = const [];
@@ -395,20 +372,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       // English handled separately – its preview built in _generate
       if (_isEnglish) return;
       final boardMath = _isMathBoardMode;
-      final boardIct = _isIctBoardMode;
-      final boardBangla = _isBanglaFirstBoardMode;
-      final boardBangla2 = _isBanglaSecondBoardMode;
-      final wMin = boardMath || boardBangla || boardBangla2
-          ? 150
-          : _cqs.length * 12 + _saqs.length * 3;
-      final mMin = boardMath || boardBangla || boardBangla2 ? 30 : _mcqs.length;
+      final wMin = boardMath ? 150 : _cqs.length * 12 + _saqs.length * 3;
+      final mMin = boardMath ? 30 : _mcqs.length;
       final isMath =
           _subject!.id == 'general_math' || _subject!.id == 'higher_math';
       String? cqNote;
-      if (boardBangla) {
-        cqNote =
-            '(গদ্য ও কবিতা অংশ থেকে মোট ৫টি সৃজনশীল প্রশ্নের উত্তর দাও। গদ্য থেকে ন্যূনতম ২টি এবং কবিতা থেকে ন্যূনতম ২টি প্রশ্নের উত্তর দিতে হবে।)';
-      } else if (boardMath) {
+      if (boardMath) {
         cqNote =
             '(৮টি থেকে ৫টি উত্তর দাও; ক, খ, গ ও ঘ—প্রত্যেক বিভাগ থেকে অন্তত ১টি এবং অবশিষ্ট ১টি যেকোনো বিভাগ থেকে। প্রতিটি প্রশ্নের মান ১০)';
       } else if (_subject!.id == 'accounting') {
@@ -423,33 +392,19 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       }
       final pages = await PaperPdf.renderPages(
         title: _titleText,
-        subjectName: _subject!.bengaliName,
-        modeLine: boardBangla2
-            ? 'বাংলা দ্বিতীয় পত্র বোর্ড প্যাটার্ন'
-            : boardBangla
-                ? 'বাংলা প্রথম পত্র বোর্ড প্যাটার্ন'
-                : boardMath
-                    ? 'গণিত বোর্ড প্যাটার্ন'
-                    : boardIct
-                        ? 'ICT বোর্ড প্যাটার্ন'
-                        : (_chapters.isEmpty
-                            ? 'ফুল সিলেবাস'
-                            : (_chapters.length <= 2
-                                ? _chapters.join(', ')
-                                : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
+        modeLine: boardMath
+            ? 'গণিত বোর্ড প্যাটার্ন'
+            : (_chapters.isEmpty
+                ? 'ফুল সিলেবাস'
+                : (_chapters.length <= 2
+                    ? _chapters.join(', ')
+                    : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
         mcqs: _mcqs,
         cqs: _cqs,
-        bangla2WrittenQuestions: _bangla2WrittenQuestions,
-        literatureQuestions: _literatureQuestions,
-        literatureNote: boardBangla
-            ? '(উপন্যাস থেকে ১টি এবং নাটক থেকে ১টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নে ক ও খ দুটি উপ-প্রশ্ন; ক-এর মান ৩ এবং খ-এর মান ৭।)'
-            : null,
         saqs: _saqs,
-        cqAnswerCount: boardBangla
-            ? BanglaFirstBoardPatternGenerator.cqAnswerCount
-            : boardMath
-                ? GeneralMathBoardPatternGenerator.cqAnswerCount
-                : _cqs.length,
+        cqAnswerCount: boardMath
+            ? GeneralMathBoardPatternGenerator.cqAnswerCount
+            : _cqs.length,
         saqAnswerCount: boardMath
             ? GeneralMathBoardPatternGenerator.saqAnswerCount
             : _saqs.length,
@@ -457,35 +412,17 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             ? null
             : cqNote ??
                 '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)',
-        writtenTime: boardMath || boardBangla || boardBangla2
-            ? '২ ঘণ্টা ৩০ মিনিট'
-            : _timeLine(wMin),
-        writtenMarks: boardMath || boardBangla || boardBangla2
-            ? '৭০'
-            : _bn(_cqs.length * 10 + _saqs.length * 2),
-        mcqTime: boardIct
-            ? '১ ঘণ্টা'
-            : (boardMath || boardBangla || boardBangla2
-                ? '৩০ মিনিট'
-                : _timeLine(mMin)),
-        mcqMarks: boardIct
-            ? '২৫'
-            : (boardMath || boardBangla || boardBangla2
-                ? '৩০'
-                : _bn(_mcqs.length)),
-        time: boardIct
-            ? '১ ঘণ্টা'
-            : (boardMath || boardBangla || boardBangla2
-                ? '৩ ঘণ্টা'
-                : _timeLine(wMin + mMin)),
-        marks: boardIct
-            ? '২৫'
-            : (boardMath || boardBangla || boardBangla2
-                ? '১০০'
-                : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length)),
+        writtenTime: boardMath ? '২ ঘণ্টা ৩০ মিনিট' : _timeLine(wMin),
+        writtenMarks:
+            boardMath ? '৭০' : _bn(_cqs.length * 10 + _saqs.length * 2),
+        mcqTime: boardMath ? '৩০ মিনিট' : _timeLine(mMin),
+        mcqMarks: boardMath ? '৩০' : _bn(_mcqs.length),
+        time: boardMath ? '৩ ঘণ্টা' : _timeLine(wMin + mMin),
+        marks: boardMath
+            ? '১০০'
+            : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length),
         mathCqThreePart: isMath,
         headerLine1: _titleText,
-        headerLine2: boardBangla2 ? 'দশম শ্রেণি • পূর্ণমান ১০০' : 'দশম শ্রেণি',
         subjectCode: _subjectCodes[_subject!.id],
         setCode: _setLetter,
       );
@@ -502,15 +439,13 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           const SnackBar(content: Text('Choose a subject first')));
       return;
     }
-    if (!_isEnglish &&
-        !_usesAutomaticBoardPattern &&
-        _chapterMcqCounts.isEmpty) {
+    if (!_isEnglish && !_isMathBoardMode && _chapterMcqCounts.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content:
               Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
       return;
     }
-    if (!_usesAutomaticBoardPattern && _requestedMcqTotal > 100) {
+    if (!_isMathBoardMode && _requestedMcqTotal > 100) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
       return;
@@ -520,8 +455,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       _generated = false;
       _pagePngs = null;
       _showAnswerKey = false;
-      _literatureQuestions = const <LiteratureQuestion>[];
-      _bangla2WrittenQuestions = const <Bangla2WrittenQuestion>[];
     });
     try {
       final sid = _subject!.id;
@@ -611,60 +544,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           _mcqs = paper.mcqs;
           _saqs = paper.saqs.map(_saqAsQuestion).toList(growable: false);
           _cqs = paper.cqs;
-          _busy = false;
-          _generated = true;
-        });
-        await _buildPreviewPages();
-        return;
-      }
-
-      if (_isIctBoardMode) {
-        final mcqs = IctBoardPatternGenerator.generate(allMCQs);
-        _advanceSetCode();
-        if (!mounted) return;
-        setState(() {
-          _mcqs = mcqs;
-          _cqs = const <CreativeQuestion>[];
-          _saqs = const <Question>[];
-          _busy = false;
-          _generated = true;
-        });
-        await _buildPreviewPages();
-        return;
-      }
-
-      if (_isBanglaFirstBoardMode) {
-        final paper = BanglaFirstBoardPatternGenerator.generate(
-          mcqBank: allMCQs,
-          cqBank: allCQs,
-          literatureBank: banglaFirstLiteratureQuestions,
-        );
-        _advanceSetCode();
-        if (!mounted) return;
-        setState(() {
-          _mcqs = paper.mcqs;
-          _cqs = paper.cqs;
-          _saqs = const <Question>[];
-          _literatureQuestions = paper.literatureQuestions;
-          _busy = false;
-          _generated = true;
-        });
-        await _buildPreviewPages();
-        return;
-      }
-
-      if (_isBanglaSecondBoardMode) {
-        final paper = BanglaSecondBoardPatternGenerator.generate(
-          mcqBank: allMCQs,
-          writtenBank: bangla2ndWrittenQuestions,
-        );
-        _advanceSetCode();
-        if (!mounted) return;
-        setState(() {
-          _mcqs = paper.mcqs;
-          _cqs = const <CreativeQuestion>[];
-          _saqs = const <Question>[];
-          _bangla2WrittenQuestions = paper.writtenQuestions;
           _busy = false;
           _generated = true;
         });
@@ -876,86 +755,47 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         return;
       }
       final boardMath = _isMathBoardMode;
-      final boardIct = _isIctBoardMode;
-      final boardBangla = _isBanglaFirstBoardMode;
-      final boardBangla2 = _isBanglaSecondBoardMode;
-      final wMin = boardMath || boardBangla || boardBangla2
-          ? 150
-          : _cqs.length * 12 + _saqs.length * 3;
-      final mMin = boardMath || boardBangla || boardBangla2 ? 30 : _mcqs.length;
+      final wMin = boardMath ? 150 : _cqs.length * 12 + _saqs.length * 3;
+      final mMin = boardMath ? 30 : _mcqs.length;
       final isMath = sid == 'general_math' || sid == 'higher_math';
       await PaperPdf.printPaper(
         title: _titleText,
-        subjectName: _subject!.bengaliName,
-        modeLine: boardBangla2
-            ? 'বাংলা দ্বিতীয় পত্র বোর্ড প্যাটার্ন'
-            : boardBangla
-                ? 'বাংলা প্রথম পত্র বোর্ড প্যাটার্ন'
-                : boardMath
-                    ? 'গণিত বোর্ড প্যাটার্ন'
-                    : boardIct
-                        ? 'ICT বোর্ড প্যাটার্ন'
-                        : (_chapters.isEmpty
-                            ? 'ফুল সিলেবাস'
-                            : (_chapters.length <= 2
-                                ? _chapters.join(', ')
-                                : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
+        modeLine: boardMath
+            ? 'গণিত বোর্ড প্যাটার্ন'
+            : (_chapters.isEmpty
+                ? 'ফুল সিলেবাস'
+                : (_chapters.length <= 2
+                    ? _chapters.join(', ')
+                    : '${_bn(_chapters.length)}টি অধ্যায় মিলিয়ে')),
         mcqs: _mcqs,
         cqs: _cqs,
-        bangla2WrittenQuestions: _bangla2WrittenQuestions,
-        literatureQuestions: _literatureQuestions,
-        literatureNote: boardBangla
-            ? '(উপন্যাস থেকে ১টি এবং নাটক থেকে ১টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নে ক ও খ দুটি উপ-প্রশ্ন; ক-এর মান ৩ এবং খ-এর মান ৭।)'
-            : null,
         saqs: _saqs,
-        cqAnswerCount: boardBangla
-            ? BanglaFirstBoardPatternGenerator.cqAnswerCount
-            : boardMath
-                ? GeneralMathBoardPatternGenerator.cqAnswerCount
-                : _cqs.length,
+        cqAnswerCount: boardMath
+            ? GeneralMathBoardPatternGenerator.cqAnswerCount
+            : _cqs.length,
         saqAnswerCount: boardMath
             ? GeneralMathBoardPatternGenerator.saqAnswerCount
             : _saqs.length,
         cqNote: _cqs.isEmpty
             ? null
-            : (boardBangla
-                ? '(গদ্য ও কবিতা অংশ থেকে মোট ৫টি সৃজনশীল প্রশ্নের উত্তর দাও। গদ্য থেকে ন্যূনতম ২টি এবং কবিতা থেকে ন্যূনতম ২টি প্রশ্নের উত্তর দিতে হবে।)'
-                : boardMath
-                    ? '(৮টি থেকে ৫টি উত্তর দাও; ক, খ, গ ও ঘ—প্রত্যেক বিভাগ থেকে অন্তত ১টি এবং অবশিষ্ট ১টি যেকোনো বিভাগ থেকে। প্রতিটি প্রশ্নের মান ১০)'
-                    : _subject!.id == 'accounting'
-                        ? '(৭টি থেকে ৪টি=40 + বাধ্যতামূলক 20=60, SAQ 10) – PDF Page-24'
-                        : _subject!.id == 'finance'
-                            ? '(Fin5+Bank3 উত্তর5≥2, SAQ 8+7 উত্তর10≥4) – Page-26'
-                            : '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'),
-        writtenTime: boardMath || boardBangla || boardBangla2
-            ? '২ ঘণ্টা ৩০ মিনিট'
-            : _timeLine(wMin),
-        writtenMarks: boardMath || boardBangla || boardBangla2
-            ? '৭০'
-            : _bn(_cqs.length * 10 + _saqs.length * 2),
-        mcqTime: boardIct
-            ? '১ ঘণ্টা'
-            : (boardMath || boardBangla || boardBangla2
-                ? '৩০ মিনিট'
-                : _timeLine(mMin)),
-        mcqMarks: boardIct
-            ? '২৫'
-            : (boardMath || boardBangla || boardBangla2
-                ? '৩০'
-                : _bn(_mcqs.length)),
-        time: boardIct
-            ? '১ ঘণ্টা'
-            : (boardMath || boardBangla || boardBangla2
-                ? '৩ ঘণ্টা'
-                : _timeLine(wMin + mMin)),
-        marks: boardIct
-            ? '২৫'
-            : (boardMath || boardBangla || boardBangla2
-                ? '১০০'
-                : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length)),
+            : (boardMath
+                ? '(৮টি থেকে ৫টি উত্তর দাও; ক, খ, গ ও ঘ—প্রত্যেক বিভাগ থেকে অন্তত ১টি এবং অবশিষ্ট ১টি যেকোনো বিভাগ থেকে। প্রতিটি প্রশ্নের মান ১০)'
+                : _subject!.id == 'accounting'
+                    ? '(৭টি থেকে ৪টি=40 + বাধ্যতামূলক 20=60, SAQ 10) – PDF Page-24'
+                    : _subject!.id == 'finance'
+                        ? '(Fin5+Bank3 উত্তর5≥2, SAQ 8+7 উত্তর10≥4) – Page-26'
+                        : '(সবগুলো সৃজনশীল প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)'),
+        writtenTime: boardMath ? '২ ঘণ্টা ৩০ মিনিট' : _timeLine(wMin),
+        writtenMarks:
+            boardMath ? '৭০' : _bn(_cqs.length * 10 + _saqs.length * 2),
+        mcqTime: boardMath ? '৩০ মিনিট' : _timeLine(mMin),
+        mcqMarks: boardMath ? '৩০' : _bn(_mcqs.length),
+        time: boardMath ? '৩ ঘণ্টা' : _timeLine(wMin + mMin),
+        marks: boardMath
+            ? '১০০'
+            : _bn(_cqs.length * 10 + _saqs.length * 2 + _mcqs.length),
         mathCqThreePart: isMath,
         headerLine1: _titleText,
-        headerLine2: boardBangla2 ? 'দশম শ্রেণি • পূর্ণমান ১০০' : 'দশম শ্রেণি',
         subjectCode: _subjectCodes[sid],
         setCode: _setLetter,
       );
@@ -1049,14 +889,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   @override
   Widget build(BuildContext context) {
     final chapters = _availableChapters;
-    final total =
-        _isMathBoardMode || _isBanglaFirstBoardMode || _isBanglaSecondBoardMode
-            ? 100
-            : (_isIctBoardMode
-                ? 25
-                : (_isEnglish
-                    ? (_cqN * 10 + _saqN * 2 + _mcqN)
-                    : _requestedMcqTotal));
+    final total = _isMathBoardMode
+        ? 100
+        : (_isEnglish ? (_cqN * 10 + _saqN * 2 + _mcqN) : _requestedMcqTotal);
     return Scaffold(
       appBar: AppBar(
           title: Text(widget.mcqOnly
@@ -1108,16 +943,13 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                                 .map((s) => DropdownMenuItem(
                                     value: s,
                                     child: Text(
-                                        '${s.icon} ${s.id == 'chemistry' || s.id == 'biology' || s.id == 'general_math' || s.id == 'ict' || s.id == 'bangla_1st' || s.id == 'bangla_2nd' ? s.bengaliName : s.name}')))
+                                        '${s.icon} ${s.id == 'chemistry' || s.id == 'biology' || s.id == 'general_math' ? s.bengaliName : s.name}')))
                                 .toList(),
                             onChanged: (s) => setState(() {
                                   _subject = s;
                                   _chapters.clear();
                                   _chapterMcqCounts.clear();
                                   _mathBoardPattern = false;
-                                  _ictBoardPattern = false;
-                                  _banglaFirstBoardPattern = false;
-                                  _banglaSecondBoardPattern = false;
                                   _generated = false;
                                   _pagePngs = null;
                                 }),
@@ -1136,136 +968,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                       ]),
                 ),
                 const SizedBox(height: 14),
-                if (_isBanglaSecond) ...[
-                  const Text('বাংলা দ্বিতীয় পত্র মোড',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 8),
-                  SegmentedButton<bool>(
-                    segments: const <ButtonSegment<bool>>[
-                      ButtonSegment<bool>(
-                        value: false,
-                        icon: Icon(Icons.tune_rounded),
-                        label: Text('কাস্টম ব্যাকরণ MCQ'),
-                      ),
-                      ButtonSegment<bool>(
-                        value: true,
-                        icon: Icon(Icons.article_outlined),
-                        label: Text('বাংলা দ্বিতীয় পত্র বোর্ড প্যাটার্ন'),
-                      ),
-                    ],
-                    selected: <bool>{_banglaSecondBoardPattern},
-                    onSelectionChanged: (selection) => setState(() {
-                      _banglaSecondBoardPattern = selection.first;
-                      _chapters.clear();
-                      _chapterMcqCounts.clear();
-                      _generated = false;
-                      _pagePngs = null;
-                    }),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (_isBanglaSecondBoardMode) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
-                    ),
-                    child: const Text(
-                      'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
-                      'রচনামূলক: ২+২+২+২+২+৩টি প্রশ্ন; নির্ধারিতভাবে উত্তর — ৭০\n'
-                      'ব্যাকরণ MCQ: ৩০টি; সবগুলোর উত্তর — ৩০\n'
-                      'CQ ও SAQ নেই; OMR কেবল ১–৩০ MCQ-এর জন্য।',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 11),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
-                      SizedBox(width: 9),
-                      Text('মোট MCQ: 30 / 100',
-                          style: TextStyle(
-                              color: Color(0xFFFFE08A),
-                              fontWeight: FontWeight.w800)),
-                    ]),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-                if (_isBanglaFirst) ...[
-                  const Text('বাংলা প্রথম পত্র মোড',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 8),
-                  SegmentedButton<bool>(
-                    segments: const <ButtonSegment<bool>>[
-                      ButtonSegment<bool>(
-                        value: false,
-                        icon: Icon(Icons.tune_rounded),
-                        label: Text('কাস্টম MCQ মোড'),
-                      ),
-                      ButtonSegment<bool>(
-                        value: true,
-                        icon: Icon(Icons.article_outlined),
-                        label: Text('বাংলা প্রথম পত্র বোর্ড প্যাটার্ন'),
-                      ),
-                    ],
-                    selected: <bool>{_banglaFirstBoardPattern},
-                    onSelectionChanged: (selection) => setState(() {
-                      _banglaFirstBoardPattern = selection.first;
-                      _chapters.clear();
-                      _chapterMcqCounts.clear();
-                      _generated = false;
-                      _pagePngs = null;
-                    }),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (_isBanglaFirstBoardMode) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
-                    ),
-                    child: const Text(
-                      'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
-                      'গদ্য CQ ৪টি + কবিতা CQ ৪টি; উত্তর মোট ৫টি — ৫০\n'
-                      'উপন্যাস ২টি + নাটক ২টি; উত্তর ১+১টি — ২০\n'
-                      'গদ্য MCQ ১৫টি + কবিতা MCQ ১৫টি; সব উত্তর — ৩০',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 11),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
-                      SizedBox(width: 9),
-                      Text('মোট MCQ: 30 / 100',
-                          style: TextStyle(
-                              color: Color(0xFFFFE08A),
-                              fontWeight: FontWeight.w800)),
-                    ]),
-                  ),
-                  const SizedBox(height: 10),
-                ],
                 if (_isGeneralMath) ...[
                   const Text('গণিত প্রশ্নপত্র মোড',
                       style:
@@ -1294,70 +996,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     }),
                   ),
                   const SizedBox(height: 12),
-                ],
-                if (_isIct) ...[
-                  const Text('ICT প্রশ্নপত্র মোড',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 8),
-                  SegmentedButton<bool>(
-                    segments: const <ButtonSegment<bool>>[
-                      ButtonSegment<bool>(
-                        value: false,
-                        icon: Icon(Icons.tune_rounded),
-                        label: Text('কাস্টম ICT MCQ টেস্ট'),
-                      ),
-                      ButtonSegment<bool>(
-                        value: true,
-                        icon: Icon(Icons.article_outlined),
-                        label: Text('ICT বোর্ড প্যাটার্ন'),
-                      ),
-                    ],
-                    selected: <bool>{_ictBoardPattern},
-                    onSelectionChanged: (selection) => setState(() {
-                      _ictBoardPattern = selection.first;
-                      _chapters.clear();
-                      _chapterMcqCounts.clear();
-                      _generated = false;
-                      _pagePngs = null;
-                    }),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (_isIctBoardMode) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
-                    ),
-                    child: const Text(
-                      'পূর্ণমান ২৫ • সময় ১ ঘণ্টা\n'
-                      'মোট ২৫টি MCQ; সবগুলোর উত্তর দিতে হবে।\n'
-                      'প্রশ্নপত্রের সঙ্গে OMR স্বয়ংক্রিয়ভাবে তৈরি হবে।',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 11),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
-                      SizedBox(width: 9),
-                      Text('মোট MCQ: 25 / 100',
-                          style: TextStyle(
-                              color: Color(0xFFFFE08A),
-                              fontWeight: FontWeight.w800)),
-                    ]),
-                  ),
-                  const SizedBox(height: 10),
                 ],
                 if (_isMathBoardMode) ...[
                   Container(
@@ -1396,7 +1034,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
-                if (!_isEnglish && !_usesAutomaticBoardPattern) ...[
+                if (!_isEnglish && !_isMathBoardMode) ...[
                   const Text('Custom MCQ test',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
@@ -1439,7 +1077,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                               : 'English 1st: Reading 70 + Writing 30 (mixed boards)',
                           style: TextStyle(
                               fontSize: 12, color: Colors.teal.shade900))),
-                if (!_usesAutomaticBoardPattern) _aiMixCard(),
+                if (!_isMathBoardMode) _aiMixCard(),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -1452,17 +1090,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                         child: Text(
-                            _isBanglaSecondBoardMode
-                                ? 'বাংলা দ্বিতীয় পত্র বোর্ড প্যাটার্ন: ১০০ নম্বর • ৩ ঘণ্টা'
-                                : _isBanglaFirstBoardMode
-                                    ? 'বাংলা প্রথম পত্র বোর্ড প্যাটার্ন: ১০০ নম্বর • ৩ ঘণ্টা'
-                                    : _isMathBoardMode
-                                        ? 'গণিত বোর্ড প্যাটার্ন: ১০০ নম্বর • ৩ ঘণ্টা'
-                                        : _isIctBoardMode
-                                            ? 'ICT বোর্ড প্যাটার্ন: ২৫ নম্বর • ১ ঘণ্টা'
-                                            : (_isEnglish
-                                                ? 'Marks: $total • Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} MCQ'
-                                                : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}'),
+                            _isMathBoardMode
+                                ? 'গণিত বোর্ড প্যাটার্ন: ১০০ নম্বর • ৩ ঘণ্টা'
+                                : (_isEnglish
+                                    ? 'Marks: $total • Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} MCQ'
+                                    : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}'),
                             style: const TextStyle(
                                 color: Color(0xFFFFE08A), fontSize: 13)))
                   ]),
