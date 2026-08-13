@@ -1,3 +1,5 @@
+import '../data/bangla_1st/bangla_1st_catalog.dart';
+import '../data/bangla_2nd/bangla_2nd_catalog.dart';
 import '../data/biology/biology_chapter_catalog.dart';
 import '../data/chemistry/chemistry_chapter_catalog.dart';
 import '../data/general_math/general_math_chapter_catalog.dart';
@@ -67,6 +69,12 @@ class ChapterCatalog {
   static List<String> ordered(Iterable<String> values, {String? subjectId}) {
     // Show each complete official catalog even before every chapter has questions.
     if (subjectId == 'physics') return List<String>.from(physics);
+    if (subjectId == BanglaFirstCatalog.subjectId) {
+      return List<String>.from(BanglaFirstCatalog.chapters);
+    }
+    if (subjectId == BanglaSecondCatalog.subjectId) {
+      return List<String>.from(BanglaSecondCatalog.grammarChapters);
+    }
     if (subjectId == ChemistryChapterCatalog.subjectId) {
       return List<String>.from(ChemistryChapterCatalog.chapters);
     }

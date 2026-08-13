@@ -7,6 +7,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../data/bangla_1st/bangla_1st_literature_questions.dart';
+import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/extra_questions.dart';
 import '../data/questions_data.dart';
 
@@ -372,6 +374,10 @@ class PaperPdf {
     String? subjectName,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
+    List<Bangla2WrittenQuestion> bangla2WrittenQuestions =
+        const <Bangla2WrittenQuestion>[],
     String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
     String headerLine2 = 'দশম শ্রেণি',
     String time = '৩ ঘণ্টা',
@@ -396,6 +402,9 @@ class PaperPdf {
       subjectName: subjectName,
       mcqs: mcqs,
       cqs: cqs,
+      literatureQuestions: literatureQuestions,
+      literatureNote: literatureNote,
+      bangla2WrittenQuestions: bangla2WrittenQuestions,
       headerLine1: headerLine1,
       headerLine2: headerLine2,
       time: time,
@@ -448,6 +457,10 @@ class PaperPdf {
     String? subjectName,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
+    List<Bangla2WrittenQuestion> bangla2WrittenQuestions =
+        const <Bangla2WrittenQuestion>[],
     String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
     String headerLine2 = 'দশম শ্রেণি',
     String time = '৩ ঘণ্টা',
@@ -471,6 +484,9 @@ class PaperPdf {
       subjectName: subjectName,
       mcqs: mcqs,
       cqs: cqs,
+      literatureQuestions: literatureQuestions,
+      literatureNote: literatureNote,
+      bangla2WrittenQuestions: bangla2WrittenQuestions,
       headerLine1: headerLine1,
       headerLine2: headerLine2,
       time: time,
@@ -498,6 +514,10 @@ class PaperPdf {
     String? subjectName,
     required List<Question> mcqs,
     required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
+    List<Bangla2WrittenQuestion> bangla2WrittenQuestions =
+        const <Bangla2WrittenQuestion>[],
     required String headerLine1,
     required String headerLine2,
     required String time,
@@ -1134,13 +1154,76 @@ class PaperPdf {
         subjectName?.trim().isNotEmpty == true ? subjectName!.trim() : title;
     final subj =
         'বিষয়ঃ $subject${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
-    final hasWritten = cqs.isNotEmpty || saqs.isNotEmpty;
+    final hasWritten = cqs.isNotEmpty ||
+        saqs.isNotEmpty ||
+        literatureQuestions.isNotEmpty ||
+        bangla2WrittenQuestions.isNotEmpty;
 
     // ══════════════ ১ম অংশ: লিখিত পত্র ══════════════
     if (hasWritten) {
       begin();
       await partHeader(
           subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
+
+      if (bangla2WrittenQuestions.isNotEmpty) {
+        const writtenSections = <(Bangla2WrittenType, String, String)>[
+          (
+            Bangla2WrittenType.paragraph,
+            'অনুচ্ছেদ রচনা',
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+          ),
+          (
+            Bangla2WrittenType.letterOrReport,
+            'চিঠিপত্র / সংবাদ প্রতিবেদন',
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+          ),
+          (
+            Bangla2WrittenType.summaryOrGist,
+            'সারাংশ / সারমর্ম',
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+          ),
+          (
+            Bangla2WrittenType.thoughtExpansion,
+            'ভাব-সম্প্রসারণ',
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+          ),
+          (
+            Bangla2WrittenType.translation,
+            'বাংলায় অনুবাদ',
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+          ),
+          (
+            Bangla2WrittenType.composition,
+            'প্রবন্ধ / রচনা',
+            'তিনটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+          ),
+        ];
+        var writtenNumber = 0;
+        for (final section in writtenSections) {
+          final questions = bangla2WrittenQuestions
+              .where((question) => question.type == section.$1)
+              .toList(growable: false);
+          if (questions.isEmpty) continue;
+          await sectionTitle(section.$2, section.$3, gapBefore: 10);
+          for (final question in questions) {
+            writtenNumber++;
+            await paraMark(
+              '${_bn(writtenNumber)}। ${question.prompt}',
+              11,
+              _bn(question.marks),
+              gapBefore: 7,
+            );
+            if (question.sourceText?.trim().isNotEmpty == true) {
+              await para(
+                question.sourceText!.trim(),
+                10.5,
+                indent: 12,
+                gapBefore: 2,
+              );
+            }
+          }
+        }
+      }
 
       if (cqs.isNotEmpty) {
         await sectionTitle(
@@ -1206,6 +1289,38 @@ class PaperPdf {
             11,
             _bn(2),
             gapBefore: 7,
+          );
+        }
+      }
+
+      if (literatureQuestions.isNotEmpty) {
+        await sectionTitle(
+          'উপন্যাস ও নাটক',
+          literatureNote ??
+              '(উপন্যাস থেকে ১টি এবং নাটক থেকে ১টি প্রশ্নের উত্তর দাও। ক-এর মান ৩ এবং খ-এর মান ৭।)',
+          gapBefore: 12,
+        );
+        for (int i = 0; i < literatureQuestions.length; i++) {
+          final question = literatureQuestions[i];
+          final number = cqs.length + saqs.length + i + 1;
+          await para(
+            '${_bn(number)}। [${question.section}: ${question.sourceTitle}] ${question.stem}',
+            11,
+            gapBefore: 9,
+          );
+          await paraMark(
+            'ক) ${question.questionK}',
+            10.5,
+            _bn(question.marks.isNotEmpty ? question.marks[0] : 3),
+            indent: 10,
+            gapBefore: 2.5,
+          );
+          await paraMark(
+            'খ) ${question.questionKh}',
+            10.5,
+            _bn(question.marks.length > 1 ? question.marks[1] : 7),
+            indent: 10,
+            gapBefore: 1.5,
           );
         }
       }
