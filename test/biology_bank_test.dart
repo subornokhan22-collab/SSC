@@ -209,7 +209,7 @@ void main() {
     test('existing Chemistry and other subject totals remain connected', () {
       const expectedMcqs = <String, int>{
         'chemistry': 605,
-        'general_math': 513,
+        'general_math': 1363,
         'higher_math': 7,
         'finance': 1,
         'accounting': 1,

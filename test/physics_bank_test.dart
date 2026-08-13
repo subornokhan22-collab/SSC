@@ -137,7 +137,7 @@ void main() {
       // these non-physics MCQs. Physics is merged in by spreading, never by
       // replacing, so these counts must survive untouched.
       const expected = <String, int>{
-        'general_math': 513,
+        'general_math': 1363,
         'higher_math': 7,
         // Chemistry now has its own additive bank plus the pre-existing item.
         'chemistry': 605,

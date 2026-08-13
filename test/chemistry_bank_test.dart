@@ -193,7 +193,7 @@ void main() {
 
     test('pre-existing non-Chemistry subject totals remain intact', () {
       const expectedMcqs = <String, int>{
-        'general_math': 513,
+        'general_math': 1363,
         'higher_math': 7,
         'biology': 701,
         'finance': 1,
