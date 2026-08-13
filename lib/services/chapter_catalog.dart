@@ -1,6 +1,7 @@
 import '../data/biology/biology_chapter_catalog.dart';
 import '../data/chemistry/chemistry_chapter_catalog.dart';
 import '../data/general_math/general_math_chapter_catalog.dart';
+import '../data/ict/ict_chapter_catalog.dart';
 
 /// One source of truth for chapter ribbons/dropdowns.
 /// Textbook order is numeric; combined/generated chapter labels stay hidden.
@@ -74,6 +75,9 @@ class ChapterCatalog {
     }
     if (subjectId == GeneralMathChapterCatalog.subjectId) {
       return List<String>.from(GeneralMathChapterCatalog.chapters);
+    }
+    if (subjectId == IctChapterCatalog.subjectId) {
+      return List<String>.from(IctChapterCatalog.chapters);
     }
     final clean =
         values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
