@@ -8,6 +8,7 @@ import 'extra_questions.dart';
 import 'general_math/general_math_cqs.dart';
 import 'general_math/general_math_mcqs.dart';
 import 'general_math/general_math_saqs.dart';
+import 'ict/ict_mcqs.dart';
 import 'physics/physics_cqs.dart';
 import 'physics/physics_mcqs.dart';
 import 'physics/physics_saqs.dart';
@@ -5907,6 +5908,7 @@ const List<Question> allMCQs = [
   ...chemistryMcqs,
   ...biologyMcqs,
   ...generalMathMcqs,
+  ...ictMcqs,
 ];
 
 const List<CreativeQuestion> allCQs = [
