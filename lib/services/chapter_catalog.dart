@@ -1,6 +1,7 @@
 import '../data/bangla_1st/bangla_1st_catalog.dart';
 import '../data/bangla_2nd/bangla_2nd_catalog.dart';
 import '../data/biology/biology_chapter_catalog.dart';
+import '../data/bgs/bgs_chapter_catalog.dart';
 import '../data/chemistry/chemistry_chapter_catalog.dart';
 import '../data/general_math/general_math_chapter_catalog.dart';
 import '../data/ict/ict_chapter_catalog.dart';
@@ -80,6 +81,9 @@ class ChapterCatalog {
     }
     if (subjectId == BiologyChapterCatalog.subjectId) {
       return List<String>.from(BiologyChapterCatalog.chapters);
+    }
+    if (subjectId == BgsChapterCatalog.subjectId) {
+      return List<String>.from(BgsChapterCatalog.chapters);
     }
     if (subjectId == GeneralMathChapterCatalog.subjectId) {
       return List<String>.from(GeneralMathChapterCatalog.chapters);
