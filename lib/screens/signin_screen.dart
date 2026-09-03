@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:flutter/services.dart';
 
 import '../services/auth_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
+import '../widgets/auth_widgets.dart';
+import '../widgets/glass_card.dart';
 import 'root_gate.dart';
 import 'signup_screen.dart';
 
-/// সাইন ইন — ইমেইল + OTP (পুরনো ব্যবহারকারী)
+/// Sign in — email + one-time code, for tutors who already have an account.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
@@ -29,22 +33,8 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  String _bnError(Object e) {
-    final s = e.toString();
-    if (e is AuthException) return e.message;
-    if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
-      return 'Too many attempts — please try again later.';
-    }
-    if (s.contains('SocketException') || s.contains('Failed host lookup')) {
-      return 'No internet — please check your connection and try again.';
-    }
-    if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
-      return 'The code is wrong or expired — request a new one.';
-    }
-    return 'Something went wrong — please try again.';
-  }
-
   Future<void> _sendOtp() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _busy = true;
       _err = null;
@@ -55,44 +45,31 @@ class _SignInScreenState extends State<SignInScreen> {
       if (!mounted) return;
       setState(() {
         _otpSent = true;
-        _msg = '✅ Code sent! Check your inbox (or spam) and enter the code.';
+        _msg = 'Code sent! Check your inbox (and spam folder).';
       });
     } catch (e) {
-      if (mounted) setState(() => _err = _bnError(e));
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _verify() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _busy = true;
       _err = null;
     });
     try {
       await AuthService.verifyOtp(_emailCtrl.text, _codeCtrl.text);
-      final p = await AuthService.fetchProfile();
-      if (!mounted) return;
-      if (p == null) {
-        // পুরনো অ্যাকাউন্টে প্রোফাইল নেই → সাইন-আপ ফর্মে নিয়ে যাও
-        setState(() {
-          _err = 'No profile found for this email — please sign up instead.';
-        });
-        await Future.delayed(const Duration(milliseconds: 800));
-        if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => SignUpScreen(prefillEmail: _emailCtrl.text.trim()),
-          ),
-        );
-        return;
-      }
+      // Every A-Learning account is a tutor account; make sure the row exists
+      // so returning users are never blocked by a missing profile.
+      await AuthService.ensureTeacherProfile();
       await AuthService.syncProFromServer();
       if (!mounted) return;
       RootGate.restart(context);
     } catch (e) {
-      if (mounted) setState(() => _err = _bnError(e));
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -102,94 +79,122 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign In')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          Text(
-            'Enter the email you used for your account — we will send you a code.',
-            style: TextStyle(fontSize: 13.5, height: 1.5, color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _emailCtrl,
-            enabled: !_otpSent,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              hintText: 'tumi@example.com',
-              prefixIcon: Icon(Icons.alternate_email),
-              border: OutlineInputBorder(),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+          children: Stagger.list([
+            const AuthHero(
+              icon: Icons.login_rounded,
+              title: 'Welcome back',
+              subtitle:
+                  'Enter the email linked to your tutor account — we will send a one-time code. No password needed.',
             ),
-          ),
-          if (_otpSent) ...[
-            const SizedBox(height: 12),
-            TextField(
-              controller: _codeCtrl,
-              keyboardType: TextInputType.number,
-              maxLength: 10,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
-              decoration: const InputDecoration(
-                labelText: 'Code from your email',
-                counterText: '',
-                border: OutlineInputBorder(),
+            const SizedBox(height: 18),
+            GlassCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionTitle(
+                    title: _otpSent ? 'Enter your code' : 'Your email',
+                    icon: _otpSent
+                        ? Icons.password_rounded
+                        : Icons.alternate_email_rounded,
+                  ),
+                  TextField(
+                    controller: _emailCtrl,
+                    enabled: !_otpSent,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.email],
+                    onSubmitted: (_) => _busy ? null : _sendOtp(),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      hintText: 'you@example.com',
+                      prefixIcon: Icon(Icons.alternate_email_rounded),
+                    ),
+                  ),
+                  SoftSwitcher(
+                    child: _otpSent
+                        ? Padding(
+                            key: const ValueKey('code'),
+                            padding: const EdgeInsets.only(top: 14),
+                            child: TextField(
+                              controller: _codeCtrl,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              maxLength: 8,
+                              autofocus: true,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                letterSpacing: 8,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.accent,
+                              ),
+                              decoration: const InputDecoration(
+                                labelText: 'Code from your email',
+                                counterText: '',
+                              ),
+                              onSubmitted: (_) => _busy ? null : _verify(),
+                            ),
+                          )
+                        : const SizedBox.shrink(key: ValueKey('empty')),
+                  ),
+                  const SizedBox(height: 16),
+                  SubmitButton(
+                    busy: _busy,
+                    icon: _otpSent
+                        ? Icons.verified_user_rounded
+                        : Icons.mark_email_read_rounded,
+                    label: _otpSent ? 'Verify & Sign In' : 'Send Code',
+                    onPressed: _busy ? null : (_otpSent ? _verify : _sendOtp),
+                  ),
+                  if (_otpSent)
+                    Center(
+                      child: TextButton(
+                        onPressed: _busy
+                            ? null
+                            : () => setState(() {
+                                  _otpSent = false;
+                                  _err = null;
+                                  _msg = null;
+                                  _codeCtrl.clear();
+                                }),
+                        child: const Text('Change email / resend code'),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ],
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: FilledButton.icon(
-              onPressed: _busy ? null : (_otpSent ? _verify : _sendOtp),
-              icon: _busy
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Icon(_otpSent
-                      ? Icons.verified_user_outlined
-                      : Icons.mark_email_read_outlined),
-              label: Text(_busy
-                  ? 'Please wait...'
-                  : (_otpSent ? 'Verify & Sign In' : 'Send OTP')),
+            if (_msg != null) ...[
+              const SizedBox(height: 14),
+              InfoBanner.success(_msg!),
+            ],
+            if (_err != null) ...[
+              const SizedBox(height: 14),
+              InfoBanner.error(_err!),
+            ],
+            const SizedBox(height: 20),
+            Center(
+              child: TextButton.icon(
+                onPressed: _busy
+                    ? null
+                    : () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SignUpScreen(
+                                prefillEmail: _emailCtrl.text.trim()),
+                          ),
+                        ),
+                icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
+                label: const Text('No account yet? Create one'),
+              ),
             ),
-          ),
-          if (_otpSent)
-            TextButton(
-              onPressed: _busy
-                  ? null
-                  : () => setState(() {
-                        _otpSent = false;
-                        _err = null;
-                        _msg = null;
-                        _codeCtrl.clear();
-                      }),
-              child: const Text('Back to change email / get a new code'),
-            ),
-          if (_msg != null) ...[
-            const SizedBox(height: 10),
-            _banner(_msg!, Colors.green.shade700),
-          ],
-          if (_err != null) ...[
-            const SizedBox(height: 10),
-            _banner(_err!, Colors.red.shade600),
-          ],
-        ],
+          ]),
+        ),
       ),
-    );
-  }
-
-  Widget _banner(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4)),
-      ),
-      child: Text(text, style: TextStyle(fontSize: 13, height: 1.5, color: color)),
     );
   }
 }

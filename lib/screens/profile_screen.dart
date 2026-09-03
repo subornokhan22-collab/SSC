@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:flutter/services.dart';
 
+import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/paper_license.dart';
-import 'subscription_screen.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
+import '../widgets/auth_widgets.dart';
+import '../widgets/glass_card.dart';
+import 'root_gate.dart';
+import 'subscription_screen.dart';
 
-/// প্রোফাইল ট্যাব — ইমেইল OTP লগইন + অ্যাকাউন্ট কার্ড + Pro সিংক
+/// Profile & settings — account details, workspace theme, Pro sync, sign out.
 ///
-/// লগইন ধারা (পুরোটা এই পর্দায়):
-///   ইমেইল লেখো → [OTP পাঠাও] → ইমেইলে ৬-সংখ্যার কোড → কোড লেখো →
-///   যাচাই → (প্রথমবার হলে) শিক্ষক/শিক্ষার্থী বাছাই → প্রোফাইল + Pro সিংক।
-///
-/// Supabase কনফিগ না থাকলে শুধু তথ্যমূলক কার্ড দেখায়; অ্যাপ ক্র্যাশ করে না।
+/// If Supabase is not configured the screen still works: it simply shows the
+/// offline notice and the local Pro state, and never throws.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -25,9 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _codeCtrl = TextEditingController();
 
   bool _busy = false;
-  bool _otpSent = false; // কোড-ধাপে আছি কিনা
-  String? _msg; // সবুজ সফল-বার্তা
-  String? _err; // লাল error-বার্তা
+  bool _otpSent = false;
+  String? _msg;
+  String? _err;
   Map<String, dynamic>? _profile;
   bool _devicePro = false;
 
@@ -37,31 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _refresh();
   }
 
-  Future<void> _refresh() async {
-    final pro = await PaperLicense.isPro();
-    Map<String, dynamic>? p;
-    if (AuthService.isLoggedIn) {
-      p = await AuthService.fetchProfile();
-      // সার্ভারে Pro থাকলে এই ডিভাইসেও চালু করো
-      if (await AuthService.syncProFromServer()) {
-        // সিংক হয়ে গেলে Pro পতাকা আবার পড়ো
-        final pro2 = await PaperLicense.isPro();
-        if (mounted) {
-          setState(() {
-            _devicePro = pro2;
-            // ✅ Pro নতুন করে চালু হলে স্পষ্ট বার্তা
-            if (pro2 && !pro) _msg = '🎉 You are now using the Pro version!';
-          });
-        }
-      }
-    }
-    if (!mounted) return;
-    setState(() {
-      _profile = p;
-      _devicePro = pro || _devicePro;
-    });
-  }
-
   @override
   void dispose() {
     _emailCtrl.dispose();
@@ -69,27 +46,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  // ত্রুটি বার্তা বাংলায়
-  String _bnError(Object e) {
-    final s = e.toString();
-    if (s.contains('পাঠাও') || s.contains('লেখো') || s.contains('মেলেনি')) {
-      return e is AuthException ? e.message : s;
+  Future<void> _refresh() async {
+    final pro = await PaperLicense.isPro();
+    Map<String, dynamic>? p;
+    var synced = false;
+    if (AuthService.isLoggedIn) {
+      try {
+        p = await AuthService.fetchProfile();
+        synced = await AuthService.syncProFromServer();
+      } catch (_) {
+        // Offline — keep whatever is cached locally.
+      }
     }
-    if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
-      return 'Too many attempts — please try again later.';
-    }
-    if (s.contains('SocketException') ||
-        s.contains('Failed host lookup') ||
-        s.contains('Network')) {
-      return 'No internet — please check your connection and try again.';
-    }
-    if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
-      return 'The code is wrong or expired — request a new one.';
-    }
-    return 'Something went wrong — please try again.';
+    final proNow = synced ? true : pro;
+    if (!mounted) return;
+    setState(() {
+      _profile = p;
+      _devicePro = proNow;
+      if (synced && !pro) _msg = 'Pro is now active on this device.';
+    });
   }
 
+  // ── Auth actions ─────────────────────────────────────────────────
   Future<void> _sendOtp() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _busy = true;
       _err = null;
@@ -100,16 +80,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (!mounted) return;
       setState(() {
         _otpSent = true;
-        _msg = '✅ Email sent! Check your inbox (or spam) for the 6-digit code.';
+        _msg = 'Code sent! Check your inbox (and spam folder).';
       });
     } catch (e) {
-      if (mounted) setState(() => _err = _bnError(e));
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _verifyOtp() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _busy = true;
       _err = null;
@@ -117,115 +98,107 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     try {
       await AuthService.verifyOtp(_emailCtrl.text, _codeCtrl.text);
-      // প্রথমবার লগইন হলে (প্রোফাইল নেই) ভূমিকা জিজ্ঞেস করো
-      var p = await AuthService.fetchProfile();
-      if (p == null && mounted) {
-        final role = await _askRole();
-        if (role != null) p = await AuthService.ensureProfile(role: role);
-      }
-      await AuthService.syncProFromServer();
+      await AuthService.ensureTeacherProfile();
       if (!mounted) return;
       setState(() {
         _otpSent = false;
-        _profile = p;
-        _msg = null;
+        _codeCtrl.clear();
       });
       await _refresh();
     } catch (e) {
-      if (mounted) setState(() => _err = _bnError(e));
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  Future<String?> _askRole() {
-    return showDialog<String>(
+  Future<void> _logout() async {
+    final ok = await showDialog<bool>(
       context: context,
-      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Who are you?'),
+        title: const Text('Sign out?'),
         content: const Text(
-          'Choose your account type (it cannot be changed later):',
-          style: TextStyle(fontSize: 13.5, height: 1.5),
-        ),
+            'Your papers stay on this device. You can sign back in any time with your email.'),
         actions: [
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context, 'teacher'),
-            icon: const Icon(Icons.school_outlined),
-            label: const Text('Teacher'),
-          ),
-          FilledButton.icon(
-            onPressed: () => Navigator.pop(context, 'student'),
-            icon: const Icon(Icons.menu_book_outlined),
-            label: const Text('Student'),
-          ),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Sign out')),
         ],
       ),
     );
-  }
-
-  Future<void> _logout() async {
+    if (ok != true) return;
     await AuthService.signOut();
     if (!mounted) return;
-    setState(() {
-      _profile = null;
-      _otpSent = false;
-      _codeCtrl.clear();
-      _msg = 'Signed out.';
-    });
+    RootGate.restart(context);
   }
 
-  // ── ফোন নম্বর বদলানো ─────────────────────────────────────────────
-  String _digitsOnly(String s) {
+  // ── Profile editing ──────────────────────────────────────────────
+  String _localPhone(String s) {
     var p = s.replaceAll(RegExp(r'[^\d]'), '');
     if (p.startsWith('880')) p = p.substring(3);
     if (p.startsWith('0')) p = p.substring(1);
     return p;
   }
 
-  Future<void> _editPhone() async {
+  Future<void> _editDetails() async {
+    final nameCtrl =
+        TextEditingController(text: _profile?['name']?.toString() ?? '');
     final phoneCtrl = TextEditingController(
-        text: _digitsOnly(_profile?['phone']?.toString() ?? ''));
+        text: _localPhone(_profile?['phone']?.toString() ?? ''));
     String? err;
+
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setD) => AlertDialog(
-          title: const Text('Change Phone Number'),
+          title: const Text('Edit details'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                controller: nameCtrl,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Full name',
+                  prefixIcon: Icon(Icons.badge_outlined),
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
                 controller: phoneCtrl,
                 keyboardType: TextInputType.phone,
                 maxLength: 13,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
-                  labelText: 'New mobile number',
+                  labelText: 'Mobile number',
                   hintText: '1XXXXXXXXX',
                   counterText: '',
-                  prefix: Text('+880  ',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  border: OutlineInputBorder(),
+                  prefixText: '+880  ',
+                  prefixStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: AppTheme.accent),
                 ),
               ),
               if (err != null) ...[
-                const SizedBox(height: 8),
-                Text(err!,
-                    style:
-                        TextStyle(fontSize: 12.5, color: Colors.red.shade600)),
+                const SizedBox(height: 10),
+                InfoBanner.error(err!),
               ],
             ],
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel')),
             FilledButton(
               onPressed: () {
-                if (!RegExp(r'^1\d{9}$')
-                    .hasMatch(_digitsOnly(phoneCtrl.text))) {
-                  setD(() => err = 'Enter a valid number (e.g. 1XXXXXXXXX)');
+                if (nameCtrl.text.trim().length < 3) {
+                  setD(() => err = 'Enter your full name (min 3 characters).');
+                  return;
+                }
+                if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(phoneCtrl.text))) {
+                  setD(() => err = 'Enter a valid number, e.g. 1XXXXXXXXX.');
                   return;
                 }
                 Navigator.pop(context, true);
@@ -236,6 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+
     if (saved == true && mounted) {
       setState(() {
         _busy = true;
@@ -244,137 +218,149 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
       try {
         await AuthService.updateProfile(
-            phone: '+880${_digitsOnly(phoneCtrl.text)}');
+          name: nameCtrl.text.trim(),
+          phone: '+880${_localPhone(phoneCtrl.text)}',
+        );
         await _refresh();
-        if (mounted) setState(() => _msg = '✅ Phone number saved!');
-      } catch (_) {
-        if (mounted) {
-          setState(
-              () => _err = 'Could not save — check your internet and try again.');
-        }
+        if (mounted) setState(() => _msg = 'Your details were saved.');
+      } catch (e) {
+        if (mounted) setState(() => _err = AuthService.friendlyError(e));
       } finally {
         if (mounted) setState(() => _busy = false);
       }
     }
+    nameCtrl.dispose();
     phoneCtrl.dispose();
+  }
+
+  Future<void> _syncPro() async {
+    setState(() {
+      _busy = true;
+      _err = null;
+      _msg = null;
+    });
+    try {
+      final ok = await AuthService.syncProFromServer();
+      await _refresh();
+      if (!mounted) return;
+      setState(() => _msg = ok
+          ? 'Pro is now active on this device.'
+          : 'Pro is not enabled for this account yet.');
+    } catch (e) {
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   // ── UI ───────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile & Login')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (!AuthService.ready)
-            _infoCard(
-              Icons.settings_suggest_outlined,
-              'Login is not configured yet.\nAll other features keep working as usual.',
-            )
-          else if (AuthService.isLoggedIn)
-            _accountCard()
-          else
-            _loginCard(),
-          if (AuthService.isLoggedIn && !_devicePro) ...[
-            const SizedBox(height: 14),
-            _subscriptionCard(),
-          ],
-          const SizedBox(height: 14),
-          if (_msg != null) _banner(_msg!, Colors.green.shade700),
-          if (_err != null) _banner(_err!, Colors.red.shade600),
-        ],
-      ),
-    );
-  }
-
-  Widget _card({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
+      appBar: AppBar(title: const Text('Profile & Settings')),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _refresh,
+          color: AppTheme.primary,
+          backgroundColor: AppTheme.card,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics()),
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
+            children: Stagger.list([
+              if (!AuthService.ready)
+                const EmptyState(
+                  icon: Icons.cloud_off_rounded,
+                  title: 'Sign-in is not configured',
+                  message:
+                      'Every offline feature keeps working — papers, PDFs and printing are all available.',
+                )
+              else if (AuthService.isLoggedIn)
+                _accountCard()
+              else
+                _loginCard(),
+              if (_msg != null) ...[
+                const SizedBox(height: 14),
+                InfoBanner.success(_msg!),
+              ],
+              if (_err != null) ...[
+                const SizedBox(height: 14),
+                InfoBanner.error(_err!),
+              ],
+              const SizedBox(height: 16),
+              _proCard(),
+              const SizedBox(height: 16),
+              _themeCard(),
+              const SizedBox(height: 20),
+              const Center(
+                child: Text(
+                  'A-Learning — Tutor Edition',
+                  style: TextStyle(fontSize: 11.5, color: AppTheme.muted),
+                ),
+              ),
+            ]),
           ),
-        ],
-      ),
-      child: child,
-    );
-  }
-
-  Widget _infoCard(IconData icon, String text) {
-    return _card(
-      child: Column(
-        children: [
-          Icon(icon, size: 44, color: Colors.grey.shade400),
-          const SizedBox(height: 10),
-          Text(text,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, height: 1.6, color: Colors.grey.shade700)),
-        ],
+        ),
       ),
     );
   }
 
   Widget _loginCard() {
-    return _card(
+    return GlassCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            _otpSent ? 'Enter the Code' : 'Sign in with Email',
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+          SectionTitle(
+            title: _otpSent ? 'Enter your code' : 'Sign in with email',
+            subtitle: _otpSent
+                ? 'The code was emailed to you and stays valid for about an hour.'
+                : 'No password needed — we email you a one-time code.',
+            icon: Icons.login_rounded,
           ),
-          const SizedBox(height: 6),
-          Text(
-            _otpSent
-                ? 'A 6-digit code has been sent to your email (valid for ~1 hour).'
-                : 'No password needed — sign in with the OTP code from your email.',
-            style: TextStyle(fontSize: 12.5, height: 1.5, color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 14),
           TextField(
             controller: _emailCtrl,
             enabled: !_otpSent,
             keyboardType: TextInputType.emailAddress,
+            autofillHints: const [AutofillHints.email],
             decoration: const InputDecoration(
               labelText: 'Email',
               hintText: 'you@example.com',
-              prefixIcon: Icon(Icons.alternate_email),
-              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.alternate_email_rounded),
             ),
           ),
-          if (_otpSent) ...[
-            const SizedBox(height: 12),
-            TextField(
-              controller: _codeCtrl,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
-              decoration: const InputDecoration(
-                labelText: '6-digit code',
-                counterText: '',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _busy ? null : (_otpSent ? _verifyOtp : _sendOtp),
-              icon: _busy
-                  ? const SizedBox(
-                      width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Icon(_otpSent ? Icons.verified_user_outlined : Icons.mark_email_read_outlined),
-              label: Text(_busy ? 'Please wait...' : (_otpSent ? 'Verify' : 'Send OTP')),
-            ),
+          SoftSwitcher(
+            child: _otpSent
+                ? Padding(
+                    key: const ValueKey('code'),
+                    padding: const EdgeInsets.only(top: 14),
+                    child: TextField(
+                      controller: _codeCtrl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      maxLength: 8,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        letterSpacing: 8,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.accent,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Code from your email',
+                        counterText: '',
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(key: ValueKey('empty')),
+          ),
+          const SizedBox(height: 16),
+          SubmitButton(
+            busy: _busy,
+            icon: _otpSent
+                ? Icons.verified_user_rounded
+                : Icons.mark_email_read_rounded,
+            label: _otpSent ? 'Verify' : 'Send Code',
+            onPressed: _otpSent ? _verifyOtp : _sendOtp,
           ),
           if (_otpSent)
             Center(
@@ -387,53 +373,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _msg = null;
                           _codeCtrl.clear();
                         }),
-                child: const Text('Back to change email / get a new code'),
+                child: const Text('Change email / resend code'),
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _subscriptionCard() {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF17130A), Color(0xFF2A230F)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(color: const Color(0xFFF7C948).withOpacity(0.65)),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.workspace_premium, color: Color(0xFFF7C948), size: 30),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Buy Subscription',
-                      style: TextStyle(
-                          color: Color(0xFFFFE08A),
-                          fontSize: 15.5,
-                          fontWeight: FontWeight.w800)),
-                  Text('Unlock all Pro features',
-                      style: TextStyle(color: Colors.white70, fontSize: 12)),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right_rounded, color: Color(0xFFF7C948)),
-          ],
-        ),
       ),
     );
   }
@@ -441,87 +384,115 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _accountCard() {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
-    final role = _profile?['role']?.toString() ?? '—';
-    final roleBn = role == 'teacher' ? 'Teacher' : (role == 'student' ? 'Student' : '—');
     final serverPro = _profile?['is_pro'] == true;
-    return _card(
+    final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
+    final initial =
+        (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
+
+    return GlassCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: AppTheme.primary.withOpacity(0.12),
-                child: Icon(Icons.person, color: AppTheme.primary),
+              Container(
+                width: 52,
+                height: 52,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: AppTheme.goldGradient,
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppTheme.primary.withOpacity(.3), blurRadius: 16),
+                  ],
+                ),
+                child: Text(
+                  initial,
+                  style: const TextStyle(
+                    color: Color(0xFF211806),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (name.isNotEmpty)
-                      Text(name,
-                          style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800)),
-                    Text(AuthService.email ?? '',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 2),
                     Text(
-                      'Role: $roleBn${phone.isNotEmpty ? '  •  $phone' : ''}',
-                      style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700),
+                      name.isEmpty ? 'Tutor' : name,
+                      style: const TextStyle(
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.textDark),
                     ),
+                    const SizedBox(height: 3),
+                    Text(
+                      AuthService.email ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          const TextStyle(fontSize: 12.5, color: AppTheme.muted),
+                    ),
+                    if (phone.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(phone,
+                          style: const TextStyle(
+                              fontSize: 12.5, color: AppTheme.muted)),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              _chip(
-                serverPro ? 'Pro on server ✓' : 'No Pro on server',
-                serverPro ? Colors.green.shade700 : Colors.grey.shade600,
+              const StatusPill(
+                  label: 'Teacher account',
+                  color: AppTheme.accent,
+                  icon: Icons.school_rounded),
+              StatusPill(
+                label: serverPro ? 'Pro on server' : 'No Pro on server',
+                color: serverPro ? AppTheme.success : AppTheme.muted,
+                icon: serverPro
+                    ? Icons.cloud_done_rounded
+                    : Icons.cloud_outlined,
               ),
-              _chip(
-                _devicePro ? 'Pro active on this phone ✓' : 'DEMO on this phone',
-                _devicePro ? AppTheme.accent : Colors.grey.shade600,
+              StatusPill(
+                label: _devicePro ? 'Pro on this device' : 'Demo on this device',
+                color: _devicePro ? AppTheme.success : AppTheme.muted,
+                icon: _devicePro
+                    ? Icons.verified_rounded
+                    : Icons.lock_outline_rounded,
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'When the tutor admin enables Pro on your email, tap \"Sync Pro\" to activate it on this phone.',
-            style: TextStyle(fontSize: 12, height: 1.5, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: _busy
-                      ? null
-                      : () async {
-                          setState(() => _busy = true);
-                          final ok = await AuthService.syncProFromServer();
-                          await _refresh();
-                          if (!mounted) return;
-                          setState(() {
-                            _busy = false;
-                            _msg = ok ? '🎉 You are now using the Pro version!' : 'Pro is not enabled on the server yet.';
-                          });
-                        },
-                  icon: const Icon(Icons.sync),
-                  label: const Text('Sync Pro'),
+                  onPressed: _busy ? null : _editDetails,
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: const Text('Edit details'),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: FilledButton.tonalIcon(
-                  onPressed: _busy ? null : _logout,
-                  icon: const Icon(Icons.logout),
-                  label: const Text('Sign Out'),
+                child: OutlinedButton.icon(
+                  onPressed: _busy ? null : _syncPro,
+                  icon: _busy
+                      ? const SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.sync_rounded, size: 18),
+                  label: const Text('Sync Pro'),
                 ),
               ),
             ],
@@ -529,10 +500,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _busy ? null : _editPhone,
-              icon: const Icon(Icons.phone_iphone),
-              label: const Text('Change Phone Number'),
+            child: TextButton.icon(
+              onPressed: _busy ? null : _logout,
+              icon: const Icon(Icons.logout_rounded, size: 18),
+              label: const Text('Sign out'),
+              style: TextButton.styleFrom(foregroundColor: AppTheme.danger),
             ),
           ),
         ],
@@ -540,28 +512,145 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _chip(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.4)),
+  Widget _proCard() {
+    if (_devicePro) {
+      return GlassCard(
+        highlighted: true,
+        child: Row(
+          children: [
+            Pulse(
+              min: .95,
+              max: 1.07,
+              period: const Duration(milliseconds: 2200),
+              child: const Icon(Icons.workspace_premium_rounded,
+                  color: AppTheme.accent, size: 30),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Pro is active',
+                      style: TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w800)),
+                  SizedBox(height: 3),
+                  Text('Full papers, no watermark, PDF export and printing.',
+                      style: TextStyle(
+                          color: AppTheme.muted, fontSize: 12, height: 1.4)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return GlassCard(
+      highlighted: true,
+      onTap: () async {
+        await Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+        if (mounted) _refresh();
+      },
+      child: Row(
+        children: [
+          const Icon(Icons.workspace_premium_rounded,
+              color: AppTheme.accent, size: 30),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Upgrade to Pro',
+                    style: TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800)),
+                SizedBox(height: 3),
+                Text('Unlock every question, remove the watermark, print freely.',
+                    style: TextStyle(
+                        color: AppTheme.muted, fontSize: 12, height: 1.4)),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right_rounded, color: AppTheme.accent),
+        ],
       ),
-      child: Text(text, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
     );
   }
 
-  Widget _banner(String text, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4)),
+  Widget _themeCard() {
+    return GlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionTitle(
+            title: 'Workspace theme',
+            subtitle: 'Sets the backdrop tone across the whole app.',
+            icon: Icons.palette_outlined,
+          ),
+          ValueListenableBuilder<int>(
+            valueListenable: AppStyle.bgIndex,
+            builder: (context, index, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(AppStyle.colors.length, (i) {
+                    final selected = i == index;
+                    return PressableScale(
+                      onTap: () => AppStyle.set(i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOut,
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppStyle.colors[i],
+                              Color.alphaBlend(
+                                  AppStyle.accents[i].withOpacity(.35),
+                                  AppStyle.colors[i]),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: selected
+                                ? AppStyle.accents[i]
+                                : Colors.white.withOpacity(.12),
+                            width: selected ? 2 : 1,
+                          ),
+                          boxShadow: selected
+                              ? [
+                                  BoxShadow(
+                                      color: AppStyle.accents[i].withOpacity(.35),
+                                      blurRadius: 14)
+                                ]
+                              : null,
+                        ),
+                        child: selected
+                            ? Icon(Icons.check_rounded,
+                                size: 20, color: AppStyle.accents[i])
+                            : null,
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  AppStyle.labels[index % AppStyle.labels.length],
+                  style: const TextStyle(fontSize: 12.5, color: AppTheme.muted),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      child: Text(text, style: TextStyle(fontSize: 12.5, height: 1.5, color: color)),
     );
   }
 }

@@ -5,18 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/app_style.dart';
-import '../services/auth_service.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
 import 'subscription_screen.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
+import '../widgets/glass_card.dart';
 import '../widgets/app_button.dart';
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
 import '../data/english_answers_data.dart';
 import '../services/english_paper_adapter.dart';
-import 'subjects_screen.dart';
+import '../models/subject_info.dart';
 
 /// SSC-2027 অফিসিয়াল প্রশ্ন-কাঠামো — PDF যাচাইকৃত (Lalmonirhat Govt Girls, ব্যবসায় বিভাগ) + NCTB Sep-2025 সংশোধনী
 /// Reference PDF pages: 101 বাংলা ১ম 70(50+20)+30, 102 বাংলা ২য় 70(10+10+10+10+10+20 নতুন সংবাদ প্রতিবেদন)+30,
@@ -118,7 +119,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   /// 👁️ প্রিভিউ পেজগুলো — printed PDF-এর হুবহু রূপ।
   List<Uint8List>? _pagePngs;
   bool _isPro = false;
-  bool _notTeacher = false; // প্রিন্ট ফিচার শিক্ষকদের — শিক্ষার্থী হলে true
   bool _showAnswerKey = false;
   String? _apiKey;
   String? _note;
@@ -169,19 +169,11 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     await AppStyle.load();
     final prefs = await SharedPreferences.getInstance();
     final pro = await PaperLicense.isPro();
-    // প্রিন্ট ফিচার শুধু শিক্ষকদের জন্য — শিক্ষার্থী হলে পর্দাটা লক থাকবে
-    final role = await AuthService.role(refresh: true);
-    SubjectInfo? subj = _subject;
-    if (widget.initialSubjectId != null) {
-      for (final s in allSubjects) {
-        if (s.id == widget.initialSubjectId) subj = s;
-      }
-    }
+    final subj = subjectById(widget.initialSubjectId) ?? _subject;
     if (!mounted) return;
     setState(() {
       _apiKey = prefs.getString('gemini_api_key');
       _isPro = pro;
-      if (role != null && role != 'teacher') _notTeacher = true;
       if (subj != null) _subject = subj;
       if (widget.initialMode != null) _mode = widget.initialMode!;
       final idx = prefs.getInt('paper_set_idx') ?? 0;
@@ -765,7 +757,19 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+              );
+            },
+            child: const Text('Buy Pro'),
+          ),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
           FilledButton(
             onPressed: () async {
               final success = await PaperLicense.activate(controller.text);
@@ -901,88 +905,58 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   // ── UI ────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    // শিক্ষার্থী অ্যাকাউন্টে প্রিন্ট পর্দা বন্ধ
-    if (_notTeacher) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Paper Printing')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(26),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.lock_outline, size: 56, color: Colors.grey.shade400),
-                const SizedBox(height: 14),
-                const Text(
-                  'Paper printing is reserved for teacher (tutor) accounts.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, height: 1.6),
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const SubscriptionScreen()),
-                  ),
-                  icon: const Icon(Icons.workspace_premium_outlined),
-                  label: const Text('View Subscription'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Question Paper (Print-ready)'),
+        title: const Text('Question Paper'),
         actions: [
-          TextButton.icon(
-            onPressed: _showUnlockDialog,
-            icon: Icon(_isPro ? Icons.verified : Icons.lock_outline,
-                color: _isPro ? AppTheme.accent : Colors.white70, size: 18),
-            label: Text(
-              _isPro ? 'PRO' : 'DEMO',
-              style: TextStyle(
-                color: _isPro ? AppTheme.accent : Colors.white70,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1,
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Center(
+              child: PressableScale(
+                onTap: _showUnlockDialog,
+                child: StatusPill(
+                  label: _isPro ? 'PRO' : 'DEMO',
+                  color: _isPro ? AppTheme.accent : AppTheme.muted,
+                  icon: _isPro
+                      ? Icons.verified_rounded
+                      : Icons.lock_outline_rounded,
+                ),
               ),
             ),
           ),
         ],
       ),
-      body: AnimatedBuilder(
-        animation: AppStyle.bgIndex,
-        builder: (context, _) => Container(
-          color: AppStyle.bg,
-          child: ListView(
-            padding: const EdgeInsets.all(14),
-            children: [
-          _configCard(),
-          const SizedBox(height: 14),
-          if (_note != null) _noteCard(),
-          if (_busy)
-            const Padding(
-              padding: EdgeInsets.all(30),
-              child: Center(
-                child: Column(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 12),
-                    Text('Generating paper...\nFilling AI questions may take a moment',
-                        textAlign: TextAlign.center),
-                  ],
-                ),
-              ),
-            )
-          else if (_generated)
-            ..._paperPages()
-          else
-            _hintCard('Pick a subject and mode, then tap "Generate Paper".'),
-            ],
-          ),
+      body: SafeArea(
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 28),
+          children: [
+            FadeSlideIn(child: _configCard()),
+            const SizedBox(height: 14),
+            if (_note != null) _noteCard(),
+            SoftSwitcher(
+              child: _busy
+                  ? const BusyIndicator(
+                      key: ValueKey('busy'),
+                      message:
+                          'Generating your paper...\nFilling in AI questions can take a moment.',
+                    )
+                  : Column(
+                      key: ValueKey(_generated),
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: _generated
+                          ? _paperPages()
+                          : [
+                              const EmptyState(
+                                icon: Icons.library_books_outlined,
+                                title: 'Ready when you are',
+                                message:
+                                    'Pick a subject and mode above, then tap Generate Paper.',
+                              ),
+                            ],
+                    ),
+            ),
+          ],
         ),
       ),
     );
@@ -1013,16 +987,16 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
 
   Widget _configCard() {
     final chapters = _chapters;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.07), blurRadius: 12, offset: const Offset(0, 5))],
-      ),
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SectionTitle(
+            title: 'Paper setup',
+            subtitle: 'Choose the subject, format and title for this paper.',
+            icon: Icons.tune_rounded,
+          ),
           DropdownButtonFormField<SubjectInfo>(
             value: _subject,
             decoration: const InputDecoration(labelText: 'Subject'),
@@ -1095,7 +1069,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           const SizedBox(height: 6),
           Text(
             'Subject Code: ${_subjectCodes[_subject?.id] ?? '—'}   •   Set Code: $_setLetter (changes each time)',
-            style: TextStyle(fontSize: 11.5, color: Colors.grey.shade700),
+            style: const TextStyle(fontSize: 11.5, color: AppTheme.muted),
           ),
           const SizedBox(height: 10),
           _aiMixSection(),
@@ -1108,7 +1082,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
                     : (_mode == 'chapter'
                         ? '📋 Structure: MCQ 10 + Creative 2  •  Marks 30  •  1 hour'
                         : _patternInfoLine()),
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+            style: const TextStyle(fontSize: 12, color: AppTheme.muted),
           ),
           const SizedBox(height: 12),
           AppButton(
@@ -1149,7 +1123,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           subtitle: Text(
             'Every paper blends fresh AI questions with banked ones',
-            style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600),
+            style: const TextStyle(fontSize: 11.5, color: AppTheme.muted),
           ),
         ),
         if (_mixAi) ...[
@@ -1171,7 +1145,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           const SizedBox(height: 6),
           Text(
             'With AI mixing, internet is required and generation takes 20–40 seconds. Always review the questions before printing.',
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade600, height: 1.4),
+            style: const TextStyle(fontSize: 11, color: AppTheme.muted, height: 1.4),
           ),
         ],
       ],
@@ -1236,32 +1210,12 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   }
 
   Widget _noteCard() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.withOpacity(0.4)),
-      ),
-      child: Text(_note!, style: const TextStyle(fontSize: 12.5, height: 1.5)),
-    );
-  }
-
-  Widget _hintCard(String text) {
-    return Container(
-      padding: const EdgeInsets.all(26),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.library_books_outlined, size: 44, color: Colors.grey.shade400),
-          const SizedBox(height: 10),
-          Text(text, textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade600)),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: InfoBanner(
+        text: _note!,
+        color: const Color(0xFFFFB347),
+        icon: Icons.lightbulb_outline_rounded,
       ),
     );
   }
@@ -1300,10 +1254,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             child: Text(
               'প্রিভিউ = প্রিন্ট হওয়া PDF-এর হুবহু রূপ (সব বিষয়ের ক্ষেত্রে)',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 11.5,
                   fontStyle: FontStyle.italic,
-                  color: Colors.grey.shade600),
+                  color: AppTheme.muted),
             ),
           ),
         ),
@@ -1638,15 +1592,33 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     );
   }
 
-  Widget _answerKeyCard() {
+  /// Answer keys keep the printed-sheet look (white paper, dark ink) so they
+  /// match the paper preview above them.
+  Widget _paperSheet({required Widget child}) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppTheme.secondary.withOpacity(0.4)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(.24),
+              blurRadius: 18,
+              offset: const Offset(0, 8)),
+        ],
       ),
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(color: Colors.black87),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _answerKeyCard() {
+    return _paperSheet(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1832,20 +1804,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (children.isEmpty) {
       children.add(Text('এই সেটের উত্তরমালা তৈরি হচ্ছে…', style: _serifSmall));
     }
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.secondary.withOpacity(0.4)),
-      ),
+    return _paperSheet(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('উত্তরমালা',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          const Divider(height: 16),
+          const Divider(height: 16, color: Colors.black26),
           ...children,
         ],
       ),

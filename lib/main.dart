@@ -1,13 +1,30 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'services/app_style.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/root_gate.dart';
 import 'widgets/animated_background.dart';
 
 Future<void> main() async {
-  // Supabase-এর আগে binding দরকার; কনফিগ না থাকলে init নিঃশব্দে skip হবে
+  // Binding must exist before Supabase / preferences are touched.
+  // If nothing is configured, initialisation is skipped silently.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // A crash in a single widget should never take the whole app down —
+  // show a branded fallback instead of the grey/red error screen.
+  ErrorWidget.builder = (details) => _FriendlyErrorView(details: details);
+
+  SystemChrome.setSystemUIOverlayStyle(AppTheme.overlayStyle);
+  await SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  );
+
+  await AppStyle.load();
   await AuthService.init();
+
   runApp(const ALearningApp());
 }
 
@@ -17,15 +34,77 @@ class ALearningApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'A-Learning',
+      title: 'A-Learning Tutor',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      // লগইন থাকলে ভূমিকা অনুযায়ী হোম, না থাকলে সাইন-ইন/সাইন-আপ পর্দা
+      theme: AppTheme.dark(),
+      themeMode: ThemeMode.dark,
       home: const RootGate(),
-      // Wraps EVERY screen (tabs and pushed routes alike) with the
-      // animated background painted underneath, so nothing needs to
-      // remember to add it individually.
-      builder: (context, child) => AnimatedBackground(child: child!),
+      // Every screen (pushed routes included) sits on the animated backdrop,
+      // and text never scales past a readable size on large-font devices.
+      builder: (context, child) {
+        final media = MediaQuery.of(context);
+        return MediaQuery(
+          data: media.copyWith(
+            textScaler: media.textScaler.clamp(
+              minScaleFactor: 0.85,
+              maxScaleFactor: 1.25,
+            ),
+          ),
+          child: AnimatedBackground(child: child ?? const SizedBox.shrink()),
+        );
+      },
+    );
+  }
+}
+
+/// Replaces Flutter's default red error box with a calm, on-brand card.
+class _FriendlyErrorView extends StatelessWidget {
+  final FlutterErrorDetails details;
+  const _FriendlyErrorView({required this.details});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppTheme.canvas,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(26),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.build_circle_outlined,
+                  color: AppTheme.accent, size: 44),
+              const SizedBox(height: 14),
+              const Text(
+                'Something did not load correctly',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.textDark,
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Please go back and try again.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.muted, fontSize: 13, height: 1.5),
+              ),
+              if (kDebugMode) ...[
+                const SizedBox(height: 14),
+                Text(
+                  details.exceptionAsString(),
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      color: AppTheme.danger, fontSize: 11, height: 1.4),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import '../data/questions_data.dart';
-import '../widgets/animations.dart';
-import 'subject_detail_screen.dart';
+/// Subject catalogue used across the teacher paper builders.
+/// Extracted from the old student 'subjects' screen so the teacher
+/// portal owns this data on its own.
 
 enum SubjectGroup { science, general, business, humanities }
 
@@ -181,137 +180,11 @@ const List<SubjectInfo> allSubjects = [
       group: SubjectGroup.humanities),
 ];
 
-class SubjectsScreen extends StatelessWidget {
-  const SubjectsScreen({super.key});
-
-  int _mcqCount(String id) => allMCQs.where((q) => q.subjectId == id).length;
-  int _cqCount(String id) => allCQs.where((q) => q.subjectId == id).length;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Subjects')),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        itemCount: allSubjects.length,
-        itemBuilder: (context, index) {
-          final subject = allSubjects[index];
-          final color = Color(subject.colorHex);
-          final mcq = _mcqCount(subject.id);
-          final cq = _cqCount(subject.id);
-          return FadeSlideIn(
-            delay: Duration(milliseconds: 45 * (index > 10 ? 10 : index)),
-            offset: const Offset(0, 20),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-              child: PressableScale(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SubjectDetailScreen(subject: subject),
-                  ),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: color.withOpacity(0.10)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: color.withOpacity(0.10),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      // Subject icon with soft gradient chip
-                      Container(
-                        width: 54,
-                        height: 54,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              color.withOpacity(0.20),
-                              color.withOpacity(0.07),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(subject.icon,
-                            style: const TextStyle(fontSize: 26)),
-                      ),
-                      const SizedBox(width: 13),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              subject.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 15.5,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              subject.bengaliName,
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 7),
-                            Row(
-                              children: [
-                                _countChip('MCQ', mcq, color),
-                                const SizedBox(width: 6),
-                                _countChip('CQ', cq, color),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.10),
-                          shape: BoxShape.circle,
-                        ),
-                        child:
-                            Icon(Icons.chevron_right, color: color, size: 20),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+/// Convenience lookup used by the paper builders.
+SubjectInfo? subjectById(String? id) {
+  if (id == null) return null;
+  for (final s in allSubjects) {
+    if (s.id == id) return s;
   }
-
-  Widget _countChip(String label, int count, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        '$label $count',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
-      ),
-    );
-  }
+  return null;
 }

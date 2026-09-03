@@ -19,9 +19,11 @@ import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
 import '../services/chapter_source_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
 import '../widgets/app_button.dart';
+import '../widgets/glass_card.dart';
 import 'subscription_screen.dart';
-import 'subjects_screen.dart';
+import '../models/subject_info.dart';
 
 /// কাস্টমাইজড টেস্ট পেপার — UPGRADED v2
 /// - Preview added (was missing before)
@@ -257,21 +259,18 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xCC161B26),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 4))
-        ],
+        border: Border.all(color: Colors.white.withOpacity(.08)),
       ),
       child: Row(
         children: [
           Expanded(
               child: Text(label,
                   style: const TextStyle(
-                      fontSize: 14.5, fontWeight: FontWeight.w600))),
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textDark))),
           IconButton(
               onPressed: value > 0 ? () => onChanged(value - 1) : null,
               icon: const Icon(Icons.remove_circle_outline),
@@ -340,9 +339,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: selected ? const Color(0xFFFFF8E5) : Colors.white,
+        color: selected
+            ? _gold.withOpacity(.12)
+            : Colors.white.withOpacity(.03),
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: selected ? _gold : Colors.black12),
+        border: Border.all(
+            color: selected ? _gold.withOpacity(.65) : Colors.white24),
       ),
       child: Row(children: [
         Checkbox(
@@ -353,10 +355,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(chapter,
-              style:
-                  const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+              style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textDark)),
           Text('ব্যাংকে $available টি MCQ',
-              style: TextStyle(fontSize: 10.5, color: Colors.grey.shade700)),
+              style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
         ])),
         if (selected) ...[
           IconButton(
@@ -838,13 +842,26 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       showDialog(
           context: context,
           builder: (c) => AlertDialog(
-                  title: const Text('Pro Required'),
+                  title: const Text('Pro required'),
                   content: const Text(
-                      'Custom paper printing is Pro – unlock first.'),
+                      'Printing custom papers is a Pro feature. Unlock Pro to export and print without a watermark.'),
                   actions: [
                     TextButton(
                         onPressed: () => Navigator.pop(c),
-                        child: const Text('OK'))
+                        child: const Text('Not now')),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(c);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SubscriptionScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.workspace_premium_rounded,
+                          size: 18),
+                      label: const Text('See Pro'),
+                    ),
                   ]));
       return;
     }
@@ -973,9 +990,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       return SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF17130A),
-                  side: const BorderSide(color: Color(0xFF17130A))),
               onPressed: _showApiKeyDialog,
               icon: const Icon(Icons.vpn_key_outlined, size: 18),
               label:
@@ -984,15 +998,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xCC161B26),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _gold.withOpacity(0.7)),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 3))
-          ]),
+          border: Border.all(color: _gold.withOpacity(0.45))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -1001,8 +1009,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             onChanged: (v) => setState(() => _mixAi = v),
             title: const Text('🤖 Mix AI questions',
                 style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-            subtitle: Text('Fresh AI + bank',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600))),
+            subtitle: const Text('Fresh AI + bank',
+                style: TextStyle(fontSize: 11, color: AppTheme.muted))),
         if (_mixAi) ...[
           const Text('AI %:',
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
@@ -1059,47 +1067,26 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     : _requestedMcqTotal));
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.mcqOnly
-              ? 'Custom MCQ Test + OMR'
-              : 'Custom Paper + Preview'),
-          backgroundColor: const Color(0xFF17130A),
-          foregroundColor: const Color(0xFFFFE08A)),
-      // This screen intentionally uses light paper-style cards. Force a local
-      // light text/input theme so the global dark+gold app theme cannot fade text on white cards.
-      body: Theme(
-        data: ThemeData.light(useMaterial3: true).copyWith(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: _gold, brightness: Brightness.light),
-          textTheme: ThemeData.light().textTheme.apply(
-              bodyColor: const Color(0xFF17130A),
-              displayColor: const Color(0xFF17130A)),
-          inputDecorationTheme: const InputDecorationTheme(
-            labelStyle: TextStyle(color: Color(0xFF5E574B)),
-            hintStyle: TextStyle(color: Color(0xFF756E63)),
-          ),
-        ),
-        child: AnimatedBuilder(
-          animation: AppStyle.bgIndex,
-          builder: (context, _) => Container(
-            color: AppStyle.bg,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
+        title: Text(widget.mcqOnly
+            ? 'Custom MCQ Test + OMR'
+            : 'Custom Paper + Preview'),
+      ),
+      body: SafeArea(
+        child: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+            children: [
                 // Config card
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4))
-                      ]),
+                FadeSlideIn(
+                    child: GlassCard(
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SectionTitle(
+                          title: 'Paper setup',
+                          icon: Icons.tune_rounded,
+                        ),
                         DropdownButtonFormField<SubjectInfo>(
                             value: _subject,
                             decoration:
@@ -1131,10 +1118,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                         const SizedBox(height: 6),
                         Text(
                             'Code: ${_subjectCodes[_subject?.id] ?? '—'} • Set: $_setLetter',
-                            style: TextStyle(
-                                fontSize: 11.5, color: Colors.grey.shade700)),
+                            style: const TextStyle(
+                                fontSize: 11.5, color: AppTheme.muted)),
                       ]),
-                ),
+                )),
                 const SizedBox(height: 14),
                 if (_isBanglaSecond) ...[
                   const Text('বাংলা দ্বিতীয় পত্র মোড',
@@ -1170,16 +1157,17 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
+                      color: _gold.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
+                      border: Border.all(color: _gold.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
                       'রচনামূলক: ২+২+২+২+২+৩টি প্রশ্ন; নির্ধারিতভাবে উত্তর — ৭০\n'
                       'ব্যাকরণ MCQ: ৩০টি; সবগুলোর উত্তর — ৩০\n'
                       'CQ ও SAQ নেই; OMR কেবল ১–৩০ MCQ-এর জন্য।',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
+                      style: TextStyle(
+                          fontSize: 12.5, height: 1.5, color: AppTheme.textDark),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1235,16 +1223,17 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
+                      color: _gold.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
+                      border: Border.all(color: _gold.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
                       'গদ্য CQ ৪টি + কবিতা CQ ৪টি; উত্তর মোট ৫টি — ৫০\n'
                       'উপন্যাস ২টি + নাটক ২টি; উত্তর ১+১টি — ২০\n'
                       'গদ্য MCQ ১৫টি + কবিতা MCQ ১৫টি; সব উত্তর — ৩০',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
+                      style: TextStyle(
+                          fontSize: 12.5, height: 1.5, color: AppTheme.textDark),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1329,15 +1318,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
+                      color: _gold.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
+                      border: Border.all(color: _gold.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ২৫ • সময় ১ ঘণ্টা\n'
                       'মোট ২৫টি MCQ; সবগুলোর উত্তর দিতে হবে।\n'
                       'প্রশ্নপত্রের সঙ্গে OMR স্বয়ংক্রিয়ভাবে তৈরি হবে।',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
+                      style: TextStyle(
+                          fontSize: 12.5, height: 1.5, color: AppTheme.textDark),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1364,9 +1354,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E5),
+                      color: _gold.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold),
+                      border: Border.all(color: _gold.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
@@ -1374,7 +1364,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                       'SAQ: ১৫টি থাকবে, ১০টি উত্তর — ২০\n'
                       'MCQ: ৩০টি, সবগুলোর উত্তর — ৩০\n'
                       'MCQ বণ্টন: বীজগণিত ১৩, জ্যামিতি ১২, ত্রিকোণমিতি-পরিমিতি ৪, পরিসংখ্যান ১',
-                      style: TextStyle(fontSize: 12.5, height: 1.5),
+                      style: TextStyle(
+                          fontSize: 12.5, height: 1.5, color: AppTheme.textDark),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1404,7 +1395,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                   Text(
                       'অধ্যায় নির্বাচন করো, তারপর প্রতিটি অধ্যায়ের পাশে MCQ সংখ্যা নির্ধারণ করো।',
                       style:
-                          TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+                          const TextStyle(fontSize: 12, color: AppTheme.muted)),
                   const SizedBox(height: 10),
                   for (final chapter in chapters) _chapterMcqRow(chapter),
                   Container(
@@ -1430,15 +1421,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                          color: Colors.teal.shade50,
+                          color: const Color(0xFF2DD4BF).withOpacity(.10),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.teal.shade100)),
+                          border: Border.all(
+                              color: const Color(0xFF2DD4BF).withOpacity(.35))),
                       child: Text(
                           _isEnglish2nd(_subject?.id)
                               ? 'English 2nd: Grammar 60 + Composition 40 (mixed boards)'
                               : 'English 1st: Reading 70 + Writing 30 (mixed boards)',
-                          style: TextStyle(
-                              fontSize: 12, color: Colors.teal.shade900))),
+                          style: const TextStyle(
+                              fontSize: 12, color: Color(0xFF7FE7DC)))),
                 if (!_usesAutomaticBoardPattern) _aiMixCard(),
                 const SizedBox(height: 14),
                 Container(
@@ -1489,10 +1481,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                 const SizedBox(height: 12),
                 // Preview (NEW)
                 if (_busy)
-                  const Center(
-                      child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: CircularProgressIndicator())),
+                  const BusyIndicator(
+                      message: 'Building your paper and preview...'),
                 if (_generated && _pagePngs != null) ...[
                   for (var i = 0; i < _pagePngs!.length; i++)
                     Container(
@@ -1528,13 +1518,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     const SizedBox(height: 12),
                     Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                                color: AppTheme.secondary.withOpacity(0.3))),
-                        child: Column(
+                                color: AppTheme.secondary.withOpacity(0.4))),
+                        child: DefaultTextStyle.merge(
+                            style: const TextStyle(color: Colors.black87),
+                            child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('MCQ Answers',
@@ -1552,19 +1544,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                                       ][_mcqs[j].correctIndex]}',
                                       style: const TextStyle(fontSize: 13))
                               ]),
-                            ])),
+                            ]))),
                   ],
                 ],
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                     'Creative=10, SAQ=2, MCQ=1 – auto calculated. Preview = exact print.',
                     textAlign: TextAlign.center,
                     style:
-                        TextStyle(fontSize: 11.5, color: Colors.grey.shade600)),
-              ],
-            ),
-          ),
-        ),
+                        TextStyle(fontSize: 11.5, color: AppTheme.muted)),
+            ]),
       ),
     );
   }

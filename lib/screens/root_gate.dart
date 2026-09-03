@@ -2,50 +2,133 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
 import 'auth_choice_screen.dart';
-import 'main_home_screen.dart';
 import 'teacher_home_screen.dart';
 
-/// অ্যাপ চালুর "দারোয়ান" —
-///  • লগইন নেই → সাইন-ইন/সাইন-আপ পর্দা
-///  • শিক্ষক  → কালো-সোনালি টিউটর হোম
-///  • শিক্ষার্থী → আগের ছাত্র-হোম
-class RootGate extends StatelessWidget {
+/// App gatekeeper —
+///  • not signed in → welcome / sign-in screen
+///  • signed in     → the teacher (tutor) portal
+///
+/// A-Learning is a teacher-only product, so there is no role branching:
+/// every authenticated account lands in the tutor workspace.
+class RootGate extends StatefulWidget {
   const RootGate({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    if (!AuthService.ready || !AuthService.isLoggedIn) {
-      return const AuthChoiceScreen();
+  State<RootGate> createState() => _RootGateState();
+}
+
+class _RootGateState extends State<RootGate> {
+  late Future<bool> _boot;
+
+  @override
+  void initState() {
+    super.initState();
+    _boot = _prepare();
+  }
+
+  /// Warms up the profile/Pro state before showing the workspace so the
+  /// home screen never flickers between logged-out and logged-in states.
+  Future<bool> _prepare() async {
+    if (!AuthService.ready || !AuthService.isLoggedIn) return false;
+    try {
+      await AuthService.ensureTeacherProfile();
+      await AuthService.syncProFromServer();
+    } catch (_) {
+      // Offline is fine — the local Pro flag and banked questions still work.
     }
-    return FutureBuilder<String?>(
-      future: AuthService.role(refresh: true),
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _boot,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(color: AppTheme.primary),
-                  const SizedBox(height: 14),
-                  const Text('Loading profile...'),
-                ],
-              ),
-            ),
-          );
+          return const _BootSplash();
         }
-        if (snap.data == 'teacher') return const TeacherHomeScreen();
-        return const MainHomeScreen();
+        return SoftSwitcher(
+          duration: const Duration(milliseconds: 420),
+          child: snap.data == true
+              ? const TeacherHomeScreen(key: ValueKey('teacher'))
+              : const AuthChoiceScreen(key: ValueKey('auth')),
+        );
       },
     );
   }
 
-  /// লগইন/লগআউটের পর গেটে ফেরার সবচেয়ে নিরাপদ পথ
+  /// Safest way back to the gate after signing in or out.
   static void restart(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const RootGate()),
       (_) => false,
+    );
+  }
+}
+
+/// Branded loading state shown while the session is restored.
+class _BootSplash extends StatelessWidget {
+  const _BootSplash();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 104,
+              height: 104,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const HaloRing(size: 104, strokeWidth: 2.6),
+                  Pulse(
+                    min: .92,
+                    max: 1.08,
+                    period: const Duration(milliseconds: 1400),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(.45),
+                        border: Border.all(
+                            color: AppTheme.primary.withOpacity(.45), width: 1.2),
+                      ),
+                      child: const Icon(Icons.school_rounded,
+                          color: AppTheme.accent, size: 32),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            FadeSlideIn(
+              delay: const Duration(milliseconds: 120),
+              child: const Text(
+                'A-Learning',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: AppTheme.textDark,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            FadeSlideIn(
+              delay: const Duration(milliseconds: 240),
+              child: const Text(
+                'Preparing your tutor workspace...',
+                style: TextStyle(fontSize: 12.8, color: AppTheme.muted),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

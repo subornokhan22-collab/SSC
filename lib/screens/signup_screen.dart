@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import '../services/auth_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/animations.dart';
+import '../widgets/auth_widgets.dart';
+import '../widgets/glass_card.dart';
 import 'root_gate.dart';
 
-/// সাইন আপ — নতুন ব্যবহারকারী
-/// ফর্ম: পুরো নাম + পেশা (শিক্ষার্থী/শিক্ষক) + ফোন (+880) + ইমেইল → OTP → প্রবেশ
+/// Sign up — creates a new tutor account.
+/// Form: full name + phone (+880) + email → one-time code → workspace.
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key, this.prefillEmail});
 
@@ -22,7 +25,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late final TextEditingController _emailCtrl;
   final _codeCtrl = TextEditingController();
 
-  String _profession = 'student'; // 'student' | 'teacher'
   bool _busy = false;
   bool _otpSent = false;
   String? _err;
@@ -43,45 +45,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  String? _validate() {
-    if (_nameCtrl.text.trim().length < 3) return 'Please enter your full name (at least 3 characters)';
-    // +880 এর পরে 1 দিয়ে শুরু ১০ সংখ্যা (মোট ১১ সংখ্যা মোবাইল দিলেও মেনে নিই)
-    var p = _phoneCtrl.text.replaceAll(RegExp(r'[^\d]'), '');
+  String _localPhone(String s) {
+    var p = s.replaceAll(RegExp(r'[^\d]'), '');
     if (p.startsWith('880')) p = p.substring(3);
     if (p.startsWith('0')) p = p.substring(1);
-    if (!RegExp(r'^1\d{9}$').hasMatch(p)) {
-      return 'Enter a valid mobile number (e.g. 1XXXXXXXXX)';
+    return p;
+  }
+
+  String get _fullPhone => '+880${_localPhone(_phoneCtrl.text)}';
+
+  String? _validate() {
+    if (_nameCtrl.text.trim().length < 3) {
+      return 'Please enter your full name (at least 3 characters).';
     }
-    final e = _emailCtrl.text.trim();
-    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(e)) {
-      return 'Enter a valid email address';
+    if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(_phoneCtrl.text))) {
+      return 'Enter a valid mobile number, e.g. 1XXXXXXXXX.';
+    }
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_emailCtrl.text.trim())) {
+      return 'Enter a valid email address.';
     }
     return null;
   }
 
-  String get _fullPhone {
-    var p = _phoneCtrl.text.replaceAll(RegExp(r'[^\d]'), '');
-    if (p.startsWith('880')) p = p.substring(3);
-    if (p.startsWith('0')) p = p.substring(1);
-    return '+880$p';
-  }
-
-  String _bnError(Object e) {
-    final s = e.toString();
-    if (e is AuthException && e.message.isNotEmpty) return e.message;
-    if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
-      return 'Too many attempts — please try again later.';
-    }
-    if (s.contains('SocketException') || s.contains('Failed host lookup')) {
-      return 'No internet — please check your connection and try again.';
-    }
-    if (s.contains('expired') || s.contains('invalid') || s.contains('Token')) {
-      return 'The code is wrong or expired — request a new one.';
-    }
-    return 'Something went wrong — please try again.';
-  }
-
   Future<void> _next() async {
+    FocusScope.of(context).unfocus();
     final bad = _validate();
     if (bad != null) {
       setState(() => _err = bad);
@@ -97,24 +84,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       setState(() {
         _otpSent = true;
-        _msg = '✅ Verification code sent! Check your inbox (or spam).';
+        _msg = 'Verification code sent! Check your inbox (and spam folder).';
       });
     } catch (e) {
-      if (mounted) setState(() => _err = _bnError(e));
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _verify() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _busy = true;
       _err = null;
     });
     try {
       await AuthService.verifyOtp(_emailCtrl.text, _codeCtrl.text);
-      await AuthService.ensureProfile(
-        role: _profession,
+      await AuthService.ensureTeacherProfile(
         name: _nameCtrl.text.trim(),
         phone: _fullPhone,
       );
@@ -122,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       RootGate.restart(context);
     } catch (e) {
-      if (mounted) setState(() => _err = _bnError(e));
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -131,118 +118,141 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_otpSent ? 'Verify Code' : 'Sign Up')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          if (!_otpSent) ...[
-            Text(
-              'Fill in your details — a code will be sent to your email for verification.',
-              style: TextStyle(fontSize: 13.5, height: 1.5, color: Colors.grey.shade700),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _nameCtrl,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                prefixIcon: Icon(Icons.badge_outlined),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 14),
-            const Text('Who are you?',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(
-                    value: 'student',
-                    icon: Icon(Icons.menu_book_outlined),
-                    label: Text('Student')),
-                ButtonSegment(
-                    value: 'teacher',
-                    icon: Icon(Icons.school_outlined),
-                    label: Text('Teacher')),
-              ],
-              selected: {_profession},
-              onSelectionChanged: (s) => setState(() => _profession = s.first),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _phoneCtrl,
-              keyboardType: TextInputType.phone,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d+]'))],
-              decoration: const InputDecoration(
-                labelText: 'Mobile Number',
-                hintText: '1XXXXXXXXX',
-                prefix: Text('+880  ',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                prefixIcon: Icon(Icons.phone_iphone),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _emailCtrl,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email Address',
-                hintText: 'tumi@example.com',
-                prefixIcon: Icon(Icons.alternate_email),
-                border: OutlineInputBorder(),
-              ),
+      appBar: AppBar(title: Text(_otpSent ? 'Verify Code' : 'Create Account')),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+          children: Stagger.list([
+            AuthHero(
+              icon: _otpSent
+                  ? Icons.mark_email_read_rounded
+                  : Icons.person_add_alt_1_rounded,
+              title: _otpSent ? 'Almost there' : 'Tutor account',
+              subtitle: _otpSent
+                  ? 'We sent a code to ${_emailCtrl.text.trim()}. Enter it below to finish setting up your workspace.'
+                  : 'Fill in your details — a one-time code will be emailed to verify your account.',
             ),
             const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: FilledButton.icon(
-                onPressed: _busy ? null : _next,
-                icon: _busy
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.arrow_forward_rounded),
-                label: Text(_busy ? 'Please wait...' : 'Next'),
-              ),
+            SoftSwitcher(
+              child: _otpSent ? _codeCard() : _detailsCard(),
             ),
-          ] else ...[
-            Text(
-              'A code has been sent to ${_emailCtrl.text.trim()}. Enter it below:',
-              style: TextStyle(fontSize: 13.5, height: 1.6, color: Colors.grey.shade700),
+            if (_msg != null) ...[
+              const SizedBox(height: 14),
+              InfoBanner.success(_msg!),
+            ],
+            if (_err != null) ...[
+              const SizedBox(height: 14),
+              InfoBanner.error(_err!),
+            ],
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _detailsCard() {
+    return GlassCard(
+      key: const ValueKey('details'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionTitle(
+            title: 'Your details',
+            subtitle: 'Used on your papers and to recover your account.',
+            icon: Icons.badge_outlined,
+          ),
+          TextField(
+            controller: _nameCtrl,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.name],
+            decoration: const InputDecoration(
+              labelText: 'Full name',
+              prefixIcon: Icon(Icons.badge_outlined),
             ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _codeCtrl,
-              keyboardType: TextInputType.number,
-              maxLength: 10,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
-              decoration: const InputDecoration(
-                labelText: 'Code from your email',
-                counterText: '',
-                border: OutlineInputBorder(),
-              ),
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _phoneCtrl,
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.next,
+            maxLength: 13,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[\d+]')),
+            ],
+            decoration: const InputDecoration(
+              labelText: 'Mobile number',
+              hintText: '1XXXXXXXXX',
+              counterText: '',
+              prefixIcon: Icon(Icons.phone_iphone_rounded),
+              prefixText: '+880  ',
+              prefixStyle: TextStyle(
+                  fontWeight: FontWeight.bold, color: AppTheme.accent),
             ),
-            const SizedBox(height: 14),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: FilledButton.icon(
-                onPressed: _busy ? null : _verify,
-                icon: _busy
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.verified_user_outlined),
-                label: Text(_busy ? 'Please wait...' : 'Verify & Create Account'),
-              ),
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _emailCtrl,
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.email],
+            onSubmitted: (_) => _busy ? null : _next(),
+            decoration: const InputDecoration(
+              labelText: 'Email address',
+              hintText: 'you@example.com',
+              prefixIcon: Icon(Icons.alternate_email_rounded),
             ),
-            TextButton(
+          ),
+          const SizedBox(height: 18),
+          SubmitButton(
+            busy: _busy,
+            icon: Icons.arrow_forward_rounded,
+            label: 'Send Verification Code',
+            onPressed: _next,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _codeCard() {
+    return GlassCard(
+      key: const ValueKey('code'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionTitle(
+            title: 'Verification code',
+            icon: Icons.password_rounded,
+          ),
+          TextField(
+            controller: _codeCtrl,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            maxLength: 8,
+            autofocus: true,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              letterSpacing: 8,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.accent,
+            ),
+            decoration: const InputDecoration(
+              labelText: 'Code from your email',
+              counterText: '',
+            ),
+            onSubmitted: (_) => _busy ? null : _verify(),
+          ),
+          const SizedBox(height: 16),
+          SubmitButton(
+            busy: _busy,
+            icon: Icons.verified_user_rounded,
+            label: 'Verify & Create Account',
+            onPressed: _verify,
+          ),
+          Center(
+            child: TextButton(
               onPressed: _busy
                   ? null
                   : () => setState(() {
@@ -251,31 +261,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         _msg = null;
                         _codeCtrl.clear();
                       }),
-              child: const Text('Back to edit details / get a new code'),
+              child: const Text('Edit details / resend code'),
             ),
-          ],
-          if (_msg != null) ...[
-            const SizedBox(height: 10),
-            _banner(_msg!, Colors.green.shade700),
-          ],
-          if (_err != null) ...[
-            const SizedBox(height: 10),
-            _banner(_err!, Colors.red.shade600),
-          ],
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _banner(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4)),
-      ),
-      child: Text(text, style: TextStyle(fontSize: 13, height: 1.5, color: color)),
     );
   }
 }
