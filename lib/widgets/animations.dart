@@ -24,15 +24,17 @@ class FadeSlideIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final span = duration.inMilliseconds;
+    // A zero-length animation would divide by zero below; just show the child.
+    if (span <= 0) return child;
     final total = (duration + delay).inMilliseconds;
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: Duration(milliseconds: total),
       curve: Curves.linear,
       builder: (context, value, child) {
-        final raw = ((value * total - delay.inMilliseconds) /
-                duration.inMilliseconds)
-            .clamp(0.0, 1.0);
+        final raw =
+            ((value * total - delay.inMilliseconds) / span).clamp(0.0, 1.0);
         final t = curve.transform(raw);
         return Opacity(
           opacity: t,
