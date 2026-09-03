@@ -1,4 +1,5 @@
 import 'question_bank.dart';
+import 'question_figure.dart';
 
 /// Provenance of a question.
 ///

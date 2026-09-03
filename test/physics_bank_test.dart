@@ -24,9 +24,14 @@ void main() {
   });
 
   group('chapter names', () {
-    test('physicsChapterNames matches ChapterCatalog.physics exactly', () {
-      expect(physicsChapterNames, equals(ChapterCatalog.physics));
-      expect(physicsChapterNames.length, 13);
+    test('the physics catalogue still lists all 13 chapters', () {
+      // `physicsChapterNames` used to be declared beside the hardcoded bank;
+      // ChapterCatalog.physics is now the single source of truth.
+      expect(ChapterCatalog.physics.length, 13);
+      expect(ChapterCatalog.physics.toSet().length, 13,
+          reason: 'chapter names must be unique');
+      expect(ChapterCatalog.ordered(const <String>[], subjectId: 'physics'),
+          ChapterCatalog.physics);
     });
 
     test('every question points at a catalogued chapter', () {

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-import 'question_figure.dart' show FigureKind, QuestionFigure;
+import 'question_figure.dart' show QuestionFigure;
 import 'questions_data.dart';
 
 /// Loads the question bank from the JSON assets in `assets/questions/`.
