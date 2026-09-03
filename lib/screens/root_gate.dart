@@ -17,6 +17,15 @@ class RootGate extends StatefulWidget {
 
   @override
   State<RootGate> createState() => _RootGateState();
+
+  /// Safest way back to the gate after signing in or out — clears the whole
+  /// navigation stack so no authenticated screen stays behind.
+  static void restart(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const RootGate()),
+      (_) => false,
+    );
+  }
 }
 
 class _RootGateState extends State<RootGate> {
@@ -56,14 +65,6 @@ class _RootGateState extends State<RootGate> {
               : const AuthChoiceScreen(key: ValueKey('auth')),
         );
       },
-    );
-  }
-
-  /// Safest way back to the gate after signing in or out.
-  static void restart(BuildContext context) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const RootGate()),
-      (_) => false,
     );
   }
 }
