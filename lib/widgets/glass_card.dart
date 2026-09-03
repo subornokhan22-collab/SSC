@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
