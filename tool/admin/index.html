@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mentor's Companion — Question Admin</title>
+<style>
+  :root{
+    --primary:#3D5AFE; --primary-dark:#2A3EB1; --accent:#00B8A9;
+    --canvas:#F4F6FB; --surface:#FFFFFF; --surface-alt:#EDF1F9;
+    --border:#DDE3EF; --text:#16203A; --muted:#66739A;
+    --success:#12A150; --danger:#E5484D; --warning:#E08700;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--canvas);color:var(--text);
+    font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Bengali",sans-serif;
+  }
+  header{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;padding:20px 24px;
+  }
+  header h1{margin:0;font-size:19px;letter-spacing:.2px}
+  header p{margin:4px 0 0;opacity:.85;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 24px 60px}
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+  @media(max-width:960px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:20px;
+    box-shadow:0 1px 2px rgba(22,32,58,.04);
+  }
+  .card h2{margin:0 0 16px;font-size:15px;font-weight:650}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:14px 0 6px}
+  input,select,textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--border);
+    border-radius:10px;font:inherit;background:var(--surface);color:var(--text);
+  }
+  textarea{resize:vertical;min-height:74px}
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(61,90,254,.13);
+  }
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .opt input[type=radio]{width:auto;flex:none;accent-color:var(--success)}
+  .opt input[type=text]{flex:1}
+  .opt .tag{
+    width:24px;height:24px;flex:none;border-radius:50%;
+    background:var(--surface-alt);color:var(--muted);
+    display:grid;place-items:center;font-size:12px;font-weight:700;
+  }
+  button{
+    padding:11px 18px;border:0;border-radius:10px;font:inherit;font-weight:650;
+    cursor:pointer;background:var(--primary);color:#fff;
+  }
+  button:hover{background:var(--primary-dark)}
+  button.ghost{background:var(--surface-alt);color:var(--text)}
+  button.tiny{padding:4px 9px;font-size:12px;font-weight:600}
+  button.danger{background:transparent;color:var(--danger);padding:4px 8px;font-size:12px}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .actions{display:flex;gap:10px;align-items:center;margin-top:20px}
+  .msg{padding:11px 14px;border-radius:10px;font-size:13.5px;margin-bottom:14px;display:none}
+  .msg.err{background:#FDF0F0;color:#A3282C;border:1px solid #F6D5D6;display:block}
+  .msg.ok{background:#EAF8F0;color:#0B7038;border:1px solid #CBEBD8;display:block}
+  .msg ul{margin:6px 0 0;padding-left:18px}
+  .stat{display:flex;gap:20px;margin-bottom:14px;flex-wrap:wrap}
+  .stat div{font-size:12.5px;color:var(--muted)}
+  .stat b{display:block;font-size:20px;color:var(--text);font-weight:700}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .list{max-height:560px;overflow:auto;margin:0 -6px;padding:0 6px}
+  .q{
+    border:1px solid var(--border);border-radius:11px;padding:11px 13px;
+    margin-bottom:9px;background:var(--surface);
+  }
+  .q .meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+  .q .id{font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  .q .text{font-size:13.5px}
+  .pill{
+    font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;background:var(--surface-alt);color:var(--muted);
+  }
+  .pill.mcq{background:#E8ECFF;color:var(--primary-dark)}
+  .pill.saq{background:#E0F6F3;color:#046B60}
+  .pill.cq{background:#FFF1DC;color:#8A5200}
+  .hide{display:none}
+  .hint{font-size:12px;color:var(--muted);margin-top:5px}
+  .grow{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>Question Admin</h1>
+  <p>Add questions to the bank without touching code — saves straight into assets/questions/</p>
+</header>
+
+<div class="wrap">
+<div class="grid">
+
+  <!-- ── add form ─────────────────────────────────────── -->
+  <div class="card">
+    <h2>Add a question</h2>
+    <div id="msg" class="msg"></div>
+
+    <div class="row">
+      <div>
+        <label for="subject">Subject</label>
+        <select id="subject"></select>
+      </div>
+      <div>
+        <label for="type">Type</label>
+        <select id="type"></select>
+      </div>
+    </div>
+
+    <label for="chapter">Chapter</label>
+    <select id="chapter"></select>
+    <div class="hint">Chapters come from the questions already in the bank.</div>
+
+    <!-- MCQ + SAQ share the question box -->
+    <div id="f-question">
+      <label for="questionText">Question</label>
+      <textarea id="questionText" placeholder="প্রশ্নটি এখানে লিখুন…"></textarea>
+    </div>
+
+    <!-- MCQ -->
+    <div id="f-mcq">
+      <label>Options — tick the correct one</label>
+      <div id="options"></div>
+    </div>
+
+    <!-- SAQ -->
+    <div id="f-saq" class="hide">
+      <label for="answer">Answer</label>
+      <textarea id="answer" placeholder="উত্তর…"></textarea>
+    </div>
+
+    <!-- CQ -->
+    <div id="f-cq" class="hide">
+      <label for="stem">Stem (উদ্দীপক)</label>
+      <textarea id="stem" placeholder="উদ্দীপক…"></textarea>
+      <label for="questionK">ক</label><input id="questionK" type="text">
+      <label for="questionKh">খ</label><input id="questionKh" type="text">
+      <label for="questionG">গ</label><input id="questionG" type="text">
+      <label for="questionGh">ঘ <span style="font-weight:500">(blank for 3-part maths CQs)</span></label>
+      <input id="questionGh" type="text">
+      <label for="marks">Marks</label>
+      <input id="marks" type="text" value="1,2,3,4">
+      <div class="hint">General maths uses 2,4,4.</div>
+    </div>
+
+    <div id="f-expl">
+      <label for="explanation">Explanation <span style="font-weight:500">(optional)</span></label>
+      <textarea id="explanation" placeholder="ব্যাখ্যা…"></textarea>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="source">Source</label>
+        <select id="source">
+          <option value="original">Original</option>
+          <option value="board">Board</option>
+          <option value="ai">AI</option>
+          <option value="internet">Internet</option>
+        </select>
+      </div>
+      <div>
+        <label for="sourceLabel">Source label <span style="font-weight:500">(optional)</span></label>
+        <input id="sourceLabel" type="text" placeholder="ঢাকা বোর্ড ২০২৪">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="save">Save question</button>
+      <button id="clear" class="ghost" type="button">Clear</button>
+      <span class="grow"></span>
+      <span class="hint" id="saving"></span>
+    </div>
+  </div>
+
+  <!-- ── browse ───────────────────────────────────────── -->
+  <div class="card">
+    <h2>Bank</h2>
+    <div class="stat">
+      <div>Total questions<b id="s-total">—</b></div>
+      <div>Showing<b id="s-shown">—</b></div>
+    </div>
+    <div class="filters">
+      <select id="f-subject"><option value="">All subjects</option></select>
+      <select id="f-type">
+        <option value="">All types</option>
+        <option value="mcq">MCQ</option>
+        <option value="saq">SAQ</option>
+        <option value="cq">CQ</option>
+      </select>
+    </div>
+    <input id="f-search" type="text" placeholder="Search text or id…">
+    <div class="list" id="list" style="margin-top:12px"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let META = { subjects: [], total: 0 };
+
+// ── form wiring ──────────────────────────────────────────
+function subjectById(id){ return META.subjects.find(s => s.id === id); }
+
+function renderOptions(n = 4){
+  const box = $('options');
+  box.innerHTML = '';
+  const letters = ['ক','খ','গ','ঘ','ঙ','চ'];
+  for (let i = 0; i < n; i++){
+    const row = document.createElement('div');
+    row.className = 'opt';
+    row.innerHTML =
+      `<input type="radio" name="correct" value="${i}" ${i===0?'checked':''} title="Correct answer">`
+      + `<span class="tag">${letters[i]}</span>`
+      + `<input type="text" class="opt-text" placeholder="Option ${letters[i]}">`;
+    box.appendChild(row);
+  }
+}
+
+function syncTypes(){
+  const s = subjectById($('subject').value);
+  const t = $('type');
+  const prev = t.value;
+  t.innerHTML = '';
+  const labels = { mcq:'MCQ (বহুনির্বাচনি)', saq:'SAQ (সংক্ষিপ্ত)', cq:'CQ (সৃজনশীল)' };
+  for (const ty of (s ? s.types : [])){
+    const o = document.createElement('option');
+    o.value = ty; o.textContent = labels[ty] || ty;
+    t.appendChild(o);
+  }
+  if ([...t.options].some(o => o.value === prev)) t.value = prev;
+  syncChapters();
+  syncFields();
+}
+
+function syncChapters(){
+  const s = subjectById($('subject').value);
+  const c = $('chapter');
+  c.innerHTML = '';
+  const chapters = s ? s.chapters : [];
+  if (!chapters.length){
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = '— no chapters yet, type below —';
+    c.appendChild(o);
+  }
+  for (const ch of chapters){
+    const o = document.createElement('option');
+    o.value = ch; o.textContent = ch;
+    c.appendChild(o);
+  }
+}
+
+function syncFields(){
+  const t = $('type').value;
+  $('f-question').classList.toggle('hide', t === 'cq');
+  $('f-mcq').classList.toggle('hide', t !== 'mcq');
+  $('f-saq').classList.toggle('hide', t !== 'saq');
+  $('f-cq').classList.toggle('hide', t !== 'cq');
+  $('f-expl').classList.toggle('hide', t === 'cq');
+}
+
+function showMsg(kind, text, items){
+  const m = $('msg');
+  m.className = 'msg ' + kind;
+  m.innerHTML = text + (items && items.length
+    ? '<ul>' + items.map(i => `<li>${escapeHtml(i)}</li>`).join('') + '</ul>' : '');
+  m.scrollIntoView({ block:'nearest', behavior:'smooth' });
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function clearForm(){
+  $('questionText').value = '';
+  $('answer').value = '';
+  $('explanation').value = '';
+  $('stem').value = '';
+  for (const k of ['questionK','questionKh','questionG','questionGh']) $(k).value = '';
+  $('sourceLabel').value = '';
+  renderOptions();
+}
+
+async function save(){
+  const type = $('type').value;
+  const body = {
+    type,
+    subjectId: $('subject').value,
+    chapter: $('chapter').value,
+    source: $('source').value,
+    sourceLabel: $('sourceLabel').value,
+    explanation: $('explanation').value,
+  };
+  if (type === 'mcq'){
+    body.questionText = $('questionText').value;
+    body.options = [...document.querySelectorAll('.opt-text')].map(i => i.value);
+    const picked = document.querySelector('input[name=correct]:checked');
+    body.correctIndex = picked ? Number(picked.value) : -1;
+  } else if (type === 'saq'){
+    body.questionText = $('questionText').value;
+    body.answer = $('answer').value;
+  } else {
+    body.stem = $('stem').value;
+    for (const k of ['questionK','questionKh','questionG','questionGh']) body[k] = $(k).value;
+    body.marks = $('marks').value;
+  }
+
+  $('save').disabled = true;
+  $('saving').textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/questions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (!r.ok){
+      showMsg('err', '<b>Could not save:</b>', data.errors);
+    } else {
+      showMsg('ok', `Saved as <b>${escapeHtml(data.id)}</b> into ${escapeHtml(data.bank)}.json — bank now holds ${data.total} questions.`);
+      clearForm();
+      await loadMeta();
+      await loadList();
+    }
+  } catch(e){
+    showMsg('err', '<b>Request failed:</b>', [String(e)]);
+  } finally {
+    $('save').disabled = false;
+    $('saving').textContent = '';
+  }
+}
+
+// ── browse ───────────────────────────────────────────────
+let listTimer = null;
+async function loadList(){
+  const p = new URLSearchParams();
+  if ($('f-subject').value) p.set('subject', $('f-subject').value);
+  if ($('f-type').value) p.set('type', $('f-type').value);
+  if ($('f-search').value.trim()) p.set('q', $('f-search').value.trim());
+  const r = await fetch('/api/questions?' + p);
+  const data = await r.json();
+  $('s-shown').textContent = data.rows.length + ' / ' + data.total;
+  $('list').innerHTML = data.rows.map(row => `
+    <div class="q">
+      <div class="meta">
+        <span class="pill ${row.type}">${row.type}</span>
+        <span class="id">${escapeHtml(row.id)}</span>
+        <span style="flex:1"></span>
+        <button class="danger" data-del="${escapeHtml(row.id)}">delete</button>
+      </div>
+      <div class="text">${escapeHtml(row.text).slice(0,220)}</div>
+    </div>`).join('') || '<p class="hint">Nothing matches.</p>';
+
+  for (const b of document.querySelectorAll('[data-del]')){
+    b.onclick = async () => {
+      if (!confirm('Delete ' + b.dataset.del + '?')) return;
+      await fetch('/api/questions/' + encodeURIComponent(b.dataset.del), { method:'DELETE' });
+      await loadMeta(); await loadList();
+    };
+  }
+}
+
+async function loadMeta(){
+  const r = await fetch('/api/meta');
+  META = await r.json();
+  $('s-total').textContent = META.total.toLocaleString();
+
+  const keep = $('subject').value;
+  $('subject').innerHTML = '';
+  $('f-subject').innerHTML = '<option value="">All subjects</option>';
+  for (const s of META.subjects){
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = s.name;
+    $('subject').appendChild(o);
+    const o2 = o.cloneNode(true);
+    $('f-subject').appendChild(o2);
+  }
+  if (keep) $('subject').value = keep;
+}
+
+// ── init ─────────────────────────────────────────────────
+$('subject').onchange = syncTypes;
+$('type').onchange = syncFields;
+$('save').onclick = save;
+$('clear').onclick = clearForm;
+$('f-subject').onchange = loadList;
+$('f-type').onchange = loadList;
+$('f-search').oninput = () => { clearTimeout(listTimer); listTimer = setTimeout(loadList, 250); };
+
+renderOptions();
+loadMeta().then(() => { syncTypes(); loadList(); });
+</script>
+</body>
+</html>

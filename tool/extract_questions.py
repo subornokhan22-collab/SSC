@@ -488,6 +488,8 @@ def write_assets(records: list[dict[str, Any]]) -> dict[str, int]:
         manifest["counts"][name] = len(rows)
         written[name] = len(rows)
 
+    # Sort so re-running this and the admin panel produce identical manifests.
+    manifest["files"].sort()
     manifest["total"] = len(records)
     with open(os.path.join(OUT_DIR, "manifest.json"), "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=2)

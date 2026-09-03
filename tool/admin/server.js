@@ -1,0 +1,394 @@
+#!/usr/bin/env node
+/**
+ * Question admin panel — a small local web app for adding questions
+ * without hand-editing JSON.
+ *
+ * Run:  node tool/admin/server.js
+ * Then open the printed URL.
+ *
+ * It reads and writes assets/questions/*.json directly, keeping the same
+ * shape tool/extract_questions.py produces, so the Flutter app picks new
+ * questions up on the next build with no other changes.
+ *
+ * Deliberately dependency-free (node stdlib only) so it works offline and
+ * needs no npm install.
+ */
+
+'use strict';
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
+
+const REPO = path.resolve(__dirname, '..', '..');
+const DIR = path.join(REPO, 'assets', 'questions');
+const MANIFEST = path.join(DIR, 'manifest.json');
+const PORT = process.env.PORT || 5055;
+
+// Which file new questions go into, per subject + type. Mirrors the banks
+// created by the migration.
+const BANKS = {
+  physics: { mcq: 'physics_mcqs', saq: 'physics_saqs', cq: 'physics_cqs' },
+  chemistry: { mcq: 'chemistry_mcqs', saq: 'chemistry_saqs', cq: 'chemistry_cqs' },
+  biology: { mcq: 'biology_mcqs', saq: 'biology_saqs', cq: 'biology_cqs' },
+  general_math: {
+    mcq: 'general_math_mcqs',
+    saq: 'general_math_saqs',
+    cq: 'general_math_cqs',
+  },
+  ict: { mcq: 'ict_mcqs' },
+  bangla_1st: { mcq: 'bangla_1st_mcqs', saq: 'bangla_1st_saqs', cq: 'bangla_1st_cqs' },
+  bangla_2nd: { mcq: 'bangla_2nd_mcqs' },
+  bgs: { mcq: 'bgs_mcqs', saq: 'bgs_saqs', cq: 'bgs_cqs' },
+  // Subjects without a dedicated bank fall back to the shared core files.
+  higher_math: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  accounting: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  finance: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+};
+
+const SUBJECT_NAMES = {
+  physics: 'পদার্থবিজ্ঞান (Physics)',
+  chemistry: 'রসায়ন (Chemistry)',
+  biology: 'জীববিজ্ঞান (Biology)',
+  general_math: 'সাধারণ গণিত (General Math)',
+  higher_math: 'উচ্চতর গণিত (Higher Math)',
+  ict: 'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)',
+  bangla_1st: 'বাংলা ১ম পত্র',
+  bangla_2nd: 'বাংলা ২য় পত্র',
+  bgs: 'বাংলাদেশ ও বিশ্বপরিচয় (BGS)',
+  accounting: 'হিসাববিজ্ঞান (Accounting)',
+  finance: 'ফিন্যান্স (Finance)',
+};
+
+const ID_PREFIX = {
+  physics: 'phy',
+  chemistry: 'chem',
+  biology: 'bio',
+  general_math: 'gm',
+  higher_math: 'hm',
+  ict: 'ict',
+  bangla_1st: 'b1',
+  bangla_2nd: 'b2',
+  bgs: 'bgs',
+  accounting: 'acc',
+  finance: 'fin',
+};
+
+// ── data helpers ──────────────────────────────────────────────────────
+
+function bankFile(name) {
+  return path.join(DIR, `${name}.json`);
+}
+
+function readBank(name) {
+  const p = bankFile(name);
+  if (!fs.existsSync(p)) return [];
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+function writeBank(name, rows) {
+  rows.sort((a, b) => a.id.localeCompare(b.id));
+  fs.writeFileSync(
+    bankFile(name),
+    JSON.stringify(rows) + '\n',
+    'utf8',
+  );
+}
+
+function allRows() {
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+  const out = [];
+  for (const f of manifest.files) {
+    const rows = JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8'));
+    for (const r of rows) out.push(r);
+  }
+  return out;
+}
+
+function refreshManifest() {
+  const files = fs
+    .readdirSync(DIR)
+    .filter((f) => f.endsWith('.json') && f !== 'manifest.json')
+    .sort();
+  const counts = {};
+  let total = 0;
+  for (const f of files) {
+    const n = JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8')).length;
+    counts[f] = n;
+    total += n;
+  }
+  fs.writeFileSync(
+    MANIFEST,
+    JSON.stringify({ version: 1, files, counts, total }, null, 2) + '\n',
+    'utf8',
+  );
+  return total;
+}
+
+/** Chapters actually present per subject, plus every known id. */
+function index() {
+  const chapters = {};
+  const ids = new Set();
+  const stems = new Map();
+  for (const r of allRows()) {
+    (chapters[r.subjectId] ||= new Set()).add(r.chapter);
+    ids.add(r.id);
+    const text = r.payload.questionText || r.payload.stem || '';
+    stems.set(text.trim(), r.id);
+  }
+  const sorted = {};
+  for (const [k, v] of Object.entries(chapters)) {
+    sorted[k] = [...v].sort((a, b) => chapterNo(a) - chapterNo(b));
+  }
+  return { chapters: sorted, ids, stems };
+}
+
+const BN = { '০': 0, '১': 1, '২': 2, '৩': 3, '৪': 4, '৫': 5, '৬': 6, '৭': 7, '৮': 8, '৯': 9 };
+
+function chapterNo(s) {
+  const m = /(?:অধ্যায়|chapter)\s*([০-৯0-9]+)/i.exec(s);
+  if (!m) return 9999;
+  let v = 0;
+  for (const c of m[1]) {
+    const d = BN[c] ?? Number(c);
+    if (Number.isNaN(d)) return 9999;
+    v = v * 10 + d;
+  }
+  return v;
+}
+
+/** Next free id, e.g. phy_c03_mcq_014 — matches the existing convention. */
+function nextId(subjectId, type, chapter, ids) {
+  const prefix = ID_PREFIX[subjectId] || subjectId.slice(0, 3);
+  const n = chapterNo(chapter);
+  const ch = n === 9999 ? 'x' : String(n).padStart(2, '0');
+  const base = `${prefix}_adm${ch}_${type}_`;
+  let i = 1;
+  while (ids.has(base + String(i).padStart(3, '0'))) i++;
+  return base + String(i).padStart(3, '0');
+}
+
+// ── validation ────────────────────────────────────────────────────────
+
+function validate(body, idx) {
+  const errors = [];
+  const { type, subjectId, chapter } = body;
+
+  if (!BANKS[subjectId]) errors.push(`Unknown subject "${subjectId}".`);
+  else if (!BANKS[subjectId][type]) {
+    errors.push(
+      `${SUBJECT_NAMES[subjectId] || subjectId} has no ${type.toUpperCase()} bank.`,
+    );
+  }
+  if (!chapter || !chapter.trim()) errors.push('Chapter is required.');
+
+  const payload = {};
+  if (type === 'mcq') {
+    const q = (body.questionText || '').trim();
+    if (!q) errors.push('Question text is required.');
+    const options = (body.options || []).map((o) => (o || '').trim());
+    if (options.filter(Boolean).length < 2) {
+      errors.push('At least two options are required.');
+    }
+    if (options.some((o) => !o)) errors.push('Options cannot be blank.');
+    const uniq = new Set(options.filter(Boolean));
+    if (uniq.size !== options.filter(Boolean).length) {
+      errors.push('Options must be distinct.');
+    }
+    const ci = Number(body.correctIndex);
+    if (!Number.isInteger(ci) || ci < 0 || ci >= options.length) {
+      errors.push('Select which option is correct.');
+    }
+    if (idx.stems.has(q)) {
+      errors.push(`This question already exists (${idx.stems.get(q)}).`);
+    }
+    payload.questionText = q;
+    payload.options = options;
+    payload.correctIndex = ci;
+    if ((body.explanation || '').trim()) {
+      payload.explanation = body.explanation.trim();
+    }
+  } else if (type === 'saq') {
+    const q = (body.questionText || '').trim();
+    const a = (body.answer || '').trim();
+    if (!q) errors.push('Question text is required.');
+    if (!a) errors.push('Answer is required.');
+    if (idx.stems.has(q)) {
+      errors.push(`This question already exists (${idx.stems.get(q)}).`);
+    }
+    payload.questionText = q;
+    payload.answer = a;
+    if ((body.explanation || '').trim()) {
+      payload.explanation = body.explanation.trim();
+    }
+  } else if (type === 'cq') {
+    const stem = (body.stem || '').trim();
+    if (!stem) errors.push('Stem (উদ্দীপক) is required.');
+    if (idx.stems.has(stem)) {
+      errors.push(`This stem already exists (${idx.stems.get(stem)}).`);
+    }
+    payload.stem = stem;
+    for (const [key, label] of [
+      ['questionK', 'ক'],
+      ['questionKh', 'খ'],
+      ['questionG', 'গ'],
+      ['questionGh', 'ঘ'],
+    ]) {
+      const v = (body[key] || '').trim();
+      if (!v && key !== 'questionGh') {
+        errors.push(`Question ${label} is required.`);
+      }
+      payload[key] = v;
+    }
+    const marks = String(body.marks || '1,2,3,4')
+      .split(',')
+      .map((m) => Number(m.trim()))
+      .filter((m) => Number.isInteger(m) && m > 0);
+    if (!marks.length) errors.push('Marks must be numbers, e.g. 1,2,3,4');
+    payload.marks = marks;
+  } else {
+    errors.push(`Unknown question type "${type}".`);
+  }
+
+  return { errors, payload };
+}
+
+// ── request handling ──────────────────────────────────────────────────
+
+function json(res, code, obj) {
+  const b = Buffer.from(JSON.stringify(obj), 'utf8');
+  res.writeHead(code, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Length': b.length,
+  });
+  res.end(b);
+}
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', (c) => {
+      data += c;
+      if (data.length > 5e6) reject(new Error('body too large'));
+    });
+    req.on('end', () => {
+      try {
+        resolve(data ? JSON.parse(data) : {});
+      } catch (e) {
+        reject(e);
+      }
+    });
+  });
+}
+
+const server = http.createServer(async (req, res) => {
+  const u = url.parse(req.url, true);
+
+  try {
+    if (req.method === 'GET' && (u.pathname === '/' || u.pathname === '/index.html')) {
+      const html = fs.readFileSync(path.join(__dirname, 'index.html'));
+      res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Content-Length': html.length,
+      });
+      return res.end(html);
+    }
+
+    if (req.method === 'GET' && u.pathname === '/api/meta') {
+      const idx = index();
+      const subjects = Object.keys(BANKS).map((id) => ({
+        id,
+        name: SUBJECT_NAMES[id] || id,
+        types: Object.keys(BANKS[id]),
+        chapters: idx.chapters[id] || [],
+      }));
+      const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+      return json(res, 200, { subjects, total: manifest.total });
+    }
+
+    if (req.method === 'GET' && u.pathname === '/api/questions') {
+      const { subject, type, q, limit } = u.query;
+      let rows = allRows();
+      if (subject) rows = rows.filter((r) => r.subjectId === subject);
+      if (type) rows = rows.filter((r) => r.type === type);
+      if (q) {
+        const needle = String(q).toLowerCase();
+        rows = rows.filter((r) => {
+          const t = (r.payload.questionText || r.payload.stem || '').toLowerCase();
+          return t.includes(needle) || r.id.toLowerCase().includes(needle);
+        });
+      }
+      const total = rows.length;
+      const n = Math.min(Number(limit) || 50, 200);
+      return json(res, 200, {
+        total,
+        rows: rows.slice(0, n).map((r) => ({
+          id: r.id,
+          type: r.type,
+          subjectId: r.subjectId,
+          chapter: r.chapter,
+          source: r.source,
+          text: r.payload.questionText || r.payload.stem || '',
+        })),
+      });
+    }
+
+    if (req.method === 'POST' && u.pathname === '/api/questions') {
+      const body = await readBody(req);
+      const idx = index();
+      const { errors, payload } = validate(body, idx);
+      if (errors.length) return json(res, 400, { errors });
+
+      const bank = BANKS[body.subjectId][body.type];
+      const id = (body.id || '').trim() || nextId(body.subjectId, body.type, body.chapter, idx.ids);
+      if (idx.ids.has(id)) return json(res, 400, { errors: [`Id "${id}" is taken.`] });
+
+      const bankVar = readBank(bank)[0]?.bank || bank;
+      const row = {
+        id,
+        type: body.type,
+        bank: bankVar,
+        subjectId: body.subjectId,
+        chapter: body.chapter.trim(),
+        source: body.source || 'original',
+        payload,
+      };
+      if ((body.sourceLabel || '').trim()) row.sourceLabel = body.sourceLabel.trim();
+
+      const rows = readBank(bank);
+      rows.push(row);
+      writeBank(bank, rows);
+      const total = refreshManifest();
+
+      return json(res, 200, { ok: true, id, bank, total });
+    }
+
+    if (req.method === 'DELETE' && u.pathname.startsWith('/api/questions/')) {
+      const id = decodeURIComponent(u.pathname.split('/').pop());
+      const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+      for (const f of manifest.files) {
+        const name = f.replace(/\.json$/, '');
+        const rows = readBank(name);
+        const i = rows.findIndex((r) => r.id === id);
+        if (i >= 0) {
+          rows.splice(i, 1);
+          writeBank(name, rows);
+          const total = refreshManifest();
+          return json(res, 200, { ok: true, total });
+        }
+      }
+      return json(res, 404, { errors: [`No question with id "${id}".`] });
+    }
+
+    json(res, 404, { errors: ['Not found'] });
+  } catch (e) {
+    json(res, 500, { errors: [String(e && e.message ? e.message : e)] });
+  }
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  const total = JSON.parse(fs.readFileSync(MANIFEST, 'utf8')).total;
+  console.log(`Question admin panel running on http://0.0.0.0:${PORT}`);
+  console.log(`${total} questions loaded from assets/questions/`);
+});
