@@ -1,6 +1,6 @@
 # Getting questions out of Dart source
 
-**Status:** proposal, nothing built yet
+**Status:** Step 1 is **done and shipped** (CI green, APK 75 MB -> 60 MB). Steps 2 and 3 are still proposals.
 **Decisions locked in:** central bank now but designed so teachers can add their own later; a web admin panel for authoring.
 
 ---
@@ -131,7 +131,26 @@ The official bank (`owner_id is null`) is then writable only via the service key
 
 Three independently shippable steps. Each is safe alone; stop after any one.
 
-### Step 1 — Dart → JSON assets *(no backend, no behaviour change)*
+### Step 1 — Dart → JSON assets ✅ DONE
+
+Shipped. `lib/` went from 266,631 to 25,229 lines (-91%), the APK from
+75 MB to 60 MB. `tool/extract_questions.py` does the export,
+`lib/data/question_bank.dart` loads it, and `test/question_bank_test.dart`
+is the verification gate. Two corrections to what this plan originally
+assumed:
+
+- **Figures were not dead.** The survey searched for `QuestionFigure(` and
+  missed the named constructors `.table(` / `.triangle(` / `.barChart(`.
+  12 questions carry structured figures and `paper_pdf.dart` renders them
+  into PDFs; they are exported with full structure and covered by a test.
+- **Grouping by (subject, type) was wrong.** The per-subject tests assert
+  exact counts, and inline questions in `questions_data.dart` share
+  subject ids, which inflated them. Files are now grouped by the Dart list
+  they came from, so every original count is preserved exactly.
+
+<details>
+<summary>Original plan for Step 1</summary>
+
 
 1. A `tool/export_questions.dart` script parses `lib/data/**` with the `analyzer` package (reads the real AST — no regex against 254k lines of Bangla) and writes `assets/questions/{subject}_{type}.json`.
 2. A `QuestionBank` loader deserialises the JSON at startup and exposes `allMCQs` / `allSAQs` / `allCQs` with identical names and types.
@@ -143,6 +162,8 @@ Three independently shippable steps. Each is safe alone; stop after any one.
 - a golden test generates a paper from a fixed seed before and after, and the two PDFs are byte-identical
 
 **Gain:** ~250k lines deleted, big drop in compile time and APK size, readable git diffs, no more Dart-escaping Bangla text. Fully offline. Zero risk to users.
+
+</details>
 
 ### Step 2 — Supabase sync *(publish without a release)*
 
@@ -164,8 +185,8 @@ Practical notes: authenticate with Supabase Auth against an `is_admin` flag on `
 
 ## 5. Unrelated things I noticed
 
-- **`lib/data/chemistry/chemistry_bank_test.dart` is an empty file** sitting inside `lib/`. Almost certainly a stray; safe to delete.
-- **GitHub releases are still titled "A-Learning APK"** — leftover from the rename, lives in the workflow file.
+- ~~**`lib/data/chemistry/chemistry_bank_test.dart` is an empty file**~~ — deleted in Step 1.
+- **GitHub releases are still titled "A-Learning APK"** — leftover from the rename, lives in `.github/workflows/build_apk.yml`. Still outstanding.
 - **12 of 20 subjects have no questions** (higher_math, english_1st/2nd, religion, agriculture, accounting, finance, …). Worth deciding whether they should be hidden in the picker until populated, so teachers do not hit dead ends.
 
 ---
