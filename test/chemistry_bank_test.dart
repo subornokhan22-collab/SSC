@@ -1,13 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/chemistry/chemistry_chapter_catalog.dart';
-import 'package:mentors_companion/data/chemistry/chemistry_cqs.dart';
-import 'package:mentors_companion/data/chemistry/chemistry_mcqs.dart';
-import 'package:mentors_companion/data/chemistry/chemistry_saqs.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
 import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
+  late final List<CreativeQuestion> chemistryCqs;
+  late final List<Question> chemistryMcqs;
+  late final List<ShortQuestion> chemistrySaqs;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    chemistryCqs = BankFixture.cqsIn('chemistry_cqs');
+    chemistryMcqs = BankFixture.mcqsIn('chemistry_mcqs');
+    chemistrySaqs = BankFixture.saqsIn('chemistry_saqs');
+  });
+
   group('Chemistry chapter catalog', () {
     test('uses the exact 12-chapter NCTB textbook order', () {
       expect(

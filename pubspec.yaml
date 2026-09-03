@@ -27,6 +27,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/questions/
     - assets/icon/icon.png
     - assets/icon/icon_foreground.png
     - assets/fonts/

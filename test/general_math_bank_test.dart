@@ -2,16 +2,28 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/general_math/general_math_chapter_catalog.dart';
-import 'package:mentors_companion/data/general_math/general_math_cqs.dart';
+
 import 'package:mentors_companion/data/general_math/general_math_divisions.dart';
-import 'package:mentors_companion/data/general_math/general_math_mcqs.dart';
-import 'package:mentors_companion/data/general_math/general_math_saqs.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
 import 'package:mentors_companion/services/chapter_catalog.dart';
 import 'package:mentors_companion/services/general_math_board_pattern.dart';
 
 void main() {
+  late final List<CreativeQuestion> generalMathCqs;
+  late final List<Question> generalMathMcqs;
+  late final List<ShortQuestion> generalMathSaqs;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    generalMathCqs = BankFixture.cqsIn('general_math_cqs');
+    generalMathMcqs = BankFixture.mcqsIn('general_math_mcqs');
+    generalMathSaqs = BankFixture.saqsIn('general_math_saqs');
+  });
+
   group('General Mathematics catalog and divisions', () {
     test('uses the exact 17-chapter numeric order', () {
       expect(

@@ -1,13 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/biology/biology_chapter_catalog.dart';
-import 'package:mentors_companion/data/biology/biology_cqs.dart';
-import 'package:mentors_companion/data/biology/biology_mcqs.dart';
-import 'package:mentors_companion/data/biology/biology_saqs.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
 import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
+  late final List<CreativeQuestion> biologyCqs;
+  late final List<Question> biologyMcqs;
+  late final List<ShortQuestion> biologySaqs;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    biologyCqs = BankFixture.cqsIn('biology_cqs');
+    biologyMcqs = BankFixture.mcqsIn('biology_mcqs');
+    biologySaqs = BankFixture.saqsIn('biology_saqs');
+  });
+
   group('Biology chapter catalog', () {
     test('uses the exact 14-chapter Bengali order', () {
       expect(

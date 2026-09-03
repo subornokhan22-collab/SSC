@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'data/question_bank.dart';
 import 'services/app_style.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
@@ -22,6 +23,9 @@ Future<void> main() async {
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
 
+  // The question bank now lives in assets/questions/*.json rather than in
+  // Dart source, so it must be read before any screen touches allMCQs.
+  await QuestionBank.load();
   await AppStyle.load();
   await AuthService.init();
 

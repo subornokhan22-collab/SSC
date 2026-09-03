@@ -9,7 +9,7 @@ import 'package:printing/printing.dart';
 
 import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
-import '../data/extra_questions.dart';
+import '../data/question_figure.dart';
 import '../data/questions_data.dart';
 
 /// একটি স্ট্যাকড ভগ্নাংশ (লব উপরে, দাগ মাঝে, হর নিচে)

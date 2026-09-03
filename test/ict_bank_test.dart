@@ -2,13 +2,22 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/ict/ict_chapter_catalog.dart';
-import 'package:mentors_companion/data/ict/ict_mcqs.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
 import 'package:mentors_companion/services/chapter_catalog.dart';
 import 'package:mentors_companion/services/ict_board_pattern.dart';
 
 void main() {
+  late final List<Question> ictMcqs;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    ictMcqs = BankFixture.mcqsIn('ict_mcqs');
+  });
+
   group('ICT MCQ-only chapter catalog', () {
     test('uses the exact six Bengali chapters in numeric order', () {
       expect(

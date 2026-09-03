@@ -2,16 +2,28 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/bangla_1st/bangla_1st_catalog.dart';
-import 'package:mentors_companion/data/bangla_1st/bangla_1st_cqs.dart';
+
 import 'package:mentors_companion/data/bangla_1st/bangla_1st_literature_questions.dart';
-import 'package:mentors_companion/data/bangla_1st/bangla_1st_mcqs.dart';
-import 'package:mentors_companion/data/bangla_1st/bangla_1st_revision_questions.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
 import 'package:mentors_companion/services/bangla_first_board_pattern.dart';
 import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
+  late final List<CreativeQuestion> banglaFirstCqs;
+  late final List<Question> banglaFirstMcqs;
+  late final List<ShortQuestion> banglaFirstRevisionQuestions;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    banglaFirstCqs = BankFixture.cqsIn('bangla_1st_cqs');
+    banglaFirstMcqs = BankFixture.mcqsIn('bangla_1st_mcqs');
+    banglaFirstRevisionQuestions = BankFixture.saqsIn('bangla_1st_saqs');
+  });
+
   group('Bangla First Paper final syllabus catalog', () {
     test('contains the exact 15 prose lessons', () {
       expect(BanglaFirstCatalog.goddo.length, 15);

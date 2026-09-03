@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
-import 'package:mentors_companion/data/physics/physics_mcqs.dart';
-import 'package:mentors_companion/data/physics/physics_saqs.dart';
-import 'package:mentors_companion/data/physics/physics_cqs.dart';
+
 import 'package:mentors_companion/services/chapter_catalog.dart';
 
 /// Contract tests for the SSC Physics question bank.
@@ -12,6 +12,17 @@ import 'package:mentors_companion/services/chapter_catalog.dart';
 /// names, per-chapter minimum counts, unique ids, well-formed options and
 /// explanations, and the presence of all four provenance kinds.
 void main() {
+  late final List<CreativeQuestion> physicsCqs;
+  late final List<Question> physicsMcqs;
+  late final List<ShortQuestion> physicsSAQs;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    physicsCqs = BankFixture.cqsIn('physics_cqs');
+    physicsMcqs = BankFixture.mcqsIn('physics_mcqs');
+    physicsSAQs = BankFixture.saqsIn('physics_saqs');
+  });
+
   group('chapter names', () {
     test('physicsChapterNames matches ChapterCatalog.physics exactly', () {
       expect(physicsChapterNames, equals(ChapterCatalog.physics));

@@ -1,13 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/bank_fixture.dart';
+
 import 'package:mentors_companion/data/bgs/bgs_chapter_catalog.dart';
-import 'package:mentors_companion/data/bgs/bgs_cqs.dart';
-import 'package:mentors_companion/data/bgs/bgs_mcqs.dart';
-import 'package:mentors_companion/data/bgs/bgs_saqs.dart';
+
 import 'package:mentors_companion/data/questions_data.dart';
 import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
+  late final List<CreativeQuestion> bgsCqs;
+  late final List<Question> bgsMcqs;
+  late final List<ShortQuestion> bgsSaqs;
+
+  setUpAll(() {
+    BankFixture.ensureLoaded();
+    bgsCqs = BankFixture.cqsIn('bgs_cqs');
+    bgsMcqs = BankFixture.mcqsIn('bgs_mcqs');
+    bgsSaqs = BankFixture.saqsIn('bgs_saqs');
+  });
+
   group('BGS chapter catalog', () {
     test('uses the exact supplied 15-chapter Bengali sequence', () {
       expect(
