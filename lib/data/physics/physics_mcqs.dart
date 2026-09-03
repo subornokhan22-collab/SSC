@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • পদার্থবিজ্ঞান (subjectId: 'physics')
+// Mentor's Companion • SSC 2027 • পদার্থবিজ্ঞান (subjectId: 'physics')
 // ---------------------------------------------------------------------------
 // সকল বহুনির্বাচনি প্রশ্ন (MCQ) — অধ্যায় ১ থেকে ১৩।
 //
@@ -203,7 +203,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 6.7 + (7 × 0.01) = 6.77 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_015',
@@ -216,7 +216,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 3.2 + (4 × 0.01) = 3.24 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_016',
@@ -229,7 +229,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 2.8 + (9 × 0.01) = 2.89 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_017',
@@ -242,7 +242,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 3.3 + (2 × 0.02) = 3.34 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_018',
@@ -255,7 +255,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 6.6 + (4 × 0.02) = 6.68 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_019',
@@ -268,7 +268,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 3.4 + (9 × 0.02) = 3.58 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_020',
@@ -281,7 +281,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 4.4 + (8 × 0.02) = 4.56 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_021',
@@ -294,7 +294,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 7.5 + (6 × 0.05) = 7.8 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_022',
@@ -307,7 +307,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 3.1 + (7 × 0.01) = 3.17 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_023',
@@ -320,7 +320,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 3.3 + (9 × 0.05) = 3.75 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_024',
@@ -333,7 +333,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 4.6 + (7 × 0.01) = 4.67 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_025',
@@ -346,7 +346,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 1.8 + (9 × 0.02) = 1.98 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_026',
@@ -359,7 +359,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 6.3 + (7 × 0.05) = 6.65 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_027',
@@ -372,7 +372,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রকৃত পাঠ = প্রধান স্কেল পাঠ + (সমপাতন × ভার্নিয়ার ধ্রুবক) = 9 + (5 × 0.02) = 9.1 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_028',
@@ -385,7 +385,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আয়তন V = (4/3)πr³, অর্থাৎ V ∝ r³। তাই আয়তনের শতকরা ত্রুটি = ৩ × ব্যাসার্ধের শতকরা ত্রুটি = ৩ × 2% = 6%।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_029',
@@ -398,7 +398,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আয়তন V = (4/3)πr³, অর্থাৎ V ∝ r³। তাই আয়তনের শতকরা ত্রুটি = ৩ × ব্যাসার্ধের শতকরা ত্রুটি = ৩ × 1% = 3%।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_030',
@@ -411,7 +411,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আয়তন V = (4/3)πr³, অর্থাৎ V ∝ r³। তাই আয়তনের শতকরা ত্রুটি = ৩ × ব্যাসার্ধের শতকরা ত্রুটি = ৩ × 3% = 9%।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c01_mcq_031',
@@ -423,7 +423,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শুরুর শূন্যগুলো সার্থক নয়; 4, 5 এবং শেষের 0—মোট ৩টি সার্থক অঙ্ক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_032',
@@ -441,7 +441,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শূন্য দাগ রেফারেন্স লাইনের নিচে থাকলে যন্ত্রটির ধনাত্মক যান্ত্রিক ত্রুটি থাকে, যা পাঠ থেকে বিয়োগ করতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_033',
@@ -459,7 +459,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্ল্যাঙ্কের ধ্রুবক h = 6.62607015×10⁻³⁴ J·s ধ্রুব ধরে কিলোগ্রাম সংজ্ঞায়িত করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_034',
@@ -470,7 +470,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'আয়তন = 2³ = 8 cm³; ঘনত্ব = 54/8 = 6.75 g/cm³।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_035',
@@ -481,7 +481,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বল = ভর × ত্বরণ = M × LT⁻² = MLT⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_036',
@@ -492,7 +492,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'কাজ = বল × সরণ = MLT⁻² × L = ML²T⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_037',
@@ -503,7 +503,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ক্ষমতা = কাজ/সময় = ML²T⁻²/T = ML²T⁻³।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_038',
@@ -514,7 +514,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'চাপ = বল/ক্ষেত্রফল = MLT⁻²/L² = ML⁻¹T⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_039',
@@ -525,7 +525,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'আলোকবর্ষ = 3×10⁸ m/s × 3.156×10⁷ s ≈ 9.46×10¹⁵ m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_040',
@@ -536,7 +536,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: '1 Å = 10⁻¹⁰ m; পারমাণবিক দূরত্ব প্রকাশে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_041',
@@ -547,7 +547,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'নিউক্লিয়াসের আকার প্রকাশে ব্যবহৃত 1 fermi = 10⁻¹⁵ m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_042',
@@ -560,7 +560,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভার্নিয়ার ধ্রুবক = মূল স্কেলের ক্ষুদ্রতম ভাগ ÷ ভার্নিয়ার ভাগসংখ্যা = 1/10 = 0.1 mm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_043',
@@ -573,7 +573,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'লঘিষ্ঠ গণন = পিচ ÷ বৃত্তাকার স্কেলের ভাগসংখ্যা = 1/100 = 0.01 mm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_044',
@@ -585,7 +585,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'পিচ = মোট সরণ ÷ ঘূর্ণন সংখ্যা = 2.5/5 = 0.5 mm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_045',
@@ -598,7 +598,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পাঠ = মূল স্কেল পাঠ + (সমপাতন × VC) = 2.4 + 6×0.01 = 2.46 cm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_046',
@@ -610,7 +610,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'পুরুত্ব = 3 + 45×0.01 = 3.45 mm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_047',
@@ -621,7 +621,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'সরল দোলকের দোলনকাল T = 2π√(L/g)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_048',
@@ -638,7 +638,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আলো শূন্যস্থানে 1/299792458 সেকেন্ডে যে দূরত্ব অতিক্রম করে তা-ই ১ মিটার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_049',
@@ -650,7 +650,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সিজিয়াম-১৩৩ পরমাণুর ৯১৯২৬৩১৭৭০টি কম্পনের সময়কে ১ সেকেন্ড ধরা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_050',
@@ -661,7 +661,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'দশমিক ৫ ঘর ডানে সরালে 3.2 পাওয়া যায়, তাই 3.2 × 10⁻⁵।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_051',
@@ -672,7 +672,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: '1 kWh = 1000 W × 3600 s = 3.6 × 10⁶ J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_052',
@@ -683,7 +683,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'কম্পাঙ্ক = 1/পর্যায়কাল, তাই মাত্রা T⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_053',
@@ -695,7 +695,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আপেক্ষিক গুরুত্ব দুটি ঘনত্বের অনুপাত, তাই এটি মাত্রাহীন ও এককবিহীন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_054',
@@ -706,7 +706,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'সমতলীয় কোণের একক রেডিয়ান, ঘনকোণের একক স্টেরেডিয়ান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c01_mcq_055',
@@ -717,7 +717,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ঘনকোণ পরিমাপের সম্পূরক একক স্টেরেডিয়ান (sr)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ২: গতি ----
   Question(
@@ -848,7 +848,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 's = ut + ½at² = (15 × 8) + ½ × 3 × 8² = 216 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_011',
@@ -860,7 +860,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 's = ut + ½at² = (15 × 5) + ½ × 4 × 5² = 125 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_012',
@@ -872,7 +872,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 's = ut + ½at² = (10 × 4) + ½ × 3 × 4² = 64 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_013',
@@ -884,7 +884,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 's = ut + ½at² = (10 × 5) + ½ × 2 × 5² = 75 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_014',
@@ -896,7 +896,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 's = ut + ½at² = (10 × 5) + ½ × 3 × 5² = 87.5 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_015',
@@ -908,7 +908,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 's = ut + ½at² = (0 × 4) + ½ × 4 × 4² = 32 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_016',
@@ -920,7 +920,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 's = ut + ½at² = (5 × 8) + ½ × 4 × 8² = 168 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_017',
@@ -932,7 +932,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 's = ut + ½at² = (10 × 6) + ½ × 5 × 6² = 150 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_018',
@@ -944,7 +944,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 's = ut + ½at² = (0 × 6) + ½ × 4 × 6² = 72 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_019',
@@ -956,7 +956,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 's = ut + ½at² = (0 × 3) + ½ × 5 × 3² = 22.5 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_020',
@@ -968,7 +968,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 's = ut + ½at² = (20 × 5) + ½ × 5 × 5² = 162.5 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_021',
@@ -981,7 +981,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 60² ÷ (২ × 10) = 180 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_022',
@@ -994,7 +994,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 30² ÷ (২ × 2) = 225 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_023',
@@ -1007,7 +1007,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 60² ÷ (২ × 8) = 225 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_024',
@@ -1020,7 +1020,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 50² ÷ (২ × 4) = 312.5 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_025',
@@ -1033,7 +1033,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 50² ÷ (২ × 10) = 125 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_026',
@@ -1046,7 +1046,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 40² ÷ (২ × 10) = 80 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_027',
@@ -1059,7 +1059,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 40² ÷ (২ × 8) = 100 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_028',
@@ -1072,7 +1072,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শেষ বেগ ০ ধরে v² = u² − 2as থেকে s = u²/(2a) = 60² ÷ (২ × 5) = 360 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_029',
@@ -1085,7 +1085,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'মুক্তভাবে পড়ায় u = ০, তাই v = √(2gh) = √(২ × ৯.৮ × 80) = 39.6 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_030',
@@ -1098,7 +1098,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'মুক্তভাবে পড়ায় u = ০, তাই v = √(2gh) = √(২ × ৯.৮ × 20) = 19.8 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_031',
@@ -1111,7 +1111,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'মুক্তভাবে পড়ায় u = ০, তাই v = √(2gh) = √(২ × ৯.৮ × 180) = 59.4 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_032',
@@ -1124,7 +1124,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'মুক্তভাবে পড়ায় u = ০, তাই v = √(2gh) = √(২ × ৯.৮ × 125) = 49.5 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c02_mcq_033',
@@ -1141,7 +1141,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সরলরেখায় দিক না বদলালে দূরত্ব ও সরণ সমান হয়, ফলে গড় দ্রুতি ও গড় বেগও সমান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_034',
@@ -1153,7 +1153,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 's = v²/2a, তাই বেগ দ্বিগুণ হলে দূরত্ব চারগুণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_035',
@@ -1165,7 +1165,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গড় বেগ = (4+16)/2 = 10 ms⁻¹; সরণ = 10×6 = 60 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_036',
@@ -1182,7 +1182,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দ্রুতি ধ্রুব থাকলেও দিক বদলায় বলে বেগ পরিবর্তিত হয় এবং ত্বরণ থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_037',
@@ -1194,7 +1194,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: '0 = 25² − 2a×100 ⇒ a = 625/200 = 3.125 ms⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_038',
@@ -1205,7 +1205,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'sₙ = u + (a/2)(2n−1) দিয়ে n-তম সেকেন্ডের দূরত্ব বের হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_039',
@@ -1217,7 +1217,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 's₃ = 0 + (2/2)(2×3−1) = 5 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_040',
@@ -1229,7 +1229,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'মোট সময় = 2u/g = 80/10 = 8 s।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_041',
@@ -1240,7 +1240,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 's = ut + ½at²—এটি t-এর দ্বিঘাত, তাই লেখ পরাবৃত্তাকার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_042',
@@ -1251,7 +1251,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'a = (v−u)/t = (0−20)/5 = −4 ms⁻², অর্থাৎ মন্দন 4 ms⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_043',
@@ -1262,7 +1262,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'v = u + at = 0 + 2×10 = 20 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_044',
@@ -1273,7 +1273,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 's = ut + ½at² = 0 + ½×3×16 = 24 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_045',
@@ -1285,7 +1285,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 's = ut + ½at² = 10×5 + ½×2×25 = 50 + 25 = 75 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_046',
@@ -1296,7 +1296,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'v² = 0 + 2×5×10 = 100, তাই v = 10 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_047',
@@ -1307,7 +1307,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'বেগ-সময় লেখের ঢাল = Δv/Δt = ত্বরণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_048',
@@ -1318,7 +1318,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বেগ × সময় = সরণ, তাই লেখের নিচের ক্ষেত্রফল সরণ দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_049',
@@ -1329,7 +1329,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সরণ-সময় লেখের ঢাল = Δs/Δt = বেগ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_050',
@@ -1340,7 +1340,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সরণ পরিবর্তন না হলে বেগ শূন্য, অর্থাৎ বস্তুটি স্থির।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_051',
@@ -1351,7 +1351,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'মেরুতে পৃথিবীর ব্যাসার্ধ কম বলে g-এর মান বেশি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_052',
@@ -1363,7 +1363,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'v = gt = 9.8 × 2 = 19.6 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_053',
@@ -1374,7 +1374,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'h = ½gt² = ½×10×9 = 45 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_054',
@@ -1386,7 +1386,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'h = u²/2g = 400/20 = 20 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_055',
@@ -1398,7 +1398,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 't = u/g = 30/10 = 3 s।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_056',
@@ -1415,7 +1415,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'g = GM/R², যা পড়ন্ত বস্তুর ভরের উপর নির্ভরশীল নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_057',
@@ -1427,7 +1427,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'v = gt, তাই বেগ সময়ের সমানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_058',
@@ -1439,7 +1439,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'h = ½gt², তাই দূরত্ব সময়ের বর্গের সমানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_059',
@@ -1451,7 +1451,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রাস অনুভূমিক ও উল্লম্ব—দুই দিকে একসাথে চলে, তাই দ্বিমাত্রিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_060',
@@ -1462,7 +1462,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: '54 ÷ 3.6 = 15 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_061',
@@ -1473,7 +1473,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'সুষম ত্বরণে গড় বেগ = আদি ও শেষ বেগের গাণিতিক গড়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_062',
@@ -1489,7 +1489,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সমবেগে সরণ সময়ের সমানুপাতিক, তাই লেখ একটি ঢালু সরলরেখা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_063',
@@ -1501,7 +1501,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'বিপরীত দিকে চললে আপেক্ষিক বেগ = 15 + 10 = 25 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_064',
@@ -1513,7 +1513,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'একই দিকে হলে আপেক্ষিক বেগ = 20 − 12 = 8 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c02_mcq_065',
@@ -1524,7 +1524,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: '1200 m ÷ 240 s = 5 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৩: বল ----
   Question(
@@ -1669,7 +1669,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (4 × 15) ÷ 0.2 = 300 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_011',
@@ -1682,7 +1682,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (12 × 20) ÷ 0.5 = 480 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_012',
@@ -1694,7 +1694,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (5 × 15) ÷ 4 = 18.75 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_013',
@@ -1706,7 +1706,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (5 × 20) ÷ 0.5 = 200 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_014',
@@ -1718,7 +1718,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (8 × 10) ÷ 0.1 = 800 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_015',
@@ -1730,7 +1730,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (4 × 20) ÷ 2 = 40 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_016',
@@ -1742,7 +1742,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (5 × 10) ÷ 4 = 12.5 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_017',
@@ -1754,7 +1754,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (12 × 5) ÷ 0.2 = 300 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_018',
@@ -1766,7 +1766,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (10 × 5) ÷ 4 = 12.5 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_019',
@@ -1779,7 +1779,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (10 × 10) ÷ 0.2 = 500 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_020',
@@ -1791,7 +1791,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (4 × 5) ÷ 0.2 = 100 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_021',
@@ -1804,7 +1804,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'F = ভরবেগের পরিবর্তনের হার = mΔv/t = (12 × 10) ÷ 0.1 = 1200 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_022',
@@ -1817,7 +1817,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভরবেগের সংরক্ষণ সূত্রে m₁u₁ = (m₁+m₂)v, তাই v = (4 × 10) ÷ (4 + 6) = 4 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_023',
@@ -1830,7 +1830,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভরবেগের সংরক্ষণ সূত্রে m₁u₁ = (m₁+m₂)v, তাই v = (3 × 4) ÷ (3 + 3) = 2 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_024',
@@ -1843,7 +1843,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভরবেগের সংরক্ষণ সূত্রে m₁u₁ = (m₁+m₂)v, তাই v = (2 × 10) ÷ (2 + 6) = 2.5 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_025',
@@ -1856,7 +1856,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভরবেগের সংরক্ষণ সূত্রে m₁u₁ = (m₁+m₂)v, তাই v = (5 × 4) ÷ (5 + 3) = 2.5 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_026',
@@ -1869,7 +1869,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভরবেগের সংরক্ষণ সূত্রে m₁u₁ = (m₁+m₂)v, তাই v = (5 × 6) ÷ (5 + 3) = 3.75 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_027',
@@ -1882,7 +1882,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভরবেগের সংরক্ষণ সূত্রে m₁u₁ = (m₁+m₂)v, তাই v = (2 × 8) ÷ (2 + 2) = 4 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c03_mcq_028',
@@ -1893,7 +1893,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'কেন্দ্রে চারদিকের ভরের আকর্ষণ পরস্পরকে নাকচ করে, তাই g = 0।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_029',
@@ -1906,7 +1906,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'মুক্তভাবে পড়ন্ত অবস্থায় ওজনহীনতার সৃষ্টি হয়, আপাত ওজন শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_030',
@@ -1918,7 +1918,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'R = √(F² + F²) = F√2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_031',
@@ -1930,7 +1930,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'F = mv²/r = 2×36/4 = 18 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_032',
@@ -1942,7 +1942,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'a = 20/5 = 4 ms⁻²; F = ma = 1000 × 4 = 4000 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_033',
@@ -1983,7 +1983,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ক্রিয়া ও প্রতিক্রিয়া সমান, বিপরীতমুখী এবং সর্বদা দুটি ভিন্ন বস্তুতে ক্রিয়া করে বলে পরস্পরকে নাকচ করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_036',
@@ -1999,7 +1999,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'G = 6.673 × 10⁻¹¹ Nm²kg⁻², এটি সর্বত্র একই মান রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_037',
@@ -2010,7 +2010,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'F ∝ 1/d², দূরত্ব দ্বিগুণ হলে বল ১/৪ গুণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_038',
@@ -2021,7 +2021,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ভূপৃষ্ঠে g = GM/R², যেখানে M পৃথিবীর ভর ও R ব্যাসার্ধ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_039',
@@ -2032,7 +2032,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'g ∝ 1/R², উচ্চতা বাড়লে দূরত্ব বাড়ে বলে g কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_040',
@@ -2043,7 +2043,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গড়ানো বা আবর্ত ঘর্ষণ সবচেয়ে কম, তাই চাকা ব্যবহার করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_041',
@@ -2054,7 +2054,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'µ = F/R—দুটি বলের অনুপাত হওয়ায় এটি মাত্রাহীন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_042',
@@ -2066,7 +2066,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F = µR = 0.4 × 50 = 20 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_043',
@@ -2083,7 +2083,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দ্বিতীয় ও তৃতীয় সূত্র একত্রে প্রয়োগ করলে ভরবেগের সংরক্ষণ সূত্র পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_044',
@@ -2100,7 +2100,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বাইরের কোনো বল ক্রিয়া না করলে সিস্টেমের মোট ভরবেগ ধ্রুব থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_045',
@@ -2118,7 +2118,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'মোট ভরবেগ শূন্য থাকায় গুলির সামনের ভরবেগের সমান ও বিপরীত ভরবেগ বন্দুক লাভ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_046',
@@ -2129,7 +2129,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ঘাত = F × t = ভরবেগের পরিবর্তন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_047',
@@ -2140,7 +2140,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ঘাত = বল × সময়, একক N·s যা kg·ms⁻¹ এর সমান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_048',
@@ -2157,7 +2157,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'F = Δp/Δt; সময় বাড়ালে একই ভরবেগ পরিবর্তনের জন্য প্রয়োজনীয় বল কমে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_049',
@@ -2168,7 +2168,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Δp = Ft = 20 × 4 = 80 kg·ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_050',
@@ -2180,7 +2180,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Δp = m(v−u) = 2 × 5 = 10 kg·ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_051',
@@ -2192,7 +2192,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দেহের উপরের অংশ গতিশীল অবস্থা বজায় রাখতে চায়, তাই সামনে ঝুঁকে পড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_052',
@@ -2204,7 +2204,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'R = √(6² + 8²) = √100 = 10 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_053',
@@ -2220,7 +2220,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'হুকের সূত্র: স্থিতিস্থাপক সীমার মধ্যে পীড়ন ∝ বিকৃতি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_054',
@@ -2237,7 +2237,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বৃত্তাকার গতিতে বস্তুকে বৃত্তে ধরে রাখতে কেন্দ্রমুখী বল কেন্দ্রের দিকে ক্রিয়া করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c03_mcq_055',
@@ -2248,7 +2248,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'কেন্দ্রমুখী বল F = mv²/r।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৪: কাজ, ক্ষমতা ও শক্তি ----
   Question(
@@ -2424,7 +2424,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (10 × ৯.৮ × 20) ÷ 4 = 490 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_015',
@@ -2436,7 +2436,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (25 × ৯.৮ × 20) ÷ 4 = 1225 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_016',
@@ -2448,7 +2448,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (15 × ৯.৮ × 5) ÷ 2 = 367.5 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_017',
@@ -2460,7 +2460,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (25 × ৯.৮ × 5) ÷ 4 = 306.3 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_018',
@@ -2472,7 +2472,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (10 × ৯.৮ × 20) ÷ 2 = 980 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_019',
@@ -2484,7 +2484,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (10 × ৯.৮ × 5) ÷ 5 = 98 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_020',
@@ -2496,7 +2496,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (20 × ৯.৮ × 5) ÷ 2 = 490 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_021',
@@ -2508,7 +2508,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (50 × ৯.৮ × 10) ÷ 4 = 1225 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_022',
@@ -2520,7 +2520,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (10 × ৯.৮ × 20) ÷ 10 = 196 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_023',
@@ -2532,7 +2532,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (25 × ৯.৮ × 20) ÷ 2 = 2450 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_024',
@@ -2544,7 +2544,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (15 × ৯.৮ × 4) ÷ 2 = 294 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_025',
@@ -2556,7 +2556,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ক্ষমতা = কাজ ÷ সময় = mgh/t = (20 × ৯.৮ × 5) ÷ 5 = 196 W।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_026',
@@ -2567,7 +2567,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গতিশক্তি = ½mv² = ½ × 5 × 4² = 40 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_027',
@@ -2578,7 +2578,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'গতিশক্তি = ½mv² = ½ × 10 × 6² = 180 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_028',
@@ -2589,7 +2589,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গতিশক্তি = ½mv² = ½ × 4 × 10² = 200 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_029',
@@ -2600,7 +2600,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'গতিশক্তি = ½mv² = ½ × 4 × 6² = 72 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_030',
@@ -2611,7 +2611,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গতিশক্তি = ½mv² = ½ × 10 × 10² = 500 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_031',
@@ -2622,7 +2622,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'গতিশক্তি = ½mv² = ½ × 2 × 10² = 100 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_032',
@@ -2633,7 +2633,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'গতিশক্তি = ½mv² = ½ × 2 × 20² = 400 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c04_mcq_033',
@@ -2645,7 +2645,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'E = mc² = 1 × (3×10⁸)² = 9 × 10¹⁶ J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_034',
@@ -2657,7 +2657,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'W = mgh = 60×10×5 = 3000 J; P = 3000/10 = 300 W।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_035',
@@ -2668,7 +2668,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'p = mv ⇒ v = p/m; Ek = ½mv² = p²/2m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_036',
@@ -2679,7 +2679,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'p = √(2mEk); Ek সমান হলে ভর বেশি হলে ভরবেগও বেশি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_037',
@@ -2691,7 +2691,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'W = 600×10×10 = 60000 J; সময় 60 s; P = 60000/60 = 1000 W।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_038',
@@ -2702,7 +2702,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'cos90° = 0, তাই কাজ W = Fs cos90° = 0।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_039',
@@ -2714,7 +2714,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বল উল্লম্ব ও সরণ অনুভূমিক হওয়ায় এদের মধ্যবর্তী কোণ 90°, তাই কাজ শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_040',
@@ -2725,7 +2725,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'বল ও সরণ বিপরীতমুখী হলে cos180° = −1, ফলে কাজ ঋণাত্মক হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_041',
@@ -2736,7 +2736,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'W = Fs cos60° = 50 × 4 × 0.5 = 100 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_042',
@@ -2747,7 +2747,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'W = mgh = 2 × 10 × 5 = 100 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_043',
@@ -2758,7 +2758,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Ek = ½ × 4 × 100 = 200 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_044',
@@ -2769,7 +2769,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Ek ∝ v², বেগ দ্বিগুণ হলে গতিশক্তি চারগুণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_045',
@@ -2781,7 +2781,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Ep = mgh = 5 × 9.8 × 20 = 980 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_046',
@@ -2792,7 +2792,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: '1 hp = 746 W।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_047',
@@ -2803,7 +2803,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'শক্তি = 0.1 kW × 5 h = 0.5 kWh।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_048',
@@ -2814,7 +2814,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: '1000 W × 3600 s = 3.6 × 10⁶ J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_049',
@@ -2831,7 +2831,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পানির বিভবশক্তি গতিশক্তিতে এবং টারবাইনের মাধ্যমে বিদ্যুৎশক্তিতে রূপান্তরিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_050',
@@ -2848,7 +2848,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বায়ুর বাধা না থাকলে বিভবশক্তি গতিশক্তিতে রূপান্তরিত হয় ও মোট শক্তি অপরিবর্তিত থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_051',
@@ -2860,7 +2860,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'mgh = ½mv² ⇒ v = √(2gh)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_052',
@@ -2871,7 +2871,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'v = √(2×10×20) = √400 = 20 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_053',
@@ -2887,7 +2887,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'কর্মদক্ষতা η = (কার্যকর আউটপুট/মোট ইনপুট) × 100%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_054',
@@ -2904,7 +2904,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ঘর্ষণ ও শব্দের কারণে কিছু শক্তি অপচয় হয়, তাই আউটপুট সর্বদা ইনপুটের চেয়ে কম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_055',
@@ -2916,7 +2916,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'η = (1500/2000) × 100% = 75%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_056',
@@ -2928,7 +2928,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সূর্যে হাইড্রোজেন নিউক্লিয়াসের ফিউশনে হিলিয়াম তৈরি হয় ও বিপুল শক্তি নির্গত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_057',
@@ -2944,7 +2944,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বিকৃত স্প্রিং-এ স্থিতিস্থাপক বিভবশক্তি সঞ্চিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_058',
@@ -2955,7 +2955,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'P = W/t = Fs/t = Fv।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_059',
@@ -2967,7 +2967,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'P = Fv = 500 × 10 = 5000 W = 5 kW।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c04_mcq_060',
@@ -2978,7 +2978,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'তাপের ব্যবহারিক একক ক্যালরি; 1 cal = 4.2 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৫: পদার্থের অবস্থা ও চাপ ----
   Question(
@@ -3105,7 +3105,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '25 cm² = 0.0025 m²। চাপ = বল ÷ ক্ষেত্রফল = 100 ÷ 0.0025 = 40000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_010',
@@ -3118,7 +3118,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '10 cm² = 0.001 m²। চাপ = বল ÷ ক্ষেত্রফল = 100 ÷ 0.001 = 100000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_011',
@@ -3131,7 +3131,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '2 cm² = 0.0002 m²। চাপ = বল ÷ ক্ষেত্রফল = 100 ÷ 0.0002 = 500000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_012',
@@ -3144,7 +3144,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '25 cm² = 0.0025 m²। চাপ = বল ÷ ক্ষেত্রফল = 50 ÷ 0.0025 = 20000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_013',
@@ -3157,7 +3157,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '5 cm² = 0.0005 m²। চাপ = বল ÷ ক্ষেত্রফল = 100 ÷ 0.0005 = 200000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_014',
@@ -3170,7 +3170,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '10 cm² = 0.001 m²। চাপ = বল ÷ ক্ষেত্রফল = 20 ÷ 0.001 = 20000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_015',
@@ -3183,7 +3183,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '5 cm² = 0.0005 m²। চাপ = বল ÷ ক্ষেত্রফল = 20 ÷ 0.0005 = 40000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_016',
@@ -3196,7 +3196,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '4 cm² = 0.0004 m²। চাপ = বল ÷ ক্ষেত্রফল = 20 ÷ 0.0004 = 50000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_017',
@@ -3209,7 +3209,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '25 cm² = 0.0025 m²। চাপ = বল ÷ ক্ষেত্রফল = 20 ÷ 0.0025 = 8000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_018',
@@ -3222,7 +3222,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '4 cm² = 0.0004 m²। চাপ = বল ÷ ক্ষেত্রফল = 100 ÷ 0.0004 = 250000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_019',
@@ -3234,7 +3234,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'তরলের চাপ P = hρg = 0.5 × 800 × ৯.৮ = 3920 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_020',
@@ -3246,7 +3246,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তরলের চাপ P = hρg = 5 × 1000 × ৯.৮ = 49000 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_021',
@@ -3258,7 +3258,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তরলের চাপ P = hρg = 2 × 13600 × ৯.৮ = 266560 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_022',
@@ -3270,7 +3270,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তরলের চাপ P = hρg = 5 × 13600 × ৯.৮ = 666400 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_023',
@@ -3282,7 +3282,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তরলের চাপ P = hρg = 0.5 × 1000 × ৯.৮ = 4900 Nm⁻²।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c05_mcq_024',
@@ -3294,7 +3294,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'F₂ = F₁ × A₂/A₁ = 20 × 100/5 = 400 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_025',
@@ -3306,7 +3306,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'P₁V₁ = P₂V₂ ⇒ 2×3 = 6×V₂ ⇒ V₂ = 1 L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_026',
@@ -3318,7 +3318,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'Y = অনুদৈর্ঘ্য পীড়ন/অনুদৈর্ঘ্য বিকৃতি; বিকৃতি এককবিহীন বলে একক Nm⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_027',
@@ -3330,7 +3330,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ওজন = 160 N; ক্ষেত্রফল = 0.04 m²; P = 160/0.04 = 4000 Pa।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_028',
@@ -3342,7 +3342,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'P = hρg = 0.76 × 13600 × 9.8 ≈ 1.013 × 10⁵ Pa।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_029',
@@ -3359,7 +3359,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '0°C থেকে 4°C পর্যন্ত উত্তপ্ত করলে পানির আয়তন কমে—এটাই ব্যতিক্রমী আচরণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_030',
@@ -3376,7 +3376,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পানির ব্যতিক্রমী আচরণে নিচের পানি 4°C-এ থাকে এবং উপরের বরফ তাপ বের হতে বাধা দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_031',
@@ -3429,7 +3429,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'P = F/A = 20 ÷ 0.05 = 400 N/m² = 400 Pa।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_035',
@@ -3441,7 +3441,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'P = hρg—পাত্রের আকৃতি বা তরলের মোট পরিমাণ চাপকে প্রভাবিত করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_036',
@@ -3453,7 +3453,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'P = hρg = 5 × 1000 × 10 = 50000 Pa।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_037',
@@ -3464,7 +3464,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: '76 cm পারদ স্তম্ভ ≈ 1.013 × 10⁵ Pa।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_038',
@@ -3480,7 +3480,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'হঠাৎ চাপ কমা ঝড়ের পূর্বাভাস নির্দেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_039',
@@ -3496,7 +3496,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ফাঁপা গঠনের কারণে জাহাজের গড় ঘনত্ব পানির চেয়ে কম হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_040',
@@ -3507,7 +3507,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'প্লবতা = ওজনের হ্রাস = 50 − 40 = 10 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_041',
@@ -3519,7 +3519,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্থির তাপমাত্রায় নির্দিষ্ট ভরের গ্যাসের চাপ ও আয়তনের গুণফল ধ্রুব।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_042',
@@ -3530,7 +3530,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'স্থির চাপে গ্যাসের আয়তন পরম তাপমাত্রার সমানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_043',
@@ -3541,7 +3541,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'পীড়ন = বল/ক্ষেত্রফল, তাই একক Nm⁻² বা প্যাসকেল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_044',
@@ -3552,7 +3552,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বিকৃতি দুটি দৈর্ঘ্যের অনুপাত, তাই এটি মাত্রাহীন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_045',
@@ -3568,7 +3568,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পীড়ন ও বিকৃতির অনুপাতই স্থিতিস্থাপক গুণাঙ্ক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_046',
@@ -3585,7 +3585,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পৃষ্ঠের অণুগুলো কেবল ভেতরের দিকে আকর্ষিত হয় বলে পৃষ্ঠ প্রসারিত ঝিল্লির মতো আচরণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_047',
@@ -3602,7 +3602,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পৃষ্ঠটান পৃষ্ঠক্ষেত্র সর্বনিম্ন রাখতে চায়, আর সমআয়তনে গোলকের পৃষ্ঠক্ষেত্র সবচেয়ে কম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_048',
@@ -3614,7 +3614,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সাবান পৃষ্ঠটান কমায়, ফলে পানি কাপড়ের তন্তুর ভেতর সহজে প্রবেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_049',
@@ -3625,7 +3625,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তাপে আন্তঃআণবিক আকর্ষণ দুর্বল হয় বলে তরল সহজে প্রবাহিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_050',
@@ -3642,7 +3642,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'চাপ কমলে পানি কম তাপমাত্রায় ফোটে, তাই রান্না সম্পূর্ণ হতে দেরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_051',
@@ -3659,7 +3659,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বেশি চাপে পানি 100°C-এর উপরে ফোটে, ফলে খাবার দ্রুত সিদ্ধ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_052',
@@ -3670,7 +3670,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: '4°C-এ পানির আয়তন সর্বনিম্ন হয় বলে ঘনত্ব সর্বোচ্চ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_053',
@@ -3681,7 +3681,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ম্যানোমিটার আবদ্ধ পাত্রে গ্যাসের চাপ পরিমাপে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_054',
@@ -3697,7 +3697,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'চাপ P = F/A, যেখানে বল তলের উপর লম্বভাবে ক্রিয়া করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c05_mcq_055',
@@ -3708,7 +3708,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: '1 প্যাসকেল = 1 Nm⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৬: বস্তুর ওপর তাপের প্রভাব ----
   Question(
@@ -3808,7 +3808,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = mcΔθ = 1 × 4200 × 10 = 42000 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_009',
@@ -3820,7 +3820,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = mcΔθ = 5 × 2100 × 25 = 262500 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_010',
@@ -3832,7 +3832,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = mcΔθ = 0.5 × 385 × 50 = 9625 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_011',
@@ -3844,7 +3844,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = mcΔθ = 5 × 2100 × 50 = 525000 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_012',
@@ -3856,7 +3856,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Q = mcΔθ = 1 × 2100 × 20 = 42000 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_013',
@@ -3868,7 +3868,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Q = mcΔθ = 2 × 2100 × 20 = 84000 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_014',
@@ -3880,7 +3880,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Q = mcΔθ = 5 × 4200 × 50 = 1.05×10⁶ J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_015',
@@ -3892,7 +3892,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Q = mcΔθ = 5 × 900 × 25 = 112500 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_016',
@@ -3904,7 +3904,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Q = mcΔθ = 0.5 × 900 × 50 = 22500 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_017',
@@ -3916,7 +3916,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Q = mcΔθ = 2 × 900 × 25 = 45000 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_018',
@@ -3928,7 +3928,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Q = mcΔθ = 1 × 4200 × 25 = 105000 J।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_019',
@@ -3939,7 +3939,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F = (9C/5) + 32 = (৯ × 30 ÷ ৫) + ৩২ = 86 °F।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_020',
@@ -3950,7 +3950,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F = (9C/5) + 32 = (৯ × 25 ÷ ৫) + ৩২ = 77 °F।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c06_mcq_021',
@@ -3962,7 +3962,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ΔL = L₁αΔθ = 2 × 12×10⁻⁶ × 50 = 1.2 × 10⁻³ m = 1.2 mm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_022',
@@ -3974,7 +3974,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'গলনে আয়তন সংকুচিত হয় এমন পদার্থের (বরফ) গলনাঙ্ক চাপ বাড়ালে কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_023',
@@ -3991,7 +3991,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তাপগতিবিদ্যার দ্বিতীয় সূত্র অনুযায়ী সমস্ত তাপ কাজে রূপান্তরিত করা অসম্ভব।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_024',
@@ -4003,7 +4003,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = 4 × 4200 × 80 = 1344000 J = 1.344 × 10⁶ J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_025',
@@ -4051,7 +4051,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'C/5 = (F − 32)/9 সম্পর্ক দিয়ে রূপান্তর করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_029',
@@ -4062,7 +4062,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'C = 5(100−32)/9 = 5×68/9 = 37.78 ≈ 37.8°C।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_030',
@@ -4074,7 +4074,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'একক ভরের একক তাপমাত্রা পরিবর্তনে প্রয়োজনীয় তাপ, তাই একক Jkg⁻¹K⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_031',
@@ -4086,7 +4086,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Q = msΔθ = 2 × 4200 × 10 = 84000 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_032',
@@ -4097,7 +4097,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তাপ ধারকত্ব = ভর × আপেক্ষিক তাপ, একক JK⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_033',
@@ -4114,7 +4114,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পানির আপেক্ষিক তাপ বেশি বলে ধীরে গরম ও ধীরে ঠান্ডা হয়, ফলে তাপমাত্রার হেরফের কম হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_034',
@@ -4131,7 +4131,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সুপ্ত তাপ প্রয়োগে তাপমাত্রা বাড়ে না, কেবল অবস্থার পরিবর্তন হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_035',
@@ -4147,7 +4147,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বরফের গলনের সুপ্ত তাপ 336000 Jkg⁻¹ = 3.36 × 10⁵ Jkg⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_036',
@@ -4163,7 +4163,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: '100°C-এ 1 kg পানিকে বাষ্পে পরিণত করতে 2.26 × 10⁶ J তাপ লাগে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_037',
@@ -4175,7 +4175,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'Q = mL = 1 × 3.36 × 10⁵ = 3.36 × 10⁵ J; তাপমাত্রা অপরিবর্তিত থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_038',
@@ -4187,7 +4187,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'α = ΔL/(L₁Δθ)—দৈর্ঘ্যের অনুপাত ও তাপমাত্রার ভাগ হওয়ায় একক K⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_039',
@@ -4203,7 +4203,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'উত্তপ্ত করলে চূড়ান্ত দৈর্ঘ্য L₂ = L₁(1 + αΔθ)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_040',
@@ -4220,7 +4220,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ক্ষেত্র প্রসারণ গুণাঙ্ক α-এর দ্বিগুণ ও আয়তন প্রসারণ গুণাঙ্ক তিনগুণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_041',
@@ -4237,7 +4237,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভিন্ন প্রসারণ গুণাঙ্কের কারণে উত্তপ্ত হলে স্ট্রিপটি বেঁকে যায়, তাই থার্মোস্ট্যাটে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_042',
@@ -4254,7 +4254,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তাপ বিনিময়ে কোনো তাপ ক্ষয় না হলে উষ্ণ বস্তুর বর্জিত তাপ = শীতল বস্তুর গৃহীত তাপ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_043',
@@ -4266,7 +4266,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তামার আপেক্ষিক তাপ কম ও পরিবাহিতা বেশি, তাই ক্যালরিমিটার তামার তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_044',
@@ -4278,7 +4278,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'চাপ বাড়লে বাষ্পে পরিণত হওয়া কঠিন হয়, তাই স্ফুটনাঙ্ক বেড়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_045',
@@ -4295,7 +4295,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বাষ্পীভবন কেবল তরলের উপরিতল থেকে যেকোনো তাপমাত্রায় ঘটে, স্ফুটন সমগ্র তরলে নির্দিষ্ট তাপমাত্রায় ঘটে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_046',
@@ -4311,7 +4311,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ঘাম বাষ্পীভূত হতে দেহ থেকে সুপ্ত তাপ নেয়, ফলে দেহ শীতল হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_047',
@@ -4328,7 +4328,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আপেক্ষিক আর্দ্রতা = (প্রকৃত জলীয়বাষ্প ÷ সম্পৃক্ত জলীয়বাষ্প) × 100%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_048',
@@ -4345,7 +4345,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শিশিরাঙ্কে পৌঁছালে বাতাসের জলীয়বাষ্প ঘনীভূত হয়ে শিশির তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_049',
@@ -4361,7 +4361,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ΔQ = ΔU + ΔW—এটি শক্তির নিত্যতা সূত্রেরই তাপীয় রূপ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_050',
@@ -4373,7 +4373,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সিস্টেমে প্রদত্ত তাপ অভ্যন্তরীণ শক্তি বৃদ্ধি ও বাহ্যিক কাজে ব্যয় হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_051',
@@ -4384,7 +4384,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'η = (300/1000) × 100% = 30%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_052',
@@ -4401,7 +4401,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'শূন্যস্থান পরিবহন-পরিচলন এবং রূপালি প্রলেপ বিকিরণ রোধ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_053',
@@ -4413,7 +4413,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তাপ হলো শক্তির একটি রূপ, যা তাপমাত্রার পার্থক্যের কারণে স্থানান্তরিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_054',
@@ -4424,7 +4424,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তাপ শক্তির রূপ বলে এর SI একক জুল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c06_mcq_055',
@@ -4441,7 +4441,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তাপমাত্রা বলে দেয় তাপ কোন দিকে প্রবাহিত হবে—বেশি থেকে কম তাপমাত্রার দিকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৭: তরঙ্গ ও শব্দ ----
   Question(
@@ -4545,7 +4545,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'v = fλ, তাই λ = v/f = 330 ÷ 1000 = 0.33 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_009',
@@ -4557,7 +4557,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'v = fλ, তাই λ = v/f = 330 ÷ 500 = 0.66 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_010',
@@ -4569,7 +4569,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'v = fλ, তাই λ = v/f = 330 ÷ 340 = 0.9706 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_011',
@@ -4581,7 +4581,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = fλ, তাই λ = v/f = 1500 ÷ 680 = 2.206 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_012',
@@ -4593,7 +4593,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = fλ, তাই λ = v/f = 1500 ÷ 250 = 6 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_013',
@@ -4605,7 +4605,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = fλ, তাই λ = v/f = 340 ÷ 250 = 1.36 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_014',
@@ -4617,7 +4617,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = fλ, তাই λ = v/f = 1500 ÷ 500 = 3 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_015',
@@ -4629,7 +4629,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'v = fλ, তাই λ = v/f = 340 ÷ 1000 = 0.34 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_016',
@@ -4641,7 +4641,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = ৩৩২ + ০.৬t = ৩৩২ + (০.৬ × 40) = 356 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_017',
@@ -4653,7 +4653,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = ৩৩২ + ০.৬t = ৩৩২ + (০.৬ × 0) = 332 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_018',
@@ -4665,7 +4665,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'v = ৩৩২ + ০.৬t = ৩৩২ + (০.৬ × 10) = 338 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_019',
@@ -4677,7 +4677,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = ৩৩২ + ০.৬t = ৩৩২ + (০.৬ × 20) = 344 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_020',
@@ -4689,7 +4689,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'v = ৩৩২ + ০.৬t = ৩৩২ + (০.৬ × 30) = 350 ms⁻¹।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c07_mcq_021',
@@ -4700,7 +4700,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = 332 + 0.61 × 25 = 332 + 15.25 ≈ 347 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_022',
@@ -4712,7 +4712,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'd = vt/2 = 1500 × 4/2 = 3000 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_023',
@@ -4724,7 +4724,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'গোলীয়ভাবে ছড়িয়ে পড়ায় তীব্রতা দূরত্বের বর্গের ব্যস্তানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_024',
@@ -4736,7 +4736,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'নিস্পন্দ বিন্দু বা node-এ সরণ শূন্য থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_025',
@@ -4748,7 +4748,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'T ∝ √L; দৈর্ঘ্য 4 গুণ হলে T √4 = 2 গুণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_026',
@@ -4761,7 +4761,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'T = 2π√(L/g) = 2 × 3.1416 × √(1/9.8) ≈ 2 × 3.1416 × 0.3194 ≈ 2.0 s।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_027',
@@ -4773,7 +4773,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমাবর্তন কেবল অনুপ্রস্থ তরঙ্গে ঘটে; শব্দ অনুদৈর্ঘ্য বলে এতে সমাবর্তন হয় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_028',
@@ -4797,7 +4797,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'a ∝ −x; ত্বরণ সর্বদা সাম্যাবস্থার দিকে নির্দেশিত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_030',
@@ -4814,7 +4814,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'অনুদৈর্ঘ্য তরঙ্গ সংকোচন (compression) ও প্রসারণ (rarefaction) আকারে চলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_031',
@@ -4826,7 +4826,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'v = fλ = 500 × 0.66 = 330 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_032',
@@ -4838,7 +4838,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'λ = v/f = 340/1700 = 0.2 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_033',
@@ -4849,7 +4849,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'শুষ্ক বায়ুতে 0°C-এ শব্দের বেগ প্রায় 332 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_034',
@@ -4860,7 +4860,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'প্রতি ডিগ্রি সেলসিয়াস বৃদ্ধিতে বেগ প্রায় 0.61 ms⁻¹ বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_035',
@@ -4871,7 +4871,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'জলীয়বাষ্প মিশলে বায়ুর ঘনত্ব কমে, ফলে শব্দের বেগ বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_036',
@@ -4884,7 +4884,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শ্রুতিস্থায়িত্ব 0.1 s, তাই ন্যূনতম ব্যবধান 0.1 সেকেন্ড হতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_037',
@@ -4896,7 +4896,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'd = vt/2 = 340 × 0.1/2 = 17 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_038',
@@ -4908,7 +4908,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'd = vt/2 = 340 × 3/2 = 510 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_039',
@@ -4920,7 +4920,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমুদ্রের গভীরতা মাপতে শব্দোত্তর তরঙ্গের প্রতিফলন ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_040',
@@ -4932,7 +4932,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'একক ক্ষেত্রফলে লম্বভাবে প্রতি সেকেন্ডে আপতিত শব্দশক্তিই তীব্রতা; একক Wm⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_041',
@@ -4943,7 +4943,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'কম্পাঙ্ক বেশি হলে শব্দ তীক্ষ্ণ (চড়া) শোনায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_042',
@@ -4954,7 +4954,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বিস্তার বাড়লে শব্দ জোরালো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_043',
@@ -4966,7 +4966,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '60 dB-এর বেশি দীর্ঘস্থায়ী শব্দ স্বাস্থ্যের জন্য ক্ষতিকর ধরা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_044',
@@ -4977,7 +4977,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: '120 dB-এর বেশি তীব্রতা যন্ত্রণাদায়ক ও শ্রবণক্ষতিকর।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_045',
@@ -4994,7 +4994,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'নিয়মিত পর্যায়বৃত্ত কম্পনে মধুর সুর সৃষ্টি হয়, অনিয়মিত কম্পনে গোলমাল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_046',
@@ -5010,7 +5010,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'দুই কম্পাঙ্ক সমান হলে বিস্তার সর্বাধিক হয়—একেই অনুরণন বলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_047',
@@ -5027,7 +5027,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'নরম ছিদ্রযুক্ত উপাদান শব্দ শোষণ করে বহুপ্রতিফলন ও প্রতিধ্বনি রোধ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_048',
@@ -5038,7 +5038,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'দোলনকাল ববের ভর ও বস্তুর উপাদানের উপর নির্ভরশীল নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_049',
@@ -5049,7 +5049,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'f = 1/T = 1/0.02 = 50 Hz।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_050',
@@ -5066,7 +5066,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'নির্দিষ্ট সময় পরপর একই অবস্থায় ফিরে আসাই পর্যায়বৃত্ত গতি; দোলকের দোলন তার উদাহরণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_051',
@@ -5077,7 +5077,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'তরঙ্গ মাধ্যমের কণাকে স্থানান্তর না করে শক্তি সঞ্চালন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_052',
@@ -5088,7 +5088,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'অনুপ্রস্থ তরঙ্গে কণা তরঙ্গের গতিপথের সাথে লম্বভাবে কাঁপে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_053',
@@ -5099,7 +5099,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'শব্দ তরঙ্গে কণা তরঙ্গের গতিপথের সমান্তরালে কাঁপে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_054',
@@ -5116,7 +5116,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পরপর দুটি শীর্ষ বা দুটি পাদের মধ্যবর্তী দূরত্বই তরঙ্গদৈর্ঘ্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c07_mcq_055',
@@ -5127,7 +5127,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'তরঙ্গ সমীকরণ v = fλ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৮: আলোর প্রতিফলন ----
   Question(
@@ -5198,7 +5198,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/25 − ১/60, সুতরাং v = 42.86 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_006',
@@ -5211,7 +5211,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/10 − ১/60, সুতরাং v = 12 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_007',
@@ -5224,7 +5224,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/20 − ১/50, সুতরাং v = 33.33 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_008',
@@ -5237,7 +5237,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/20 − ১/40, সুতরাং v = 40 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_009',
@@ -5250,7 +5250,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/20 − ১/30, সুতরাং v = 60 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_010',
@@ -5263,7 +5263,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/20 − ১/60, সুতরাং v = 30 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_011',
@@ -5276,7 +5276,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/25 − ১/50, সুতরাং v = 50 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_012',
@@ -5289,7 +5289,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/15 − ১/50, সুতরাং v = 21.43 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_013',
@@ -5302,7 +5302,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/10 − ১/30, সুতরাং v = 15 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_014',
@@ -5315,7 +5315,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দর্পণ সমীকরণ ১/v = ১/f − ১/u = ১/25 − ১/30, সুতরাং v = 150 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c08_mcq_015',
@@ -5327,7 +5327,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'রশ্মি একই পথে ফিরে আসে, অর্থাৎ দিক 180° পরিবর্তিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_016',
@@ -5339,7 +5339,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'দর্পণের সাপেক্ষে উভয়ে 1 ms⁻¹, তাই আপেক্ষিক বেগ 2 ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_017',
@@ -5357,7 +5357,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'জ্যামিতিক প্রমাণে দেখা যায় দর্পণের দৈর্ঘ্য ব্যক্তির উচ্চতার অর্ধেক হলেই যথেষ্ট।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_018',
@@ -5374,7 +5374,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'এ অবস্থানে প্রতিবিম্ব C-এর বাইরে গঠিত হয় এবং বিবর্ধিত ও উল্টো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_019',
@@ -5386,7 +5386,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: '1/v = 1/f − 1/u = 1/10 − 1/30 = 2/30 ⇒ v = 15 cm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_020',
@@ -5398,7 +5398,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'm = v/u = 15/30 = 0.5; প্রতিবিম্ব ছোট।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_021',
@@ -5410,7 +5410,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'u = 2f হলে v = 2f, তাই m = v/u = 1; প্রতিবিম্ব সমান আকারের ও উল্টো।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_022',
@@ -5453,7 +5453,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'দুই কোণ ৩০° করে, তাই মধ্যবর্তী কোণ 30° + 30° = 60°।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_025',
@@ -5470,7 +5470,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'অমসৃণ তল থেকে আলো সব দিকে ছড়িয়ে পড়ে বলে বস্তুকে যেকোনো দিক থেকে দেখা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_026',
@@ -5482,7 +5482,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'প্রতিবিম্ব দর্পণের পেছনে 2 m; মোট দূরত্ব 2 + 2 = 4 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_027',
@@ -5493,7 +5493,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'n = (360/60) − 1 = 5টি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_028',
@@ -5504,7 +5504,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'কোণ 0° হলে বারবার প্রতিফলনে অসংখ্য প্রতিবিম্ব গঠিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_029',
@@ -5521,7 +5521,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'u < f হলে প্রতিবিম্ব দর্পণের পেছনে অবাস্তব, সোজা ও বড় হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_030',
@@ -5534,7 +5534,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'u = r হলে প্রতিবিম্ব একই স্থানে, বাস্তব, উল্টো ও সমান আকারের হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_031',
@@ -5547,7 +5547,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'অসীম থেকে আসা সমান্তরাল রশ্মি ফোকাসে বিন্দুবৎ প্রতিবিম্ব গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_032',
@@ -5558,7 +5558,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'গোলীয় দর্পণের সমীকরণ 1/f = 1/u + 1/v।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_033',
@@ -5570,7 +5570,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বিবর্ধন = প্রতিবিম্বের দৈর্ঘ্য / বস্তুর দৈর্ঘ্য = v/u (মানের বিচারে)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_034',
@@ -5581,7 +5581,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বিবর্ধন 1-এর বেশি মানে প্রতিবিম্ব বস্তুর চেয়ে বড়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_035',
@@ -5593,7 +5593,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ফোকাসে উৎস রাখলে অবতল দর্পণ থেকে সমান্তরাল শক্তিশালী রশ্মিগুচ্ছ পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_036',
@@ -5610,7 +5610,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সামনের গাড়ির চালক পশ্চাৎ-দর্পণে দেখলে পার্শ্ব-বিপরীতকরণের কারণে লেখাটি সোজা দেখায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_037',
@@ -5622,7 +5622,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বস্তু ফোকাসের ভেতরে থাকলে প্রতিবিম্ব অবাস্তব, সোজা ও বিবর্ধিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_038',
@@ -5633,7 +5633,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'প্রতিফলনে মাধ্যম পরিবর্তিত হয় না, তাই বেগ অপরিবর্তিত থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_039',
@@ -5666,7 +5666,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'আলো তড়িৎচুম্বকীয় তরঙ্গ, যা শূন্য মাধ্যমেও চলতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_041',
@@ -5677,7 +5677,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'শূন্যস্থানে আলোর বেগ প্রায় 3 × 10⁸ ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_042',
@@ -5694,7 +5694,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'কোনো তলে আপতিত হয়ে আলো একই মাধ্যমে ফিরে এলে তাকে প্রতিফলন বলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_043',
@@ -5705,7 +5705,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'আপতন কোণ = প্রতিফলন কোণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_044',
@@ -5722,7 +5722,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আপতিত রশ্মি, প্রতিফলিত রশ্মি ও আপতন বিন্দুতে অঙ্কিত অভিলম্ব একই সমতলে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_045',
@@ -5733,7 +5733,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'লম্বভাবে আপতিত রশ্মি একই পথে ফিরে আসে, তাই প্রতিফলন কোণও 0°।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_046',
@@ -5744,7 +5744,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'মসৃণ তলে সমান্তরাল রশ্মি প্রতিফলনের পরও সমান্তরাল থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_047',
@@ -5761,7 +5761,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমতল দর্পণের প্রতিবিম্ব সর্বদা অবাস্তব, সোজা, সমান আকারের ও পার্শ্ব-বিপরীত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_048',
@@ -5777,7 +5777,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'দর্পণ থেকে বস্তুর দূরত্ব যত, প্রতিবিম্বের দূরত্বও তত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_049',
@@ -5788,7 +5788,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'অবতল ও উত্তল—এই দুই প্রকার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_050',
@@ -5799,7 +5799,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'অবতল দর্পণে গোলকের ভেতরের দিকের তল প্রতিফলক হিসেবে কাজ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_051',
@@ -5811,7 +5811,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ফোকাস দূরত্ব বক্রতার ব্যাসার্ধের অর্ধেক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_052',
@@ -5823,7 +5823,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'f = r/2 = 40/2 = 20 cm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_053',
@@ -5839,7 +5839,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'অবতল দর্পণ অভিসারী; সমান্তরাল রশ্মি প্রধান ফোকাসে মিলিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_054',
@@ -5855,7 +5855,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'উত্তল দর্পণ আলোকে ছড়িয়ে দেয়, তাই একে অপসারী দর্পণ বলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c08_mcq_055',
@@ -5872,7 +5872,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বস্তুর অবস্থান যাই হোক, উত্তল দর্পণের প্রতিবিম্ব অবাস্তব, সোজা ও ছোট হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৯: আলোর প্রতিসরণ ----
   Question(
@@ -5962,7 +5962,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ক্ষমতা P = 1/f (f মিটারে), তাই f = ১ ÷ 5 = 0.2 m = 20 cm।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_008',
@@ -5974,7 +5974,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সংকট কোণ θc = sin⁻¹(1/n) = sin⁻¹(১ ÷ 1.33) = 48.75°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_009',
@@ -5986,7 +5986,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'সংকট কোণ θc = sin⁻¹(1/n) = sin⁻¹(১ ÷ 1.5) = 41.81°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_010',
@@ -5998,7 +5998,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সংকট কোণ θc = sin⁻¹(1/n) = sin⁻¹(১ ÷ 1.6) = 38.68°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_011',
@@ -6010,7 +6010,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সংকট কোণ θc = sin⁻¹(1/n) = sin⁻¹(১ ÷ 2.42) = 24.41°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_012',
@@ -6023,7 +6023,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 30° ÷ 1.33, সুতরাং r = 22.08°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_013',
@@ -6036,7 +6036,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 45° ÷ 1.33, সুতরাং r = 32.12°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_014',
@@ -6049,7 +6049,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 60° ÷ 1.33, সুতরাং r = 40.63°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_015',
@@ -6062,7 +6062,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 30° ÷ 1.5, সুতরাং r = 19.47°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_016',
@@ -6075,7 +6075,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 45° ÷ 1.5, সুতরাং r = 28.13°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_017',
@@ -6088,7 +6088,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 60° ÷ 1.5, সুতরাং r = 35.26°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_018',
@@ -6101,7 +6101,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 30° ÷ 1.6, সুতরাং r = 18.21°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_019',
@@ -6114,7 +6114,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 45° ÷ 1.6, সুতরাং r = 26.23°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_020',
@@ -6127,7 +6127,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্নেলের সূত্র n = sin i / sin r থেকে sin r = sin 60° ÷ 1.6, সুতরাং r = 32.77°।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_021',
@@ -6140,7 +6140,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতিসরাঙ্ক = প্রকৃত গভীরতা ÷ আপাত গভীরতা, তাই আপাত গভীরতা = 4 ÷ 1.33 = 3.008 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_022',
@@ -6153,7 +6153,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতিসরাঙ্ক = প্রকৃত গভীরতা ÷ আপাত গভীরতা, তাই আপাত গভীরতা = 8 ÷ 1.33 = 6.015 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_023',
@@ -6166,7 +6166,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতিসরাঙ্ক = প্রকৃত গভীরতা ÷ আপাত গভীরতা, তাই আপাত গভীরতা = 6 ÷ 1.5 = 4 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_024',
@@ -6179,7 +6179,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতিসরাঙ্ক = প্রকৃত গভীরতা ÷ আপাত গভীরতা, তাই আপাত গভীরতা = 12 ÷ 1.5 = 8 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_025',
@@ -6192,7 +6192,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতিসরাঙ্ক = প্রকৃত গভীরতা ÷ আপাত গভীরতা, তাই আপাত গভীরতা = 12 ÷ 1.33 = 9.023 m।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c09_mcq_026',
@@ -6204,7 +6204,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'sin r = sin 30° / 1.33 = 0.5/1.33 = 0.376।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_027',
@@ -6215,7 +6215,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'sin C = 1/1.5 = 0.667 ⇒ C ≈ 41.8° ≈ 42°।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_028',
@@ -6226,7 +6226,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'sin C = 1/1.33 = 0.752 ⇒ C ≈ 48.8° ≈ 49°।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_029',
@@ -6237,7 +6237,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'আপাত গভীরতা = 4/1.33 = 3.008 ≈ 3 m।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_030',
@@ -6249,7 +6249,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '1/v = 1/f + 1/u (মান বিবেচনায়) ⇒ 1/v = 1/10 − 1/15 = 1/30 ⇒ v = 30 cm।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_031',
@@ -6260,7 +6260,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'হীরকের প্রতিসরাঙ্ক 2.42, যা খুব বেশি—তাই এটি বেশি ঝলমল করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_032',
@@ -6276,7 +6276,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'μ = শূন্যস্থানে আলোর বেগ ÷ মাধ্যমে আলোর বেগ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_033',
@@ -6292,7 +6292,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'v = c/μ = 3 × 10⁸ / 1.5 = 2 × 10⁸ ms⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_034',
@@ -6304,7 +6304,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতিসরণে কম্পাঙ্ক অপরিবর্তিত থাকে; বেগ ও তরঙ্গদৈর্ঘ্য বদলায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_035',
@@ -6321,7 +6321,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আলোকে ঘন মাধ্যম থেকে লঘু মাধ্যমে যেতে হবে এবং আপতন কোণ সংকট কোণের চেয়ে বড় হতে হবে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_036',
@@ -6338,7 +6338,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ঘন মাধ্যমে যে আপতন কোণের জন্য লঘু মাধ্যমে প্রতিসরণ কোণ 90° হয় তাকে সংকট কোণ বলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_037',
@@ -6349,7 +6349,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'μ = 1/sin C, অর্থাৎ sin C = 1/μ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_038',
@@ -6366,7 +6366,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'উত্তপ্ত বাতাসের স্তরে ক্রমাগত প্রতিসরণ ও পরে পূর্ণ অভ্যন্তরীণ প্রতিফলনের কারণে মরীচিকা দেখা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_039',
@@ -6383,7 +6383,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'হীরকের সংকট কোণ প্রায় 24°, তাই ভেতরে বারবার পূর্ণ অভ্যন্তরীণ প্রতিফলন ঘটে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_040',
@@ -6395,7 +6395,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তলদেশ থেকে আসা রশ্মি প্রতিসৃত হয়ে অভিলম্ব থেকে দূরে সরে, ফলে আপাত গভীরতা কম মনে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_041',
@@ -6411,7 +6411,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'μ = প্রকৃত গভীরতা ÷ আপাত গভীরতা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_042',
@@ -6422,7 +6422,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'P = 1/0.5 m = 2 D।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_043',
@@ -6433,7 +6433,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অবতল লেন্সের ফোকাস দূরত্ব ঋণাত্মক, তাই ক্ষমতাও ঋণাত্মক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_044',
@@ -6444,7 +6444,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'চিহ্ন প্রথা মেনে লেন্সের সমীকরণ 1/f = 1/v − 1/u।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_045',
@@ -6460,7 +6460,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'u = 2f হলে v = 2f এবং বিবর্ধন 1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_046',
@@ -6476,7 +6476,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'এ কারণেই উত্তল লেন্স সাধারণ বিবর্ধক কাচ হিসেবে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_047',
@@ -6489,7 +6489,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'চোখের গোলক লম্বা বা লেন্সের ক্ষমতা বেশি হলে প্রতিবিম্ব রেটিনার সামনে পড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_048',
@@ -6501,7 +6501,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দূর ও কাছ উভয় দৃষ্টির জন্য দ্বিফোকাস (বাইফোকাল) লেন্স ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_049',
@@ -6514,7 +6514,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বেলনাকার (সিলিন্ড্রিক্যাল) লেন্স দিয়ে এ ত্রুটি সংশোধন করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_050',
@@ -6526,7 +6526,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বেগুনি আলোর তরঙ্গদৈর্ঘ্য সবচেয়ে কম, প্রতিসরাঙ্ক সবচেয়ে বেশি, তাই বিচ্যুতিও সর্বাধিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_051',
@@ -6543,7 +6543,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পানির ফোঁটায় আলো প্রতিসৃত, অভ্যন্তরীণভাবে প্রতিফলিত ও বিচ্ছুরিত হয়ে রংধনু তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_052',
@@ -6560,7 +6560,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বায়ুমণ্ডলের স্তরে স্তরে প্রতিসরণের ফলে সূর্য প্রকৃত অবস্থানের চেয়ে উঁচুতে দেখা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c09_mcq_053',
@@ -6772,7 +6772,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = CV = 5 × ১০⁻⁶ × 500 = 0.0025 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_013',
@@ -6784,7 +6784,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Q = CV = 20 × ১০⁻⁶ × 250 = 0.005 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_014',
@@ -6796,7 +6796,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Q = CV = 2 × ১০⁻⁶ × 500 = 0.001 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_015',
@@ -6808,7 +6808,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Q = CV = 20 × ১০⁻⁶ × 500 = 0.01 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_016',
@@ -6820,7 +6820,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = CV = 10 × ১০⁻⁶ × 100 = 0.001 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_017',
@@ -6832,7 +6832,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = CV = 5 × ১০⁻⁶ × 100 = 0.0005 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_018',
@@ -6844,7 +6844,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Q = CV = 2 × ১০⁻⁶ × 250 = 0.0005 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_019',
@@ -6856,7 +6856,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Q = CV = 20 × ১০⁻⁶ × 200 = 0.004 C।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_020',
@@ -6868,7 +6868,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 5 × 100 = 500 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_021',
@@ -6880,7 +6880,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 10 × 500 = 5000 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_022',
@@ -6892,7 +6892,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 4 × 200 = 800 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_023',
@@ -6904,7 +6904,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 2 × 200 = 400 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_024',
@@ -6916,7 +6916,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 2 × 100 = 200 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_025',
@@ -6928,7 +6928,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 2 × 500 = 1000 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_026',
@@ -6940,7 +6940,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তড়িৎ ক্ষেত্রে আধানের উপর বল F = qE = 4 × 100 = 400 N।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c10_mcq_027',
@@ -6951,7 +6951,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F = 9×10⁹ × 6×10⁻¹² / 9 = 6 × 10⁻³ N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_028',
@@ -6962,7 +6962,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: '1/C = 1/2 + 1/3 = 5/6 ⇒ C = 1.2 μF।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_029',
@@ -6973,7 +6973,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ধারকে সঞ্চিত শক্তি W = ½CV² = ½QV।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_030',
@@ -6989,7 +6989,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'একটি বিন্দুতে তড়িৎক্ষেত্রের দিক একটিই হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_031',
@@ -7001,7 +7001,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্থিরাবস্থায় পরিবাহীর ভেতরে ক্ষেত্র শূন্য এবং সব আধান পৃষ্ঠে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_032',
@@ -7012,7 +7012,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'বিভব পার্থক্য শূন্য হওয়ায় W = qΔV = 0।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_033',
@@ -7028,7 +7028,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'মাইকা প্লেটের মাঝে বসালে ধারকত্ব বেড়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_034',
@@ -7039,7 +7039,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'n = 1/(1.6 × 10⁻¹⁹) = 6.25 × 10¹⁸টি ইলেকট্রন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_035',
@@ -7050,7 +7050,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'কাচ থেকে ইলেকট্রন সিল্কে চলে যায়, ফলে কাচ ধনাত্মক আহিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_036',
@@ -7061,7 +7061,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পশম থেকে ইলেকট্রন এবোনাইটে আসে, তাই এবোনাইট ঋণাত্মক হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_037',
@@ -7077,7 +7077,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'k = 1/(4πε₀) = 9 × 10⁹ Nm²C⁻²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_038',
@@ -7088,7 +7088,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F ∝ 1/r²; r দ্বিগুণ হলে F এক-চতুর্থাংশ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_039',
@@ -7099,7 +7099,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'E = F/q; একক NC⁻¹ বা Vm⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_040',
@@ -7110,7 +7110,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অসীম থেকে 1 C ধনাত্মক আধান আনতে 1 J কাজ হলে বিভব 1 V।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_041',
@@ -7121,7 +7121,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বিভব কেবল মান দ্বারা প্রকাশিত হয়, তাই এটি স্কেলার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_042',
@@ -7134,7 +7134,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ধনাত্মক আধান উচ্চ থেকে নিম্ন বিভবের দিকে যায়; ইলেকট্রন বিপরীত দিকে চলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_043',
@@ -7145,7 +7145,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'C = Q/V = 6×10⁻⁶/12 = 5 × 10⁻⁷ F = 0.5 μF।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_044',
@@ -7156,7 +7156,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সমান্তরালে সমতুল্য ধারকত্ব যোগ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_045',
@@ -7167,7 +7167,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'শ্রেণিতে বিপরীত মানগুলো যোগ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_046',
@@ -7183,7 +7183,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বলরেখা ধনাত্মক আধান থেকে বেরিয়ে ঋণাত্মক আধানে প্রবেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_047',
@@ -7200,7 +7200,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আহিত বস্তু কাছে আনলে স্পর্শ ছাড়াই অপর বস্তুতে বিপরীত আধান আবিষ্ট হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_048',
@@ -7212,7 +7212,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'সমধর্মী আধান যোগ হয়ে বিকর্ষণ বাড়ে, ফলে ফাঁক বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_049',
@@ -7229,7 +7229,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সূচালো প্রান্তে পৃষ্ঠ আধান ঘনত্ব বেশি হওয়ায় সেখান থেকে নিঃসরণ সহজ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_050',
@@ -7245,7 +7245,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পরিবাহী খাঁচার ভেতরে বাহ্যিক তড়িৎক্ষেত্র শূন্য থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_051',
@@ -7257,7 +7257,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পারস্পরিক বিকর্ষণের ফলে আধান পরিবাহীর বাইরের পৃষ্ঠে অবস্থান করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_052',
@@ -7275,7 +7275,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ঘর্ষণে সৃষ্ট স্থির আধান জমে স্ফুলিঙ্গ সৃষ্টি করতে পারে; শিকল তা মাটিতে পাঠায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_053',
@@ -7292,7 +7292,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আহিত ড্রামে টোনার কণা স্থির বৈদ্যুতিক আকর্ষণে আটকে থেকে কাগজে ছাপ ফেলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_054',
@@ -7303,7 +7303,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'এটি অতি উচ্চ বিভবে বিপুল স্থির আধান জমা করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_055',
@@ -7315,7 +7315,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'একক ধনাত্মক আধানের উপর ক্রিয়াশীল বলই তড়িৎক্ষেত্রের তীব্রতা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_056',
@@ -7327,7 +7327,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'E = kq/r²; দূরত্বের বর্গের ব্যস্তানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_057',
@@ -7338,7 +7338,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বিভব দূরত্বের ব্যস্তানুপাতিক: V = kq/r।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_058',
@@ -7349,7 +7349,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'q আধান V বিভব পার্থক্যে সরাতে কৃতকাজ W = qV।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c10_mcq_059',
@@ -7360,7 +7360,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'W = qV = 20×10⁻⁶ × 5 = 1 × 10⁻⁴ J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১১: চল বিদ্যুৎ ----
   Question(
@@ -7423,7 +7423,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'P = V²/R থেকে R = V²/P = 110² ÷ 40 = 302.5 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_006',
@@ -7435,7 +7435,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'P = V²/R থেকে R = V²/P = 220² ÷ 60 = 806.7 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_007',
@@ -7447,7 +7447,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'P = V²/R থেকে R = V²/P = 220² ÷ 200 = 242 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_008',
@@ -7459,7 +7459,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'P = V²/R থেকে R = V²/P = 220² ÷ 40 = 1210 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_009',
@@ -7471,7 +7471,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'P = V²/R থেকে R = V²/P = 110² ÷ 60 = 201.7 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_010',
@@ -7483,7 +7483,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'P = V²/R থেকে R = V²/P = 110² ÷ 100 = 121 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_011',
@@ -7495,7 +7495,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'P = V²/R থেকে R = V²/P = 220² ÷ 100 = 484 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_012',
@@ -7508,7 +7508,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমান্তরালে 1/Rp = 1/R₁ + 1/R₂, তাই Rp = R₁R₂/(R₁+R₂) = (4 × 6) ÷ (4 + 6) = 2.4 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_013',
@@ -7521,7 +7521,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমান্তরালে 1/Rp = 1/R₁ + 1/R₂, তাই Rp = R₁R₂/(R₁+R₂) = (6 × 12) ÷ (6 + 12) = 4 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_014',
@@ -7534,7 +7534,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমান্তরালে 1/Rp = 1/R₁ + 1/R₂, তাই Rp = R₁R₂/(R₁+R₂) = (2 × 3) ÷ (2 + 3) = 1.2 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_015',
@@ -7547,7 +7547,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমান্তরালে 1/Rp = 1/R₁ + 1/R₂, তাই Rp = R₁R₂/(R₁+R₂) = (10 × 15) ÷ (10 + 15) = 6 Ω।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_016',
@@ -7560,7 +7560,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ব্যয়িত শক্তি = (ক্ষমতা kW-এ) × ঘণ্টা = (500 ÷ ১০০০) × 4 × 15 = 30 kWh।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_017',
@@ -7573,7 +7573,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ব্যয়িত শক্তি = (ক্ষমতা kW-এ) × ঘণ্টা = (1000 ÷ ১০০০) × 4 × 15 = 60 kWh।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_018',
@@ -7586,7 +7586,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ব্যয়িত শক্তি = (ক্ষমতা kW-এ) × ঘণ্টা = (500 ÷ ১০০০) × 5 × 30 = 75 kWh।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_019',
@@ -7599,7 +7599,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ব্যয়িত শক্তি = (ক্ষমতা kW-এ) × ঘণ্টা = (60 ÷ ১০০০) × 2 × 15 = 1.8 kWh।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_020',
@@ -7612,7 +7612,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ব্যয়িত শক্তি = (ক্ষমতা kW-এ) × ঘণ্টা = (500 ÷ ১০০০) × 2 × 15 = 15 kWh।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_021',
@@ -7625,7 +7625,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ব্যয়িত শক্তি = (ক্ষমতা kW-এ) × ঘণ্টা = (1000 ÷ ১০০০) × 4 × 30 = 120 kWh।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c11_mcq_022',
@@ -7638,7 +7638,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দৈর্ঘ্য 2 গুণ হলে ক্ষেত্রফল অর্ধেক, তাই R = ρ(2L)/(A/2) = 4R।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_023',
@@ -7649,7 +7649,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'R = V²/P = 48400/100 = 484 Ω।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_024',
@@ -7661,7 +7661,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'E = 2 kW × 2 h × 30 = 120 kWh।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_025',
@@ -7674,7 +7674,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শ্রেণিতে মোট রোধ বাড়ে ও প্রতিটি বাল্বে ভোল্টেজ অর্ধেক হয়, তাই উজ্জ্বলতা কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_026',
@@ -7734,7 +7734,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'I = Q/t = 60/120 = 0.5 A।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_030',
@@ -7750,7 +7750,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তাপমাত্রাসহ পরিবাহীর ভৌত অবস্থা স্থির থাকলে তবেই V ∝ I।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_031',
@@ -7761,7 +7761,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'I = V/R = 220/44 = 5 A।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_032',
@@ -7773,7 +7773,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'R = ρL/A; রোধ দৈর্ঘ্যের সমানুপাতিক ও ক্ষেত্রফলের ব্যস্তানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_033',
@@ -7784,7 +7784,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ρ = RA/L; একক ওহম-মিটার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_034',
@@ -7796,7 +7796,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'R ∝ L; দৈর্ঘ্য দ্বিগুণ হলে রোধও দ্বিগুণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_035',
@@ -7808,7 +7808,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'তাপমাত্রা বাড়লে আয়নের কম্পন বাড়ে, ইলেকট্রনের সংঘর্ষ বাড়ে, রোধ বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_036',
@@ -7819,7 +7819,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'তাপে মুক্ত আধানবাহকের সংখ্যা বাড়ায় অর্ধপরিবাহীর রোধ কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_037',
@@ -7830,7 +7830,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: '1/R = 1/3 + 1/6 = 1/2 ⇒ R = 2 Ω।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_038',
@@ -7841,7 +7841,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'শ্রেণিতে একই প্রবাহ সব রোধ দিয়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_039',
@@ -7853,7 +7853,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'সমান্তরাল শাখাগুলো একই দুই বিন্দুর মাঝে থাকায় বিভব পার্থক্য সমান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_040',
@@ -7864,7 +7864,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'I = P/V = 100/220 = 0.4545 ≈ 0.45 A।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_041',
@@ -7875,7 +7875,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: '1 kWh = 1000 × 3600 = 3.6 × 10⁶ J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_042',
@@ -7886,7 +7886,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'H = I²Rt; তাপ প্রবাহের বর্গের সমানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_043',
@@ -7897,7 +7897,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'H = I²Rt = 4 × 10 × 5 = 200 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_044',
@@ -7914,7 +7914,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'অতিরিক্ত প্রবাহে দ্রুত গলে যাওয়ার জন্য ফিউজ তারের গলনাঙ্ক কম ও রোধ তুলনামূলক বেশি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_045',
@@ -7925,7 +7925,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'নিরাপত্তার জন্য ফিউজ সর্বদা লাইভ বা ফেজ তারে বসানো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_046',
@@ -7937,7 +7937,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'লাইভ তারে সুইচ থাকলে বন্ধ অবস্থায় যন্ত্র সম্পূর্ণ বিচ্ছিন্ন থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_047',
@@ -7954,7 +7954,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'EMF হলো একক আধানকে সম্পূর্ণ বর্তনীতে ঘোরাতে কোষ কর্তৃক প্রদত্ত শক্তি; একক ভোল্ট।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_048',
@@ -7965,7 +7965,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বাহ্যিক রোধ R ও অভ্যন্তরীণ রোধ r একত্রে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_049',
@@ -7977,7 +7977,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'I = 6/(2.5 + 0.5) = 6/3 = 2 A।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_050',
@@ -7989,7 +7989,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বর্তনীর প্রবাহ যাতে না বদলায়, তাই আদর্শ অ্যামিটারের রোধ শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_051',
@@ -8000,7 +8000,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'যাতে শাখায় প্রবাহ না যায়, তাই আদর্শ ভোল্টমিটারের রোধ অসীম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_052',
@@ -8012,7 +8012,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'নির্দিষ্ট সংকট তাপমাত্রার নিচে কিছু পদার্থের রোধ কার্যত শূন্য হয়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_053',
@@ -8023,7 +8023,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পরিবাহিতা G = 1/R; একক সিমেন্স (S)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_054',
@@ -8039,7 +8039,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'নির্ধারিত ভোল্টেজে চালালে ঐ ক্ষমতা ব্যয় হবে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c11_mcq_055',
@@ -8055,7 +8055,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'I = Q/t; একক সময়ে প্রবাহিত আধানই তড়িৎ প্রবাহ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১২: বিদ্যুতের চৌম্বক ক্রিয়া ----
   Question(
@@ -8228,7 +8228,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 220 × 75 ÷ 10 = 1650 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_014',
@@ -8240,7 +8240,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 240 × 250 ÷ 1000 = 60 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_015',
@@ -8252,7 +8252,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 110 × 75 ÷ 10 = 825 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_016',
@@ -8264,7 +8264,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 220 × 50 ÷ 200 = 55 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_017',
@@ -8276,7 +8276,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 220 × 500 ÷ 100 = 1100 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_018',
@@ -8288,7 +8288,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 110 × 500 ÷ 100 = 550 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_019',
@@ -8300,7 +8300,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 220 × 250 ÷ 1000 = 55 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_020',
@@ -8312,7 +8312,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Vs/Vp = ns/np, তাই Vs = 110 × 250 ÷ 1000 = 27.5 V।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_021',
@@ -8325,7 +8325,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আদর্শ ট্রান্সফরমারে VpIp = VsIs, তাই Is = (220 × 2) ÷ 22 = 20 A।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_022',
@@ -8338,7 +8338,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আদর্শ ট্রান্সফরমারে VpIp = VsIs, তাই Is = (220 × 2) ÷ 36 = 12.22 A।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_023',
@@ -8351,7 +8351,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আদর্শ ট্রান্সফরমারে VpIp = VsIs, তাই Is = (220 × 2) ÷ 44 = 10 A।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_024',
@@ -8364,7 +8364,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আদর্শ ট্রান্সফরমারে VpIp = VsIs, তাই Is = (12 × 3) ÷ 22 = 1.636 A।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c12_mcq_025',
@@ -8375,7 +8375,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'পরিবাহী ক্ষেত্রের সাথে θ কোণে থাকলে F = BIL sinθ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_026',
@@ -8387,7 +8387,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'θ = 0° হলে sinθ = 0, তাই বল শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_027',
@@ -8399,7 +8399,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'F = BIL = 0.5 × 4 × 0.2 = 0.4 N।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_028',
@@ -8411,7 +8411,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'কুণ্ডলীর তল ক্ষেত্রের সমান্তরাল হলে টর্ক সর্বাধিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_029',
@@ -8428,7 +8428,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বাধা অতিক্রমে কৃত কাজই বৈদ্যুতিক শক্তিতে রূপান্তরিত হয়—এটি শক্তির নিত্যতা রক্ষা করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_030',
@@ -8440,7 +8440,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'প্রতি চক্রে দুইবার দিক বদলায়, তাই 50 × 2 = 100 বার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_031',
@@ -8452,7 +8452,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Vs = 220 × 1000/200 = 1100 V।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_032',
@@ -8469,7 +8469,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ল্যামিনেটেড কোর এডি কারেন্ট বা ঘূর্ণি প্রবাহ কমিয়ে অপচয় হ্রাস করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_033',
@@ -8522,7 +8522,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ম্যাক্সওয়েলের ডানহাতি স্ক্রু বা ডানহাতের বুড়ো আঙুল নিয়ম প্রযোজ্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_036',
@@ -8533,7 +8533,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'সোজা তারের ক্ষেত্রে B ∝ 1/r, তাই দূরত্ব বাড়লে প্রাবল্য কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_037',
@@ -8545,7 +8545,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'B ∝ I, তাই প্রবাহ দ্বিগুণ হলে ক্ষেত্রও দ্বিগুণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_038',
@@ -8561,7 +8561,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'দীর্ঘ সলিনয়েডের ভেতরে প্রায় সুষম চৌম্বক ক্ষেত্র থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_039',
@@ -8573,7 +8573,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বাইরের ক্ষেত্র দণ্ড চুম্বকের ক্ষেত্রের অনুরূপ, দুই প্রান্ত N ও S মেরুর মতো আচরণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_040',
@@ -8589,7 +8589,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'রোধ বাড়ালে প্রবাহ কমে যায়, ফলে চৌম্বক শক্তি কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_041',
@@ -8606,7 +8606,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'নরম লোহার চৌম্বক ভেদ্যতা বেশি এবং প্রবাহ বন্ধ হলে চুম্বকত্ব প্রায় হারিয়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_042',
@@ -8617,7 +8617,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ইস্পাত ধীরে চুম্বকত্ব অর্জন করে কিন্তু দীর্ঘদিন ধরে রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_043',
@@ -8628,7 +8628,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'চৌম্বক আবেশ B-এর একক টেসলা (T)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_044',
@@ -8639,7 +8639,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Φ = BA; একক ওয়েবার (Wb)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_045',
@@ -8656,7 +8656,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বামহস্ত নিয়ম মোটরের ক্ষেত্রে প্রযোজ্য (বল নির্ণয়)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_046',
@@ -8667,7 +8667,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তর্জনী ক্ষেত্র, মধ্যমা প্রবাহ, বুড়ো আঙুল বল বা গতির দিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_047',
@@ -8679,7 +8679,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'স্প্লিট রিং কম্যুটেটর কুণ্ডলীর প্রবাহের দিক উল্টে দিয়ে ঘূর্ণন একমুখী রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_048',
@@ -8696,7 +8696,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'e = −dΦ/dt; ফ্লাক্স পরিবর্তনের হারের সমানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_049',
@@ -8713,7 +8713,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আবিষ্ট প্রবাহ এমন দিকে প্রবাহিত হয় যে তা তার উৎপত্তির কারণকে বাধা দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_050',
@@ -8725,7 +8725,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ফ্লাক্স পরিবর্তন না হলে কোনো তড়িৎচালক শক্তি আবিষ্ট হয় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_051',
@@ -8736,7 +8736,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'AC জেনারেটরে দুটি পূর্ণ স্লিপ রিং ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_052',
@@ -8748,7 +8748,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'আবিষ্ট প্রবাহের দিক নির্ণয়ে ডানহস্ত নিয়ম (জেনারেটর নিয়ম) ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_053',
@@ -8760,7 +8760,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দুই কুণ্ডলীর মধ্যকার পারস্পরিক তড়িৎ চৌম্বক আবেশে ট্রান্সফরমার কাজ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_054',
@@ -8772,7 +8772,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পরিবর্তনশীল ফ্লাক্স প্রয়োজন বলে ট্রান্সফরমার কেবল AC-তে কাজ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_055',
@@ -8783,7 +8783,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গৌণ কুণ্ডলীর পাক সংখ্যা বেশি হলে ভোল্টেজ বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_056',
@@ -8794,7 +8794,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'আদর্শ ট্রান্সফরমারে ভোল্টেজ পাক সংখ্যার সমানুপাতিক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_057',
@@ -8806,7 +8806,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ক্ষমতা অপরিবর্তিত (VpIp = VsIs) বলে ভোল্টেজ বাড়লে প্রবাহ কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_058',
@@ -8824,7 +8824,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'উচ্চ ভোল্টেজে প্রবাহ কম হয়, ফলে তারের তাপ অপচয় I²R অনেক কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_059',
@@ -8840,7 +8840,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ধাতব বস্তুর ভেতরে আবিষ্ট আবর্ত আকারের প্রবাহই ঘূর্ণি প্রবাহ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_060',
@@ -8857,7 +8857,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পরিবর্তনশীল চৌম্বক ক্ষেত্রে পাত্রে ঘূর্ণি প্রবাহ সৃষ্টি হয়ে তাপ উৎপন্ন হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_061',
@@ -8874,7 +8874,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'MRI-তে অতিপরিবাহী তড়িৎ চুম্বকের শক্তিশালী চৌম্বক ক্ষেত্র ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_062',
@@ -8891,7 +8891,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'চৌম্বক ক্ষেত্রে ভয়েস কয়েলে পরিবর্তনশীল প্রবাহ বল সৃষ্টি করে ডায়াফ্রাম কাঁপায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_063',
@@ -8903,7 +8903,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'শব্দে কম্পিত কুণ্ডলী চৌম্বক ক্ষেত্রে নড়াচড়া করে আবিষ্ট তড়িৎচালক শক্তি সৃষ্টি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c12_mcq_064',
@@ -8916,7 +8916,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'গ্রাহক প্রান্তে উচ্চ ভোল্টেজকে 220 V-এ নামাতে স্টেপ-ডাউন ট্রান্সফরমার ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১৩: তেজস্ক্রিয়তা ও ইলেকট্রনিকস ----
   Question(
@@ -8971,7 +8971,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '4 দিনে অর্ধায়ু সম্পন্ন হয় 4 ÷ 2 = 2 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2² = 1/4।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_005',
@@ -8984,7 +8984,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '6 দিনে অর্ধায়ু সম্পন্ন হয় 6 ÷ 2 = 3 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2³ = 1/8।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_006',
@@ -8997,7 +8997,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '8 দিনে অর্ধায়ু সম্পন্ন হয় 8 ÷ 2 = 4 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁴ = 1/16।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_007',
@@ -9010,7 +9010,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '10 দিনে অর্ধায়ু সম্পন্ন হয় 10 ÷ 2 = 5 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁵ = 1/32।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_008',
@@ -9023,7 +9023,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '10 দিনে অর্ধায়ু সম্পন্ন হয় 10 ÷ 5 = 2 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2² = 1/4।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_009',
@@ -9036,7 +9036,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '15 দিনে অর্ধায়ু সম্পন্ন হয় 15 ÷ 5 = 3 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2³ = 1/8।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_010',
@@ -9049,7 +9049,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '20 দিনে অর্ধায়ু সম্পন্ন হয় 20 ÷ 5 = 4 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁴ = 1/16।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_011',
@@ -9062,7 +9062,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '25 দিনে অর্ধায়ু সম্পন্ন হয় 25 ÷ 5 = 5 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁵ = 1/32।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_012',
@@ -9075,7 +9075,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '20 দিনে অর্ধায়ু সম্পন্ন হয় 20 ÷ 10 = 2 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2² = 1/4।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_013',
@@ -9088,7 +9088,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '30 দিনে অর্ধায়ু সম্পন্ন হয় 30 ÷ 10 = 3 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2³ = 1/8।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_014',
@@ -9101,7 +9101,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '40 দিনে অর্ধায়ু সম্পন্ন হয় 40 ÷ 10 = 4 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁴ = 1/16।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_015',
@@ -9114,7 +9114,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '50 দিনে অর্ধায়ু সম্পন্ন হয় 50 ÷ 10 = 5 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁵ = 1/32।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_016',
@@ -9127,7 +9127,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '40 দিনে অর্ধায়ু সম্পন্ন হয় 40 ÷ 20 = 2 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2² = 1/4।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_017',
@@ -9140,7 +9140,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '60 দিনে অর্ধায়ু সম্পন্ন হয় 60 ÷ 20 = 3 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2³ = 1/8।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_018',
@@ -9153,7 +9153,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '80 দিনে অর্ধায়ু সম্পন্ন হয় 80 ÷ 20 = 4 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁴ = 1/16।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_019',
@@ -9166,7 +9166,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '100 দিনে অর্ধায়ু সম্পন্ন হয় 100 ÷ 20 = 5 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁵ = 1/32।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_020',
@@ -9179,7 +9179,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '60 দিনে অর্ধায়ু সম্পন্ন হয় 60 ÷ 30 = 2 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2² = 1/4।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_021',
@@ -9192,7 +9192,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '90 দিনে অর্ধায়ু সম্পন্ন হয় 90 ÷ 30 = 3 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2³ = 1/8।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_022',
@@ -9205,7 +9205,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '120 দিনে অর্ধায়ু সম্পন্ন হয় 120 ÷ 30 = 4 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁴ = 1/16।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_023',
@@ -9218,7 +9218,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         '150 দিনে অর্ধায়ু সম্পন্ন হয় 150 ÷ 30 = 5 বার। প্রতিবার ভর অর্ধেক হয়, তাই অবশিষ্ট অংশ = 1/2⁵ = 1/32।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_024',
@@ -9231,7 +9231,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 320 ÷ ২² = 80 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_025',
@@ -9244,7 +9244,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 160 ÷ ২³ = 20 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_026',
@@ -9257,7 +9257,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 320 ÷ ২⁴ = 20 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_027',
@@ -9270,7 +9270,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 160 ÷ ২⁴ = 10 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_028',
@@ -9283,7 +9283,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 100 ÷ ২² = 25 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_029',
@@ -9296,7 +9296,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 100 ÷ ২³ = 12.5 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_030',
@@ -9309,7 +9309,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'প্রতি অর্ধায়ুতে ভর অর্ধেক হয়, তাই অবশিষ্ট ভর = m₀/2ⁿ = 80 ÷ ২³ = 10 g।',
     source: QuestionSource.ai,
-    sourceLabel: 'A-Learning AI (যাচাইকৃত)',
+    sourceLabel: "Mentor's Companion AI (যাচাইকৃত)",
   ),
   Question(
     id: 'phy_c13_mcq_031',
@@ -9321,7 +9321,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'A = 238 − 4 = 234, Z = 92 − 2 = 90 (থোরিয়াম)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_032',
@@ -9333,7 +9333,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: '3টি অর্ধায়ু ⇒ 80 → 40 → 20 → 10 g।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_033',
@@ -9344,7 +9344,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: '1 u ≈ 931.5 MeV শক্তির সমতুল্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_034',
@@ -9355,7 +9355,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'হোল সংখ্যাগরিষ্ঠ হলেও সামগ্রিকভাবে পদার্থটি তড়িৎ নিরপেক্ষ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_035',
@@ -9379,7 +9379,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তেজস্ক্রিয়তা সম্পূর্ণরূপে নিউক্লিয়াসের ধর্ম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_037',
@@ -9391,7 +9391,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ভারী ও দ্বি-ধনাত্মক আধানের কারণে আলফার আয়নীকরণ ক্ষমতা সর্বোচ্চ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_038',
@@ -9404,7 +9404,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'গামা রশ্মি থামাতে কয়েক সেন্টিমিটার সিসা বা পুরু কংক্রিট প্রয়োজন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_039',
@@ -9415,7 +9415,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'α ক্ষয়ে ভরসংখ্যা ৪ এবং পারমাণবিক সংখ্যা ২ কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_040',
@@ -9427,7 +9427,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'নিউট্রন প্রোটনে রূপান্তরিত হয়, ফলে Z ১ বাড়ে, ভরসংখ্যা অপরিবর্তিত থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_041',
@@ -9444,7 +9444,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'গামা নিঃসরণে কেবল উত্তেজিত নিউক্লিয়াসের অতিরিক্ত শক্তি বেরিয়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_042',
@@ -9456,7 +9456,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'অর্ধায়ু কেবল নিউক্লিয়াসের নিজস্ব ধর্ম; বাহ্যিক অবস্থার প্রভাব নেই।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_043',
@@ -9468,7 +9468,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: '15/5 = 3টি অর্ধায়ু ⇒ (1/2)³ = 1/8।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_044',
@@ -9485,7 +9485,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'α ধনাত্মক, β ঋণাত্মক তাই বিপরীত দিকে বাঁকে; γ আধানহীন বলে সোজা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_045',
@@ -9501,7 +9501,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'GM কাউন্টার দিয়ে তেজস্ক্রিয় বিকিরণ গণনা করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_046',
@@ -9512,7 +9512,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: '1 Bq = প্রতি সেকেন্ডে ১টি ক্ষয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_047',
@@ -9524,7 +9524,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'C-14-এর অর্ধায়ু প্রায় 5730 বছর, তাই প্রত্নবস্তুর বয়স নির্ণয়ে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_048',
@@ -9536,7 +9536,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Co-60 থেকে নির্গত গামা রশ্মি টিউমার কোষ ধ্বংসে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_049',
@@ -9553,7 +9553,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'দুটি ধনাত্মক নিউক্লিয়াসের কুলম্ব বিকর্ষণ অতিক্রম করতে কোটি ডিগ্রি তাপমাত্রা ও প্রচণ্ড চাপ প্রয়োজন; মন্দক ও ধীর নিউট্রন ফিশনের শর্ত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_050',
@@ -9564,7 +9564,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'আইনস্টাইনের ভর-শক্তি সমতুল্যতা E = mc²।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_051',
@@ -9580,7 +9580,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ভেজালমুক্ত বিশুদ্ধ অর্ধপরিবাহীকে ইনট্রিনসিক অর্ধপরিবাহী বলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_052',
@@ -9591,7 +9591,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পঞ্চযোজী ভেজাল যোগে অতিরিক্ত ইলেকট্রন পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_053',
@@ -9603,7 +9603,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ত্রিযোজী মৌল (বোরন, গ্যালিয়াম, ইন্ডিয়াম) যোগে হোল সৃষ্টি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_054',
@@ -9615,7 +9615,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'পঞ্চযোজী মৌল যেমন ফসফরাস, আর্সেনিক বা অ্যান্টিমনি ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_055',
@@ -9632,7 +9632,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'p-প্রান্তে ধনাত্মক ও n-প্রান্তে ঋণাত্মক সংযোগে প্রবাহ সহজে চলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_056',
@@ -9643,7 +9643,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ডিপ্লেশন স্তর প্রশস্ত হয়ে প্রবাহকে বাধা দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_057',
@@ -9659,7 +9659,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 0,
     explanation: 'একটি ডায়োড AC-এর কেবল অর্ধচক্র পাস করায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_058',
@@ -9670,7 +9670,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ব্রিজ সাজানোয় ৪টি ডায়োড দিয়ে পূর্ণতরঙ্গ একমুখীকরণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_059',
@@ -9682,7 +9682,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'ফটোডায়োড আলো পড়লে প্রবাহ সৃষ্টি করে, তাই আলো শনাক্তকরণে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_060',
@@ -9694,7 +9694,7 @@ const List<Question> physicsMcqs = <Question>[
     explanation:
         'বেস অত্যন্ত পাতলা ও হালকা ডোপকৃত হয় যাতে অধিকাংশ আধানবাহক কালেক্টরে পৌঁছায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_061',
@@ -9710,7 +9710,7 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'AND গেটে সব ইনপুট 1 হলেই আউটপুট 1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   Question(
     id: 'phy_c13_mcq_062',
@@ -9726,6 +9726,6 @@ const List<Question> physicsMcqs = <Question>[
     correctIndex: 3,
     explanation: 'OR গেটে অন্তত একটি ইনপুট 1 হলেই আউটপুট 1; সব 0 হলে আউটপুট 0।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
 ];

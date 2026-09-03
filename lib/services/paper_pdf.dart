@@ -445,7 +445,7 @@ class PaperPdf {
     } catch (_) {
       // কিছু ফোনে system print dialog খোলে না (print service off/incompatible)।
       // তখন PDF সরাসরি Share/Save sheet-এ পাঠাই — সেখান থেকে save/print যায়।
-      await Printing.sharePdf(bytes: bytes, filename: 'a_learning_paper.pdf');
+      await Printing.sharePdf(bytes: bytes, filename: 'mentors_companion_paper.pdf');
     }
   }
 
@@ -1411,26 +1411,29 @@ class PaperPdf {
     await para('- শেষ -', 10, align: TextAlign.center, gapBefore: 4);
     await commit();
 
-    // ══════════════ OMR SHEET — fixed two-zone layout (no overlap) ══════════════
+    // ══════════════ OMR SHEET — measured layout, guaranteed no overlap ══════════════
     if (mcqs.isNotEmpty) {
       begin();
-      const pink = Color(0xFFE91E63);
-      const pinkLight = Color(0xFFFCE4EC);
-      const black = Color(0xFF000000);
-      final borderPink = Paint()
-        ..color = pink
+      const ink = Color(0xFF1A1A1A);
+      const accent = Color(0xFF1F5FA8);
+      const accentSoft = Color(0xFFEAF1FB);
+      final borderAccent = Paint()
+        ..color = accent
         ..style = PaintingStyle.stroke
         ..strokeWidth = 0.9 * _k;
 
-      // Scanner alignment marks.
+      // Scanner alignment marks (kept fully inside the printable page).
+      const markSize = 10.0;
       for (final p in [
-        Offset(_margin - 16 * _k, _margin - 16 * _k),
-        Offset(sw - _margin + 5 * _k, _margin - 16 * _k),
-        Offset(_margin - 16 * _k, sh - _margin + 5 * _k),
-        Offset(sw - _margin + 5 * _k, sh - _margin + 5 * _k),
+        Offset(_margin, _margin - (markSize + 6) * _k),
+        Offset(sw - _margin - markSize * _k, _margin - (markSize + 6) * _k),
+        Offset(_margin, sh - _margin + 6 * _k),
+        Offset(sw - _margin - markSize * _k, sh - _margin + 6 * _k),
       ]) {
-        canvas.drawRect(Rect.fromLTWH(p.dx, p.dy, 10 * _k, 10 * _k),
-            Paint()..color = black);
+        canvas.drawRect(
+          Rect.fromLTWH(p.dx, p.dy, markSize * _k, markSize * _k),
+          Paint()..color = ink,
+        );
       }
 
       y = _margin;
@@ -1446,22 +1449,22 @@ class PaperPdf {
       y += 4 * _k;
       await rule(gapBefore: 1, gapAfter: 5);
 
-      // OMR content uses two non-overlapping horizontal bands:
-      // up to four 25-question columns (1–100), then identity fields.
       final sheetX = _margin;
+      const bubbleR = 4.8;
+      const bubbleD = bubbleR * 2;
 
       void bubble(double x, double yy, String value, {bool selected = false}) {
-        final r = 4.8 * _k;
+        final r = bubbleR * _k;
         canvas.drawCircle(
           Offset(x, yy),
           r,
-          Paint()..color = selected ? pink : Colors.white,
+          Paint()..color = selected ? accent : Colors.white,
         );
         canvas.drawCircle(
           Offset(x, yy),
           r,
           Paint()
-            ..color = pink
+            ..color = accent
             ..style = PaintingStyle.stroke
             ..strokeWidth = .8 * _k,
         );
@@ -1471,16 +1474,32 @@ class PaperPdf {
           isBold: selected,
           align: TextAlign.center,
         )..layout();
-        t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
+        t.paint(
+          canvas,
+          Offset(x - t.width / 2, yy - t.height / 2),
+        );
       }
 
       final total = mcqs.length.clamp(0, 100).toInt();
+      // Balance the columns so 30 questions become 15+15 rather than 25+5,
+      // and cap each column at 25 rows so the sheet always fits the page.
       const maxPerColumn = 25;
-      final questionColumns = (total + maxPerColumn - 1) ~/ maxPerColumn;
-      final questionGap = 5 * _k;
+      final questionColumns = ((total + maxPerColumn - 1) ~/ maxPerColumn)
+          .clamp(1, 4)
+          .toInt();
+      final perColumn =
+          ((total + questionColumns - 1) ~/ questionColumns).clamp(1, maxPerColumn).toInt();
+      final questionGap = 8 * _k;
       final questionWidth =
           (contentW - (questionColumns - 1) * questionGap) / questionColumns;
       final rowH = 11.2 * _k;
+      // Reserve room for the question number, then spread four bubbles across
+      // the remaining width so they never collide or spill past the border.
+      final numberW = 26 * _k;
+      final bubbleAreaX = numberW + bubbleR * _k + 2 * _k;
+      final bubbleSpan = questionWidth - bubbleAreaX - (bubbleR + 4) * _k;
+      final bubbleStep = bubbleSpan / 3;
+      final headerH = 13 * _k;
 
       void questionBox(
         int first,
@@ -1489,34 +1508,48 @@ class PaperPdf {
         double top,
         double width,
       ) {
-        final h = (count + 1) * rowH + 3 * _k;
-        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderPink);
-        final head = makePainter(
-          'প্রশ্ন নং                 উত্তর',
-          7.4,
-          isBold: true,
-        )..layout(maxWidth: width - 8 * _k);
-        head.paint(canvas, Offset(x + 4 * _k, top + 1 * _k));
+        final h = headerH + count * rowH + 4 * _k;
+        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
+        canvas.drawRect(
+          Rect.fromLTWH(x, top, width, headerH),
+          Paint()..color = accentSoft,
+        );
+        final head = makePainter('প্রশ্ন', 7.4, isBold: true)..layout();
+        head.paint(
+          canvas,
+          Offset(x + 4 * _k, top + (headerH - head.height) / 2),
+        );
+        // Label each answer column above its own bubble stack.
+        for (var option = 0; option < 4; option++) {
+          final letter = makePainter(
+            _optionLetters[option],
+            7.0,
+            isBold: true,
+            align: TextAlign.center,
+          )..layout();
+          final cx = x + bubbleAreaX + option * bubbleStep;
+          letter.paint(
+            canvas,
+            Offset(cx - letter.width / 2, top + (headerH - letter.height) / 2),
+          );
+        }
         for (var i = 0; i < count; i++) {
-          final yy = top + (i + 1) * rowH + 4.8 * _k;
-          if (i.isEven) {
+          final rowTop = top + headerH + i * rowH;
+          final yy = rowTop + rowH / 2;
+          if (i.isOdd) {
             canvas.drawRect(
-              Rect.fromLTWH(
-                x + .5 * _k,
-                yy - 5.6 * _k,
-                width - _k,
-                rowH,
-              ),
-              Paint()..color = pinkLight.withOpacity(.32),
+              Rect.fromLTWH(x + .5 * _k, rowTop, width - _k, rowH),
+              Paint()..color = accentSoft.withOpacity(.55),
             );
           }
           final number = makePainter(_bn(first + i), 7.6)..layout();
-          number.paint(canvas, Offset(x + 4 * _k, yy - number.height / 2));
-          final firstBubbleX = x + 31 * _k;
-          final bubbleStep = (width - 38 * _k) / 3;
+          number.paint(
+            canvas,
+            Offset(x + 4 * _k, yy - number.height / 2),
+          );
           for (var option = 0; option < 4; option++) {
             bubble(
-              firstBubbleX + option * bubbleStep,
+              x + bubbleAreaX + option * bubbleStep,
               yy,
               _optionLetters[option],
             );
@@ -1525,21 +1558,28 @@ class PaperPdf {
       }
 
       final questionsTop = y;
+      var placed = 0;
+      var tallestColumn = 0;
       for (var column = 0; column < questionColumns; column++) {
-        final first = column * maxPerColumn + 1;
-        final remaining = total - column * maxPerColumn;
-        final count = remaining > maxPerColumn ? maxPerColumn : remaining;
+        final remaining = total - placed;
+        if (remaining <= 0) break;
+        final count = remaining > perColumn ? perColumn : remaining;
         questionBox(
-          first,
+          placed + 1,
           count,
           sheetX + column * (questionWidth + questionGap),
           questionsTop,
           questionWidth,
         );
+        placed += count;
+        if (count > tallestColumn) tallestColumn = count;
       }
-      final longestQuestionColumn = total > maxPerColumn ? maxPerColumn : total;
       final questionsBottom =
-          questionsTop + (longestQuestionColumn + 1) * rowH + 3 * _k;
+          questionsTop + headerH + tallestColumn * rowH + 4 * _k;
+
+      // ── Identity panels ──────────────────────────────────────────
+      const digitRowH = 10.8;
+      const digitCount = 10;
 
       void digitPanel(
         String panelTitle,
@@ -1549,26 +1589,36 @@ class PaperPdf {
         double width, {
         String digits = '',
       }) {
-        final h = 10 * 10.8 * _k + 13 * _k;
-        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderPink);
+        // Measure the caption first so bubbles always start below it.
         final label = makePainter(
           panelTitle,
           8.5,
           isBold: true,
           align: TextAlign.center,
-        )..layout(maxWidth: width - 4 * _k);
+        )..layout(maxWidth: width - 6 * _k);
+        final labelH = label.height + 4 * _k;
+        final h = labelH + digitCount * digitRowH * _k + 6 * _k;
+        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
+        canvas.drawRect(
+          Rect.fromLTWH(x, top, width, labelH),
+          Paint()..color = accentSoft,
+        );
         label.paint(
           canvas,
-          Offset(x + (width - label.width) / 2, top + 1.5 * _k),
+          Offset(x + (width - label.width) / 2, top + 2 * _k),
         );
+        // Spread the digit columns evenly inside the panel.
+        final usable = width - 2 * (bubbleR + 4) * _k;
+        final step = columns > 1 ? usable / (columns - 1) : 0.0;
+        final startX =
+            columns > 1 ? x + (bubbleR + 4) * _k : x + width / 2;
         for (var column = 0; column < columns; column++) {
-          final denominator = columns > 1 ? columns - 1 : 1;
-          final cx = x + 7 * _k + column * (width - 14 * _k) / denominator;
+          final cx = startX + column * step;
           final wanted = column < digits.length ? digits[column] : '';
-          for (var digit = 0; digit < 10; digit++) {
+          for (var digit = 0; digit < digitCount; digit++) {
             bubble(
               cx,
-              top + 12 * _k + digit * 10.8 * _k,
+              top + labelH + (digit + .5) * digitRowH * _k,
               '$digit',
               selected: wanted == '$digit',
             );
@@ -1576,10 +1626,16 @@ class PaperPdf {
         }
       }
 
-      final identityTop = questionsBottom + 8 * _k;
-      final identityGap = 6 * _k;
-      final rollW = contentW * .29;
-      final registrationW = contentW * .47;
+      double digitPanelHeight(String panelTitle, double width) {
+        final label = makePainter(panelTitle, 8.5, isBold: true)
+          ..layout(maxWidth: width - 6 * _k);
+        return label.height + 4 * _k + digitCount * digitRowH * _k + 6 * _k;
+      }
+
+      final identityTop = questionsBottom + 10 * _k;
+      final identityGap = 8 * _k;
+      final rollW = (contentW - 2 * identityGap) * .30;
+      final registrationW = (contentW - 2 * identityGap) * .46;
       final subjectW = contentW - rollW - registrationW - 2 * identityGap;
       digitPanel('রোল নম্বর', 6, sheetX, identityTop, rollW);
       digitPanel(
@@ -1610,28 +1666,39 @@ class PaperPdf {
         digits: code,
       );
 
-      final identityBottom = identityTop + 10 * 10.8 * _k + 13 * _k;
-      final setTop = identityBottom + 6 * _k;
-      final setW = 94 * _k;
-      final setH = 18 * _k;
-      canvas.drawRect(
-        Rect.fromLTWH(sheetX, setTop, setW, setH),
-        borderPink,
+      final identityBottom = identityTop +
+          mx(
+            mx(
+              digitPanelHeight('রোল নম্বর', rollW),
+              digitPanelHeight('রেজিস্ট্রেশন নম্বর', registrationW),
+            ),
+            digitPanelHeight('বিষয় কোড', subjectW),
+          );
+
+      // ── Set code + instructions ──────────────────────────────────
+      final setTop = identityBottom + 10 * _k;
+      final setW = 150 * _k;
+      final setH = 26 * _k;
+      canvas.drawRect(Rect.fromLTWH(sheetX, setTop, setW, setH), borderAccent);
+      final setTitle = makePainter('সেট কোড', 8.2, isBold: true)..layout();
+      setTitle.paint(
+        canvas,
+        Offset(sheetX + 5 * _k, setTop + (setH - setTitle.height) / 2),
       );
-      final setTitle = makePainter('সেট কোড', 8.2, isBold: true)
-        ..layout(maxWidth: 25 * _k);
-      setTitle.paint(canvas, Offset(sheetX + 3 * _k, setTop + 3 * _k));
+      final setBubbleStart = sheetX + 8 * _k + setTitle.width + bubbleD * _k;
+      final setBubbleStep =
+          (setW - (setBubbleStart - sheetX) - (bubbleR + 5) * _k) / 3;
       for (var i = 0; i < 4; i++) {
         bubble(
-          sheetX + 35 * _k + i * 17 * _k,
-          setTop + 9 * _k,
+          setBubbleStart + i * setBubbleStep,
+          setTop + setH / 2,
           _optionLetters[i],
           selected: setCode == _optionLetters[i],
         );
       }
 
-      final rulesX = sheetX + setW + 8 * _k;
-      final rulesW = contentW - setW - 8 * _k;
+      final rulesX = sheetX + setW + 12 * _k;
+      final rulesW = contentW - setW - 12 * _k;
       final rules = [
         'নিয়মাবলি:',
         '১। বৃত্তের ভেতরের লেখা দেখা না যায় এমনভাবে ভরাট করো।',
@@ -1648,6 +1715,25 @@ class PaperPdf {
         )..layout(maxWidth: rulesW);
         ruleText.paint(canvas, Offset(rulesX, rulesY));
         rulesY += ruleText.height + 2 * _k;
+      }
+
+      // Signature strip anchored to the bottom of the sheet.
+      final signatureY = mx(mx(setTop + setH, rulesY) + 22 * _k, sh - _margin - 30 * _k);
+      final signatureLine = Paint()
+        ..color = ink
+        ..strokeWidth = .8 * _k;
+      final signWidth = contentW * .34;
+      for (final entry in [
+        ('পরীক্ষার্থীর স্বাক্ষর', sheetX),
+        ('পরিদর্শকের স্বাক্ষর', sheetX + contentW - signWidth),
+      ]) {
+        canvas.drawLine(
+          Offset(entry.$2, signatureY),
+          Offset(entry.$2 + signWidth, signatureY),
+          signatureLine,
+        );
+        final caption = makePainter(entry.$1, 7.5)..layout();
+        caption.paint(canvas, Offset(entry.$2, signatureY + 3 * _k));
       }
       await commit();
     }

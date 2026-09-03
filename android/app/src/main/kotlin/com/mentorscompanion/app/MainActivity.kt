@@ -1,4 +1,4 @@
-package com.example.ssc_prep_app
+package com.mentorscompanion.app
 
 import io.flutter.embedding.android.FlutterActivity
 

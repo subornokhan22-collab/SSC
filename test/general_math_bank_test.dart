@@ -2,14 +2,14 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:a_learning/data/general_math/general_math_chapter_catalog.dart';
-import 'package:a_learning/data/general_math/general_math_cqs.dart';
-import 'package:a_learning/data/general_math/general_math_divisions.dart';
-import 'package:a_learning/data/general_math/general_math_mcqs.dart';
-import 'package:a_learning/data/general_math/general_math_saqs.dart';
-import 'package:a_learning/data/questions_data.dart';
-import 'package:a_learning/services/chapter_catalog.dart';
-import 'package:a_learning/services/general_math_board_pattern.dart';
+import 'package:mentors_companion/data/general_math/general_math_chapter_catalog.dart';
+import 'package:mentors_companion/data/general_math/general_math_cqs.dart';
+import 'package:mentors_companion/data/general_math/general_math_divisions.dart';
+import 'package:mentors_companion/data/general_math/general_math_mcqs.dart';
+import 'package:mentors_companion/data/general_math/general_math_saqs.dart';
+import 'package:mentors_companion/data/questions_data.dart';
+import 'package:mentors_companion/services/chapter_catalog.dart';
+import 'package:mentors_companion/services/general_math_board_pattern.dart';
 
 void main() {
   group('General Mathematics catalog and divisions', () {

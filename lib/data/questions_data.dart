@@ -738,7 +738,7 @@ const List<Question> allMCQs = [
       source: QuestionSource.board,
       sourceLabel: 'ময়মনসিংহ বোর্ড ২০২৫'),
 
-  // ───── সাধারণ গণিত: অধ্যায় ১ (বাস্তব সংখ্যা) ─ A-Learning Original ─────
+  // ───── সাধারণ গণিত: অধ্যায় ১ (বাস্তব সংখ্যা) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c1_01',
       subjectId: 'general_math',
@@ -747,7 +747,7 @@ const List<Question> allMCQs = [
       options: ['√7', '√12', '√25', '√18'],
       correctIndex: 2,
       explanation: '√25 = 5 একটি পূর্ণসংখ্যা, তাই এটি মূলদ সংখ্যা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_02',
       subjectId: 'general_math',
@@ -756,7 +756,7 @@ const List<Question> allMCQs = [
       options: ['মূলদ সংখ্যা', 'অমূলদ সংখ্যা', 'জোড় সংখ্যা', 'মৌলিক সংখ্যা'],
       correctIndex: 1,
       explanation: 'π = 3.14159... অসীম অনাবৃত দশমিক, তাই অমূলদ সংখ্যা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_03',
       subjectId: 'general_math',
@@ -765,7 +765,7 @@ const List<Question> allMCQs = [
       options: ['৩/১০', '১/৩', '৩৩/১০০', '৩/১১'],
       correctIndex: 1,
       explanation: 'এক অঙ্ক পৌনঃপুনিক হলে সেই অঙ্ক/৯; অর্থাৎ ৩/৯ = ১/৩।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_04',
       subjectId: 'general_math',
@@ -775,7 +775,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'মূলদ সংখ্যার যোগ, বিয়োগ, গুণ ও ভাগফল (শূন্য দ্বারা ভাগ ব্যতীত) সবসময় মূলদ হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_05',
       subjectId: 'general_math',
@@ -784,7 +784,7 @@ const List<Question> allMCQs = [
       options: ['2', '√6', '4', '8'],
       correctIndex: 2,
       explanation: '√2 × √8 = √16 = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_06',
       subjectId: 'general_math',
@@ -793,7 +793,7 @@ const List<Question> allMCQs = [
       options: ['সসীম', 'অসীম আবৃত্ত', 'অসীম অনাবৃত', 'সসীম আবৃত্ত'],
       correctIndex: 2,
       explanation: 'অমূলদ সংখ্যার দশমিক প্রকাশ সবসময় অসীম ও অনাবৃত হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_07',
       subjectId: 'general_math',
@@ -803,7 +803,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'এতে অঙ্কের প্যাটার্ন আছে তবু পুনরাবৃত্তি নেই; অসীম অনাবৃত বলে এটি অমূলদ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_08',
       subjectId: 'general_math',
@@ -813,7 +813,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           '৮ = ২³; হরে কেবল ২ ও ৫ এর উৎপাদক থাকলে দশমিক সসীম হয়। ৭/৮ = ০.৮৭৫।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_09',
       subjectId: 'general_math',
@@ -823,7 +823,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           '১২ = ২²×৩; হরে ২,৫ ব্যতীত ৩ উৎপাদক থাকায় দশমিক অসীম আবৃত্ত হয় (০.৪১৬৬৬...)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_10',
       subjectId: 'general_math',
@@ -832,7 +832,7 @@ const List<Question> allMCQs = [
       options: ['২৩টি', '২৪টি', '২৫টি', '২৬টি'],
       correctIndex: 2,
       explanation: '১ থেকে ১০০ পর্যন্ত মোট ২৫টি মৌলিক সংখ্যা আছে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_11',
       subjectId: 'general_math',
@@ -841,7 +841,7 @@ const List<Question> allMCQs = [
       options: ['২০০', '২০২৫', '২০৫০', '২০৭৫'],
       correctIndex: 1,
       explanation: '২০২৫ = ৪৫²; বাকি সংখ্যাগুলোর বর্গমূল পূর্ণসংখ্যা নয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_12',
       subjectId: 'general_math',
@@ -850,7 +850,7 @@ const List<Question> allMCQs = [
       options: ['২৫', '১০', '৫', '√10'],
       correctIndex: 2,
       explanation: '(√a)² = a; তাই (√5)² = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_13',
       subjectId: 'general_math',
@@ -859,7 +859,7 @@ const List<Question> allMCQs = [
       options: ['−৯', '৯', '০', '১/৯'],
       correctIndex: 1,
       explanation: 'পরমমান কখনো ঋণাত্মক হয় না; |−৯| = ৯।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_14',
       subjectId: 'general_math',
@@ -868,7 +868,7 @@ const List<Question> allMCQs = [
       options: ['৯৭/১০০', '৯৭/৯০', '৯৭/৯৯', '৯/১০'],
       correctIndex: 2,
       explanation: 'দুই অঙ্ক পৌনঃপুনিক থাকলে হর ৯৯; অর্থাৎ ৯৭/৯৯।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_15',
       subjectId: 'general_math',
@@ -878,7 +878,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'একটি অনাবৃত অঙ্কের পর দুই অঙ্ক আবৃত্ত: (২৩৪−২)/৯৯০ = ২৩২/৯৯০।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_16',
       subjectId: 'general_math',
@@ -887,7 +887,7 @@ const List<Question> allMCQs = [
       options: ['০', '১/২', '১', '−১'],
       correctIndex: 3,
       explanation: 'ঋণাত্মক সংখ্যা শূন্য ও ধনাত্মক সব সংখ্যা অপেক্ষা ছোট।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_17',
       subjectId: 'general_math',
@@ -901,7 +901,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'স্বাভাবিক (N) ⊂ পূর্ণসংখ্যা (Z) ⊂ মূলদ (Q) ⊂ বাস্তব (R)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_18',
       subjectId: 'general_math',
@@ -911,7 +911,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           '৫/২ = ২.৫ মূলদ ও ২ এর বড়, ৩ এর ছোট; বাকিগুলো অমূলদ বা সীমার বাইরে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_19',
       subjectId: 'general_math',
@@ -920,7 +920,7 @@ const List<Question> allMCQs = [
       options: ['(৮, ১২)', '(৯, ১৫)', '(১৪, ২১)', '(৮, ১৫)'],
       correctIndex: 3,
       explanation: 'গসাগু(৮, ১৫) = ১; বাকি জোড়াগুলোর গসাগু ১ এর বেশি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_20',
       subjectId: 'general_math',
@@ -929,7 +929,7 @@ const List<Question> allMCQs = [
       options: ['√2/2', '2/√2', '√2', '১/২'],
       correctIndex: 0,
       explanation: 'লব ও হরকে √2 দিয়ে গুণ করলে √2/2 পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_21',
       subjectId: 'general_math',
@@ -938,7 +938,7 @@ const List<Question> allMCQs = [
       options: ['১', '৯', '১৭', '৮'],
       correctIndex: 0,
       explanation: '(a+b)(a−b) = a²−b² = ৯−৮ = ১।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_22',
       subjectId: 'general_math',
@@ -947,7 +947,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৬', '৪√2', '৯'],
       correctIndex: 1,
       explanation: '১/x = ৩−২√2 (কারণ গুণফল ১); যোগফল = ৩+২√2+৩−২√2 = ৬।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_23',
       subjectId: 'general_math',
@@ -957,7 +957,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           '√০.৩৬=০.৬, √০.৪৯=০.৭, √১.২১=১.১ (মূলদ); কিন্তু √০.৫ অসীম অনাবৃত।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_24',
       subjectId: 'general_math',
@@ -966,7 +966,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৪', '০'],
       correctIndex: 1,
       explanation: 'যেমন গসাগু(৮, ১০) = ২; ক্রমিক জোড় সংখ্যার গসাগু সবসময় ২।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_25',
       subjectId: 'general_math',
@@ -975,7 +975,7 @@ const List<Question> allMCQs = [
       options: ['২³×৩', '২⁴×৩', '২²×৩²', '২×৩×৫'],
       correctIndex: 1,
       explanation: '৪৮ = ২×২×২×২×৩ = ২⁴×৩।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_26',
       subjectId: 'general_math',
@@ -984,7 +984,7 @@ const List<Question> allMCQs = [
       options: ['৬', '৮', '১২', '১৮'],
       correctIndex: 2,
       explanation: '৩৬ = ২²×৩² এবং ৮৪ = ২²×৩×৭; সাধারণ অংশ ২²×৩ = ১২।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_27',
       subjectId: 'general_math',
@@ -993,7 +993,7 @@ const List<Question> allMCQs = [
       options: ['১২', '২৪', '৪৮', '৯৬'],
       correctIndex: 1,
       explanation: '৪=২², ৬=২×৩, ৮=২³; লসাগু = ২³×৩ = ২৪।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_28',
       subjectId: 'general_math',
@@ -1003,7 +1003,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'লসাগু ১২০ ধরলে যথাক্রমে ৭২, ৮০, ৭০, ৭৫ — এদের মধ্যে ২/৩ সবচেয়ে বড়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_29',
       subjectId: 'general_math',
@@ -1013,7 +1013,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'স্বাভাবিক সংখ্যা গণনা শুরু হয় ১ থেকে; ০ স্বাভাবিক সংখ্যা নয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c1_30',
       subjectId: 'general_math',
@@ -1027,8 +1027,8 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'যেকোনো পূর্ণসংখ্যা a কে a/1 আকারে লেখা যায়, তাই এটি মূলদ।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ২ (সেট ও ফাংশন) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ২ (সেট ও ফাংশন) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c2_01',
       subjectId: 'general_math',
@@ -1044,7 +1044,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           '১০-এর নিচে মৌলিক সংখ্যা কেবল ২, ৩, ৫, ৭; ১ মৌলিক নয়, ৯ মৌলিক নয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_02',
       subjectId: 'general_math',
@@ -1058,7 +1058,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'x² ≤ 25 হলে x ≤ 5 এবং x স্বাভাবিক সংখ্যা (১ থেকে শুরু)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_03',
       subjectId: 'general_math',
@@ -1067,7 +1067,7 @@ const List<Question> allMCQs = [
       options: ['৪টি', '৬টি', '৮টি', '৯টি'],
       correctIndex: 2,
       explanation: 'n উপাদানের সেটের উপসেট সংখ্যা 2ⁿ; এখানে 2³ = 8।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_04',
       subjectId: 'general_math',
@@ -1076,7 +1076,7 @@ const List<Question> allMCQs = [
       options: ['৪টি', '৮টি', '১৬টি', '৩২টি'],
       correctIndex: 2,
       explanation: 'P(A)-এর উপাদান সংখ্যা = 2⁴ = 16।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_05',
       subjectId: 'general_math',
@@ -1085,7 +1085,7 @@ const List<Question> allMCQs = [
       options: ['৩০টি', '৩২টি', '১৬টি', '৩১টি'],
       correctIndex: 3,
       explanation: 'প্রকৃত উপসেট = 2ⁿ − 1 = 2⁵ − 1 = 31 (মূল সেট বাদ)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_06',
       subjectId: 'general_math',
@@ -1094,7 +1094,7 @@ const List<Question> allMCQs = [
       options: ['০টি', '২টি', 'অসংখ্য', '১টি'],
       correctIndex: 3,
       explanation: 'ফাঁকা সেটের একমাত্র উপসেট হলো নিজেই, অর্থাৎ ১টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_07',
       subjectId: 'general_math',
@@ -1103,7 +1103,7 @@ const List<Question> allMCQs = [
       options: ['{1, 2}', '{3, 4}', '{1, 2, 3, 4, 5}', '∅'],
       correctIndex: 1,
       explanation: 'ছেদ সেটে কেবল সাধারণ উপাদান থাকে: ৩ ও ৪।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_08',
       subjectId: 'general_math',
@@ -1112,7 +1112,7 @@ const List<Question> allMCQs = [
       options: ['{1, 2}', '{3, 4}', '{3, 4, 5}', '{1, 2, 3, 4, 5}'],
       correctIndex: 3,
       explanation: 'সংযোগ সেটে উভয় সেটের সব উপাদান একবার করে থাকে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_09',
       subjectId: 'general_math',
@@ -1121,7 +1121,7 @@ const List<Question> allMCQs = [
       options: ['{1, 3, 5, 7}', '{2, 4, 6}', '{1, 3, 5}', 'U'],
       correctIndex: 0,
       explanation: 'পরিপূরক সেটে U-এর সেই উপাদান থাকে যেগুলো A-তে নেই।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_10',
       subjectId: 'general_math',
@@ -1130,7 +1130,7 @@ const List<Question> allMCQs = [
       options: ['{b, d}', '{a, c}', '{a, b, c}', '∅'],
       correctIndex: 1,
       explanation: 'অন্তর সেটে A-এর সেই উপাদান থাকে যেগুলো B-তে নেই।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_11',
       subjectId: 'general_math',
@@ -1139,7 +1139,7 @@ const List<Question> allMCQs = [
       options: ['n(A) − n(B)', 'n(A) + n(B)', 'n(A) × n(B)', '০'],
       correctIndex: 1,
       explanation: 'A ∩ B = ∅ হলে n(A ∩ B) = 0, তাই n(A ∪ B) = n(A) + n(B)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_12',
       subjectId: 'general_math',
@@ -1148,7 +1148,7 @@ const List<Question> allMCQs = [
       options: ['সমান সেট', 'উপসেট', 'নিশ্ছেদ সেট', 'সার্বিক সেট'],
       correctIndex: 2,
       explanation: 'কোনো সাধারণ উপাদান না থাকলে সেট দুটি নিশ্ছেদ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_13',
       subjectId: 'general_math',
@@ -1159,7 +1159,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'অন্তত একটি খেলে = 25 + 20 − 10 = 35 জন; কোনোটিই না = 40 − 35 = 5 জন।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_14',
       subjectId: 'general_math',
@@ -1168,7 +1168,7 @@ const List<Question> allMCQs = [
       options: ['২টি', '৪টি', '৬টি', '৩টি'],
       correctIndex: 3,
       explanation: '{1,2}, {1,3}, {2,3} — মোট ৩টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_15',
       subjectId: 'general_math',
@@ -1177,7 +1177,7 @@ const List<Question> allMCQs = [
       options: ['A′ ∪ B′', 'A′ ∩ B′', 'A ∩ B', 'A − B'],
       correctIndex: 1,
       explanation: '(A ∪ B)′ = A′ ∩ B′ এবং (A ∩ B)′ = A′ ∪ B′।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_16',
       subjectId: 'general_math',
@@ -1191,7 +1191,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'ছেদ সেটের উপাদান হতে হলে x কে A ও B উভয়েরই সদস্য হতে হবে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_17',
       subjectId: 'general_math',
@@ -1205,7 +1205,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'ক্রমজোড়ে সমান স্থানের উপাদান সমান হয়: x = 2 এবং y = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_18',
       subjectId: 'general_math',
@@ -1215,7 +1215,7 @@ const List<Question> allMCQs = [
       options: ['৫টি', '৬টি', '৮টি', '৯টি'],
       correctIndex: 1,
       explanation: 'n(A × B) = n(A) × n(B) = 2 × 3 = 6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_19',
       subjectId: 'general_math',
@@ -1224,7 +1224,7 @@ const List<Question> allMCQs = [
       options: ['(3, 5)', '(5, 3)', '(3, 7)', '(2, 5)'],
       correctIndex: 0,
       explanation: 'y + 2 = 7 হলে y = 5 এবং x = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_20',
       subjectId: 'general_math',
@@ -1233,7 +1233,7 @@ const List<Question> allMCQs = [
       options: ['৮', '১০', '১১', '২৪'],
       correctIndex: 2,
       explanation: 'f(4) = 2×4 + 3 = 11।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_21',
       subjectId: 'general_math',
@@ -1242,7 +1242,7 @@ const List<Question> allMCQs = [
       options: ['৪', '১', '৭', '১০'],
       correctIndex: 0,
       explanation: 'f(3) = 9 − 6 + 1 = 4; অথবা (x−1)² = 2² = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_22',
       subjectId: 'general_math',
@@ -1251,7 +1251,7 @@ const List<Question> allMCQs = [
       options: ['৩', '২', '৪', '৫'],
       correctIndex: 0,
       explanation: '5a − 1 = 14 হলে 5a = 15, অর্থাৎ a = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_23',
       subjectId: 'general_math',
@@ -1260,7 +1260,7 @@ const List<Question> allMCQs = [
       options: ['x = ২', 'x = ০', 'x = −২', 'x = ১'],
       correctIndex: 0,
       explanation: 'x = 2 হলে হর শূন্য হয়, তাই এটি ডোমেনে রাখা যায় না।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_24',
       subjectId: 'general_math',
@@ -1269,7 +1269,7 @@ const List<Question> allMCQs = [
       options: ['{0, 1, 2}', '{3, 4, 5}', '{1, 2, 3}', '{2, 3, 4}'],
       correctIndex: 3,
       explanation: 'f(0) = 2, f(1) = 3, f(2) = 4; রেঞ্জ {2, 3, 4}।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_25',
       subjectId: 'general_math',
@@ -1283,7 +1283,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'বর্গ কখনো ঋণাত্মক হয় না; রেঞ্জ = {y : y ≥ 0}।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_26',
       subjectId: 'general_math',
@@ -1292,7 +1292,7 @@ const List<Question> allMCQs = [
       options: ['ডোমেনের উপাদান', 'ধ্রুবক', 'রেঞ্জের উপাদান', 'সহগ'],
       correctIndex: 0,
       explanation: 'x ডোমেনের উপাদান (স্বাধীন চলক) এবং y রেঞ্জের উপাদান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_27',
       subjectId: 'general_math',
@@ -1301,7 +1301,7 @@ const List<Question> allMCQs = [
       options: ['{2, 3, 4}', '{1, 4}', '{1, 2, 3, 4}', '{1, 2, 3}'],
       correctIndex: 3,
       explanation: 'ডোমেন = প্রথম উপাদানগুলোর সেট; রেঞ্জ = দ্বিতীয়গুলোর সেট।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_28',
       subjectId: 'general_math',
@@ -1310,7 +1310,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৬', '৯', '১২'],
       correctIndex: 1,
       explanation: 'f(x + 2) − f(x) = 3(x+2) − 3x = 3x + 6 − 3x = 6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_29',
       subjectId: 'general_math',
@@ -1325,7 +1325,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           '∅ প্রতিটি সেটের উপসেট; আবার {0} ফাঁকা সেট নয়, এতে ০ নামক উপাদান আছে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c2_30',
       subjectId: 'general_math',
@@ -1335,8 +1335,8 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           '{0} সেটে একটি উপাদান (0) আছে, ∅-তে কোনো উপাদান নেই; তাই সমান নয়।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৩ (বীজগাণিতিক রাশি) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৩ (বীজগাণিতিক রাশি) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c3_01',
       subjectId: 'general_math',
@@ -1345,7 +1345,7 @@ const List<Question> allMCQs = [
       options: ['a² − 2ab + b²', 'a² + 2ab + b²', 'a² + b²', 'a² − b²'],
       correctIndex: 1,
       explanation: '(a + b)² = a² + 2ab + b²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_02',
       subjectId: 'general_math',
@@ -1354,7 +1354,7 @@ const List<Question> allMCQs = [
       options: ['(a + b)³', '(a − b)²', '(a + b)(a − b)', '(a + b)²'],
       correctIndex: 3,
       explanation: 'a² + 2ab + b² = (a + b)²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_03',
       subjectId: 'general_math',
@@ -1363,7 +1363,7 @@ const List<Question> allMCQs = [
       options: ['২৯', '৩৯', '৪৯', '৬৯'],
       correctIndex: 0,
       explanation: 'a² + b² = (a+b)² − 2ab = 49 − 20 = 29।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_04',
       subjectId: 'general_math',
@@ -1372,7 +1372,7 @@ const List<Question> allMCQs = [
       options: ['৬১', '২৫', '৩১', '৩৭'],
       correctIndex: 3,
       explanation: 'x² + y² = (x−y)² + 2xy = 25 + 12 = 37।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_05',
       subjectId: 'general_math',
@@ -1381,7 +1381,7 @@ const List<Question> allMCQs = [
       options: ['ab', '2ab', '3ab', '4ab'],
       correctIndex: 1,
       explanation: '(a+b)² থেকে 2ab বাদ দিলে a² + b² পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_06',
       subjectId: 'general_math',
@@ -1390,7 +1390,7 @@ const List<Question> allMCQs = [
       options: ['১২', '১৬', '১৮', '১৪'],
       correctIndex: 3,
       explanation: 'x² + 1/x² = (x + 1/x)² − 2 = 16 − 2 = 14।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_07',
       subjectId: 'general_math',
@@ -1399,7 +1399,7 @@ const List<Question> allMCQs = [
       options: ['৭', '৯', '১১', '১৩'],
       correctIndex: 2,
       explanation: 'x² + 1/x² = (x − 1/x)² + 2 = 9 + 2 = 11।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_08',
       subjectId: 'general_math',
@@ -1408,7 +1408,7 @@ const List<Question> allMCQs = [
       options: ['১১০', '১০০', '১২৫', '১১৫'],
       correctIndex: 0,
       explanation: 'x³ + 1/x³ = (x + 1/x)³ − 3(x + 1/x) = 125 − 15 = 110।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_09',
       subjectId: 'general_math',
@@ -1417,7 +1417,7 @@ const List<Question> allMCQs = [
       options: ['৮', '১২', '১৪', '১৬'],
       correctIndex: 2,
       explanation: 'x³ − 1/x³ = (x − 1/x)³ + 3(x − 1/x) = 8 + 6 = 14।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_10',
       subjectId: 'general_math',
@@ -1426,7 +1426,7 @@ const List<Question> allMCQs = [
       options: ['১৫', '২৫', '৪৫', '৩৫'],
       correctIndex: 3,
       explanation: 'a³ + b³ = (a+b)³ − 3ab(a+b) = 125 − 90 = 35।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_11',
       subjectId: 'general_math',
@@ -1440,7 +1440,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'a³ − b³ = (a − b)(a² + ab + b²)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_12',
       subjectId: 'general_math',
@@ -1454,7 +1454,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: '3 + 4 = 7 এবং 3 × 4 = 12; তাই (x + 3)(x + 4)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_13',
       subjectId: 'general_math',
@@ -1463,7 +1463,7 @@ const List<Question> allMCQs = [
       options: ['(x − 9)(x + 1)', '(x − 3)(x + 3)', '(x − 3)²', '(x + 3)²'],
       correctIndex: 1,
       explanation: 'দুই বর্গের অন্তর: x² − 9 = (x − 3)(x + 3)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_14',
       subjectId: 'general_math',
@@ -1478,7 +1478,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'ঘনের যোগ: (2a)³ + (3b)³ = (2a + 3b)((2a)² − 2a·3b + (3b)²)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_15',
       subjectId: 'general_math',
@@ -1487,7 +1487,7 @@ const List<Question> allMCQs = [
       options: ['০', '১', '২', '৩'],
       correctIndex: 2,
       explanation: 'ভাগশেষ উপপাদ্য: f(3) = 9 − 9 + 2 = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_16',
       subjectId: 'general_math',
@@ -1496,7 +1496,7 @@ const List<Question> allMCQs = [
       options: ['১', '০', '২', '−১'],
       correctIndex: 1,
       explanation: 'f(−1) = (−1)³ + 1 = 0; তাই (x + 1) রাশিটির একটি উৎপাদক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_17',
       subjectId: 'general_math',
@@ -1505,7 +1505,7 @@ const List<Question> allMCQs = [
       options: ['xy', 'x³y³', 'x²y', 'x²y²'],
       correctIndex: 3,
       explanation: 'লসাগুতে প্রতিটি উৎপাদকের সর্বোচ্চ ঘাত থাকে: x²y²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_18',
       subjectId: 'general_math',
@@ -1514,7 +1514,7 @@ const List<Question> allMCQs = [
       options: ['3ab', '3a²b²', 'ab', '18a²b²'],
       correctIndex: 0,
       explanation: 'গসাগুতে সাধারণ উৎপাদকের ক্ষুদ্রতম ঘাত থাকে: 3ab।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_19',
       subjectId: 'general_math',
@@ -1523,7 +1523,7 @@ const List<Question> allMCQs = [
       options: ['(x + y)/xy', '1/(x + y)', '(x − y)/xy', '2/xy'],
       correctIndex: 0,
       explanation: 'লসাগু xy ধরে লব সমন্বয় করলে (x + y)/xy পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_20',
       subjectId: 'general_math',
@@ -1532,7 +1532,7 @@ const List<Question> allMCQs = [
       options: ['x + 2', 'x² − 2', 'x − 2', '1/(x − 2)'],
       correctIndex: 2,
       explanation: 'x² − 4 = (x − 2)(x + 2); (x + 2) অপনয়ন করলে x − 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_21',
       subjectId: 'general_math',
@@ -1541,7 +1541,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৩', '৪'],
       correctIndex: 2,
       explanation: '(a + b)³ = a³ + 3a²b + 3ab² + b³; ab² এর সহগ ৩।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_22',
       subjectId: 'general_math',
@@ -1551,7 +1551,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'লব-হরকে (2 + √3) দিয়ে গুণ করলে: (2 + √3)/(4 − 3) = 2 + √3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_23',
       subjectId: 'general_math',
@@ -1560,7 +1560,7 @@ const List<Question> allMCQs = [
       options: ['১৬', '১৮', '২০', '২৪'],
       correctIndex: 2,
       explanation: 'a² + b² = (a−b)² + 2ab = 16 + 4 = 20।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_24',
       subjectId: 'general_math',
@@ -1574,7 +1574,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: '(−3) + (−4) = −7 এবং (−3)(−4) = 12।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_25',
       subjectId: 'general_math',
@@ -1583,7 +1583,7 @@ const List<Question> allMCQs = [
       options: ['(2x − 3)²', '(2x + 3)²', '(4x + 3)²', '(2x + 3)(2x − 3)'],
       correctIndex: 1,
       explanation: 'এটি (2x)² + 2·2x·3 + 3² আকারের, তাই (2x + 3)²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_26',
       subjectId: 'general_math',
@@ -1592,7 +1592,7 @@ const List<Question> allMCQs = [
       options: ['2xy', '4xy', 'x²y²', '8xy'],
       correctIndex: 1,
       explanation: '(x+y)² − (x−y)² = 4xy।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_27',
       subjectId: 'general_math',
@@ -1601,7 +1601,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৬', '৯', '৩৬'],
       correctIndex: 2,
       explanation: 'x² + 6x + 9 = (x + 3)²; তাই ৯ যোগ করতে হবে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_28',
       subjectId: 'general_math',
@@ -1610,7 +1610,7 @@ const List<Question> allMCQs = [
       options: ['২', '৪', '৬', '√2'],
       correctIndex: 0,
       explanation: '(x − y)² = (x + y)² − 4xy = 6 − 4 = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_29',
       subjectId: 'general_math',
@@ -1619,7 +1619,7 @@ const List<Question> allMCQs = [
       options: ['(a + b)²/ab', '(a − b)/ab', '(a + b)/ab', '(a − b)²/ab'],
       correctIndex: 3,
       explanation: '(a² + b² − 2ab)/ab = (a − b)²/ab।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c3_30',
       subjectId: 'general_math',
@@ -1633,8 +1633,8 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'ঘনের অন্তর: x³ − 2³ = (x − 2)(x² + 2x + 4)।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৪ (সূচক ও লগারিদম) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৪ (সূচক ও লগারিদম) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c4_01',
       subjectId: 'general_math',
@@ -1643,7 +1643,7 @@ const List<Question> allMCQs = [
       options: ['2⁷', '2¹²', '2¹', '4⁷'],
       correctIndex: 0,
       explanation: 'একই ভিত্তির গুণে সূচক যোগ হয়: 3 + 4 = 7।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_02',
       subjectId: 'general_math',
@@ -1652,7 +1652,7 @@ const List<Question> allMCQs = [
       options: ['5⁵', '5⁶', '5³⁶', '5⁴'],
       correctIndex: 0,
       explanation: 'একই ভিত্তির ভাগে সূচক বিয়োগ হয়: 9 − 4 = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_03',
       subjectId: 'general_math',
@@ -1661,7 +1661,7 @@ const List<Question> allMCQs = [
       options: ['3⁸', '3⁹', '3⁵', '3⁶'],
       correctIndex: 3,
       explanation: 'সূচকের সূচকে ঘাতগুলো গুণ হয়: 2 × 3 = 6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_04',
       subjectId: 'general_math',
@@ -1670,7 +1670,7 @@ const List<Question> allMCQs = [
       options: ['০', '৭', 'অসংজ্ঞায়িত', '১'],
       correctIndex: 3,
       explanation: 'যেকোনো অশূন্য সংখ্যার শূন্য ঘাত ১।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_05',
       subjectId: 'general_math',
@@ -1679,7 +1679,7 @@ const List<Question> allMCQs = [
       options: ['−৮', '−৬', '১/৮', '১/৬'],
       correctIndex: 2,
       explanation: 'ঋণাত্মক সূচক মানে ব্যস্ত: 2⁻³ = 1/2³ = 1/8।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_06',
       subjectId: 'general_math',
@@ -1688,7 +1688,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৪', '৯', '২'],
       correctIndex: 0,
       explanation: '১/২ ঘাত মানে বর্গমূল: √9 = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_07',
       subjectId: 'general_math',
@@ -1697,7 +1697,7 @@ const List<Question> allMCQs = [
       options: ['২', '৩', '৪', '১৬'],
       correctIndex: 2,
       explanation: '৮^(১/৩) = 2 এবং 2² = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_08',
       subjectId: 'general_math',
@@ -1706,7 +1706,7 @@ const List<Question> allMCQs = [
       options: ['−৭', '৪৯', '৭', '±৭'],
       correctIndex: 3,
       explanation: 'বর্গমূল ধনাত্মক ও ঋণাত্মক দুটোই হতে পারে: x = ±7।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_09',
       subjectId: 'general_math',
@@ -1715,7 +1715,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৬', '১৬', '৪'],
       correctIndex: 0,
       explanation: '32 = 2⁵, তাই x = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_10',
       subjectId: 'general_math',
@@ -1724,7 +1724,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৩', '৪'],
       correctIndex: 2,
       explanation: '81 = 3⁴ হওয়ায় x + 1 = 4, অর্থাৎ x = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_11',
       subjectId: 'general_math',
@@ -1733,7 +1733,7 @@ const List<Question> allMCQs = [
       options: ['−২', '২', '−৪', '৪'],
       correctIndex: 0,
       explanation: '1/16 = 4⁻², তাই x = −2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_12',
       subjectId: 'general_math',
@@ -1742,7 +1742,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৬', '৯', '৮১'],
       correctIndex: 2,
       explanation: '(√3)⁴ = ((√3)²)² = 3² = 9।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_13',
       subjectId: 'general_math',
@@ -1752,7 +1752,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'ভেতরে a × a^(1/2) = a^(3/2); তার উপর বর্গমূল: a^(3/2 × 1/2) = a^(3/4)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_14',
       subjectId: 'general_math',
@@ -1761,7 +1761,7 @@ const List<Question> allMCQs = [
       options: ['২', '১০', '১০০', '৩'],
       correctIndex: 3,
       explanation: '10³ = 1000, তাই log₁₀1000 = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_15',
       subjectId: 'general_math',
@@ -1770,7 +1770,7 @@ const List<Question> allMCQs = [
       options: ['৪', '৫', '৬', '১৬'],
       correctIndex: 1,
       explanation: '2⁵ = 32, তাই লগের মান 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_16',
       subjectId: 'general_math',
@@ -1779,7 +1779,7 @@ const List<Question> allMCQs = [
       options: ['১', 'a', '০', 'অসংজ্ঞায়িত'],
       correctIndex: 2,
       explanation: 'যেকোনো ভিত্তিতে log 1 = 0, কারণ a⁰ = 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_17',
       subjectId: 'general_math',
@@ -1788,7 +1788,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৩', '১০০'],
       correctIndex: 1,
       explanation: 'log(4 × 25) = log 100 = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_18',
       subjectId: 'general_math',
@@ -1797,7 +1797,7 @@ const List<Question> allMCQs = [
       options: ['০', '২', '৩', '৫'],
       correctIndex: 1,
       explanation: 'log(125/5) = log 25 = 2 (ভিত্তি 5)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_19',
       subjectId: 'general_math',
@@ -1806,7 +1806,7 @@ const List<Question> allMCQs = [
       options: ['৩০০', '১০০০', '৩০', '৯০০'],
       correctIndex: 1,
       explanation: 'লগের সংজ্ঞা অনুযায়ী x = 10³ = 1000।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_20',
       subjectId: 'general_math',
@@ -1820,7 +1820,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'গুণফলের লগ = লগদ্বয়ের সমষ্টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_21',
       subjectId: 'general_math',
@@ -1834,7 +1834,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'ভাগফলের লগ = লগদ্বয়ের অন্তর।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_22',
       subjectId: 'general_math',
@@ -1843,7 +1843,7 @@ const List<Question> allMCQs = [
       options: ['log M + n', '(log M)^n', 'M log n', 'n log M'],
       correctIndex: 3,
       explanation: 'ঘাতের লগে সূচকটি সহগ হয়ে আসে: n log M।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_23',
       subjectId: 'general_math',
@@ -1852,7 +1852,7 @@ const List<Question> allMCQs = [
       options: ['৩', '২৭', '৪', '৯'],
       correctIndex: 2,
       explanation: '3⁴ = 81, তাই লগের মান 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_24',
       subjectId: 'general_math',
@@ -1861,7 +1861,7 @@ const List<Question> allMCQs = [
       options: ['−২', '২', '−১', '১০'],
       correctIndex: 0,
       explanation: '0.01 = 10⁻², তাই লগের মান −2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_25',
       subjectId: 'general_math',
@@ -1870,7 +1870,7 @@ const List<Question> allMCQs = [
       options: ['৩২', '৩৬', '৬৪', '১২'],
       correctIndex: 2,
       explanation: 'x = 2⁶ = 64।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_26',
       subjectId: 'general_math',
@@ -1879,7 +1879,7 @@ const List<Question> allMCQs = [
       options: ['০', '১', 'e', '১০'],
       correctIndex: 1,
       explanation: 'যেকোনো ভিত্তিতে ভিত্তিসংখ্যাটির লগ ১; e¹ = e।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_27',
       subjectId: 'general_math',
@@ -1888,7 +1888,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৩৫', '১২', '৭'],
       correctIndex: 3,
       explanation: 'a^(logₐ x) = x; এখানে a = 5 ও x = 7।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_28',
       subjectId: 'general_math',
@@ -1897,7 +1897,7 @@ const List<Question> allMCQs = [
       options: ['১০', '৭', '৩', '১'],
       correctIndex: 3,
       explanation: 'log(2 × 5) = log 10 = 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_29',
       subjectId: 'general_math',
@@ -1906,7 +1906,7 @@ const List<Question> allMCQs = [
       options: ['−১', '−৪', '৪', '−৩'],
       correctIndex: 1,
       explanation: '0.0001 = 10⁻⁴, তাই x = −4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c4_30',
       subjectId: 'general_math',
@@ -1915,8 +1915,8 @@ const List<Question> allMCQs = [
       options: ['৪/৯', '৯/৪', '−৪/৯', '৬'],
       correctIndex: 1,
       explanation: 'ব্যস্ত করে বর্গ: (3/2)² = 9/4।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৫ (এক চলকবিশিষ্ট সমীকরণ) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৫ (এক চলকবিশিষ্ট সমীকরণ) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c5_01',
       subjectId: 'general_math',
@@ -1925,7 +1925,7 @@ const List<Question> allMCQs = [
       options: ['২', '৫', '১০', '২০'],
       correctIndex: 1,
       explanation: 'উভয় পক্ষকে ২ দিয়ে ভাগ করলে x = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_02',
       subjectId: 'general_math',
@@ -1934,7 +1934,7 @@ const List<Question> allMCQs = [
       options: ['৯', '১', '১৬', '২'],
       correctIndex: 2,
       explanation: 'x = 9 + 7 = 16।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_03',
       subjectId: 'general_math',
@@ -1943,7 +1943,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৫', '৭', '৯'],
       correctIndex: 1,
       explanation: '3x = 15 হওয়ায় x = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_04',
       subjectId: 'general_math',
@@ -1952,7 +1952,7 @@ const List<Question> allMCQs = [
       options: ['২৪', '১.৫', '১০', '৬'],
       correctIndex: 0,
       explanation: 'x = 6 × 4 = 24।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_05',
       subjectId: 'general_math',
@@ -1961,7 +1961,7 @@ const List<Question> allMCQs = [
       options: ['২', '৩', '৪', '৬'],
       correctIndex: 2,
       explanation: '5x − 2x = 9 + 3 হলে 3x = 12, অর্থাৎ x = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_06',
       subjectId: 'general_math',
@@ -1970,7 +1970,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৪', '১১', '৭'],
       correctIndex: 1,
       explanation: 'x + 3 = 7 হলে x = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_07',
       subjectId: 'general_math',
@@ -1979,7 +1979,7 @@ const List<Question> allMCQs = [
       options: ['৭', '৮', '১১', '৯'],
       correctIndex: 3,
       explanation: 'x + 1 = 10 হলে x = 9।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_08',
       subjectId: 'general_math',
@@ -1988,7 +1988,7 @@ const List<Question> allMCQs = [
       options: ['ab', 'b/a', 'a/b', 'a − b'],
       correctIndex: 1,
       explanation: 'উভয় পক্ষকে a দিয়ে ভাগ করলে x = b/a।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_09',
       subjectId: 'general_math',
@@ -1998,7 +1998,7 @@ const List<Question> allMCQs = [
       options: ['সমাধান সেট', 'মূল', 'সহগ', 'ধ্রুবক'],
       correctIndex: 1,
       explanation: 'সমীকরণসিদ্ধকারী প্রতিটি মানই সমীকরণটির মূল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_10',
       subjectId: 'general_math',
@@ -2007,7 +2007,7 @@ const List<Question> allMCQs = [
       options: ['{6}', '{−6}', '{−6, 6}', '{0, 6}'],
       correctIndex: 2,
       explanation: '6 ও −6 উভয়ের বর্গই 36, তাই মূল দুটি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_11',
       subjectId: 'general_math',
@@ -2016,7 +2016,7 @@ const List<Question> allMCQs = [
       options: ['{8}', '{−2, 8}', '{2, 8}', '{−8, 2}'],
       correctIndex: 1,
       explanation: 'x − 3 = ±5 হলে x = 8 অথবা x = −2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_12',
       subjectId: 'general_math',
@@ -2026,7 +2026,7 @@ const List<Question> allMCQs = [
       options: ['৪৪ ও ৪৭', '৪৫ ও ৪৬', '৪০ ও ৫১', '৪৫ ও ৪৭'],
       correctIndex: 1,
       explanation: 'x + (x + 1) = 91 হলে x = 45; সংখ্যা দুটি 45 ও 46।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_13',
       subjectId: 'general_math',
@@ -2041,7 +2041,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: '3x + 12 = 2(x + 12) হলে x = 12; পুত্র ১২, পিতা ৩৬ বছর।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_14',
       subjectId: 'general_math',
@@ -2050,7 +2050,7 @@ const List<Question> allMCQs = [
       options: ['৩', '২', '৪', '৫'],
       correctIndex: 0,
       explanation: '7x − 2x + 5 = 20 হলে 5x = 15, অর্থাৎ x = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_15',
       subjectId: 'general_math',
@@ -2059,7 +2059,7 @@ const List<Question> allMCQs = [
       options: ['১০', '১২', '১৫', '২০'],
       correctIndex: 2,
       explanation: '১৫ দিয়ে গুণ করলে 9x = 5x + 60, অর্থাৎ x = 15।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_16',
       subjectId: 'general_math',
@@ -2068,7 +2068,7 @@ const List<Question> allMCQs = [
       options: ['৫০', '৬০', '৯০', '৪৫'],
       correctIndex: 3,
       explanation: 'x × 2/3 = 30 হলে x = 30 × 3/2 = 45।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_17',
       subjectId: 'general_math',
@@ -2077,7 +2077,7 @@ const List<Question> allMCQs = [
       options: ['৮', '১০', '১২', '১৪'],
       correctIndex: 2,
       explanation: '6x = 72 হলে x = 12।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_18',
       subjectId: 'general_math',
@@ -2086,7 +2086,7 @@ const List<Question> allMCQs = [
       options: ['২', '৩', '৫', '৪'],
       correctIndex: 3,
       explanation: '0.2x = 0.8 হলে x = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_19',
       subjectId: 'general_math',
@@ -2095,7 +2095,7 @@ const List<Question> allMCQs = [
       options: ['−৩', '৩', '০', '৯'],
       correctIndex: 0,
       explanation: '3x = −9 হলে x = −3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_20',
       subjectId: 'general_math',
@@ -2109,7 +2109,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'উভয় পক্ষ অভেদভাবে সমান, তাই x এর যেকোনো মান সমাধান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_21',
       subjectId: 'general_math',
@@ -2118,7 +2118,7 @@ const List<Question> allMCQs = [
       options: ['অসংখ্য সমাধান', 'x = 3', 'x = −3', 'কোনো সমাধান নেই'],
       correctIndex: 3,
       explanation: '5 = 2 অসম্ভব, তাই কোনো x মান সমীকরণ সিদ্ধ করে না।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_22',
       subjectId: 'general_math',
@@ -2129,7 +2129,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           '2(x + 2x) = 36 হলে x = 6; প্রস্থ ৬ মিটার, দৈর্ঘ্য ১২ মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_23',
       subjectId: 'general_math',
@@ -2139,7 +2139,7 @@ const List<Question> allMCQs = [
       options: ['২০°', '৪৫°', '৬০°', '৩০°'],
       correctIndex: 3,
       explanation: '6x = 180° হলে x = 30°; ক্ষুদ্রতম কোণ ৩০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_24',
       subjectId: 'general_math',
@@ -2148,7 +2148,7 @@ const List<Question> allMCQs = [
       options: ['{2, 3}', '{5, 7}', '{−2, −5}', '{2, 5}'],
       correctIndex: 3,
       explanation: 'গুণফল শূন্য হলে কোনো একটি গুণনীয়ক শূন্য: x = 2 বা x = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_25',
       subjectId: 'general_math',
@@ -2157,7 +2157,7 @@ const List<Question> allMCQs = [
       options: ['{−2, −3}', '{2, 3}', '{−1, −6}', '{1, 6}'],
       correctIndex: 0,
       explanation: '(x + 2)(x + 3) = 0 হলে x = −2 বা x = −3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_26',
       subjectId: 'general_math',
@@ -2166,7 +2166,7 @@ const List<Question> allMCQs = [
       options: ['১০০', '১২৫', '১৬০', '২০০'],
       correctIndex: 2,
       explanation: 'x × 25/100 = 40 হলে x = 160।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_27',
       subjectId: 'general_math',
@@ -2176,7 +2176,7 @@ const List<Question> allMCQs = [
       options: ['১৫%', '১০%', '২০%', '২৫%'],
       correctIndex: 0,
       explanation: 'লাভ ৬০ টাকা; শতকরা লাভ = 60/400 × 100% = 15%।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_28',
       subjectId: 'general_math',
@@ -2185,7 +2185,7 @@ const List<Question> allMCQs = [
       options: ['১০', '১১', '১৫', '১২'],
       correctIndex: 3,
       explanation: '5x/6 = 10 হলে x = 12।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_29',
       subjectId: 'general_math',
@@ -2194,7 +2194,7 @@ const List<Question> allMCQs = [
       options: ['৮', '৪', '৬', '১০'],
       correctIndex: 0,
       explanation: '3x − 6 = 2x + 2 হলে x = 8।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c5_30',
       subjectId: 'general_math',
@@ -2204,8 +2204,8 @@ const List<Question> allMCQs = [
       options: ['৯ টাকা', '১১ টাকা', '১০ টাকা', '১২ টাকা'],
       correctIndex: 1,
       explanation: '5x + 60 = 115 হলে 5x = 55, অর্থাৎ x = 11 টাকা।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৬ (রেখা, কোণ ও ত্রিভুজ) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৬ (রেখা, কোণ ও ত্রিভুজ) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c6_01',
       subjectId: 'general_math',
@@ -2214,7 +2214,7 @@ const List<Question> allMCQs = [
       options: ['৪৫°', '১৮০°', '৩৬০°', '৯০°'],
       correctIndex: 3,
       explanation: 'এক সমকোণ = ৯০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_02',
       subjectId: 'general_math',
@@ -2223,7 +2223,7 @@ const List<Question> allMCQs = [
       options: ['৯০°', '১৮০°', '২৭০°', '৩৬০°'],
       correctIndex: 1,
       explanation: 'এক সরলকোণ = দুই সমকোণ = ১৮০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_03',
       subjectId: 'general_math',
@@ -2232,7 +2232,7 @@ const List<Question> allMCQs = [
       options: ['৩৬০°', '৯০°', '২৭০°', '১৮০°'],
       correctIndex: 3,
       explanation: 'দুটি কোণের সমষ্টি ১৮০° হলে তারা পরস্পরের সম্পূরক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_04',
       subjectId: 'general_math',
@@ -2241,7 +2241,7 @@ const List<Question> allMCQs = [
       options: ['৯০°', '১৮০°', '৪৫°', '৬০°'],
       correctIndex: 0,
       explanation: 'দুটি কোণের সমষ্টি ৯০° হলে তারা পরস্পরের পূরক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_05',
       subjectId: 'general_math',
@@ -2250,7 +2250,7 @@ const List<Question> allMCQs = [
       options: ['সম্পূরক', 'সমান', 'পূরক', 'অসমান'],
       correctIndex: 1,
       explanation: 'বিপ্রতীপ কোণদ্বয় সর্বদা পরস্পর সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_06',
       subjectId: 'general_math',
@@ -2259,7 +2259,7 @@ const List<Question> allMCQs = [
       options: ['৪৫°', '৫৫°', '১৩৫°', '৯০°'],
       correctIndex: 0,
       explanation: 'পূরক = 90° − 45° = 45°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_07',
       subjectId: 'general_math',
@@ -2268,7 +2268,7 @@ const List<Question> allMCQs = [
       options: ['৮০°', '৭০°', '৯০°', '২৫০°'],
       correctIndex: 1,
       explanation: 'সম্পূরক = 180° − 110° = 70°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_08',
       subjectId: 'general_math',
@@ -2278,7 +2278,7 @@ const List<Question> allMCQs = [
       options: ['সম্পূরক', 'অসমান', 'সমান', 'পূরক'],
       correctIndex: 2,
       explanation: 'সমান্তরাল রেখার ক্ষেত্রে অনুরূপ কোণদ্বয় সমান হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_09',
       subjectId: 'general_math',
@@ -2287,7 +2287,7 @@ const List<Question> allMCQs = [
       options: ['সমান', 'সম্পূরক', 'অসমান', '৯০°'],
       correctIndex: 0,
       explanation: 'একান্তর কোণদ্বয় পরস্পর সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_10',
       subjectId: 'general_math',
@@ -2297,7 +2297,7 @@ const List<Question> allMCQs = [
       options: ['৯০°', '১৮০°', '২৭০°', '৬০°'],
       correctIndex: 1,
       explanation: 'একই পার্শ্বস্থ অন্তঃকোণদ্বয় পরস্পর সম্পূরক (১৮০°)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_11',
       subjectId: 'general_math',
@@ -2306,7 +2306,7 @@ const List<Question> allMCQs = [
       options: ['১ সমকোণ', '২ সমকোণ', '৩ সমকোণ', '৪ সমকোণ'],
       correctIndex: 1,
       explanation: 'ত্রিভুজের তিন কোণের সমষ্টি ১৮০° = দুই সমকোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_12',
       subjectId: 'general_math',
@@ -2316,7 +2316,7 @@ const List<Question> allMCQs = [
       options: ['অন্তরের সমান', 'গুণফলের সমান', 'গড়ের সমান', 'সমষ্টির সমান'],
       correctIndex: 3,
       explanation: 'বহিঃস্থ কোণ = অন্তঃস্থ বিপরীত কোণদ্বয়ের সমষ্টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_13',
       subjectId: 'general_math',
@@ -2325,7 +2325,7 @@ const List<Question> allMCQs = [
       options: ['৩০°', '৪৫°', '৬০°', '৯০°'],
       correctIndex: 2,
       explanation: 'তিন কোণ সমান ও সমষ্টি ১৮০° হওয়ায় প্রতিটি ৬০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_14',
       subjectId: 'general_math',
@@ -2335,7 +2335,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'সমান বাহুদ্বয়ের বিপরীত কোণ সমান, তাই ভূমি সংলগ্ন কোণদ্বয় সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_15',
       subjectId: 'general_math',
@@ -2344,7 +2344,7 @@ const List<Question> allMCQs = [
       options: ['৫ সেমি', '৬ সেমি', '৭ সেমি', '১২ সেমি'],
       correctIndex: 0,
       explanation: 'পিথাগোরাস: √(3² + 4²) = √25 = 5 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_16',
       subjectId: 'general_math',
@@ -2353,7 +2353,7 @@ const List<Question> allMCQs = [
       options: ['লম্ব', 'ভূমি', 'অতিভুজ', 'মধ্যমা'],
       correctIndex: 2,
       explanation: 'সমকোণের বিপরীত বাহুই অতিভুজ, এটিই বৃহত্তম বাহু।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_17',
       subjectId: 'general_math',
@@ -2363,7 +2363,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'ত্রিভুজ অসমতা: দুই বাহুর সমষ্টি সবসময় তৃতীয় বাহু অপেক্ষা বড়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_18',
       subjectId: 'general_math',
@@ -2372,7 +2372,7 @@ const List<Question> allMCQs = [
       options: ['ক্ষুদ্রতর', 'বৃহত্তর', 'সবসময় সমকোণ', 'সবসময় ৬০°'],
       correctIndex: 1,
       explanation: 'বৃহত্তর বাহুর বিপরীত কোণই বৃহত্তর কোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_19',
       subjectId: 'general_math',
@@ -2387,7 +2387,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'কেবল কোণ সমান হলে ত্রিভুজ সদৃশকোণী হয়, সর্বসম হওয়ার গ্যারান্টি নেই।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_20',
       subjectId: 'general_math',
@@ -2401,7 +2401,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'শীর্ষ থেকে বিপরীত বাহুর মধ্যবিন্দুর সংযোগ সরলরেখাই মধ্যমা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_21',
       subjectId: 'general_math',
@@ -2410,7 +2410,7 @@ const List<Question> allMCQs = [
       options: ['লম্বকেন্দ্র', 'ভরকেন্দ্র', 'পরিকেন্দ্র', 'অন্তঃকেন্দ্র'],
       correctIndex: 1,
       explanation: 'মধ্যমাত্রয়ের ছেদবিন্দু ত্রিভুজের ভরকেন্দ্র।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_22',
       subjectId: 'general_math',
@@ -2420,7 +2420,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'এক কোণ ৯০° হওয়ায় বাকি দুই কোণের সমষ্টি = 180° − 90° = 90°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_23',
       subjectId: 'general_math',
@@ -2429,7 +2429,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '১৫০°', '৩০°', '৯০°'],
       correctIndex: 0,
       explanation: 'পূরক = 90° − 30° = 60°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_24',
       subjectId: 'general_math',
@@ -2438,7 +2438,7 @@ const List<Question> allMCQs = [
       options: ['৪০°', '৬০°', '৫০°', '৭০°'],
       correctIndex: 2,
       explanation: 'তৃতীয় কোণ = 180° − (80° + 50°) = 50°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_25',
       subjectId: 'general_math',
@@ -2447,7 +2447,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '৯০°', '১২০°', '১৫০°'],
       correctIndex: 2,
       explanation: 'বহিঃস্থ কোণ = 180° − 60° = 120°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_26',
       subjectId: 'general_math',
@@ -2457,7 +2457,7 @@ const List<Question> allMCQs = [
       options: ['রেখাংশ', 'সরলরেখা', 'বক্ররেখা', 'রশ্মি'],
       correctIndex: 3,
       explanation: 'একটি প্রান্তবিন্দুসহ অসীম দৈর্ঘ্যবিশিষ্ট রেখা হলো রশ্মি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_27',
       subjectId: 'general_math',
@@ -2467,7 +2467,7 @@ const List<Question> allMCQs = [
       options: ['লম্ব রেখা', 'মিলিত রেখা', 'বক্ররেখা', 'সমান্তরাল রেখা'],
       correctIndex: 3,
       explanation: 'অছেদকারী সমতলীয় সরলরেখাই সমান্তরাল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_28',
       subjectId: 'general_math',
@@ -2477,7 +2477,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'সমান বাহুদ্বয়ের বিপরীত কোণ সমান; AB-এর বিপরীত ∠C ও AC-এর বিপরীত ∠B।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_29',
       subjectId: 'general_math',
@@ -2487,7 +2487,7 @@ const List<Question> allMCQs = [
       options: ['৪৫°', '১৮০°', '৯০°', '৩৬০°'],
       correctIndex: 2,
       explanation: 'লম্ব হলে সন্নিহিত কোণদ্বয় সমান ও প্রতিটি সমকোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c6_30',
       subjectId: 'general_math',
@@ -2496,8 +2496,8 @@ const List<Question> allMCQs = [
       options: ['সমান', 'পূরক', 'সম্পূরক', 'বিপ্রতীপ'],
       correctIndex: 2,
       explanation: 'বহিঃস্থ কোণ + সন্নিহিত অন্তঃকোণ = ১৮০°।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৭ (ব্যবহারিক জ্যামিতি) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৭ (ব্যবহারিক জ্যামিতি) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c7_01',
       subjectId: 'general_math',
@@ -2513,7 +2513,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'দুই বাহুর সমষ্টি তৃতীয় বাহু অপেক্ষা বড় হওয়া অঙ্কনের শর্ত।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_02',
       subjectId: 'general_math',
@@ -2528,7 +2528,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'অতিভুজ শুধু সমকোণী ত্রিভুজেই থাকে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_03',
       subjectId: 'general_math',
@@ -2539,7 +2539,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'ত্রিভুজের তিনটি স্বাধীন উপাত্ত (যেমন তিন বাহু) থাকলেই নির্দিষ্ট ত্রিভুজ আঁকা যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_04',
       subjectId: 'general_math',
@@ -2550,7 +2550,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'এই উপাত্তগুলো থাকলে বাহু-কোণ-বাহু শর্তে ঠিক একটি ত্রিভুজ পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_05',
       subjectId: 'general_math',
@@ -2561,7 +2561,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'চতুর্ভুজ অঙ্কনে সর্বাধিক পাঁচটি স্বাধীন উপাত্ত প্রয়োজন হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_06',
       subjectId: 'general_math',
@@ -2576,7 +2576,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'রম্বসের কর্ণদ্বয় পরস্পরকে সমকোণে সমদ্বিখণ্ডিত করে (সমান নয়)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_07',
       subjectId: 'general_math',
@@ -2590,7 +2590,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'সামান্তরিকের কর্ণদ্বয় পরস্পরকে সমদ্বিখণ্ডিত করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_08',
       subjectId: 'general_math',
@@ -2599,7 +2599,7 @@ const List<Question> allMCQs = [
       options: ['অসমান', 'লম্ব', 'সর্বদা বাহুর সমান', 'পরস্পর সমান'],
       correctIndex: 3,
       explanation: 'আয়তক্ষেত্রের দুটি কর্ণ পরস্পর সমান হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_09',
       subjectId: 'general_math',
@@ -2608,7 +2608,7 @@ const List<Question> allMCQs = [
       options: ['√2 গুণ', '2 গুণ', '√3 গুণ', '3 গুণ'],
       correctIndex: 0,
       explanation: 'পিথাগোরাস অনুযায়ী কর্ণ = বাহু × √2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_10',
       subjectId: 'general_math',
@@ -2622,7 +2622,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'ট্রাপিজিয়ামের এক জোড়া বিপরীত বাহু সমান্তরাল হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_11',
       subjectId: 'general_math',
@@ -2631,7 +2631,7 @@ const List<Question> allMCQs = [
       options: ['১৮০°', '২৭০°', '৩৬০°', '৫৪০°'],
       correctIndex: 2,
       explanation: 'চতুর্ভুজের চার কোণের সমষ্টি ৩৬০° বা চার সমকোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_12',
       subjectId: 'general_math',
@@ -2640,7 +2640,7 @@ const List<Question> allMCQs = [
       options: ['সমান', 'পূরক', 'সম্পূরক', 'অসমান'],
       correctIndex: 2,
       explanation: 'সামান্তরিকের পাশাপাশি কোণদ্বয়ের সমষ্টি ১৮০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_13',
       subjectId: 'general_math',
@@ -2654,7 +2654,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'সামান্তরিকের বিপরীত বাহুগুলো সমান এবং সমান্তরাল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_14',
       subjectId: 'general_math',
@@ -2663,7 +2663,7 @@ const List<Question> allMCQs = [
       options: ['সম্পূরক', 'সমান', 'পূরক', 'অসমান'],
       correctIndex: 1,
       explanation: 'সামান্তরিকের বিপরীত কোণদ্বয় পরস্পর সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_15',
       subjectId: 'general_math',
@@ -2673,7 +2673,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'কর্ণদ্বয় সমান হওয়া আয়তক্ষেত্রের বৈশিষ্ট্য (বর্গও আয়তক্ষেত্রের বিশেষ রূপ)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_16',
       subjectId: 'general_math',
@@ -2683,7 +2683,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'রম্বসের কর্ণদ্বয় সমান হলে প্রতিটি কোণ সমকোণ হয়, তখন তা বর্গক্ষেত্র।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_17',
       subjectId: 'general_math',
@@ -2693,7 +2693,7 @@ const List<Question> allMCQs = [
       options: ['আয়তক্ষেত্র', 'রম্বস', 'বর্গক্ষেত্র', 'ট্রাপিজিয়াম'],
       correctIndex: 2,
       explanation: 'উভয় বৈশিষ্ট্য একসাথে শুধু বর্গক্ষেত্রেরই আছে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_18',
       subjectId: 'general_math',
@@ -2703,7 +2703,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '২টি', '৩টি', '৪টি'],
       correctIndex: 0,
       explanation: 'কেবল বাহুর দৈর্ঘ্য জানলেই বর্গক্ষেত্র আঁকা যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_19',
       subjectId: 'general_math',
@@ -2718,7 +2718,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'বাহুগুলোর লম্ব সমদ্বিখণ্ডক যে বিন্দুতে মিলিত হয় সেটিই পরিকেন্দ্র।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_20',
       subjectId: 'general_math',
@@ -2733,7 +2733,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'তিন কোণের সমদ্বিখণ্ডক যে বিন্দুতে মিলিত হয় সেটিই অন্তঃকেন্দ্র।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_21',
       subjectId: 'general_math',
@@ -2748,7 +2748,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'প্রদত্ত তথ্য বিন্যস্ত করে রুক্ষ চিত্র আঁকাই অঙ্কনের প্রথম ধাপ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_22',
       subjectId: 'general_math',
@@ -2758,7 +2758,7 @@ const List<Question> allMCQs = [
       options: ['৩ সেমি', '৯ সেমি', '৬ সেমি', '১২ সেমি'],
       correctIndex: 2,
       explanation: 'বাহু = কর্ণ ÷ √2 = 6√2/√2 = 6 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_23',
       subjectId: 'general_math',
@@ -2773,7 +2773,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'দুই কোণ জানা থাকলে তৃতীয় কোণ 180° থেকে বের করা যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_24',
       subjectId: 'general_math',
@@ -2787,7 +2787,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'স্কেল ও কম্পাসই শাস্ত্রীয় জ্যামিতিক অঙ্কনের মৌলিক উপকরণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_25',
       subjectId: 'general_math',
@@ -2796,7 +2796,7 @@ const List<Question> allMCQs = [
       options: ['অসমান', 'সমান', 'পূরক', 'সমকোণ'],
       correctIndex: 1,
       explanation: 'সমদ্বিবাহু ট্রাপিজিয়ামের একই ভূমি সংলগ্ন কোণদ্বয় সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_26',
       subjectId: 'general_math',
@@ -2805,7 +2805,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '৪টি', '৩টি', '২টি'],
       correctIndex: 3,
       explanation: 'চারটি শীর্ষবিন্দু থেকে কর্ণ পাওয়া যায় মাত্র ২টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_27',
       subjectId: 'general_math',
@@ -2814,7 +2814,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '৩০°', '১২০°', '৯০°'],
       correctIndex: 0,
       explanation: 'রম্বসও সামান্তরিক, তাই বিপরীত কোণ সমান (৬০°)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_28',
       subjectId: 'general_math',
@@ -2823,7 +2823,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '৯০°', '১২০°', '১৫০°'],
       correctIndex: 2,
       explanation: 'ক্রমিক কোণদ্বয় সম্পূরক: 180° − 60° = 120°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_29',
       subjectId: 'general_math',
@@ -2834,7 +2834,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'রম্বসের কর্ণদ্বয় পরস্পরকে সমকোণে সমদ্বিখণ্ডিত করে, তাই কর্ণ জানলেই রম্বস আঁকা যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c7_30',
       subjectId: 'general_math',
@@ -2849,8 +2849,8 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'দুই বাহুর সমষ্টি 7 < 8 হওয়ায় ত্রিভুজ অসমতা মানে না; অঙ্কন অসম্ভব।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৮ (বৃত্ত) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৮ (বৃত্ত) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c8_01',
       subjectId: 'general_math',
@@ -2859,7 +2859,7 @@ const List<Question> allMCQs = [
       options: ['ব্যাসার্ধ', 'চাপ', 'স্পর্শক', 'ব্যাস'],
       correctIndex: 3,
       explanation: 'কেন্দ্র দিয়ে যাওয়া জ্যা-ই ব্যাস।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_02',
       subjectId: 'general_math',
@@ -2868,7 +2868,7 @@ const List<Question> allMCQs = [
       options: ['ব্যাসার্ধ', 'ব্যাস', 'স্পর্শরেখা', 'ছেদক রেখা'],
       correctIndex: 1,
       explanation: 'ব্যাস-ই বৃত্তের বৃহত্তম জ্যা (d = 2r)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_03',
       subjectId: 'general_math',
@@ -2878,7 +2878,7 @@ const List<Question> allMCQs = [
       options: ['২০০°', '৫০°', '২৫°', '১০০°'],
       correctIndex: 1,
       explanation: 'পরিধিস্থ কোণ কেন্দ্রস্থ কোণের অর্ধেক: ১০০°/২ = ৫০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_04',
       subjectId: 'general_math',
@@ -2887,7 +2887,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '৪৫°', '১৮০°', '৯০°'],
       correctIndex: 3,
       explanation: 'অর্ধবৃত্তস্থ কোণ সর্বদা সমকোণ (৯০°)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_05',
       subjectId: 'general_math',
@@ -2896,7 +2896,7 @@ const List<Question> allMCQs = [
       options: ['৭০°', '১৭.৫°', '৩৫°', '১৪৫°'],
       correctIndex: 0,
       explanation: 'কেন্দ্রস্থ কোণ পরিধিস্থ কোণের দ্বিগুণ: ২ × ৩৫° = ৭০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_06',
       subjectId: 'general_math',
@@ -2906,7 +2906,7 @@ const List<Question> allMCQs = [
       options: ['৯০°', '১৮০°', '৬০°', '৪৫°'],
       correctIndex: 0,
       explanation: 'স্পর্শবিন্দুতে ব্যাসার্ধ স্পর্শকের উপর লম্ব।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_07',
       subjectId: 'general_math',
@@ -2917,7 +2917,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'বহিঃস্থ বিন্দু থেকে টানা স্পর্শকদ্বয়ের দৈর্ঘ্য সর্বদা সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_08',
       subjectId: 'general_math',
@@ -2931,7 +2931,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'কেন্দ্র থেকে জ্যার উপর লম্ব জ্যাকে সমান দুই ভাগে ভাগ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_09',
       subjectId: 'general_math',
@@ -2940,7 +2940,7 @@ const List<Question> allMCQs = [
       options: ['৫ সেমি', '২০ সেমি', '১০ সেমি', '২.৫ সেমি'],
       correctIndex: 0,
       explanation: 'ব্যাসার্ধ = ব্যাস ÷ ২ = ৫ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_10',
       subjectId: 'general_math',
@@ -2949,7 +2949,7 @@ const List<Question> allMCQs = [
       options: ['সমান', 'পূরক', 'সম্পূরক', 'অসমান'],
       correctIndex: 2,
       explanation: 'বৃত্তস্থ চতুর্ভুজের বিপরীত কোণদ্বয়ের সমষ্টি ১৮০°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_11',
       subjectId: 'general_math',
@@ -2958,7 +2958,7 @@ const List<Question> allMCQs = [
       options: ['অসমান', 'সম্পূরক', 'সমান', 'পূরক'],
       correctIndex: 2,
       explanation: 'একই চাপের উপর দণ্ডায়মান সব পরিধিস্থ কোণ সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_12',
       subjectId: 'general_math',
@@ -2972,7 +2972,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'জ্যার লম্ব সমদ্বিখণ্ডক বৃত্তের কেন্দ্রগামী।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_13',
       subjectId: 'general_math',
@@ -2982,7 +2982,7 @@ const List<Question> allMCQs = [
       options: ['২টি', '১টি', '৩টি', 'অসংখ্য'],
       correctIndex: 0,
       explanation: 'ছেদক রেখা বৃত্তকে সর্বাধিক দুই বিন্দুতে ছেদ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_14',
       subjectId: 'general_math',
@@ -2991,7 +2991,7 @@ const List<Question> allMCQs = [
       options: ['০টি', '২টি', '১টি', '৩টি'],
       correctIndex: 2,
       explanation: 'স্পর্শক বৃত্তকে ঠিক একটি বিন্দুতে স্পর্শ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_15',
       subjectId: 'general_math',
@@ -3006,7 +3006,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'কেন্দ্র থেকে সমদূরবর্তী জ্যাদ্বয় সমান; আবার সমান জ্যা কেন্দ্র থেকে সমদূরবর্তী।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_16',
       subjectId: 'general_math',
@@ -3015,7 +3015,7 @@ const List<Question> allMCQs = [
       options: ['πr', 'πr²', '4πr', '2πr'],
       correctIndex: 3,
       explanation: 'পরিধি = 2πr।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_17',
       subjectId: 'general_math',
@@ -3024,7 +3024,7 @@ const List<Question> allMCQs = [
       options: ['২২ সেমি', '৮৮ সেমি', '৪৪ সেমি', '১৫৪ সেমি'],
       correctIndex: 2,
       explanation: 'পরিধি = 2 × (22/7) × 7 = 44 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_18',
       subjectId: 'general_math',
@@ -3033,7 +3033,7 @@ const List<Question> allMCQs = [
       options: ['১৮০°', '৯০°', '৩৬০°', '২৭০°'],
       correctIndex: 2,
       explanation: 'কেন্দ্রের চারদিকের কোণ ৩৬০° বা চার সমকোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_19',
       subjectId: 'general_math',
@@ -3042,7 +3042,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '২টি', '৪টি', 'অসংখ্য'],
       correctIndex: 3,
       explanation: 'কেন্দ্র দিয়ে অসংখ্য ব্যাস টানা যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_20',
       subjectId: 'general_math',
@@ -3052,7 +3052,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '৩টি', '৪টি', '২টি'],
       correctIndex: 3,
       explanation: 'দুটি ভিন্ন বৃত্ত সর্বাধিক দুই বিন্দুতে ছেদ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_21',
       subjectId: 'general_math',
@@ -3061,7 +3061,7 @@ const List<Question> allMCQs = [
       options: ['ক্ষুদ্র চাপ', 'উপচাপ (মেজর চাপ)', 'অর্ধচাপ', 'জ্যা'],
       correctIndex: 1,
       explanation: 'বৃহত্তর অংশকে উপচাপ ও ক্ষুদ্রতর অংশকে অপচাপ বলে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_22',
       subjectId: 'general_math',
@@ -3070,7 +3070,7 @@ const List<Question> allMCQs = [
       options: ['অসংখ্য', '২টি', 'মাত্র একটি', '৩টি'],
       correctIndex: 2,
       explanation: 'তিনটি অসমরেখ বিন্দু দিয়ে কেবল একটি বৃত্ত যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_23',
       subjectId: 'general_math',
@@ -3079,7 +3079,7 @@ const List<Question> allMCQs = [
       options: ['সমান কোণ', 'অসমান কোণ', 'সম্পূরক কোণ', 'সমকোণ'],
       correctIndex: 0,
       explanation: 'সমান জ্যা কেন্দ্রে সমান কোণ উৎপন্ন করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_24',
       subjectId: 'general_math',
@@ -3088,7 +3088,7 @@ const List<Question> allMCQs = [
       options: ['2πr', 'πr²', 'πd', '2πr²'],
       correctIndex: 1,
       explanation: 'ক্ষেত্রফল = πr²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_25',
       subjectId: 'general_math',
@@ -3098,7 +3098,7 @@ const List<Question> allMCQs = [
       options: ['৪ সেমি', '৬ সেমি', '৮ সেমি', '১০ সেমি'],
       correctIndex: 2,
       explanation: 'অর্ধ জ্যা = √(5² − 3²) = 4 সেমি; পূর্ণ জ্যা = 8 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_26',
       subjectId: 'general_math',
@@ -3107,7 +3107,7 @@ const List<Question> allMCQs = [
       options: ['১ : ১', '১ : ২', '২ : ১', '৩ : ১'],
       correctIndex: 2,
       explanation: 'কেন্দ্রস্থ কোণ পরিধিস্থ কোণের দ্বিগুণ, তাই অনুপাত ২ : ১।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_27',
       subjectId: 'general_math',
@@ -3117,7 +3117,7 @@ const List<Question> allMCQs = [
       options: ['১৩ সেমি', '১৭ সেমি', '৭ সেমি', '১১ সেমি'],
       correctIndex: 0,
       explanation: 'OP ⊥ PB, তাই OB = √(5² + 12²) = √169 = 13 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_28',
       subjectId: 'general_math',
@@ -3126,7 +3126,7 @@ const List<Question> allMCQs = [
       options: ['১১০°', '৭০°', '৯০°', '৫৫°'],
       correctIndex: 1,
       explanation: 'বিপরীত কোণদ্বয় সম্পূরক: 180° − 110° = 70°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_29',
       subjectId: 'general_math',
@@ -3141,7 +3141,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'বহিঃস্পর্শে কেন্দ্রদূরত্ব = r₁ + r₂।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c8_30',
       subjectId: 'general_math',
@@ -3156,8 +3156,8 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'অন্তঃস্পর্শে কেন্দ্রদূরত্ব = |r₁ − r₂|।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ৯ (ত্রিকোণমিতিক অনুপাত) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ৯ (ত্রিকোণমিতিক অনুপাত) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c9_01',
       subjectId: 'general_math',
@@ -3166,7 +3166,7 @@ const List<Question> allMCQs = [
       options: ['১/২', '√3/২', '১/√2', '১'],
       correctIndex: 0,
       explanation: 'sin 30° = 1/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_02',
       subjectId: 'general_math',
@@ -3175,7 +3175,7 @@ const List<Question> allMCQs = [
       options: ['১/√2', '০', '√3/২', '১/২'],
       correctIndex: 3,
       explanation: 'cos 60° = 1/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_03',
       subjectId: 'general_math',
@@ -3184,7 +3184,7 @@ const List<Question> allMCQs = [
       options: ['০', '১/√2', '১', '√3'],
       correctIndex: 2,
       explanation: 'tan 45° = 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_04',
       subjectId: 'general_math',
@@ -3193,7 +3193,7 @@ const List<Question> allMCQs = [
       options: ['১', '১/২', '−১', '০'],
       correctIndex: 3,
       explanation: 'sin 0° = 0।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_05',
       subjectId: 'general_math',
@@ -3202,7 +3202,7 @@ const List<Question> allMCQs = [
       options: ['১/২', '√3/২', '০', '১'],
       correctIndex: 3,
       explanation: 'cos 0° = 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_06',
       subjectId: 'general_math',
@@ -3211,7 +3211,7 @@ const List<Question> allMCQs = [
       options: ['১/২', '√3/২', '১', '১/√2'],
       correctIndex: 1,
       explanation: 'sin 60° = √3/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_07',
       subjectId: 'general_math',
@@ -3220,7 +3220,7 @@ const List<Question> allMCQs = [
       options: ['√3', '১', '√3/২', '১/√3'],
       correctIndex: 3,
       explanation: 'tan 30° = 1/√3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_08',
       subjectId: 'general_math',
@@ -3229,7 +3229,7 @@ const List<Question> allMCQs = [
       options: ['২', '১/২', '√2', '√3'],
       correctIndex: 0,
       explanation: 'cosec 30° = 1/sin 30° = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_09',
       subjectId: 'general_math',
@@ -3238,7 +3238,7 @@ const List<Question> allMCQs = [
       options: ['২', '১/২', '√2', '√3'],
       correctIndex: 0,
       explanation: 'sec 60° = 1/cos 60° = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_10',
       subjectId: 'general_math',
@@ -3247,7 +3247,7 @@ const List<Question> allMCQs = [
       options: ['০', 'অসীম', '১', '√3'],
       correctIndex: 2,
       explanation: 'cot 45° = 1/tan 45° = 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_11',
       subjectId: 'general_math',
@@ -3256,7 +3256,7 @@ const List<Question> allMCQs = [
       options: ['০', '২', 'tan²x', '১'],
       correctIndex: 3,
       explanation: 'যেকোনো কোণের জন্য sin²x + cos²x = 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_12',
       subjectId: 'general_math',
@@ -3265,7 +3265,7 @@ const List<Question> allMCQs = [
       options: ['cosec²x', 'sec²x', 'cot²x', '২'],
       correctIndex: 1,
       explanation: 'অভেদ: 1 + tan²x = sec²x।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_13',
       subjectId: 'general_math',
@@ -3274,7 +3274,7 @@ const List<Question> allMCQs = [
       options: ['০', '২', '১', '−১'],
       correctIndex: 2,
       explanation: 'অভেদ: 1 + cot²x = cosec²x, তাই পার্থক্য ১।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_14',
       subjectId: 'general_math',
@@ -3283,7 +3283,7 @@ const List<Question> allMCQs = [
       options: ['sin x × cos x', 'sin x / cos x', 'cos x / sin x', '1 / sin x'],
       correctIndex: 1,
       explanation: 'tan x = sin x / cos x।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_15',
       subjectId: 'general_math',
@@ -3292,7 +3292,7 @@ const List<Question> allMCQs = [
       options: ['cos x', 'sin x', 'tan x', 'sec x'],
       correctIndex: 0,
       explanation: 'পূরক কোণের সাইন = মূল কোণের কোসাইন।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_16',
       subjectId: 'general_math',
@@ -3301,7 +3301,7 @@ const List<Question> allMCQs = [
       options: ['tan x', 'sec x', 'cot x', 'cosec x'],
       correctIndex: 2,
       explanation: 'পূরক কোণের ট্যান = মূল কোণের কোট্যান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_17',
       subjectId: 'general_math',
@@ -3310,7 +3310,7 @@ const List<Question> allMCQs = [
       options: ['ভূমি/অতিভুজ', 'লম্ব/অতিভুজ', 'লম্ব/ভূমি', 'অতিভুজ/লম্ব'],
       correctIndex: 1,
       explanation: 'sin A = বিপরীত বাহু (লম্ব) ÷ অতিভুজ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_18',
       subjectId: 'general_math',
@@ -3319,7 +3319,7 @@ const List<Question> allMCQs = [
       options: ['ভূমি/অতিভুজ', 'লম্ব/অতিভুজ', 'লম্ব/ভূমি', 'অতিভুজ/ভূমি'],
       correctIndex: 2,
       explanation: 'tan A = লম্ব ÷ ভূমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_19',
       subjectId: 'general_math',
@@ -3328,7 +3328,7 @@ const List<Question> allMCQs = [
       options: ['১', '০', '২', 'অসীম'],
       correctIndex: 0,
       explanation: 'cos x এর মান −1 থেকে 1 এর মধ্যে থাকে; সর্বোচ্চ 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_20',
       subjectId: 'general_math',
@@ -3337,7 +3337,7 @@ const List<Question> allMCQs = [
       options: ['০ থেকে ১', '−১ থেকে ১', '১ থেকে অসীম', '০ থেকে অসীম'],
       correctIndex: 1,
       explanation: 'যেকোনো কোণের জন্য −1 ≤ sin x ≤ 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_21',
       subjectId: 'general_math',
@@ -3346,7 +3346,7 @@ const List<Question> allMCQs = [
       options: ['১/২', '√3/২', '১/√2', '√3'],
       correctIndex: 1,
       explanation: 'cos 30° = √3/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_22',
       subjectId: 'general_math',
@@ -3355,7 +3355,7 @@ const List<Question> allMCQs = [
       options: ['cos 20°', 'sin 70°', 'cos 70°', 'cos 160°'],
       correctIndex: 2,
       explanation: 'sin 20° = cos(90° − 20°) = cos 70°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_23',
       subjectId: 'general_math',
@@ -3364,7 +3364,7 @@ const List<Question> allMCQs = [
       options: ['১/২', '১', '√3/২', '√3'],
       correctIndex: 2,
       explanation: '2 × 1/2 × √3/2 = √3/2; এটি sin 60° এর সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_24',
       subjectId: 'general_math',
@@ -3373,7 +3373,7 @@ const List<Question> allMCQs = [
       options: ['১', '√3', '১/√3', '√3/২'],
       correctIndex: 1,
       explanation: 'tan 60° = √3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_25',
       subjectId: 'general_math',
@@ -3382,7 +3382,7 @@ const List<Question> allMCQs = [
       options: ['cos x', 'sin x', 'tan x', 'cosec x'],
       correctIndex: 0,
       explanation: 'sec x হলো cos x এর বিপরীত অনুপাত।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_26',
       subjectId: 'general_math',
@@ -3391,7 +3391,7 @@ const List<Question> allMCQs = [
       options: ['১/২', '√3/২', '১/√2', '১'],
       correctIndex: 2,
       explanation: 'sin 45° = 1/√2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_27',
       subjectId: 'general_math',
@@ -3400,7 +3400,7 @@ const List<Question> allMCQs = [
       options: ['1/tan x', '1/sin x', '1/sec x', 'tan x × cos x'],
       correctIndex: 0,
       explanation: 'cot x হলো tan x এর বিপরীত অনুপাত।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_28',
       subjectId: 'general_math',
@@ -3409,7 +3409,7 @@ const List<Question> allMCQs = [
       options: ['লম্ব/অতিভুজ', 'ভূমি/লম্ব', 'অতিভুজ/ভূমি', 'ভূমি/অতিভুজ'],
       correctIndex: 3,
       explanation: 'cos A = সন্নিহিত বাহু (ভূমি) ÷ অতিভুজ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_29',
       subjectId: 'general_math',
@@ -3418,7 +3418,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৪০', '০'],
       correctIndex: 1,
       explanation: '2(sin²40° + cos²40°) = 2 × 1 = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c9_30',
       subjectId: 'general_math',
@@ -3427,8 +3427,8 @@ const List<Question> allMCQs = [
       options: ['১', '৩', '০', '২'],
       correctIndex: 3,
       explanation: '(√3)² − 1 = 3 − 1 = 2।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১০ (দূরত্ব ও উচ্চতা) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১০ (দূরত্ব ও উচ্চতা) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c10_01',
       subjectId: 'general_math',
@@ -3438,7 +3438,7 @@ const List<Question> allMCQs = [
       options: ['সমকোণ', 'বিপ্রতীপ কোণ', 'অবনতি কোণ', 'উন্নতি কোণ'],
       correctIndex: 3,
       explanation: 'নিচ থেকে উপরে তাকালে যে কোণ হয় সেটিই উন্নতি কোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_02',
       subjectId: 'general_math',
@@ -3448,7 +3448,7 @@ const List<Question> allMCQs = [
       options: ['উন্নতি কোণ', 'পূরক কোণ', 'অবনতি কোণ', 'সরলকোণ'],
       correctIndex: 2,
       explanation: 'উপর থেকে নিচে তাকালে উৎপন্ন কোণই অবনতি কোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_03',
       subjectId: 'general_math',
@@ -3458,7 +3458,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '৯০°', '৩০°', '৪৫°'],
       correctIndex: 3,
       explanation: 'tan 45° = 1 হওয়ায় ছায়া = উচ্চতা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_04',
       subjectId: 'general_math',
@@ -3468,7 +3468,7 @@ const List<Question> allMCQs = [
       options: ['১০০√3 মিটার', '৭১ মিটার', '৫০ মিটার', '১০০ মিটার'],
       correctIndex: 3,
       explanation: 'উচ্চতা = দূরত্ব × tan 45° = 100 × 1 = 100 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_05',
       subjectId: 'general_math',
@@ -3478,7 +3478,7 @@ const List<Question> allMCQs = [
       options: ['২০/√3 মিটার', '৬০ মিটার', '২০ মিটার', '২০√3 মিটার'],
       correctIndex: 3,
       explanation: 'উচ্চতা = 20 × tan 60° = 20√3 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_06',
       subjectId: 'general_math',
@@ -3488,7 +3488,7 @@ const List<Question> allMCQs = [
       options: ['৬০ মিটার', '৩০ মিটার', '৩০√3 মিটার', '১০√3 মিটার'],
       correctIndex: 2,
       explanation: 'দূরত্ব = 30/tan 30° = 30√3 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_07',
       subjectId: 'general_math',
@@ -3498,7 +3498,7 @@ const List<Question> allMCQs = [
       options: ['৮ মিটার', '১৬ মিটার', '২৪ মিটার', '৮√3 মিটার'],
       correctIndex: 0,
       explanation: 'উচ্চতা = ছায়া × tan 30° = 8√3 × 1/√3 = 8 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_08',
       subjectId: 'general_math',
@@ -3508,7 +3508,7 @@ const List<Question> allMCQs = [
       options: ['৪ মিটার', '৬ মিটার', '৮ মিটার', '১০ মিটার'],
       correctIndex: 2,
       explanation: 'পিথাগোরাস: উচ্চতা = √(10² − 6²) = 8 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_09',
       subjectId: 'general_math',
@@ -3518,7 +3518,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '১৫°', '৩০°', '৪৫°'],
       correctIndex: 3,
       explanation: 'tan θ = h/h = 1 হলে θ = 45°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_10',
       subjectId: 'general_math',
@@ -3528,7 +3528,7 @@ const List<Question> allMCQs = [
       options: ['শূন্য হবে', 'বাড়বে', 'কমবে', 'একই থাকবে'],
       correctIndex: 2,
       explanation: 'উন্নতি কোণ যত বাড়ে ছায়া তত ছোট হয় (ছায়া = h/tanθ)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_11',
       subjectId: 'general_math',
@@ -3542,7 +3542,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'tan θ = উচ্চতা/দূরত্ব হওয়ায় উচ্চতা = দূরত্ব × tan θ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_12',
       subjectId: 'general_math',
@@ -3552,7 +3552,7 @@ const List<Question> allMCQs = [
       options: ['৩০°', '৪৫°', '৬০°', '৯০°'],
       correctIndex: 0,
       explanation: 'tan θ = 50/(50√3) = 1/√3 হলে θ = 30°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_13',
       subjectId: 'general_math',
@@ -3562,7 +3562,7 @@ const List<Question> allMCQs = [
       options: ['৬০√3 মিটার', '৩০ মিটার', '৬০ মিটার', '২০√3 মিটার'],
       correctIndex: 3,
       explanation: 'দূরত্ব = 60/tan 60° = 60/√3 = 20√3 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_14',
       subjectId: 'general_math',
@@ -3572,7 +3572,7 @@ const List<Question> allMCQs = [
       options: ['৩০°', '৪৫°', '৬০°', '১৫°'],
       correctIndex: 0,
       explanation: 'tan θ = 12/(12√3) = 1/√3 হলে θ = 30°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_15',
       subjectId: 'general_math',
@@ -3582,7 +3582,7 @@ const List<Question> allMCQs = [
       options: ['৫৭.৭ মিটার', '১৫০ মিটার', '১৭৩.২ মিটার', '১০০ মিটার'],
       correctIndex: 2,
       explanation: 'উচ্চতা = 100 × √3 = 173.2 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_16',
       subjectId: 'general_math',
@@ -3592,7 +3592,7 @@ const List<Question> allMCQs = [
       options: ['৭ মিটার', '১২ মিটার', '১ মিটার', '৫ মিটার'],
       correctIndex: 3,
       explanation: 'দূরত্ব = √(13² − 12²) = √25 = 5 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_17',
       subjectId: 'general_math',
@@ -3601,7 +3601,7 @@ const List<Question> allMCQs = [
       options: ['1 : 1', '1 : √3', '2 : 1', '√3 : 1'],
       correctIndex: 0,
       explanation: 'tan 45° = 1 হওয়ায় উচ্চতা : দূরত্ব = 1 : 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_18',
       subjectId: 'general_math',
@@ -3612,7 +3612,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'সমান্তরাল ভূরেখা-দৃষ্টিরেখার একান্তর কোণ বলে উন্নতি কোণ = অবনতি কোণ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_19',
       subjectId: 'general_math',
@@ -3621,7 +3621,7 @@ const List<Question> allMCQs = [
       options: ['বাড়ে', 'কমে', '৯০° হয়ে যায়', 'অপরিবর্তিত থাকে'],
       correctIndex: 1,
       explanation: 'সূর্য যত নিচের দিকে নামে উন্নতি কোণ তত কমে যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_20',
       subjectId: 'general_math',
@@ -3631,7 +3631,7 @@ const List<Question> allMCQs = [
       options: ['দ্বিগুণ হবে', 'অর্ধেক হবে', 'একই থাকবে', 'চারগুণ হবে'],
       correctIndex: 1,
       explanation: 'tan θ = h/d; d দ্বিগুণ হলে tan θ অর্ধেক হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_21',
       subjectId: 'general_math',
@@ -3641,7 +3641,7 @@ const List<Question> allMCQs = [
       options: ['h মিটার', 'h√3 মিটার', 'h/√3 মিটার', '2h মিটার'],
       correctIndex: 1,
       explanation: 'দূরত্ব = h/tan 30° = h√3 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_22',
       subjectId: 'general_math',
@@ -3651,7 +3651,7 @@ const List<Question> allMCQs = [
       options: ['৪২.৫ মিটার', '৮৫ মিটার', '৮৫√3 মিটার', '১৭০ মিটার'],
       correctIndex: 1,
       explanation: 'দূরত্ব = 85/tan 45° = 85 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_23',
       subjectId: 'general_math',
@@ -3661,7 +3661,7 @@ const List<Question> allMCQs = [
       options: ['৬০°', '৪৫°', '৩০°', '১৫°'],
       correctIndex: 2,
       explanation: 'tan θ = 1/√3 হলে θ = 30°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_24',
       subjectId: 'general_math',
@@ -3671,7 +3671,7 @@ const List<Question> allMCQs = [
       options: ['৩০°', '৪৫°', '৬০°', '৯০°'],
       correctIndex: 1,
       explanation: 'উচ্চতা = ছায়া হলে tan θ = 1, অর্থাৎ θ = 45°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_25',
       subjectId: 'general_math',
@@ -3681,7 +3681,7 @@ const List<Question> allMCQs = [
       options: ['২৫ মিটার', '২৫√3 মিটার', '৫০ মিটার', '৫০√3 মিটার'],
       correctIndex: 1,
       explanation: 'h√3 − h/√3 = 50 হলে h = 25√3 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_26',
       subjectId: 'general_math',
@@ -3690,7 +3690,7 @@ const List<Question> allMCQs = [
       options: ['√3', '১/√3', '১', 'অসীম'],
       correctIndex: 1,
       explanation: 'cot 60° = 1/tan 60° = 1/√3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_27',
       subjectId: 'general_math',
@@ -3699,7 +3699,7 @@ const List<Question> allMCQs = [
       options: ['১/√3', '১', '√3', '√3/২'],
       correctIndex: 2,
       explanation: 'tan 60° = √3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_28',
       subjectId: 'general_math',
@@ -3709,7 +3709,7 @@ const List<Question> allMCQs = [
       options: ['৪৫°', '৩০°', '৬০°', '৯০°'],
       correctIndex: 0,
       explanation: 'tan θ = 8/8 = 1 হলে θ = 45°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_29',
       subjectId: 'general_math',
@@ -3719,7 +3719,7 @@ const List<Question> allMCQs = [
       options: ['x tan θ', 'x/tan θ', 'x sin θ', 'x ÷ sin θ'],
       correctIndex: 0,
       explanation: 'উচ্চতা = দূরত্ব × tan θ = x tan θ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c10_30',
       subjectId: 'general_math',
@@ -3729,8 +3729,8 @@ const List<Question> allMCQs = [
       options: ['৩০°', '৪৫°', '৬০°', '১৫°'],
       correctIndex: 0,
       explanation: 'tan θ = 100/(100√3) = 1/√3 হলে θ = 30°।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১১ (বীজগাণিতিক অনুপাত ও সমানুপাত) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১১ (বীজগাণিতিক অনুপাত ও সমানুপাত) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c11_01',
       subjectId: 'general_math',
@@ -3739,7 +3739,7 @@ const List<Question> allMCQs = [
       options: ['৭৫%', '৬০%', '৪০%', '২৫%'],
       correctIndex: 0,
       explanation: '3/4 = 0.75 = 75%।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_02',
       subjectId: 'general_math',
@@ -3748,7 +3748,7 @@ const List<Question> allMCQs = [
       options: ['3 : 4', '2 : 3', '4 : 6', '6 : 8'],
       correctIndex: 1,
       explanation: '১২ দিয়ে ভাগ করলে পাওয়া যায় 2 : 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_03',
       subjectId: 'general_math',
@@ -3757,7 +3757,7 @@ const List<Question> allMCQs = [
       options: ['8 : 15', '2 : 5', '4 : 3', '8 : 5'],
       correctIndex: 0,
       explanation: 'a/c = (a/b) × (b/c) = 2/3 × 4/5 = 8/15।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_04',
       subjectId: 'general_math',
@@ -3767,7 +3767,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'আড়গুণনে প্রান্তীয় রাশির গুণফল = মধ্য রাশির গুণফল: ad = bc।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_05',
       subjectId: 'general_math',
@@ -3777,7 +3777,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'ক্রমিক সমানুপাতে মধ্যপদের বর্গ = প্রান্তীয় পদদ্বয়ের গুণফল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_06',
       subjectId: 'general_math',
@@ -3786,7 +3786,7 @@ const List<Question> allMCQs = [
       options: ['১২', '১০', '১৩', '১৪'],
       correctIndex: 0,
       explanation: 'মধ্য সমানুপাতী = √(8 × 18) = √144 = 12।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_07',
       subjectId: 'general_math',
@@ -3796,7 +3796,7 @@ const List<Question> allMCQs = [
       options: ['a/c = b/d', 'a/d = b/c', 'ab = cd', 'b/a = d/c'],
       correctIndex: 3,
       explanation: 'উভয় পক্ষের লব-হর উল্টালে b/a = d/c পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_08',
       subjectId: 'general_math',
@@ -3805,7 +3805,7 @@ const List<Question> allMCQs = [
       options: ['b/a = d/c', 'a/d = b/c', 'a/c = b/d', 'ab = cd'],
       correctIndex: 2,
       explanation: 'মধ্য রাশিদ্বয় স্থান বদলালে a/c = b/d হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_09',
       subjectId: 'general_math',
@@ -3815,7 +3815,7 @@ const List<Question> allMCQs = [
       options: ['(c − d)/d', 'c/b', 'd/c', '(c + d)/d'],
       correctIndex: 3,
       explanation: 'উভয় পক্ষের সাথে 1 যোগ করলে (a+b)/b = (c+d)/d।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_10',
       subjectId: 'general_math',
@@ -3830,7 +3830,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'উভয় পক্ষ থেকে 1 বাদ দিলে (a−b)/b = (c−d)/d।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_11',
       subjectId: 'general_math',
@@ -3840,7 +3840,7 @@ const List<Question> allMCQs = [
       options: ['c/d', '(c + d)/(c − d)', '(c − d)/(c + d)', 'd/c'],
       correctIndex: 1,
       explanation: 'Componendo ও Dividendo ভাগ করলে (a+b)/(a−b) = (c+d)/(c−d)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_12',
       subjectId: 'general_math',
@@ -3849,7 +3849,7 @@ const List<Question> allMCQs = [
       options: ['5 : 3', '15 : 25', '3 : 5', '2 : 3'],
       correctIndex: 2,
       explanation: '২৫ দিয়ে ভাগ করলে পাওয়া যায় 3 : 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_13',
       subjectId: 'general_math',
@@ -3858,7 +3858,7 @@ const List<Question> allMCQs = [
       options: ['২৫', '৩৫', '২৮', '৩২'],
       correctIndex: 2,
       explanation: 'A = 5k হলে k = 4; তাই B = 7k = 28।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_14',
       subjectId: 'general_math',
@@ -3867,7 +3867,7 @@ const List<Question> allMCQs = [
       options: ['৩০০ টাকা', '৫০০ টাকা', '৪০০ টাকা', '৬০০ টাকা'],
       correctIndex: 1,
       explanation: 'মোট ৮ ভাগে প্রতি ভাগ ১০০ টাকা; বড় অংশ ৫ × ১০০ = ৫০০ টাকা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_15',
       subjectId: 'general_math',
@@ -3876,7 +3876,7 @@ const List<Question> allMCQs = [
       options: ['1 : 2', '1 : 500', '5 : 1', '2 : 1'],
       correctIndex: 3,
       explanation: '১ কেজি = ১০০০ গ্রাম; 1000 : 500 = 2 : 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_16',
       subjectId: 'general_math',
@@ -3885,7 +3885,7 @@ const List<Question> allMCQs = [
       options: ['৩০ ও ৪২', '৩২ ও ৪০', '৩৬ ও ৩৬', '২৪ ও ৪৮'],
       correctIndex: 1,
       explanation: '9k = 72 হলে k = 8; সংখ্যা দুটি 32 ও 40।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_17',
       subjectId: 'general_math',
@@ -3894,7 +3894,7 @@ const List<Question> allMCQs = [
       options: ['2 : 3', '4 : 6', '3 : 2', '6 : 9'],
       correctIndex: 2,
       explanation: 'বিপরীত (ব্যস্ত) অনুপাতে পদ দুটি উল্টে যায়: 3 : 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_18',
       subjectId: 'general_math',
@@ -3903,7 +3903,7 @@ const List<Question> allMCQs = [
       options: ['২', '৬', '৮', '৪'],
       correctIndex: 3,
       explanation: 'x = 8 × 3/6 = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_19',
       subjectId: 'general_math',
@@ -3912,7 +3912,7 @@ const List<Question> allMCQs = [
       options: ['3 : 4 : 6', '3 : 2 : 3', '6 : 8 : 12', '3 : 4 : 5'],
       correctIndex: 0,
       explanation: 'b এর মান 4 ধরলে c = 6 হয়; তাই a : b : c = 3 : 4 : 6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_20',
       subjectId: 'general_math',
@@ -3921,7 +3921,7 @@ const List<Question> allMCQs = [
       options: ['৯০ টাকা', '১০০ টাকা', '১২০ টাকা', '১১০ টাকা'],
       correctIndex: 2,
       explanation: 'প্রতিটি কলম ১৫ টাকা; ৮ × ১৫ = ১২০ টাকা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_21',
       subjectId: 'general_math',
@@ -3931,7 +3931,7 @@ const List<Question> allMCQs = [
       options: ['২৫ দিন', '৪ দিন', '৫ দিন', '৬ দিন'],
       correctIndex: 1,
       explanation: 'ব্যস্তানুপাত: 6 × 10 = 15 × d হলে d = 4 দিন।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_22',
       subjectId: 'general_math',
@@ -3940,7 +3940,7 @@ const List<Question> allMCQs = [
       options: ['1/4', '4/5', '2/5', '3/5'],
       correctIndex: 2,
       explanation: '40/100 = 2/5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_23',
       subjectId: 'general_math',
@@ -3949,7 +3949,7 @@ const List<Question> allMCQs = [
       options: ['৩৫%', '৩০%', '৪২%', '৩৭.৫%'],
       correctIndex: 3,
       explanation: '3/8 × 100% = 37.5%।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_24',
       subjectId: 'general_math',
@@ -3958,7 +3958,7 @@ const List<Question> allMCQs = [
       options: ['৫/৪', '১১/৪', '৭/৪', '৯/৪'],
       correctIndex: 1,
       explanation: 'a/b + 2 = 3/4 + 8/4 = 11/4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_25',
       subjectId: 'general_math',
@@ -3967,7 +3967,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৫', '৮', '৪'],
       correctIndex: 3,
       explanation: '(5+3)/(5−3) = 8/2 = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_26',
       subjectId: 'general_math',
@@ -3976,7 +3976,7 @@ const List<Question> allMCQs = [
       options: ['3 : 2', '2 : 3', '1 : 2', '4 : 3'],
       correctIndex: 1,
       explanation: '3/2 : 9/4 = 6 : 9 = 2 : 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_27',
       subjectId: 'general_math',
@@ -3986,7 +3986,7 @@ const List<Question> allMCQs = [
       options: ['১০', '১৫', '২৫', '৩০'],
       correctIndex: 2,
       explanation: '10k = 50 হলে k = 5; বৃহত্তম = 5k = 25।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_28',
       subjectId: 'general_math',
@@ -3996,7 +3996,7 @@ const List<Question> allMCQs = [
       options: ['১৫ মিটার', '২৪ মিটার', '২০ মিটার', '৩০ মিটার'],
       correctIndex: 2,
       explanation: '2(5k + 3k) = 64 হলে k = 4; দৈর্ঘ্য = 5k = 20 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_29',
       subjectId: 'general_math',
@@ -4005,7 +4005,7 @@ const List<Question> allMCQs = [
       options: ['3 : 4', '9 : 16', '81 : 256', '16 : 9'],
       correctIndex: 0,
       explanation: 'বর্গমূল নিলে পাওয়া যায় √9 : √16 = 3 : 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c11_30',
       subjectId: 'general_math',
@@ -4014,8 +4014,8 @@ const List<Question> allMCQs = [
       options: ['2 : 5', '1 : 5', '5 : 2', '2 : 50'],
       correctIndex: 0,
       explanation: '১০ দিয়ে গুণ করলে 2 : 5 পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১২ (দুই চলকবিশিষ্ট সরল সহসমীকরণ) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১২ (দুই চলকবিশিষ্ট সরল সহসমীকরণ) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c12_01',
       subjectId: 'general_math',
@@ -4024,7 +4024,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৩', '৪', '২'],
       correctIndex: 0,
       explanation: 'যোগ করলে 2x = 10, অর্থাৎ x = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_02',
       subjectId: 'general_math',
@@ -4033,7 +4033,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৩', '৪'],
       correctIndex: 1,
       explanation: 'বিয়োগ করলে 2y = 4, অর্থাৎ y = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_03',
       subjectId: 'general_math',
@@ -4042,7 +4042,7 @@ const List<Question> allMCQs = [
       options: ['৬', '২', '৩', '৪'],
       correctIndex: 2,
       explanation: 'x + 2x = 9 হলে 3x = 9, অর্থাৎ x = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_04',
       subjectId: 'general_math',
@@ -4051,7 +4051,7 @@ const List<Question> allMCQs = [
       options: ['৩', '১', '৪', '২'],
       correctIndex: 3,
       explanation: '6 + 3y = 12 হলে 3y = 6, অর্থাৎ y = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_05',
       subjectId: 'general_math',
@@ -4060,7 +4060,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৫', '৭', '১০'],
       correctIndex: 2,
       explanation: 'x = 5 + 2 = 7।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_06',
       subjectId: 'general_math',
@@ -4069,7 +4069,7 @@ const List<Question> allMCQs = [
       options: ['১', '২', '৩', '৪'],
       correctIndex: 1,
       explanation: 'বিয়োগ করলে 2x = 4, অর্থাৎ x = 2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_07',
       subjectId: 'general_math',
@@ -4078,7 +4078,7 @@ const List<Question> allMCQs = [
       options: ['(5, 4)', '(4, 5)', '(9, 1)', '(3, 6)'],
       correctIndex: 0,
       explanation: 'যোগে 2x = 10 হলে x = 5 এবং y = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_08',
       subjectId: 'general_math',
@@ -4088,7 +4088,7 @@ const List<Question> allMCQs = [
       options: ['অসংখ্য', 'দুটি', 'শূন্যটি', 'একটি'],
       correctIndex: 3,
       explanation: 'ছেদকারী রেখার ক্ষেত্রে জোটের একটি মাত্র অনন্য সমাধান থাকে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_09',
       subjectId: 'general_math',
@@ -4102,7 +4102,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'সমান্তরাল রেখা কখনো ছেদ করে না, তাই সমাধান থাকে না।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_10',
       subjectId: 'general_math',
@@ -4111,7 +4111,7 @@ const List<Question> allMCQs = [
       options: ['একটি', 'কোনোটি নয়', 'অসংখ্য', 'তিনটি'],
       correctIndex: 2,
       explanation: 'একই রেখার প্রতিটি বিন্দুই সমাধান, তাই অসংখ্য সমাধান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_11',
       subjectId: 'general_math',
@@ -4120,7 +4120,7 @@ const List<Question> allMCQs = [
       options: ['৩', '২', '৪', '৫'],
       correctIndex: 0,
       explanation: '10 − 2y = 4 হলে 2y = 6, অর্থাৎ y = 3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_12',
       subjectId: 'general_math',
@@ -4129,7 +4129,7 @@ const List<Question> allMCQs = [
       options: ['(2, 4)', '(4, 2)', '(3, 3)', '(6, 2)'],
       correctIndex: 1,
       explanation: 'বিয়োগে 3y = 6 হলে y = 2; তখন x = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_13',
       subjectId: 'general_math',
@@ -4139,7 +4139,7 @@ const List<Question> allMCQs = [
       options: ['৩৬', '৪৫', '৫৪', '২৭'],
       correctIndex: 1,
       explanation: 'x + y = 9 ও y − x = 1 হলে x = 4, y = 5; সংখ্যাটি 45।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_14',
       subjectId: 'general_math',
@@ -4149,7 +4149,7 @@ const List<Question> allMCQs = [
       options: ['১৫০ টাকা', '২৫০ টাকা', '৩০০ টাকা', '২০০ টাকা'],
       correctIndex: 3,
       explanation: 'অপনয়নে 3p = 600 হলে p = 200 টাকা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_15',
       subjectId: 'general_math',
@@ -4160,7 +4160,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'সমাধানে লব ৪, হর ৯ পাওয়া যায়; যাচাই: 5/10 = 1/2 এবং 3/9 = 1/3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_16',
       subjectId: 'general_math',
@@ -4170,7 +4170,7 @@ const List<Question> allMCQs = [
       options: ['১০ বছর', '১২ বছর', '১৫ বছর', '২০ বছর'],
       correctIndex: 2,
       explanation: 'x + 3x = 60 হলে x = 15; পুত্র ১৫ বছর, পিতা ৪৫ বছর।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_17',
       subjectId: 'general_math',
@@ -4179,7 +4179,7 @@ const List<Question> allMCQs = [
       options: ['৪', '১৬', '৩২', '৮'],
       correctIndex: 3,
       explanation: 'উভয় পক্ষকে ২ দিয়ে ভাগ করলে x + y = 8।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_18',
       subjectId: 'general_math',
@@ -4188,7 +4188,7 @@ const List<Question> allMCQs = [
       options: ['2/3', '−2/3', '3/2', '−3/2'],
       correctIndex: 1,
       explanation: 'y = −(2/3)x + 4 আকারে ঢাল −2/3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_19',
       subjectId: 'general_math',
@@ -4197,7 +4197,7 @@ const List<Question> allMCQs = [
       options: ['(3, 2)', '(2, 3)', '(5, 0)', '(1, 4)'],
       correctIndex: 0,
       explanation: 'x = 3, y = 2 উভয় সমীকরণ সিদ্ধ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_20',
       subjectId: 'general_math',
@@ -4211,7 +4211,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: '2 + 3 = 5 এবং 2×2 − 3 = 1 — উভয় শর্ত পূরণ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_21',
       subjectId: 'general_math',
@@ -4220,7 +4220,7 @@ const List<Question> allMCQs = [
       options: ['x + y = 1', 'x − y = 1', '2x + y = 5', 'x + 2y = 4'],
       correctIndex: 0,
       explanation: '2 + (−1) = 1 সত্য; বাকিগুলো যথাক্রমে 3, 3, 0 দেয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_22',
       subjectId: 'general_math',
@@ -4229,7 +4229,7 @@ const List<Question> allMCQs = [
       options: ['৬', '১২', '১৫', '৮'],
       correctIndex: 3,
       explanation: 'x = 2k, y = 3k হলে 5k = 20; k = 4, x = 8।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_23',
       subjectId: 'general_math',
@@ -4239,7 +4239,7 @@ const List<Question> allMCQs = [
       options: ['৩ কি.মি.', '৬ কি.মি.', '১২ কি.মি.', '২৪ কি.মি.'],
       correctIndex: 2,
       explanation: 'নৌকার বেগ = (15 + 9)/2 = 12 কি.মি./ঘণ্টা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_24',
       subjectId: 'general_math',
@@ -4248,7 +4248,7 @@ const List<Question> allMCQs = [
       options: ['৩ কি.মি.', '৬ কি.মি.', '১২ কি.মি.', '২৪ কি.মি.'],
       correctIndex: 0,
       explanation: 'স্রোতের বেগ = (15 − 9)/2 = 3 কি.মি./ঘণ্টা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_25',
       subjectId: 'general_math',
@@ -4257,7 +4257,7 @@ const List<Question> allMCQs = [
       options: ['১', '১.৫', '২', '২.৫'],
       correctIndex: 1,
       explanation: '6 = 4y হলে y = 1.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_26',
       subjectId: 'general_math',
@@ -4267,7 +4267,7 @@ const List<Question> allMCQs = [
       options: ['২টি', '৪টি', '৫টি', '৩টি'],
       correctIndex: 3,
       explanation: '(1,3), (2,2), (3,1) — মোট ৩টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_27',
       subjectId: 'general_math',
@@ -4276,7 +4276,7 @@ const List<Question> allMCQs = [
       options: ['৪', '৩', '৫', '৭'],
       correctIndex: 0,
       explanation: 'প্রতিসম জোটে x = y; তাই 10x = 40, অর্থাৎ x = 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_28',
       subjectId: 'general_math',
@@ -4286,7 +4286,7 @@ const List<Question> allMCQs = [
       options: ['১০ মিটার', '২০ মিটার', '২৫ মিটার', '১৫ মিটার'],
       correctIndex: 3,
       explanation: 'l + w = 25 ও l − w = 5 হলে l = 15 মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_29',
       subjectId: 'general_math',
@@ -4295,7 +4295,7 @@ const List<Question> allMCQs = [
       options: ['২৮', '২৪', '২১', '৩০'],
       correctIndex: 0,
       explanation: 'x = 7, y = 4; তাই xy = 28।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c12_30',
       subjectId: 'general_math',
@@ -4304,8 +4304,8 @@ const List<Question> allMCQs = [
       options: ['১', '৪', '২', '৩'],
       correctIndex: 2,
       explanation: '(p − q)² = 144 − 140 = 4 হওয়ায় p − q = 2।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১৩ (সসীম ধারা) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১৩ (সসীম ধারা) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c13_01',
       subjectId: 'general_math',
@@ -4314,7 +4314,7 @@ const List<Question> allMCQs = [
       options: ['২', '৩', '৪', '৫'],
       correctIndex: 1,
       explanation: 'প্রতিটি পদ আগের পদ অপেক্ষা ৩ বেশি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_02',
       subjectId: 'general_math',
@@ -4323,7 +4323,7 @@ const List<Question> allMCQs = [
       options: ['১৩', '১৪', '১৫', '১৭'],
       correctIndex: 1,
       explanation: '২, ৫, ৮, ১১, ১৪ — পঞ্চম পদ ১৪।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_03',
       subjectId: 'general_math',
@@ -4333,7 +4333,7 @@ const List<Question> allMCQs = [
       options: ['a + nd', 'an + d', 'a − (n − 1)d', 'a + (n − 1)d'],
       correctIndex: 3,
       explanation: 'n-তম পদ = a + (n − 1)d।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_04',
       subjectId: 'general_math',
@@ -4343,7 +4343,7 @@ const List<Question> allMCQs = [
       options: ['২৪', '২৭', '৩১', '২৩'],
       correctIndex: 3,
       explanation: '3 + (6 − 1) × 4 = 23।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_05',
       subjectId: 'general_math',
@@ -4352,7 +4352,7 @@ const List<Question> allMCQs = [
       options: ['২৯', '৩৫', '৩২', '৩৮'],
       correctIndex: 2,
       explanation: '5 + 9 × 3 = 32।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_06',
       subjectId: 'general_math',
@@ -4361,7 +4361,7 @@ const List<Question> allMCQs = [
       options: ['না', 'হ্যাঁ, d = 3', 'হ্যাঁ, d = 5', 'হ্যাঁ, d = 4'],
       correctIndex: 3,
       explanation: 'পরপর দুই পদের অন্তর ধ্রুবক (৪), তাই সমান্তর।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_07',
       subjectId: 'general_math',
@@ -4371,7 +4371,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'প্রতিটি পদ আগের পদের ৩ গুণ, তাই সাধারণ অনুপাতবিশিষ্ট গুণোত্তর অনুক্রম।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_08',
       subjectId: 'general_math',
@@ -4380,7 +4380,7 @@ const List<Question> allMCQs = [
       options: ['২', '৩', '৬', '৯'],
       correctIndex: 0,
       explanation: '৬/৩ = ১২/৬ = ২।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_09',
       subjectId: 'general_math',
@@ -4390,7 +4390,7 @@ const List<Question> allMCQs = [
       options: ['a + (n − 1)r', 'an × r', 'ar^(n−1)', 'a + rn'],
       correctIndex: 2,
       explanation: 'n-তম পদ = ar^(n−1)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_10',
       subjectId: 'general_math',
@@ -4399,7 +4399,7 @@ const List<Question> allMCQs = [
       options: ['৩৬', '৫৪', '৭২', '১০৮'],
       correctIndex: 1,
       explanation: '২ × ৩³ = ৫৪।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_11',
       subjectId: 'general_math',
@@ -4408,7 +4408,7 @@ const List<Question> allMCQs = [
       options: ['৫৫', '৪৫', '৫০', '৬০'],
       correctIndex: 0,
       explanation: '10 × 11/2 = 55।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_12',
       subjectId: 'general_math',
@@ -4417,7 +4417,7 @@ const List<Question> allMCQs = [
       options: ['n²', 'n(n + 1)/2', 'n(n − 1)/2', '2n'],
       correctIndex: 1,
       explanation: '1 + 2 + ... + n = n(n + 1)/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_13',
       subjectId: 'general_math',
@@ -4426,7 +4426,7 @@ const List<Question> allMCQs = [
       options: ['১২২৫', '১২৫০', '১২৭৫', '১৩০০'],
       correctIndex: 2,
       explanation: '50 × 51/2 = 1275।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_14',
       subjectId: 'general_math',
@@ -4436,7 +4436,7 @@ const List<Question> allMCQs = [
       options: ['n(a + l)/2', 'n(a + l)', '2n(a + l)', '(a + l)/(2n)'],
       correctIndex: 0,
       explanation: 'সমষ্টি = n(a + l)/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_15',
       subjectId: 'general_math',
@@ -4446,7 +4446,7 @@ const List<Question> allMCQs = [
       options: ['৭০', '৮৪', '৭৭', '১৫৪'],
       correctIndex: 2,
       explanation: '7 × (2 + 20)/2 = 77।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_16',
       subjectId: 'general_math',
@@ -4455,7 +4455,7 @@ const List<Question> allMCQs = [
       options: ['১১০', '১০০', '১২১', '৯০'],
       correctIndex: 0,
       explanation: 'পদসংখ্যা ১০; সমষ্টি = 10 × (2 + 20)/2 = 110।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_17',
       subjectId: 'general_math',
@@ -4464,7 +4464,7 @@ const List<Question> allMCQs = [
       options: ['৮১', '১০০', '১০৫', '৯৫'],
       correctIndex: 1,
       explanation: 'পদসংখ্যা ১০; সমষ্টি = 10 × (1 + 19)/2 = 100।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_18',
       subjectId: 'general_math',
@@ -4473,7 +4473,7 @@ const List<Question> allMCQs = [
       options: ['n(n + 1)(2n + 1)/6', 'n(n + 1)/2', 'n²(n + 1)²/4', 'n³/3'],
       correctIndex: 0,
       explanation: '1² + 2² + ... + n² = n(n + 1)(2n + 1)/6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_19',
       subjectId: 'general_math',
@@ -4482,7 +4482,7 @@ const List<Question> allMCQs = [
       options: ['৫০', '৬০', '৪৫', '৫৫'],
       correctIndex: 3,
       explanation: '5 × 6 × 11/6 = 55।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_20',
       subjectId: 'general_math',
@@ -4491,7 +4491,7 @@ const List<Question> allMCQs = [
       options: ['[n(n + 1)/2]²', 'n(n + 1)(2n + 1)/6', 'n³', 'n(n − 1)/2'],
       correctIndex: 0,
       explanation: '1³ + 2³ + ... + n³ = [n(n + 1)/2]²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_21',
       subjectId: 'general_math',
@@ -4500,7 +4500,7 @@ const List<Question> allMCQs = [
       options: ['২৭', '৪৫', '১৮', '৩৬'],
       correctIndex: 3,
       explanation: '1 + 8 + 27 = 36; অথবা (3 × 4/2)² = 36।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_22',
       subjectId: 'general_math',
@@ -4514,7 +4514,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: '১, ২, ৪, ৮ এ অন্তর ধ্রুবক নয়; এটি গুণোত্তর অনুক্রম।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_23',
       subjectId: 'general_math',
@@ -4523,7 +4523,7 @@ const List<Question> allMCQs = [
       options: ['৮', '৯', '১০', '১১'],
       correctIndex: 2,
       explanation: '৩-এর গুণিতক: 3n = 30 হলে n = 10।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_24',
       subjectId: 'general_math',
@@ -4532,7 +4532,7 @@ const List<Question> allMCQs = [
       options: ['১০ম', '১১তম', '১৩তম', '১২তম'],
       correctIndex: 3,
       explanation: '7 + (n−1) × 3 = 40 হলে n = 12।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_25',
       subjectId: 'general_math',
@@ -4541,7 +4541,7 @@ const List<Question> allMCQs = [
       options: ['১', '০', 'অসংজ্ঞায়িত', '৫'],
       correctIndex: 1,
       explanation: 'ধ্রুবক অনুক্রমেও অন্তর থাকে; তা ০।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_26',
       subjectId: 'general_math',
@@ -4550,7 +4550,7 @@ const List<Question> allMCQs = [
       options: ['১৪', '১৬', '৩১', '১৫'],
       correctIndex: 3,
       explanation: '1 × (2⁴ − 1)/(2 − 1) = 15; সরাসরি: 1+2+4+8 = 15।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_27',
       subjectId: 'general_math',
@@ -4559,7 +4559,7 @@ const List<Question> allMCQs = [
       options: ['১১৭', '১২০', '১২৩', '১২৬'],
       correctIndex: 1,
       explanation: '81 + 27 + 9 + 3 = 120।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_28',
       subjectId: 'general_math',
@@ -4568,7 +4568,7 @@ const List<Question> allMCQs = [
       options: ['২', '৫', '১/২', '−২'],
       correctIndex: 2,
       explanation: '৫/১০ = ১/২।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_29',
       subjectId: 'general_math',
@@ -4577,7 +4577,7 @@ const List<Question> allMCQs = [
       options: ['৩', '৪', '৫', '৬'],
       correctIndex: 2,
       explanation: 'n = 1 বসালে পাওয়া যায় 4 × 1 + 1 = 5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c13_30',
       subjectId: 'general_math',
@@ -4586,8 +4586,8 @@ const List<Question> allMCQs = [
       options: ['১', '৪', '৩', '৫'],
       correctIndex: 1,
       explanation: '4n + 1 এ n এর সহগই সাধারণ অন্তর, তাই ৪।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১৪ (অনুপাত, সদৃশতা ও প্রতিসমতা) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১৪ (অনুপাত, সদৃশতা ও প্রতিসমতা) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c14_01',
       subjectId: 'general_math',
@@ -4601,7 +4601,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'অনুরূপ কোণগুলো সমান হলেই ত্রিভুজদ্বয় সদৃশকোণী।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_02',
       subjectId: 'general_math',
@@ -4610,7 +4610,7 @@ const List<Question> allMCQs = [
       options: ['অসমান', 'সমান', 'বর্গের সমান', 'অনির্ণেয়'],
       correctIndex: 1,
       explanation: 'সদৃশ ত্রিভুজের অনুরূপ বাহুগুলো সমানুপাতিক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_03',
       subjectId: 'general_math',
@@ -4621,7 +4621,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'দুই জোড়া কোণ সমান হলে তৃতীয় জোড়াটিও স্বয়ংক্রিয়ভাবে সমান হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_04',
       subjectId: 'general_math',
@@ -4631,7 +4631,7 @@ const List<Question> allMCQs = [
       options: ['৫ সেমি', '৮ সেমি', '১০ সেমি', '১২ সেমি'],
       correctIndex: 2,
       explanation: 'সদৃশ অনুপাত 1 : 2 হওয়ায় EF = 2 × 5 = 10 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_05',
       subjectId: 'general_math',
@@ -4641,7 +4641,7 @@ const List<Question> allMCQs = [
       options: ['2 : 3', '3 : 2', '4 : 9', '4 : 6'],
       correctIndex: 2,
       explanation: 'ক্ষেত্রফলের অনুপাত বাহুর অনুপাতের বর্গ: 4 : 9।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_06',
       subjectId: 'general_math',
@@ -4651,7 +4651,7 @@ const List<Question> allMCQs = [
       options: ['সর্বসম', 'অসদৃশ', 'সমকোণী নয়', 'সদৃশ'],
       correctIndex: 3,
       explanation: 'উপপাদ্য অনুযায়ী সৃষ্ট প্রতিটি ত্রিভুজ মূল ত্রিভুজের সদৃশ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_07',
       subjectId: 'general_math',
@@ -4660,7 +4660,7 @@ const List<Question> allMCQs = [
       options: ['২টি', '৩টি', '৪টি', '৫টি'],
       correctIndex: 2,
       explanation: '২টি কর্ণে ও ২টি বাহুর মধ্যবিন্দুগামী রেখায় — মোট ৪টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_08',
       subjectId: 'general_math',
@@ -4669,7 +4669,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '৪টি', '০টি', '২টি'],
       correctIndex: 3,
       explanation: 'বাহুগুলোর মধ্যবিন্দু সংযোজক রেখা দুটিই প্রতিসম রেখা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_09',
       subjectId: 'general_math',
@@ -4678,7 +4678,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '২টি', '৩টি', '৪টি'],
       correctIndex: 2,
       explanation: 'প্রতিটি শীর্ষ থেকে একটি করে — মোট ৩টি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_10',
       subjectId: 'general_math',
@@ -4687,7 +4687,7 @@ const List<Question> allMCQs = [
       options: ['১টি', '৪টি', '৮টি', 'অসংখ্য'],
       correctIndex: 3,
       explanation: 'প্রতিটি ব্যাসই একটি প্রতিসম রেখা, তাই অসংখ্য।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_11',
       subjectId: 'general_math',
@@ -4702,7 +4702,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'আয়তক্ষেত্র কর্ণদ্বয়ের ছেদবিন্দুর সাপেক্ষে বিন্দু প্রতিসম।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_12',
       subjectId: 'general_math',
@@ -4711,7 +4711,7 @@ const List<Question> allMCQs = [
       options: ['সমান ক্ষেত্রফলবিশিষ্ট', 'সদৃশ', 'সর্বসম', 'সমকোণী'],
       correctIndex: 1,
       explanation: 'প্রতিটি কোণ ৬০° হওয়ায় সবসময় সদৃশকোণী।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_13',
       subjectId: 'general_math',
@@ -4725,7 +4725,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'ক্ষেত্রফলের অনুপাত = (বাহুর অনুপাত)²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_14',
       subjectId: 'general_math',
@@ -4735,7 +4735,7 @@ const List<Question> allMCQs = [
       options: ['অর্ধেক ও সমান্তরাল', 'সমান', 'দ্বিগুণ', 'লম্ব'],
       correctIndex: 0,
       explanation: 'মধ্যবিন্দু সংযোগরেখা তৃতীয় বাহুর অর্ধেক ও সমান্তরাল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_15',
       subjectId: 'general_math',
@@ -4745,7 +4745,7 @@ const List<Question> allMCQs = [
       options: ['2 : 3', '8 : 27', '4 : 9', '1 : 3'],
       correctIndex: 2,
       explanation: 'বাহুর অনুপাত 2 : 3, ক্ষেত্রফলের অনুপাত 4 : 9।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_16',
       subjectId: 'general_math',
@@ -4759,7 +4759,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'সর্বসম হলে আকার-আকৃতি একই, তাই অবশ্যই সদৃশ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_17',
       subjectId: 'general_math',
@@ -4773,7 +4773,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'সদৃশ অনুপাত 1 : 1 হলেই সর্বসমতা পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_18',
       subjectId: 'general_math',
@@ -4783,7 +4783,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'সমান্তরাল বাহুদ্বয়ের মধ্যবিন্দুগামী রেখাটিই একমাত্র প্রতিসম রেখা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_19',
       subjectId: 'general_math',
@@ -4793,7 +4793,7 @@ const List<Question> allMCQs = [
       options: ['৪৫°', '৯০°', '১৮০°', '৩৬০°'],
       correctIndex: 1,
       explanation: 'বর্গের ঘূর্ণন প্রতিসমের ক্রম ৪; 360°/4 = 90°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_20',
       subjectId: 'general_math',
@@ -4802,7 +4802,7 @@ const List<Question> allMCQs = [
       options: ['৫০°', '৬০°', '৮০°', '৭০°'],
       correctIndex: 3,
       explanation: '∠F = ∠C = 180° − (50° + 60°) = 70°।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_21',
       subjectId: 'general_math',
@@ -4812,7 +4812,7 @@ const List<Question> allMCQs = [
       options: ['২ কি.মি.', '৪ কি.মি.', '১ কি.মি.', '২০ কি.মি.'],
       correctIndex: 0,
       explanation: '2 সেমি × 100000 = 200000 সেমি = 2 কি.মি.।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_22',
       subjectId: 'general_math',
@@ -4821,7 +4821,7 @@ const List<Question> allMCQs = [
       options: ['২টি', '১টি', '৪টি', '৩টি'],
       correctIndex: 0,
       explanation: 'দুটি কর্ণই রম্বসের প্রতিসম রেখা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_23',
       subjectId: 'general_math',
@@ -4831,7 +4831,7 @@ const List<Question> allMCQs = [
       options: ['বর্গ', 'ঘন', 'অর্ধেক', 'সমান'],
       correctIndex: 3,
       explanation: 'মধ্যমা, উচ্চতা, পরিসীমার অনুপাতও বাহুর অনুপাতেরই সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_24',
       subjectId: 'general_math',
@@ -4841,7 +4841,7 @@ const List<Question> allMCQs = [
       options: ['৬০ মিটার', '৩০ মিটার', '৪৫ মিটার', '৫০ মিটার'],
       correctIndex: 0,
       explanation: 'উচ্চতা ১৫ গুণ হওয়ায় ছায়াও ৪ × ১৫ = ৬০ মিটার।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_25',
       subjectId: 'general_math',
@@ -4855,7 +4855,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'সমান্তরাল ফলে অনুরূপ কোণ সমান, তাই সদৃশ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_26',
       subjectId: 'general_math',
@@ -4865,7 +4865,7 @@ const List<Question> allMCQs = [
       options: ['(−3, 5)', '(3, −5)', '(−3, −5)', '(5, 3)'],
       correctIndex: 0,
       explanation: 'y-অক্ষ সাপেক্ষে প্রতিবিম্বে x চিহ্ন বদলায়: (−3, 5)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_27',
       subjectId: 'general_math',
@@ -4875,7 +4875,7 @@ const List<Question> allMCQs = [
       options: ['(−3, 5)', '(5, 3)', '(3, −5)', '(3, 5)'],
       correctIndex: 2,
       explanation: 'x-অক্ষ সাপেক্ষে প্রতিবিম্বে y চিহ্ন বদলায়: (3, −5)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_28',
       subjectId: 'general_math',
@@ -4885,7 +4885,7 @@ const List<Question> allMCQs = [
       options: ['(3, −5)', '(−3, 5)', '(5, 3)', '(−3, −5)'],
       correctIndex: 3,
       explanation: 'মূলবিন্দু সাপেক্ষে উভয় চিহ্ন বদলায়: (−3, −5)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_29',
       subjectId: 'general_math',
@@ -4895,7 +4895,7 @@ const List<Question> allMCQs = [
       options: ['1 : 2', '2 : 1', '1 : 4', '1 : 8'],
       correctIndex: 2,
       explanation: 'ক্ষেত্রফলের অনুপাত বাহুর অনুপাতের বর্গ: 1 : 4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c14_30',
       subjectId: 'general_math',
@@ -4904,8 +4904,8 @@ const List<Question> allMCQs = [
       options: ['সর্বসম', 'সদৃশ', 'অসদৃশ', 'সমান'],
       correctIndex: 1,
       explanation: 'সব বর্গের কোণ সমান ও বাহু সমানুপাতিক, তাই সদৃশ।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১৫ (ক্ষেত্রফল সম্পর্কিত উপপাদ্য ও সম্পাদ্য) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১৫ (ক্ষেত্রফল সম্পর্কিত উপপাদ্য ও সম্পাদ্য) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c15_01',
       subjectId: 'general_math',
@@ -4916,7 +4916,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'এটি একটি প্রসিদ্ধ উপপাদ্য: এ ক্ষেত্রে সব ত্রিভুজক্ষেত্রর ক্ষেত্রফল সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_02',
       subjectId: 'general_math',
@@ -4927,7 +4927,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'ত্রিভুজক্ষেত্রের ক্ষেত্রফল = ½ × সামান্তরিকক্ষেত্রের ক্ষেত্রফল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_03',
       subjectId: 'general_math',
@@ -4941,7 +4941,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'ক্ষেত্রফল = ½ × ভূমি × উচ্চতা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_04',
       subjectId: 'general_math',
@@ -4956,7 +4956,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'মধ্যমা ভূমিকে সমদ্বিখণ্ডিত করলে সৃষ্ট দুই ত্রিভুজের ক্ষেত্রফল সমান হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_05',
       subjectId: 'general_math',
@@ -4970,7 +4970,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'সামান্তরিকক্ষেত্রের ক্ষেত্রফল = ভূমি × উচ্চতা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_06',
       subjectId: 'general_math',
@@ -4984,7 +4984,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: 'আয়তক্ষেত্রের ক্ষেত্রফল = দৈর্ঘ্য × প্রস্থ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_07',
       subjectId: 'general_math',
@@ -4993,7 +4993,7 @@ const List<Question> allMCQs = [
       options: ['2a²', 'a√2', 'a²', 'a²/2'],
       correctIndex: 3,
       explanation: 'বাহু = a/√2 হওয়ায় ক্ষেত্রফল = a²/2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_08',
       subjectId: 'general_math',
@@ -5002,7 +5002,7 @@ const List<Question> allMCQs = [
       options: ['(d₁ + d₂)²', 'd₁ × d₂', '½ d₁ d₂', '2 d₁ d₂'],
       correctIndex: 2,
       explanation: 'রম্বসের ক্ষেত্রফল = ½ × কর্ণদ্বয়ের গুণফল।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_09',
       subjectId: 'general_math',
@@ -5012,7 +5012,7 @@ const List<Question> allMCQs = [
       options: ['(√3/4)a²', '(√3/2)a²', '√3 a²', 'a²/2'],
       correctIndex: 0,
       explanation: 'উচ্চতা = (√3/2)a, তাই ক্ষেত্রফল = (√3/4)a²।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_10',
       subjectId: 'general_math',
@@ -5026,7 +5026,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: '(√3/4) × 16 = 4√3 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_11',
       subjectId: 'general_math',
@@ -5041,7 +5041,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'ট্রাপিজিয়ামের ক্ষেত্রফল = ½ × সমান্তরাল বাহুদ্বয়ের সমষ্টি × উচ্চতা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_12',
       subjectId: 'general_math',
@@ -5051,7 +5051,7 @@ const List<Question> allMCQs = [
       options: ['৩৫ বর্গ সেমি', '৭০ বর্গ সেমি', '৪৮ বর্গ সেমি', '৩০ বর্গ সেমি'],
       correctIndex: 0,
       explanation: '½ × (8 + 6) × 5 = 35 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_13',
       subjectId: 'general_math',
@@ -5066,7 +5066,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'উচ্চতা স্থির হলে ক্ষেত্রফল ভূমির সমানুপাতিক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_14',
       subjectId: 'general_math',
@@ -5081,7 +5081,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'কর্ণ সামান্তরিকক্ষেত্রকে দুটি সর্বসম (সমান ক্ষেত্রফলের) ত্রিভুজে ভাগ করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_15',
       subjectId: 'general_math',
@@ -5095,7 +5095,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: '½ × 10 × 6 = 30 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_16',
       subjectId: 'general_math',
@@ -5105,7 +5105,7 @@ const List<Question> allMCQs = [
       options: ['এক-চতুর্থাংশ', 'দ্বিগুণ', 'অর্ধেক', 'সমান'],
       correctIndex: 2,
       explanation: 'আয়তক্ষেত্রও ভূমি × উচ্চতা; ত্রিভুজ তারই অর্ধেক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_17',
       subjectId: 'general_math',
@@ -5121,7 +5121,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'সমান উচ্চতা থাকা বাধ্যতামূলক, তাই শীর্ষদ্বয় ভূমির সমান্তরাল রেখায় থাকে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_18',
       subjectId: 'general_math',
@@ -5130,7 +5130,7 @@ const List<Question> allMCQs = [
       options: ['ঘন সেমি', 'মিটার', 'সেমি', 'বর্গ সেমি'],
       correctIndex: 3,
       explanation: 'ক্ষেত্রফল মাপা হয় বর্গ এককে, যেমন বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_19',
       subjectId: 'general_math',
@@ -5145,7 +5145,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: '12 × 5 = 60 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_20',
       subjectId: 'general_math',
@@ -5155,7 +5155,7 @@ const List<Question> allMCQs = [
       options: ['৪ সেমি', '৮ সেমি', '৬ সেমি', '৯ সেমি'],
       correctIndex: 1,
       explanation: 'উচ্চতা = 2 × 36/9 = 8 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_21',
       subjectId: 'general_math',
@@ -5170,7 +5170,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'অতিভুজ² = লম্ব² + ভূমি² — ক্ষেত্রফলের ভাষায় এই সম্পর্ক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_22',
       subjectId: 'general_math',
@@ -5180,7 +5180,7 @@ const List<Question> allMCQs = [
       options: ['৬ সেমি', '৮ সেমি', '১০ সেমি', '১২ সেমি'],
       correctIndex: 1,
       explanation: 'প্রস্থ = 96/12 = 8 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_23',
       subjectId: 'general_math',
@@ -5196,7 +5196,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'চতুর্ভুজক্ষেত্র = কর্ণের দুই পাশের দুটি ত্রিভুজের সমষ্টি, তাই ½ × কর্ণ × (h₁ + h₂)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_24',
       subjectId: 'general_math',
@@ -5206,7 +5206,7 @@ const List<Question> allMCQs = [
       options: ['৮০ বর্গ সেমি', '৪০ বর্গ সেমি', '৩০ বর্গ সেমি', '৫০ বর্গ সেমি'],
       correctIndex: 1,
       explanation: '½ × 10 × (3 + 5) = 40 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_25',
       subjectId: 'general_math',
@@ -5216,7 +5216,7 @@ const List<Question> allMCQs = [
       options: ['২টি', '৪টি', '৬টি', '৮টি'],
       correctIndex: 1,
       explanation: 'দুটি কর্ণের ছেদে সৃষ্ট চারটি ত্রিভুজের ক্ষেত্রফল সমান হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_26',
       subjectId: 'general_math',
@@ -5227,7 +5227,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'মধ্যমাত্রয়ের ছেদে সৃষ্ট ছয়টি ছোট ত্রিভুজের ক্ষেত্রফল সমান হয়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_27',
       subjectId: 'general_math',
@@ -5236,7 +5236,7 @@ const List<Question> allMCQs = [
       options: ['৪৮ বর্গ সেমি', '২৪ বর্গ সেমি', '১৪ বর্গ সেমি', '৩৬ বর্গ সেমি'],
       correctIndex: 1,
       explanation: '½ × 8 × 6 = 24 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_28',
       subjectId: 'general_math',
@@ -5251,7 +5251,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'উচ্চতা সমান হলে ক্ষেত্রফল ∝ ভূমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_29',
       subjectId: 'general_math',
@@ -5266,7 +5266,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'ভূমি সমান হলে ক্ষেত্রফল ∝ উচ্চতা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c15_30',
       subjectId: 'general_math',
@@ -5281,8 +5281,8 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'ত্রিভুজক্ষেত্র সামান্তরিকক্ষেত্রের অর্ধেক: ২৫ বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১৬ (পরিমিতি) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১৬ (পরিমিতি) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c16_01',
       subjectId: 'general_math',
@@ -5296,7 +5296,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'পরিসীমা = 2(দৈর্ঘ্য + প্রস্থ)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_02',
       subjectId: 'general_math',
@@ -5305,7 +5305,7 @@ const List<Question> allMCQs = [
       options: ['2a', '4a', 'a²', 'a/4'],
       correctIndex: 1,
       explanation: 'চারটি সমান বাহু থাকায় পরিসীমা = 4a।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_03',
       subjectId: 'general_math',
@@ -5320,7 +5320,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: '12 × 5 = 60 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_04',
       subjectId: 'general_math',
@@ -5329,7 +5329,7 @@ const List<Question> allMCQs = [
       options: ['৭২ বর্গ সেমি', '১৮ বর্গ সেমি', '৩৬ বর্গ সেমি', '৮১ বর্গ সেমি'],
       correctIndex: 3,
       explanation: '9² = 81 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_05',
       subjectId: 'general_math',
@@ -5339,7 +5339,7 @@ const List<Question> allMCQs = [
       options: ['৩২ সেমি', '১৬ সেমি', '৬০ সেমি', '২৬ সেমি'],
       correctIndex: 0,
       explanation: '2(10 + 6) = 32 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_06',
       subjectId: 'general_math',
@@ -5348,7 +5348,7 @@ const List<Question> allMCQs = [
       options: ['a√2', '2a', 'a/√2', 'a²'],
       correctIndex: 0,
       explanation: 'পিথাগোরাস অনুযায়ী কর্ণ = √(a² + a²) = a√2।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_07',
       subjectId: 'general_math',
@@ -5357,7 +5357,7 @@ const List<Question> allMCQs = [
       options: ['৮ সেমি', '১৬ সেমি', '৪ সেমি', '8√2 সেমি'],
       correctIndex: 0,
       explanation: 'বাহু = কর্ণ/√2 = 8 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_08',
       subjectId: 'general_math',
@@ -5366,7 +5366,7 @@ const List<Question> allMCQs = [
       options: ['১৪ সেমি', '২৮ সেমি', '৪৯ সেমি', '২১ সেমি'],
       correctIndex: 3,
       explanation: '7 + 7 + 7 = 21 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_09',
       subjectId: 'general_math',
@@ -5375,7 +5375,7 @@ const List<Question> allMCQs = [
       options: ['πr²', '4πr', '2πr', 'πr'],
       correctIndex: 2,
       explanation: 'পরিধি = 2πr।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_10',
       subjectId: 'general_math',
@@ -5384,7 +5384,7 @@ const List<Question> allMCQs = [
       options: ['৪৪ সেমি', '৮৮ সেমি', '৬১৬ সেমি', '১৭৬ সেমি'],
       correctIndex: 1,
       explanation: '2 × (22/7) × 14 = 88 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_11',
       subjectId: 'general_math',
@@ -5399,7 +5399,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: '(22/7) × 7² = 154 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_12',
       subjectId: 'general_math',
@@ -5408,7 +5408,7 @@ const List<Question> allMCQs = [
       options: ['১৪ সেমি', '২২ সেমি', '৩.৫ সেমি', '৭ সেমি'],
       correctIndex: 3,
       explanation: 'r = 44 ÷ 2π = 44 × 7/44 = 7 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_13',
       subjectId: 'general_math',
@@ -5418,7 +5418,7 @@ const List<Question> allMCQs = [
       options: ['১৪ সেমি', '১১ সেমি', '২২ সেমি', '৭ সেমি'],
       correctIndex: 3,
       explanation: 'r² = 154 × 7/22 = 49 হলে r = 7 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_14',
       subjectId: 'general_math',
@@ -5428,7 +5428,7 @@ const List<Question> allMCQs = [
       options: ['৪৪ সেমি', '১১ সেমি', '২২ সেমি', '৩৩ সেমি'],
       correctIndex: 2,
       explanation: 'চাপ = (60/360) × 2πr = (1/6) × 132 = 22 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_15',
       subjectId: 'general_math',
@@ -5443,7 +5443,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 3,
       explanation: 'ক্ষেত্রফল = (30/360) × π × 144 = 12π বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_16',
       subjectId: 'general_math',
@@ -5452,7 +5452,7 @@ const List<Question> allMCQs = [
       options: ['l + b + h', '2(lb + bh + hl)', 'l²b²h²', 'lbh'],
       correctIndex: 3,
       explanation: 'আয়তন = দৈর্ঘ্য × প্রস্থ × উচ্চতা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_17',
       subjectId: 'general_math',
@@ -5462,7 +5462,7 @@ const List<Question> allMCQs = [
       options: ['lbh', '4(l + b + h)', '2(lb + bh + hl)', '6a²'],
       correctIndex: 2,
       explanation: 'সমগ্রতল = 2(lb + bh + hl)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_18',
       subjectId: 'general_math',
@@ -5471,7 +5471,7 @@ const List<Question> allMCQs = [
       options: ['১২ ঘন সেমি', '৯৪ ঘন সেমি', '৬০ ঘন সেমি', '১২০ ঘন সেমি'],
       correctIndex: 2,
       explanation: '5 × 4 × 3 = 60 ঘন সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_19',
       subjectId: 'general_math',
@@ -5481,7 +5481,7 @@ const List<Question> allMCQs = [
       options: ['৫২ বর্গ সেমি', '২৪ বর্গ সেমি', '৬০ বর্গ সেমি', '৯৪ বর্গ সেমি'],
       correctIndex: 0,
       explanation: '2(6 + 12 + 8) = 52 বর্গ সেমি (২৪ হলো আয়তন)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_20',
       subjectId: 'general_math',
@@ -5490,7 +5490,7 @@ const List<Question> allMCQs = [
       options: ['৯ ঘন সেমি', '২৭ ঘন সেমি', '৫৪ ঘন সেমি', '৮১ ঘন সেমি'],
       correctIndex: 1,
       explanation: '3³ = 27 ঘন সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_21',
       subjectId: 'general_math',
@@ -5504,7 +5504,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: '6 × 5² = 150 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_22',
       subjectId: 'general_math',
@@ -5513,7 +5513,7 @@ const List<Question> allMCQs = [
       options: ['a√2', '3a', 'a²√3', 'a√3'],
       correctIndex: 3,
       explanation: 'ঘনকের কর্ণ = √(a² + a² + a²) = a√3।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_23',
       subjectId: 'general_math',
@@ -5522,7 +5522,7 @@ const List<Question> allMCQs = [
       options: ['√(lbh)', '√(l² + b² + h²)', 'l + b + h', '2√(lb + bh + hl)'],
       correctIndex: 1,
       explanation: 'কর্ণ = √(l² + b² + h²)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_24',
       subjectId: 'general_math',
@@ -5532,7 +5532,7 @@ const List<Question> allMCQs = [
       options: ['১২ সেমি', '১৯ সেমি', '১৩ সেমি', '৫২ সেমি'],
       correctIndex: 2,
       explanation: '√(9 + 16 + 144) = √169 = 13 সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_25',
       subjectId: 'general_math',
@@ -5541,7 +5541,7 @@ const List<Question> allMCQs = [
       options: ['πr²h', '2πrh', '2πr²h', '(4/3)πr³'],
       correctIndex: 0,
       explanation: 'আয়তন = πr²h।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_26',
       subjectId: 'general_math',
@@ -5550,7 +5550,7 @@ const List<Question> allMCQs = [
       options: ['2πrh', 'πr²h', '2πr(r + h)', '2πr²'],
       correctIndex: 0,
       explanation: 'বক্রতলের ক্ষেত্রফল = 2πrh।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_27',
       subjectId: 'general_math',
@@ -5560,7 +5560,7 @@ const List<Question> allMCQs = [
       options: ['৭৭০ ঘন সেমি', '১৫৪০ ঘন সেমি', '৩০৮০ ঘন সেমি', '৪৪০ ঘন সেমি'],
       correctIndex: 1,
       explanation: '(22/7) × 49 × 10 = 1540 ঘন সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_28',
       subjectId: 'general_math',
@@ -5574,7 +5574,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 2,
       explanation: '2 × (22/7) × 7 × 10 = 440 বর্গ সেমি।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_29',
       subjectId: 'general_math',
@@ -5583,7 +5583,7 @@ const List<Question> allMCQs = [
       options: ['(4/3)πr³', '4πr²', 'πr³', '(2/3)πr³'],
       correctIndex: 0,
       explanation: 'গোলকের আয়তন = (4/3)πr³।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c16_30',
       subjectId: 'general_math',
@@ -5592,8 +5592,8 @@ const List<Question> allMCQs = [
       options: ['১ ঘনমিটার', '১০০ ঘনমিটার', '০.১ ঘনমিটার', '০.০১ ঘনমিটার'],
       correctIndex: 2,
       explanation: '১ লিটার = 0.001 ঘনমিটার; ১০০ লিটার = 0.1 ঘনমিটার।',
-      sourceLabel: 'A-Learning Original'),
-  // ───── সাধারণ গণিত: অধ্যায় ১৭ (পরিসংখ্যান) ─ A-Learning Original ─────
+      sourceLabel: "Mentor's Companion Original"),
+  // ───── সাধারণ গণিত: অধ্যায় ১৭ (পরিসংখ্যান) ─ Mentor's Companion Original ─────
   Question(
       id: 'gm_c17_01',
       subjectId: 'general_math',
@@ -5607,7 +5607,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'কোনো উদ্দেশ্যে সংগৃহীত সংখ্যাসূচক তথ্যই উপাত্ত।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_02',
       subjectId: 'general_math',
@@ -5616,7 +5616,7 @@ const List<Question> allMCQs = [
       options: ['১২', '১৫', '২০', '২৫'],
       correctIndex: 1,
       explanation: 'পরিসর = সর্বোচ্চ মান − সর্বনিম্ন মান = 20 − 5 = 15।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_03',
       subjectId: 'general_math',
@@ -5625,7 +5625,7 @@ const List<Question> allMCQs = [
       options: ['৮', '১০', '১২', '৯'],
       correctIndex: 3,
       explanation: 'যোগফল = 45, গড় = 45 ÷ 5 = 9।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_04',
       subjectId: 'general_math',
@@ -5634,7 +5634,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৫.৫', '৬', '৬.৫'],
       correctIndex: 1,
       explanation: 'যোগফল = 55, গড় = 55 ÷ 10 = 5.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_05',
       subjectId: 'general_math',
@@ -5643,7 +5643,7 @@ const List<Question> allMCQs = [
       options: ['৭', '৯', '৪', '৫'],
       correctIndex: 3,
       explanation: 'ক্রমানুসারে: 2, 4, 5, 7, 9; মাঝের মান 5-ই মধ্যক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_06',
       subjectId: 'general_math',
@@ -5652,7 +5652,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৬.৫', '৮', '৭'],
       correctIndex: 1,
       explanation: 'উপাত্ত সংখ্যা জোড় হওয়ায় মধ্যক = (5 + 8) ÷ 2 = 6.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_07',
       subjectId: 'general_math',
@@ -5661,7 +5661,7 @@ const List<Question> allMCQs = [
       options: ['২', '৪', '৩', '৬'],
       correctIndex: 2,
       explanation: '৩ সর্বাধিক ৩ বার এসেছে, তাই প্রচুরক ৩।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_08',
       subjectId: 'general_math',
@@ -5675,7 +5675,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'উপাত্তে যে মানটি সবচেয়ে বেশি বার থাকে সেটিই প্রচুরক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_09',
       subjectId: 'general_math',
@@ -5684,7 +5684,7 @@ const List<Question> allMCQs = [
       options: ['১৪', '১৫', '১৪.৫', '১৫.৫'],
       correctIndex: 2,
       explanation: 'মধ্যমান = (10 + 19) ÷ 2 = 14.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_10',
       subjectId: 'general_math',
@@ -5699,7 +5699,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 1,
       explanation: 'শ্রেণিব্যাপ্তি = (ঊর্ধ্বসীমা − নিম্নসীমা) + 1।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_11',
       subjectId: 'general_math',
@@ -5713,7 +5713,7 @@ const List<Question> allMCQs = [
       ],
       correctIndex: 0,
       explanation: 'কোনো মান বা শ্রেণির অন্তর্গত উপাত্তের সংখ্যাই গণসংখ্যা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_12',
       subjectId: 'general_math',
@@ -5728,7 +5728,7 @@ const List<Question> allMCQs = [
       correctIndex: 1,
       explanation:
           'প্রথম শ্রেণি থেকে নির্দিষ্ট শ্রেণি পর্যন্ত গণসংখ্যাগুলো পরপর যোগ করলে ক্রমযোজিত গণসংখ্যা পাওয়া যায়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_13',
       subjectId: 'general_math',
@@ -5738,7 +5738,7 @@ const List<Question> allMCQs = [
       options: ['৭৮', '৪২৬', '৪৩২', '৪৪৪'],
       correctIndex: 2,
       explanation: 'মোট = গড় × সংখ্যা = 72 × 6 = 432।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_14',
       subjectId: 'general_math',
@@ -5747,7 +5747,7 @@ const List<Question> allMCQs = [
       options: ['২৫', '৩৫', '৩০', '৪০'],
       correctIndex: 2,
       explanation: 'যোগফল 150, গড় = 150 ÷ 5 = 30।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_15',
       subjectId: 'general_math',
@@ -5756,7 +5756,7 @@ const List<Question> allMCQs = [
       options: ['১০', '১১', '৯', '১২'],
       correctIndex: 0,
       explanation: 'যোগফল = 100, গড় = 100 ÷ 10 = 10।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_16',
       subjectId: 'general_math',
@@ -5765,7 +5765,7 @@ const List<Question> allMCQs = [
       options: ['১২', '১৪', '১৬', '১৮'],
       correctIndex: 2,
       explanation: 'মোট = 4 × 7 = 28; z = 28 − 12 = 16।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_17',
       subjectId: 'general_math',
@@ -5775,7 +5775,7 @@ const List<Question> allMCQs = [
       options: ['ম', 'ম − ৫', 'ম × ৫', 'ম + ৫'],
       correctIndex: 3,
       explanation: 'প্রতিটি উপাত্তে একই সংখ্যা যোগ করলে গড়ও ততটাই বাড়ে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_18',
       subjectId: 'general_math',
@@ -5785,7 +5785,7 @@ const List<Question> allMCQs = [
       options: ['১৫', '১৭.৫', '১৮', '২০'],
       correctIndex: 1,
       explanation: 'মোট ছিল 100; বাদ দেওয়ার পর (100 − 30) ÷ 4 = 17.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_19',
       subjectId: 'general_math',
@@ -5795,7 +5795,7 @@ const List<Question> allMCQs = [
       options: ['৭', '৮', '৯', '১০'],
       correctIndex: 2,
       explanation: 'সংখ্যাগুলো 7, 8, 9; বৃহত্তম = 9।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_20',
       subjectId: 'general_math',
@@ -5805,7 +5805,7 @@ const List<Question> allMCQs = [
       options: ['৭ম', '৮ম', '৯ম', '১০ম'],
       correctIndex: 1,
       explanation: 'মধ্যকের অবস্থান = (15 + 1) ÷ 2 = ৮ম উপাত্ত।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_21',
       subjectId: 'general_math',
@@ -5820,7 +5820,7 @@ const List<Question> allMCQs = [
       correctIndex: 2,
       explanation:
           'উপাত্ত সংখ্যা জোড় হলে মধ্যক = মাঝের দুইটি উপাত্তের (এখানে ৪র্থ ও ৫ম) গড়।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_22',
       subjectId: 'general_math',
@@ -5830,7 +5830,7 @@ const List<Question> allMCQs = [
       options: ['১৮', '১৯', '২০', '২২'],
       correctIndex: 2,
       explanation: '4 + 6 + 8 + 2 = 20 জন।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_23',
       subjectId: 'general_math',
@@ -5840,7 +5840,7 @@ const List<Question> allMCQs = [
       options: ['৭', '৫', '৬', '৮'],
       correctIndex: 0,
       explanation: '৭ নম্বর সর্বাধিক (৮ জন) শিক্ষার্থী পেয়েছে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_24',
       subjectId: 'general_math',
@@ -5850,7 +5850,7 @@ const List<Question> allMCQs = [
       options: ['৬', '৬.২', '৬.৬', '৬.৪'],
       correctIndex: 3,
       explanation: 'মোট = 20+36+56+16 = 128; গড় = 128 ÷ 20 = 6.4।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_25',
       subjectId: 'general_math',
@@ -5860,7 +5860,7 @@ const List<Question> allMCQs = [
       options: ['৬', '৬.৫', '৭', '৭.৫'],
       correctIndex: 1,
       explanation: '২০টি উপাত্তে ১০ম = 6 ও ১১তম = 7; মধ্যক = (6+7) ÷ 2 = 6.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_26',
       subjectId: 'general_math',
@@ -5870,7 +5870,7 @@ const List<Question> allMCQs = [
       options: ['৫', '৭', '১০', '৬'],
       correctIndex: 3,
       explanation: 'শ্রেণিসংখ্যা = পরিসর ÷ শ্রেণিব্যাপ্তি = 60 ÷ 10 = 6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_27',
       subjectId: 'general_math',
@@ -5879,7 +5879,7 @@ const List<Question> allMCQs = [
       options: ['৬', '৫', '৭', '৮'],
       correctIndex: 0,
       explanation: '2+4+6+8+10 = 30; গড় = 30 ÷ 5 = 6।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_28',
       subjectId: 'general_math',
@@ -5890,7 +5890,7 @@ const List<Question> allMCQs = [
       correctIndex: 3,
       explanation:
           'মোট = (10×60)+(10×70) = 1300; সম্মিলিত গড় = 1300 ÷ 20 = 65।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_29',
       subjectId: 'general_math',
@@ -5900,7 +5900,7 @@ const List<Question> allMCQs = [
       correctIndex: 0,
       explanation:
           'গড়, মধ্যক, প্রচুরক কেন্দ্রীয় প্রবণতার মাপ; পরিসর বিস্তারের মাপ।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   Question(
       id: 'gm_c17_30',
       subjectId: 'general_math',
@@ -5910,7 +5910,7 @@ const List<Question> allMCQs = [
       options: ['১৭', '১৮', '১৯', '১৮.৫'],
       correctIndex: 3,
       explanation: 'মধ্যমান 12, 17, 22; (24+51+110) ÷ 10 = 185 ÷ 10 = 18.5।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   ...physicsMcqs,
   ...chemistryMcqs,
   ...biologyMcqs,
@@ -6094,7 +6094,7 @@ const List<CreativeQuestion> allCQs = [
     sourceLabel: 'চট্টগ্রাম বোর্ড ২০২৫',
   ),
 
-  // ───── সাধারণ গণিত: অধ্যায় ১ (বাস্তব সংখ্যা) ─ A-Learning Original ─────
+  // ───── সাধারণ গণিত: অধ্যায় ১ (বাস্তব সংখ্যা) ─ Mentor's Companion Original ─────
   CreativeQuestion(
       id: 'gm_c1_cq1',
       subjectId: 'general_math',
@@ -6104,7 +6104,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'x কে সামান্য ভগ্নাংশ আকারে প্রকাশ করো।',
       questionG: 'y কে সামান্য ভগ্নাংশ আকারে প্রকাশ করো।',
       questionGh: 'x + y এর যোগফল মূলদ সংখ্যা — কারণসহ বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c1_cq2',
       subjectId: 'general_math',
@@ -6114,7 +6114,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'a ও c মূলদ সংখ্যা কি না — দেখাও।',
       questionG: 'b কে ৪√3 আকারে প্রকাশ করে এটি অমূলদ কেন তা ব্যাখ্যা করো।',
       questionGh: 'ac ÷ b রাশিটি মূলদ না অমূলদ — গাণিতিক যুক্তিসহ নির্ণয় করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c1_cq3',
       subjectId: 'general_math',
@@ -6124,7 +6124,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'x একটি অমূলদ সংখ্যা কেন — ব্যাখ্যা করো।',
       questionG: 'x² এর মান নির্ণয় করো।',
       questionGh: 'দেখাও যে, x + ১/x একটি মূলদ সংখ্যা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c1_cq4',
       subjectId: 'general_math',
@@ -6136,7 +6136,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ভগ্নাংশ দুইটির মাঝামাঝি একটি মূলদ সংখ্যা নির্ণয় করো।',
       questionGh:
           'ভগ্নাংশ দুইটির মধ্যে অসংখ্য মূলদ সংখ্যা বিদ্যমান — ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c1_cq5',
       subjectId: 'general_math',
@@ -6146,7 +6146,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: '৭/১২ কে দশমিকে প্রকাশ করো এবং এটি কোন ধরনের দশমিক তা লেখো।',
       questionG: '৭/১২ এর দশমিক প্রকাশ সসীম হয় না কেন — কারণ ব্যাখ্যা করো।',
       questionGh: '৭/৮ সসীম দশমিক হয় কীভাবে — হরের গাণিতিক গঠন বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c2_cq1',
       subjectId: 'general_math',
@@ -6158,7 +6158,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'দেখাও যে, (A ∪ B)′ = A′ ∩ B′।',
       questionGh:
           'P(A) নির্ণয় করে দেখাও যে, এতে 2ⁿ সংখ্যক উপসেট আছে, যেখানে n হলো A-এর উপাদান সংখ্যা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c2_cq2',
       subjectId: 'general_math',
@@ -6169,7 +6169,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'f(x) = 10 হলে x এর মান নির্ণয় করো।',
       questionGh:
           'g(f(2)) ও f(g(2)) নির্ণয় করে দেখাও যে, সাধারণভাবে g(f(x)) ≠ f(g(x))।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c2_cq3',
       subjectId: 'general_math',
@@ -6182,7 +6182,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'উভয় বিষয়ে পাস করেছে এমন শিক্ষার্থীর সংখ্যা নির্ণয় করো।',
       questionGh:
           'ভেনচিত্রের সাহায্যে শুধুমাত্র গণিতে এবং শুধুমাত্র বিজ্ঞানে পাস করা শিক্ষার্থীর সংখ্যা নির্ণয় করে ফলাফলটি বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c2_cq4',
       subjectId: 'general_math',
@@ -6192,7 +6192,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'A ও B সেটকে তালিকা পদ্ধতিতে প্রকাশ করো।',
       questionG: 'A ∩ B ও A ∪ B নির্ণয় করো।',
       questionGh: 'দেখাও যে, n(A ∪ B) = n(A) + n(B) − n(A ∩ B)।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c2_cq5',
       subjectId: 'general_math',
@@ -6204,7 +6204,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'R এর ডোমেন ও রেঞ্জ নির্ণয় করো।',
       questionGh:
           'R একটি ফাংশন কি না — কারণসহ মতামত দাও এবং ফাংশন হওয়ার শর্ত ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c3_cq1',
       subjectId: 'general_math',
@@ -6215,7 +6215,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'x³ + 1/x³ এর মান নির্ণয় করো।',
       questionGh:
           'x⁴ + 1/x⁴ এর মান নির্ণয় করো এবং এটি (x² + 1/x²)² − 2 এর সমান হওয়ার কারণ ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c3_cq2',
       subjectId: 'general_math',
@@ -6226,7 +6226,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'a ও b এর মান নির্ণয় করো।',
       questionGh:
           'a³ − b³ এর মান নির্ণয় করো এবং সূত্র ব্যবহার না করে সরাসরি ঘনের অন্তরফলের সাথে মিলিয়ে দেখো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c3_cq3',
       subjectId: 'general_math',
@@ -6238,7 +6238,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'P/Q কে সরলতম আকারে প্রকাশ করো।',
       questionGh:
           'R কে উৎপাদকে বিশ্লেষণ করে দেখাও যে, Q এর একটি উৎপাদক R এরও উৎপাদক।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c3_cq4',
       subjectId: 'general_math',
@@ -6250,7 +6250,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'A − B নির্ণয় করো।',
       questionGh:
           'দেখাও যে, (A + B) ÷ (A − B) = x/2 এবং x = 4 হলে এর মান পরীক্ষা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c3_cq5',
       subjectId: 'general_math',
@@ -6261,7 +6261,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'দেখাও যে, (x − 2) রাশিটির একটি উৎপাদক।',
       questionGh:
           'f(x) কে সম্পূর্ণভাবে উৎপাদকে বিশ্লেষণ করো এবং উৎপাদকগুলোর গুণফল মূল রাশির সমান কি না পরীক্ষা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c4_cq1',
       subjectId: 'general_math',
@@ -6272,7 +6272,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'উদ্দীপক থেকে y এর মান নির্ণয় করো।',
       questionGh:
           'x^y এর মান নির্ণয় করো এবং ফলাফলটি মূলদ সংখ্যা কি না — যুক্তিসহ ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c4_cq2',
       subjectId: 'general_math',
@@ -6283,7 +6283,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'f(x) = −2 হলে x এর মান নির্ণয় করো।',
       questionGh:
           'দেখাও যে, f(8) = 3f(2) এবং এই ধর্মটি লগের কোন সূত্রের ফলাফল — ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c4_cq3',
       subjectId: 'general_math',
@@ -6293,7 +6293,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'A ও B এর মান নির্ণয় করো।',
       questionG: 'C এর মান নির্ণয় করে দেখাও যে, A · B · C = 12/5।',
       questionGh: 'প্রমাণ করো যে, (A · B · C)² = 144/25।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c4_cq4',
       subjectId: 'general_math',
@@ -6304,7 +6304,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'দ্বিতীয় সমীকরণ থেকে y নির্ণয় করো।',
       questionGh:
           'x^y + y^x এর মান নির্ণয় করো এবং ফলাফলটি মৌলিক সংখ্যা কি না — যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c4_cq5',
       subjectId: 'general_math',
@@ -6315,7 +6315,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'Q এর মান নির্ণয় করো।',
       questionGh:
           'P × Q নির্ণয় করে দেখাও যে, এটি পূর্ণসংখ্যা নয় কিন্তু মূলদ সংখ্যা।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c5_cq1',
       subjectId: 'general_math',
@@ -6326,7 +6326,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'সমাধান করে সংখ্যাটি নির্ণয় করো।',
       questionGh:
           'প্রাপ্ত সংখ্যাটির চারগুণের সাথে ৬ যোগ করলে যা পাওয়া যায় তা নির্ণয় করো এবং সমাধানটি মূল সমীকরণ সিদ্ধ করে কি না তা যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c5_cq2',
       subjectId: 'general_math',
@@ -6337,7 +6337,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'সংখ্যা দুটি নির্ণয় করো।',
       questionGh:
           'সংখ্যা দুটির গুণফল ও গড় নির্ণয় করে দেখাও যে, গড়টি সংখ্যা দুটির মাঝামাঝি পূর্ণসংখ্যাটির সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c5_cq3',
       subjectId: 'general_math',
@@ -6349,7 +6349,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'জমিটির দৈর্ঘ্য ও প্রস্থ নির্ণয় করো।',
       questionGh:
           'জমিটির ক্ষেত্রফল নির্ণয় করো; দৈর্ঘ্য আরও ২ মিটার বাড়ালে ক্ষেত্রফল কত বাড়বে এবং এর কারণ বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c5_cq4',
       subjectId: 'general_math',
@@ -6361,7 +6361,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'মা ও কন্যার বর্তমান বয়স নির্ণয় করো।',
       questionGh:
           'কত বছর পর মায়ের বয়স কন্যার বয়সের ৩ গুণ হবে — নতুন সমীকরণের সাহায্যে নির্ণয় করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c5_cq5',
       subjectId: 'general_math',
@@ -6372,7 +6372,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ঘড়িটির ক্রয়মূল্য নির্ণয় করো।',
       questionGh:
           '৩০% লাভ পেতে হলে ঘড়িটি কত টাকায় বিক্রি করতে হতো এবং এতে লাভের পরিমাণ আগের তুলনায় কত বাড়তো — বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c6_cq1',
       subjectId: 'general_math',
@@ -6384,7 +6384,7 @@ const List<CreativeQuestion> allCQs = [
           'BC বাহুকে D পর্যন্ত বর্ধিত করলে সৃষ্ট ∠ACD বহিঃস্থ কোণের মান নির্ণয় করো।',
       questionGh:
           'প্রমাণ করো যে, ত্রিভুজের বহিঃস্থ কোণটি অন্তঃস্থ বিপরীত কোণদ্বয়ের সমষ্টির সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c6_cq2',
       subjectId: 'general_math',
@@ -6398,7 +6398,7 @@ const List<CreativeQuestion> allCQs = [
           'ছেদবিন্দুদ্বয়ে গঠিত কোণগুলোর একটি 70° হলে অবশিষ্ট সবগুলো কোণের মান নির্ণয় করো।',
       questionGh:
           'প্রমাণ করো যে, সমান্তরাল সরলরেখার ক্ষেত্রে একান্তর কোণদ্বয় পরস্পর সমান।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c6_cq3',
       subjectId: 'general_math',
@@ -6410,7 +6410,7 @@ const List<CreativeQuestion> allCQs = [
           'প্রমাণ করো যে, সমদ্বিবাহু ত্রিভুজের ভূমি সংলগ্ন কোণদ্বয় পরস্পর সমান।',
       questionGh:
           'প্রমাণ করো যে, ∠A এর সমদ্বিখণ্ডক ভূমি BC এর উপর লম্ব এবং BC কে সমদ্বিখণ্ডিত করে।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c6_cq4',
       subjectId: 'general_math',
@@ -6422,7 +6422,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'প্রমাণ করো যে, ত্রিভুজের তিন কোণের সমষ্টি দুই সমকোণ।',
       questionGh:
           'দেখাও যে, G বিন্দুতে সৃষ্ট বহিঃস্থ কোণ অন্তঃস্থ বিপরীত কোণদ্বয়ের সমষ্টির সমান এবং এর মান নির্ণয় করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c6_cq5',
       subjectId: 'general_math',
@@ -6435,7 +6435,7 @@ const List<CreativeQuestion> allCQs = [
           'প্রমাণ করো যে, ত্রিভুজের বৃহত্তর বাহুর বিপরীত কোণই বৃহত্তর কোণ।',
       questionGh:
           'প্রমাণ করো যে, QR + PR > PQ এবং এই অসমতার ভিত্তিতে ৩, ৪, ৮ সেমি বাহু দিয়ে ত্রিভুজ গঠন সম্ভব কি না তা বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c7_cq1',
       subjectId: 'general_math',
@@ -6448,7 +6448,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ত্রিভুজটি অঙ্কনের ধাপগুলো বর্ণনা করো।',
       questionGh:
           'অঙ্কিত ত্রিভুজটির পরিবৃত্ত অঙ্কনের পূর্ণ প্রণালী (পরিকেন্দ্র নির্ণয়সহ) আলোচনা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c7_cq2',
       subjectId: 'general_math',
@@ -6460,7 +6460,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'উদ্দীপকের তথ্য অনুযায়ী ত্রিভুজটি অঙ্কনের বর্ণনা দাও।',
       questionGh:
           'পিথাগোরাসের উপপাদ্য ব্যবহার করে তৃতীয় বাহুর দৈর্ঘ্য নির্ণয় করো এবং একটি কোণ দেওয়া না থাকলেও অঙ্কনটি যে স্বতন্ত্র তার কারণ বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c7_cq3',
       subjectId: 'general_math',
@@ -6471,7 +6471,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'রম্বসটি অঙ্কনের ধাপগুলো বর্ণনা করো।',
       questionGh:
           'দেখাও যে, রম্বসটির ক্ষুদ্রতর কর্ণের দৈর্ঘ্য বাহুর সমান এবং কারণ ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c7_cq4',
       subjectId: 'general_math',
@@ -6484,7 +6484,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'চতুর্ভুজটি অঙ্কনের ধাপগুলো বর্ণনা করো।',
       questionGh:
           'অঙ্কিত চিত্রে অপর কর্ণ BD পরিমাপ করো এবং পাঁচটি উপাত্ত দেওয়া থাকলেই যে নির্দিষ্ট চতুর্ভুজ পাওয়া যায় তার কারণ বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c7_cq5',
       subjectId: 'general_math',
@@ -6496,7 +6496,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ত্রিভুজটি অঙ্কনের ধাপগুলো বর্ণনা করো।',
       questionGh:
           'অঙ্কিত ত্রিভুজের মধ্যমাত্রয় অঙ্কনের প্রণালী বর্ণনা করো এবং ভরকেন্দ্র চিহ্নিত করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c8_cq1',
       subjectId: 'general_math',
@@ -6509,7 +6509,7 @@ const List<CreativeQuestion> allCQs = [
           'প্রমাণ করো যে, একই চাপের উপর দণ্ডায়মান কেন্দ্রস্থ কোণ পরিধিস্থ কোণের দ্বিগুণ।',
       questionGh:
           'C বিন্দুটি যদি ক্ষুদ্র চাপে থাকত তবে ∠ACB কত হতো — বৃত্তস্থ চতুর্ভুজের ধর্ম ব্যবহার করে নির্ণয় ও ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c8_cq2',
       subjectId: 'general_math',
@@ -6521,7 +6521,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'পিথাগোরাসের সাহায্যে AM এর দৈর্ঘ্য নির্ণয় করো।',
       questionGh:
           'জ্যা AB এর দৈর্ঘ্য নির্ণয় করো এবং জ্যাটি যদি ব্যাস হতো তবে কেন্দ্র থেকে দূরত্ব কত হতো — ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c8_cq3',
       subjectId: 'general_math',
@@ -6534,7 +6534,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'প্রমাণ করো যে, PA = PB।',
       questionGh:
           'PO = 13 সেমি এবং ব্যাসার্ধ 5 সেমি হলে স্পর্শকের দৈর্ঘ্য নির্ণয় করো এবং ∠APB সম্পর্কে মন্তব্য করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c8_cq4',
       subjectId: 'general_math',
@@ -6546,7 +6546,7 @@ const List<CreativeQuestion> allCQs = [
           'প্রমাণ করো যে, বৃত্তস্থ চতুর্ভুজের বিপরীত কোণদ্বয় পরস্পর সম্পূরক।',
       questionGh:
           '∠D এর মান নির্ণয় করো এবং উদ্দীপকের চতুর্ভুজটি সামান্তরিক হওয়া সম্ভব কি না — বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c8_cq5',
       subjectId: 'general_math',
@@ -6558,7 +6558,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'প্রমাণ করো যে, ∠AOB = ∠COD।',
       questionGh:
           'প্রমাণ করো যে, OM = ON অর্থাৎ সমান জ্যা কেন্দ্র থেকে সমদূরবর্তী এবং এর বিপরীত উপপাদ্যটিও সত্য কি না আলোচনা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c9_cq1',
       subjectId: 'general_math',
@@ -6569,7 +6569,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'sin C, cos C ও tan C এর মান নির্ণয় করো।',
       questionGh:
           'উদ্দীপকের তথ্য ব্যবহার করে প্রমাণ করো যে, sin²C + cos²C = 1 এবং এটি সকল সূক্ষ্মকোণের জন্য প্রযোজ্য কেন তা ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c9_cq2',
       subjectId: 'general_math',
@@ -6581,7 +6581,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'sin x ও cos x এর মান নির্ণয় করো।',
       questionGh:
           'প্রমাণ করো যে, 1 + tan²x = sec²x এবং উদ্দীপকের মান বসিয়ে অভেদটি যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c9_cq3',
       subjectId: 'general_math',
@@ -6592,7 +6592,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'প্রমাণ করো যে, sin A = cos(90° − A)।',
       questionGh:
           'দেখাও যে, tan A × tan B = 1 এবং পূরক কোণদ্বয়ের ত্রিকোণমিতিক অনুপাতের এই সম্পর্ক ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c9_cq4',
       subjectId: 'general_math',
@@ -6603,7 +6603,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'দেখাও যে, 2 sin x cos x = 1।',
       questionGh:
           'প্রমাণ করো যে, (sin x + cos x)² = 2 এবং এ থেকে sin²x + cos²x = 1 অভেদের ভূমিকা ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c9_cq5',
       subjectId: 'general_math',
@@ -6614,7 +6614,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'cos θ ও tan θ এর মান নির্ণয় করো।',
       questionGh:
           'প্রমাণ করো যে, sec²θ − tan²θ = 1 অর্থাৎ অভেদটি sin θ এর যেকোনো বৈধ মানের জন্য সত্য।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c10_cq1',
       subjectId: 'general_math',
@@ -6626,7 +6626,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'মিনারের উচ্চতা নির্ণয় করো।',
       questionGh:
           'উন্নতি কোণ ৬০° হলে ঐ পর্যবেক্ষককে মিনারের পাদবিন্দু থেকে কত দূরে দাঁড়াতে হবে এবং উচ্চতা ঠিক থাকার কারণ ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c10_cq2',
       subjectId: 'general_math',
@@ -6639,7 +6639,7 @@ const List<CreativeQuestion> allCQs = [
           'মইয়ের শীর্ষবিন্দু ভূতল থেকে কত উচ্চতায় পৌঁছেছে — নির্ণয় করো।',
       questionGh:
           'মইটি ভূতলের সাথে ৩০° কোণ উৎপন্ন করে নামালে শীর্ষবিন্দু কত নিচে নামবে — গাণিতিক বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c10_cq3',
       subjectId: 'general_math',
@@ -6651,7 +6651,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'গাছটির উচ্চতা নির্ণয় করো।',
       questionGh:
           'নদীর বিস্তার নির্ণয় করো এবং প্রথম পর্যবেক্ষণ বিন্দু থেকে গাছের শীর্ষের সরাসরি দূরত্ব বের করে ফলাফল বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c10_cq4',
       subjectId: 'general_math',
@@ -6663,7 +6663,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'টাওয়ারের উচ্চতা নির্ণয় করো।',
       questionGh:
           'উন্নতি কোণ ৬০° হলে ছায়ার দৈর্ঘ্য কত হবে এবং ৩০°-এর ক্ষেত্রের সাথে তুলনা করে সম্পর্কটি বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c10_cq5',
       subjectId: 'general_math',
@@ -6674,7 +6674,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'খুঁটিটির ছায়ার দৈর্ঘ্য নির্ণয় করো।',
       questionGh:
           'উন্নতি কোণ ৩০° হলে ছায়ার দৈর্ঘ্য কত হতো এবং ছায়া পরিবর্তনের কারণ ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c11_cq1',
       subjectId: 'general_math',
@@ -6685,7 +6685,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'সংখ্যা দুটি নির্ণয় করো।',
       questionGh:
           'বৃহত্তর সংখ্যাটির কত ভগ্নাংশ নিলে ক্ষুদ্রতর সংখ্যাটির সমান হবে — নির্ণয় করে বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c11_cq2',
       subjectId: 'general_math',
@@ -6696,7 +6696,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'a + c = 46 হলে b এর মান নির্ণয় করো।',
       questionGh:
           'a = 16 হলে b ও c নির্ণয় করো এবং উদ্দীপকের অনুপাতগুলো যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c11_cq3',
       subjectId: 'general_math',
@@ -6708,7 +6708,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'প্রত্যেক অংশীদারের প্রাপ্ত অংশ নির্ণয় করো।',
       questionGh:
           'C এর অংশ, A ও B এর যোগফলের শতকরা কত — নির্ণয় করে ফলাফলটি বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c11_cq4',
       subjectId: 'general_math',
@@ -6719,7 +6719,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'x ও y এর মান নির্ণয় করো।',
       questionGh:
           'যোগ-বিয়োগ বিধি প্রয়োগ করে (x + y)/(y − x) নির্ণয় করো এবং প্রাপ্ত মান যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c11_cq5',
       subjectId: 'general_math',
@@ -6731,7 +6731,7 @@ const List<CreativeQuestion> allCQs = [
           '২০ জন শ্রমিক কত দিনে কাজটি শেষ করবে নির্ণয় করো এবং এটি কোন ধরনের সমানুপাত — ব্যাখ্যা করো।',
       questionGh:
           'কাজটি ১০ দিনে শেষ করতে চাইলে আরও কতজন শ্রমিক নিয়োগ করতে হবে — বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c12_cq1',
       subjectId: 'general_math',
@@ -6742,7 +6742,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'y এর মান নির্ণয় করো।',
       questionGh:
           'দেখাও যে, প্রাপ্ত (x, y) উভয় সমীকরণ সিদ্ধ করে এবং xy এর মান নির্ণয় করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c12_cq2',
       subjectId: 'general_math',
@@ -6754,7 +6754,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'অপনয়ন পদ্ধতিতে প্রতিটি কলম ও খাতার দাম নির্ণয় করো।',
       questionGh:
           '৫টি কলম ও ৪টি খাতার মোট দাম নির্ণয় করো এবং ফলাফলটি উদ্দীপকের আলোকে যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c12_cq3',
       subjectId: 'general_math',
@@ -6767,7 +6767,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'সংখ্যাটি নির্ণয় করো।',
       questionGh:
           'অঙ্কদ্বয়ের গুণফল নির্ণয় করো এবং সংখ্যাটি উদ্দীপকের শর্তসমূহ পূরণ করে কি না যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c12_cq4',
       subjectId: 'general_math',
@@ -6780,7 +6780,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'স্থির পানিতে নৌকার বেগ নির্ণয় করো।',
       questionGh:
           'স্রোতের বেগ নির্ণয় করো এবং নৌকাটি স্রোতের অনুকূলে ৫ ঘণ্টায় কত দূরত্ব অতিক্রম করবে তা বের করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c12_cq5',
       subjectId: 'general_math',
@@ -6792,7 +6792,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'বর্তমানে পিতা ও পুত্রের বয়স নির্ণয় করো।',
       questionGh:
           'কত বছর পর পিতার বয়স পুত্রের দ্বিগুণ হবে — নতুন সমীকরণ দিয়ে নির্ণয় করো এবং ফলাফল বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c13_cq1',
       subjectId: 'general_math',
@@ -6802,7 +6802,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'ধারাটির ৮ম পদ নির্ণয় করো।',
       questionG: 'ধারাটির প্রথম ১০টি পদের সমষ্টি নির্ণয় করো।',
       questionGh: 'ধারাটির কততম পদ ১৩৮ হবে — নির্ণয় করে ফলাফলটি যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c13_cq2',
       subjectId: 'general_math',
@@ -6813,7 +6813,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ধারাটির প্রথম ৪টি পদের সমষ্টি নির্ণয় করো।',
       questionGh:
           'ধারাটির কোন পদ ৪৮৬ হবে — নির্ণয় করো এবং প্রক্রিয়াটি ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c13_cq3',
       subjectId: 'general_math',
@@ -6824,7 +6824,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ধারাটির সমষ্টি নির্ণয় করো।',
       questionGh:
           'ধারাটির প্রথম ১০টি পদের সমষ্টি নির্ণয় করো এবং দুইটি সমষ্টির তুলনামূলক বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c13_cq4',
       subjectId: 'general_math',
@@ -6836,7 +6836,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'B এর মান নির্ণয় করো।',
       questionGh:
           'দেখাও যে, B = (1 + 2 + ... + 10)² এবং এই সম্পর্কের গাণিতিক ব্যাখ্যা দাও।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c13_cq5',
       subjectId: 'general_math',
@@ -6847,7 +6847,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ধারাটির ১৫তম পদ নির্ণয় করো।',
       questionGh:
           'প্রমাণ করো যে, ধারাটির প্রথম nটি পদের সমষ্টি n(3n + 1)/2 এবং n = 5 এর জন্য যাচাই করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c14_cq1',
       subjectId: 'general_math',
@@ -6859,7 +6859,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'EF এর দৈর্ঘ্য নির্ণয় করো।',
       questionGh:
           'ত্রিভুজদ্বয়ের ক্ষেত্রফলের অনুপাত নির্ণয় করো এবং বাহুর অনুপাতের সাথে সম্পর্ক ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c14_cq2',
       subjectId: 'general_math',
@@ -6871,7 +6871,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'দেখাও যে, ΔADE ~ ΔABC।',
       questionGh:
           'BC এর দৈর্ঘ্য নির্ণয় করো এবং সমান্তরাল সরলরেখা কাটা বাহুদ্বয়কে সমানুপাতে ভাগ করে কি না তা মন্তব্য করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c14_cq3',
       subjectId: 'general_math',
@@ -6884,7 +6884,7 @@ const List<CreativeQuestion> allCQs = [
           'বর্গক্ষেত্রকে একটি কর্ণ বরাবর ভাঁজ করলে যে ত্রিভুজ পাওয়া যায় তার প্রকৃতি ব্যাখ্যা করো।',
       questionGh:
           'বিন্দু প্রতিসমতার সংজ্ঞা দাও এবং সমবাহু ত্রিভুজের তা না থাকলেও আয়তক্ষেত্রের থাকার কারণ বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c14_cq4',
       subjectId: 'general_math',
@@ -6896,7 +6896,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'প্রমাণ করো যে, AB² = AD × AC।',
       questionGh:
           'AB = 6 সেমি ও AC = 9 সেমি হলে AD এর দৈর্ঘ্য নির্ণয় করো এবং উপপাদ্যের প্রযোজ্যতা ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c14_cq5',
       subjectId: 'general_math',
@@ -6909,7 +6909,7 @@ const List<CreativeQuestion> allCQs = [
           'A বিন্দুর y-অক্ষ ও মূলবিন্দুর সাপেক্ষে প্রতিসম প্রতিবিম্বের স্থানাঙ্ক নির্ণয় করো।',
       questionGh:
           'A ও এর তিনটি প্রতিবিম্ব বিন্দু যুক্ত করলে যে চতুর্ভুজ পাওয়া যায় তার নাম নির্ণয় করো এবং প্রতিসমতার দৃষ্টিকোণ থেকে ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c15_cq1',
       subjectId: 'general_math',
@@ -6922,7 +6922,7 @@ const List<CreativeQuestion> allCQs = [
           'প্রমাণ করো যে, ত্রিভুজক্ষেত্রের ক্ষেত্রফল সামান্তরিকক্ষেত্রের ক্ষেত্রফলের অর্ধেক।',
       questionGh:
           'সামান্তরিকক্ষেত্রের ক্ষেত্রফল 60 বর্গ সেমি হলে ত্রিভুজক্ষেত্রের ক্ষেত্রফল নির্ণয় করো এবং A বিন্দু ED রেখা বরাবর সরলে ক্ষেত্রফলের কী পরিবর্তন হবে — ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c15_cq2',
       subjectId: 'general_math',
@@ -6934,7 +6934,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ত্রিভুজটির ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'দেখাও যে, মধ্যমা AD ত্রিভুজটিকে সমান ক্ষেত্রফলবিশিষ্ট দুটি ত্রিভুজে ভাগ করে এবং প্রতিটির ক্ষেত্রফল নির্ণয় করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c15_cq3',
       subjectId: 'general_math',
@@ -6946,7 +6946,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ΔABM এর ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'প্রমাণ করো যে, মধ্যমা ত্রিভুজক্ষেত্রকে সমান ক্ষেত্রফলবিশিষ্ট দুটি ত্রিভুজক্ষেত্রে বিভক্ত করে এবং পুরো ত্রিভুজের ক্ষেত্রফলের সাথে সম্পর্ক ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c15_cq4',
       subjectId: 'general_math',
@@ -6958,7 +6958,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ট্রাপিজিয়ামটির ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'সমান্তরাল বাহুদ্বয়ের মধ্যবিন্দুদ্বয়ের সংযোগরেখার দৈর্ঘ্য নির্ণয় করো এবং এ রেখা ক্ষেত্রটিকে কীভাবে বিভক্ত করে তা আলোচনা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c15_cq5',
       subjectId: 'general_math',
@@ -6970,7 +6970,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ত্রিভুজক্ষেত্রটির ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'প্রাপ্ত ফলাফলদ্বয় তুলনা করে একই ভূমি ও একই সমান্তরালে অবস্থিত ত্রিভুজ ও আয়তক্ষেত্রের ক্ষেত্রফলের সম্পর্ক ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c16_cq1',
       subjectId: 'general_math',
@@ -6982,7 +6982,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ঘরটির চার দেয়ালের ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'ঘরটির আয়তন নির্ণয় করো এবং ঘরটিতে কত লিটার বাতাস ধরবে তা বের করো। (১ ঘনমিটার = ১০০০ লিটার)',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c16_cq2',
       subjectId: 'general_math',
@@ -6993,7 +6993,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'বাক্সটির আয়তন নির্ণয় করো।',
       questionGh:
           'বাক্সটির কর্ণের দৈর্ঘ্য নির্ণয় করো এবং এরুপ ৮টি ঘনকের মোট আয়তন বের করে ধারসম্পন্ন নতুন ঘনকের ধার নির্ণয় করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c16_cq3',
       subjectId: 'general_math',
@@ -7004,7 +7004,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'পুকুরটির ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'পুকুরের চারপাশে ৩ মিটার চওড়া রাস্তার ক্ষেত্রফল নির্ণয় করো এবং নির্মাণ পদ্ধতি ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c16_cq4',
       subjectId: 'general_math',
@@ -7016,7 +7016,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'বেলনটির আয়তন নির্ণয় করো।',
       questionGh:
           'বেলনটির সমগ্রতলের (দুই ভূমিসহ) ক্ষেত্রফল নির্ণয় করো এবং বক্রতলের সাথে তুলনা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c16_cq5',
       subjectId: 'general_math',
@@ -7027,7 +7027,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'ক্ষেত্রফল নির্ণয় করো।',
       questionGh:
           'আয়তক্ষেত্রটির ভেতর থেকে সবচেয়ে বড় বর্গক্ষেত্রটি কেটে নিলে অবশিষ্ট অংশের ক্ষেত্রফল নির্ণয় করো এবং অবশিষ্ট অংশটির আকৃতি ব্যাখ্যা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   // ───── সাধারণ গণিত: অধ্যায় ১৭ (পরিসংখ্যান) ─ সৃজনশীল ─────
   CreativeQuestion(
       id: 'gm_c17_cq1',
@@ -7040,7 +7040,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'শিক্ষার্থীটির প্রাপ্ত নম্বরের গড় নির্ণয় করো।',
       questionGh:
           'সর্বোচ্চ নম্বরের বিষয়টিতে সে আরও ১০ নম্বর বেশি পেলে গড় পরিবর্তিত হলেও মধ্যক অপরিবর্তিত থাকে কেন — গাণিতিকভাবে বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c17_cq2',
       subjectId: 'general_math',
@@ -7052,7 +7052,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'শিক্ষার্থীদের গড় বয়স নির্ণয় করো।',
       questionGh:
           'মধ্যক নির্ণয় করে গড় ও প্রচুরকের সাহায্যে উপাত্তের কেন্দ্রীয় প্রবণতা বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c17_cq3',
       subjectId: 'general_math',
@@ -7064,7 +7064,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'শ্রেণিব্যাপ্তি ১০ ধরে শ্রেণিসংখ্যা নির্ণয় করো।',
       questionGh:
           'প্রথম দুটি শ্রেণি নির্ণয় করে প্রতিটির মধ্যমানসহ একটি গণসংখ্যা সারণির গঠন আলোচনা করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c17_cq4',
       subjectId: 'general_math',
@@ -7076,7 +7076,7 @@ const List<CreativeQuestion> allCQs = [
       questionG: 'বিদ্যুৎ বিলগুলোর মধ্যক নির্ণয় করো।',
       questionGh:
           'এই উপাত্তের প্রচুরক নির্ণয় সম্ভব নয় কেন এবং এ ক্ষেত্রে কেন্দ্রীয় প্রবণতা প্রকাশে কোন মাপ অধিক উপযোগী — বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   CreativeQuestion(
       id: 'gm_c17_cq5',
       subjectId: 'general_math',
@@ -7087,7 +7087,7 @@ const List<CreativeQuestion> allCQs = [
       questionKh: 'প্রতিটি শ্রেণির মধ্যমান নির্ণয় করো।',
       questionG: 'মধ্যমানের সাহায্যে উপাত্তের গড় নির্ণয় করো।',
       questionGh: 'প্রচুরক শ্রেণি চিহ্নিত করে উপাত্তের প্রকৃতি বিশ্লেষণ করো।',
-      sourceLabel: 'A-Learning Original'),
+      sourceLabel: "Mentor's Companion Original"),
   ...physicsCqs,
   ...chemistryCqs,
   ...biologyCqs,

@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • বাংলা প্রথম পত্র
+// Mentor's Companion • SSC 2027 • বাংলা প্রথম পত্র
 // Original theme-based practice; no textbook passage is reproduced.
 import '../questions_data.dart';
 

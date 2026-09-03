@@ -43,7 +43,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isPro ? 'A-Learning Pro' : 'Upgrade to Pro')),
+      appBar: AppBar(title: Text(_isPro ? "Mentor's Companion Pro" : 'Upgrade to Pro')),
       body: SafeArea(
         child: SoftSwitcher(
           child: _loading
@@ -156,7 +156,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      'A-Learning Pro',
+                      "Mentor's Companion Pro",
                       style: TextStyle(
                         color: AppTheme.textDark,
                         fontSize: 21,

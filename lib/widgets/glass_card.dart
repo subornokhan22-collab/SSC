@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'animations.dart';
 
-/// Frosted, subtly-lit surface used for every panel in the teacher portal.
-/// Replaces the old opaque white `Container`s so the animated background
-/// stays visible and the app reads as one consistent product.
+/// Frosted, softly-lit white surface used for every panel in the tutor
+/// portal. The translucency keeps the animated backdrop visible while the
+/// content sits on clean paper-white so long text stays easy to read.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -31,8 +31,8 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final border = highlighted
-        ? AppTheme.primary.withOpacity(.55)
-        : Colors.white.withOpacity(.08);
+        ? AppTheme.primary.withOpacity(.45)
+        : AppTheme.border;
     final body = ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
@@ -47,18 +47,18 @@ class GlassCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                (tint ?? const Color(0xFF161B26)).withOpacity(.82),
-                (tint ?? const Color(0xFF10141D)).withOpacity(.72),
+                (tint ?? Colors.white).withOpacity(.94),
+                (tint ?? const Color(0xFFF7F9FE)).withOpacity(.88),
               ],
             ),
             border: Border.all(color: border, width: highlighted ? 1.3 : 1),
             boxShadow: [
               BoxShadow(
                 color: highlighted
-                    ? AppTheme.primary.withOpacity(.13)
-                    : Colors.black.withOpacity(.34),
+                    ? AppTheme.primary.withOpacity(.16)
+                    : const Color(0xFF16203A).withOpacity(.07),
                 blurRadius: highlighted ? 26 : 18,
-                offset: const Offset(0, 10),
+                offset: const Offset(0, 8),
               ),
             ],
           ),
@@ -76,7 +76,7 @@ class GlassCard extends StatelessWidget {
   }
 }
 
-/// Section heading with a small gold rule — used to break long forms up.
+/// Section heading with a small brand rule — used to break long forms up.
 class SectionTitle extends StatelessWidget {
   final String title;
   final String? subtitle;
@@ -100,7 +100,7 @@ class SectionTitle extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [AppTheme.accent, AppTheme.secondary],
+                colors: [AppTheme.primary, AppTheme.secondary],
               ),
             ),
           ),
@@ -111,7 +111,7 @@ class SectionTitle extends StatelessWidget {
                 Row(
                   children: [
                     if (icon != null) ...[
-                      Icon(icon, size: 17, color: AppTheme.accent),
+                      Icon(icon, size: 17, color: AppTheme.primary),
                       const SizedBox(width: 7),
                     ],
                     Flexible(
@@ -153,7 +153,7 @@ class StatusPill extends StatelessWidget {
   const StatusPill({
     super.key,
     required this.label,
-    this.color = AppTheme.accent,
+    this.color = AppTheme.primary,
     this.icon,
   });
 
@@ -163,9 +163,9 @@ class StatusPill extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(.13),
+        color: color.withOpacity(.11),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: color.withOpacity(.45)),
+        border: Border.all(color: color.withOpacity(.34)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -200,13 +200,13 @@ class InfoBanner extends StatelessWidget {
 
   factory InfoBanner.success(String text) => InfoBanner(
         text: text,
-        color: const Color(0xFF4ADE80),
+        color: AppTheme.success,
         icon: Icons.check_circle_outline_rounded,
       );
 
   factory InfoBanner.error(String text) => InfoBanner(
         text: text,
-        color: const Color(0xFFFF7B7B),
+        color: AppTheme.danger,
         icon: Icons.error_outline_rounded,
       );
 
@@ -219,9 +219,9 @@ class InfoBanner extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          color: color.withOpacity(.10),
+          color: color.withOpacity(.09),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withOpacity(.38)),
+          border: Border.all(color: color.withOpacity(.32)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,7 +272,7 @@ class EmptyState extends StatelessWidget {
                   color: AppTheme.primary.withOpacity(.10),
                   border: Border.all(color: AppTheme.primary.withOpacity(.35)),
                 ),
-                child: Icon(icon, size: 34, color: AppTheme.accent),
+                child: Icon(icon, size: 34, color: AppTheme.primary),
               ),
             ),
             const SizedBox(height: 16),
@@ -325,7 +325,7 @@ class BusyIndicator extends StatelessWidget {
                     max: 1.06,
                     period: const Duration(milliseconds: 1100),
                     child: const Icon(Icons.auto_awesome_rounded,
-                        color: AppTheme.accent, size: 26),
+                        color: AppTheme.primary, size: 26),
                   ),
                 ],
               ),

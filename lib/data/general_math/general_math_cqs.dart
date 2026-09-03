@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • গণিত — 170 three-part creative questions.
+// Mentor's Companion • SSC 2027 • গণিত — 170 three-part creative questions.
 // Mathematics CQ marks: ক=2, খ=4, গ=4. questionGh stays empty for model compatibility.
 import '../questions_data.dart';
 

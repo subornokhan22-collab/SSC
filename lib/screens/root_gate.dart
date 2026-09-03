@@ -5,12 +5,13 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import 'auth_choice_screen.dart';
 import 'teacher_home_screen.dart';
+import '../widgets/app_logo.dart';
 
 /// App gatekeeper —
 ///  • not signed in → welcome / sign-in screen
 ///  • signed in     → the teacher (tutor) portal
 ///
-/// A-Learning is a teacher-only product, so there is no role branching:
+/// Mentor's Companion is a teacher-only product, so there is no role branching:
 /// every authenticated account lands in the tutor workspace.
 class RootGate extends StatefulWidget {
   const RootGate({super.key});
@@ -91,17 +92,7 @@ class _BootSplash extends StatelessWidget {
                     min: .92,
                     max: 1.08,
                     period: const Duration(milliseconds: 1400),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black.withOpacity(.45),
-                        border: Border.all(
-                            color: AppTheme.primary.withOpacity(.45), width: 1.2),
-                      ),
-                      child: const Icon(Icons.school_rounded,
-                          color: AppTheme.accent, size: 32),
-                    ),
+                    child: const AppLogo(size: 72),
                   ),
                 ],
               ),
@@ -110,7 +101,7 @@ class _BootSplash extends StatelessWidget {
             FadeSlideIn(
               delay: const Duration(milliseconds: 120),
               child: const Text(
-                'A-Learning',
+                "Mentor's Companion",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,

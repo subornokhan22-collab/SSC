@@ -3,15 +3,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'paper_license.dart';
 import 'supabase_config.dart';
 
-/// Email-OTP sign-in + tutor profile (name / phone) + Pro sync (Supabase).
+/// Email + password sign-in, tutor profile (name / phone), Pro sync (Supabase).
 ///
 /// Flow:
-///  1) Sign up — name, +880 phone, email → OTP → a `profiles` row is created
-///     with role `teacher`.
-///  2) Sign in — email → OTP → the existing profile is loaded.
+///  1) Sign up — name, +880 phone, email + password. Supabase emails a
+///     one-time code to confirm the address, then a `profiles` row is created
+///     with role `teacher`. This is the ONLY time a code is sent.
+///  2) Sign in — email + password. No code, no email round-trip.
 ///  3) If `profiles.is_pro` is true, syncing turns Pro on for this device.
 ///
-/// A-Learning is a tutor-only product, so every account is a teacher account.
+/// Mentor's Companion is a tutor-only product, so every account is a teacher account.
 /// When Supabase is not configured ([SupabaseConfig] empty) every call degrades
 /// gracefully instead of throwing, and the offline features keep working.
 class AuthService {
@@ -64,30 +65,93 @@ class AuthService {
     return e.contains('@') ? e.split('@').first : e;
   }
 
-  // ── Step 1: send the OTP ──────────────────────────────────────────
-  static Future<void> sendOtp(String email) async {
-    _requireReady();
+  /// Minimum length enforced on new passwords (Supabase default is 6).
+  static const int minPasswordLength = 8;
+
+  static String _validEmail(String email) {
     final e = email.trim();
     if (e.isEmpty || !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(e)) {
       throw const AuthException('Enter a valid email address');
     }
-    await _c.auth.signInWithOtp(email: e);
+    return e;
   }
 
-  // ── Step 2: verify the OTP ────────────────────────────────────────
-  static Future<void> verifyOtp(String email, String code) async {
+  // ── Sign up: create the account, Supabase emails a one-time code ──
+  //
+  // The verification code is only ever sent here, at sign-up. Afterwards the
+  // tutor signs in with their email + password and receives no further codes.
+  static Future<void> signUpWithPassword({
+    required String email,
+    required String password,
+  }) async {
+    _requireReady();
+    final e = _validEmail(email);
+    if (password.length < minPasswordLength) {
+      throw AuthException(
+          'Password must be at least $minPasswordLength characters');
+    }
+    final res = await _c.auth.signUp(email: e, password: password);
+    // When email confirmation is disabled in the Supabase project the session
+    // arrives immediately and no code needs to be entered.
+    if (res.session != null) _profileCache = null;
+  }
+
+  /// True when sign-up returned a usable session (no email confirmation step).
+  static bool get hasSession => isLoggedIn;
+
+  // ── Verify the sign-up code (only used once, right after sign-up) ──
+  static Future<void> verifySignUpCode({
+    required String email,
+    required String code,
+  }) async {
     _requireReady();
     final c = code.trim();
     if (c.isEmpty) throw const AuthException('Enter the code from your email');
-    final res = await _c.auth.verifyOTP(
-      type: OtpType.email,
-      token: c,
-      email: email.trim(),
-    );
+    final e = email.trim();
+    AuthResponse? res;
+    // Newer projects issue a `signup` token; older ones fall back to `email`.
+    try {
+      res = await _c.auth
+          .verifyOTP(type: OtpType.signup, token: c, email: e);
+    } on AuthException {
+      res = await _c.auth.verifyOTP(type: OtpType.email, token: c, email: e);
+    }
     if (res.session == null) {
       throw const AuthException('The code did not match — please try again');
     }
     _profileCache = null;
+  }
+
+  // ── Sign in: email + password only, never a code ──────────────────
+  static Future<void> signInWithPassword({
+    required String email,
+    required String password,
+  }) async {
+    _requireReady();
+    final e = _validEmail(email);
+    if (password.isEmpty) throw const AuthException('Enter your password');
+    final res = await _c.auth.signInWithPassword(email: e, password: password);
+    if (res.session == null) {
+      throw const AuthException('Could not sign in — please try again');
+    }
+    _profileCache = null;
+  }
+
+  /// Sets a password on the signed-in account (used right after sign-up when
+  /// the account was confirmed by code, and by "change password").
+  static Future<void> setPassword(String password) async {
+    _requireReady();
+    if (password.length < minPasswordLength) {
+      throw AuthException(
+          'Password must be at least $minPasswordLength characters');
+    }
+    await _c.auth.updateUser(UserAttributes(password: password));
+  }
+
+  /// Emails a password-reset link/code for tutors who forgot their password.
+  static Future<void> sendPasswordReset(String email) async {
+    _requireReady();
+    await _c.auth.resetPasswordForEmail(_validEmail(email));
   }
 
   // ── Reading the profile ───────────────────────────────────────────
@@ -204,6 +268,17 @@ class AuthService {
         s.contains('network') ||
         s.contains('timeout')) {
       return 'No internet — check your connection and try again.';
+    }
+    if (s.contains('invalid login credentials') ||
+        s.contains('invalid_credentials')) {
+      return 'Wrong email or password — please try again.';
+    }
+    if (s.contains('email not confirmed')) {
+      return 'Please confirm your email first, then sign in.';
+    }
+    if (s.contains('user already registered') ||
+        s.contains('already been registered')) {
+      return 'That email already has an account — sign in instead.';
     }
     if (s.contains('expired') || s.contains('invalid') || s.contains('token')) {
       return 'That code is wrong or expired — request a new one.';

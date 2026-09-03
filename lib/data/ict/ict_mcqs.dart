@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • তথ্য ও যোগাযোগ প্রযুক্তি
+// Mentor's Companion • SSC 2027 • তথ্য ও যোগাযোগ প্রযুক্তি
 // ICT is MCQ-only: 200 original questions in each of 6 chapters.
 import '../questions_data.dart';
 

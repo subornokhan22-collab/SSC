@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'animations.dart';
 
-/// Consistent gold primary action with tactile motion and an optional outline style.
+/// Consistent brand primary action with tactile motion and an optional outline style.
 class AppButton extends StatefulWidget {
   final String label;
   final IconData? icon;
@@ -17,7 +17,7 @@ class _AppButtonState extends State<AppButton> {
   @override
   Widget build(BuildContext context) {
     final disabled = widget.onPressed == null;
-    final fg = widget.outlined ? AppTheme.accent : const Color(0xFF211806);
+    final fg = widget.outlined ? AppTheme.primary : Colors.white;
     final child = Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, children: [
       if (widget.icon != null) ...[Icon(widget.icon, size: 20, color: fg), const SizedBox(width: 8)],
       Flexible(child: Text(widget.label, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: fg))),
@@ -29,10 +29,10 @@ class _AppButtonState extends State<AppButton> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          gradient: widget.outlined || disabled ? null : const LinearGradient(colors: [Color(0xFFFFD86B), AppTheme.primary], begin: Alignment.topLeft, end: Alignment.bottomRight),
-          color: disabled ? const Color(0xFF3A404B) : (widget.outlined ? const Color(0xFF171B25) : null),
-          border: widget.outlined ? Border.all(color: AppTheme.primary.withOpacity(.7)) : null,
-          boxShadow: widget.outlined || disabled ? [] : [BoxShadow(color: AppTheme.primary.withOpacity(_pressed ? .12 : .25), blurRadius: _pressed ? 7 : 15, offset: Offset(0, _pressed ? 2 : 6))],
+          gradient: widget.outlined || disabled ? null : AppTheme.brandGradient,
+          color: disabled ? const Color(0xFFC9D0E2) : (widget.outlined ? Colors.white : null),
+          border: widget.outlined ? Border.all(color: AppTheme.primary.withOpacity(.45), width: 1.3) : null,
+          boxShadow: widget.outlined || disabled ? [] : [BoxShadow(color: AppTheme.primary.withOpacity(_pressed ? .14 : .28), blurRadius: _pressed ? 7 : 16, offset: Offset(0, _pressed ? 2 : 7))],
         ), child: child,
       ),
     );

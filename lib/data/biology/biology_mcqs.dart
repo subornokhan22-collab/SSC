@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • জীববিজ্ঞান (subjectId: biology)
+// Mentor's Companion • SSC 2027 • জীববিজ্ঞান (subjectId: biology)
 // 700 original, chapter-wise, NCTB-aligned MCQs.
 import '../questions_data.dart';
 

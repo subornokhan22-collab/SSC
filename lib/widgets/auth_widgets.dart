@@ -27,7 +27,7 @@ class AuthHero extends StatelessWidget {
             color: AppTheme.primary.withOpacity(.12),
             border: Border.all(color: AppTheme.primary.withOpacity(.4)),
           ),
-          child: Icon(icon, color: AppTheme.accent, size: 24),
+          child: Icon(icon, color: AppTheme.primary, size: 24),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -85,7 +85,7 @@ class SubmitButton extends StatelessWidget {
                 width: 17,
                 height: 17,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2.2, color: Color(0xFF211806)),
+                    strokeWidth: 2.2, color: Colors.white),
               )
             : Icon(icon, size: 20),
         label: Text(busy ? 'Please wait...' : label),

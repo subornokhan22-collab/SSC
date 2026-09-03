@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • রসায়ন (subjectId: chemistry)
+// Mentor's Companion • SSC 2027 • রসায়ন (subjectId: chemistry)
 // Original NCTB-aligned chapter-wise MCQ bank.
 import '../questions_data.dart';
 
@@ -19,7 +19,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'রসায়ন পদার্থের গঠন, ধর্ম, সংযুতি ও পরিবর্তন নিয়ে আলোচনা করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_002',
@@ -35,7 +35,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'রাসায়নিক ছিটা থেকে চোখ রক্ষায় সুরক্ষা চশমা আবশ্যক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_003',
@@ -53,7 +53,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ওয়াফটিং পদ্ধতিতে অল্প বাষ্প নাকের দিকে আনা হয়; সরাসরি শোঁকা বিপজ্জনক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_004',
@@ -70,7 +70,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'এসিডে পানি ঢাললে প্রচণ্ড তাপে ছিটকে পড়তে পারে; তাই পানিতে ধীরে এসিড যোগ করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_005',
@@ -86,7 +86,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'দাহ্য পদার্থ খোলা আগুনে দ্রুত জ্বলে দুর্ঘটনা ঘটাতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_006',
@@ -103,7 +103,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'বিকার তরল রাখা, মেশানো ও গরম করার পাত্র; নির্ভুল আয়তন মাপার যন্ত্র নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_007',
@@ -121,7 +121,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'আয়তনমাত্রিক ফ্লাস্কের নির্দিষ্ট দাগ পর্যন্ত দ্রবণ নিয়ে সঠিক আয়তন তৈরি করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_008',
@@ -137,7 +137,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ড্রপার দিয়ে অল্প তরল নিয়ন্ত্রিতভাবে ফোঁটায় যোগ করা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_009',
@@ -154,7 +154,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'স্প্যাচুলা দিয়ে কঠিন রাসায়নিক নেওয়া হয়; খালি হাতে স্পর্শ করা উচিত নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_010',
@@ -171,7 +171,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'উত্তপ্ত তরল হঠাৎ ছিটকে যেতে পারে, তাই মুখ মানুষ থেকে দূরে রাখতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_011',
@@ -188,7 +188,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'দূষিত স্থান দ্রুত প্রচুর পানি দিয়ে ধুলে এসিডের ঘনত্ব ও ক্ষতি কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_012',
@@ -204,7 +204,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'খাবার দূষিত হলে রাসায়নিক মুখ দিয়ে শরীরে প্রবেশ করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_013',
@@ -220,7 +220,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Corrosive পদার্থ ত্বক পোড়ায় এবং অনেক ধাতু ক্ষয় করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_014',
@@ -236,7 +236,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'খুলি-অস্থি প্রতীক তীব্র বিষাক্ততার সতর্কতা দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_015',
@@ -253,7 +253,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পরিবেশ-ঝুঁকির প্রতীক রাসায়নিক নিঃসরণ ও বর্জ্য ব্যবস্থাপনায় সতর্ক করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_016',
@@ -270,7 +270,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'জৈব রসায়নের মূল বিষয় কার্বন যৌগ, কয়েকটি সরল কার্বন যৌগ ব্যতিক্রম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_017',
@@ -287,7 +287,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ভৌত রসায়ন শক্তি, সাম্যাবস্থা, বিক্রিয়ার গতি ইত্যাদি নিয়ে কাজ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_018',
@@ -304,7 +304,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'গুণগত বিশ্লেষণে উপাদান শনাক্ত এবং পরিমাণগত বিশ্লেষণে পরিমাণ নির্ণয় করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_019',
@@ -322,7 +322,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'জীবরসায়ন জীবদেহে সংঘটিত রাসায়নিক বিক্রিয়া ও অণু নিয়ে আলোচনা করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_020',
@@ -339,7 +339,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ঔষধ রসায়ন কার্যকর ও নিরাপদ ঔষধ আবিষ্কার ও প্রস্তুতির সঙ্গে যুক্ত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_021',
@@ -355,7 +355,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'মরিচা পড়লে নতুন পদার্থ আয়রন অক্সাইড তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_022',
@@ -372,7 +372,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ঊর্ধ্বপাতনে পদার্থের অবস্থা বদলায়, রাসায়নিক পরিচয় বদলায় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_023',
@@ -389,7 +389,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'রাসায়নিক পরিবর্তনের মূল বৈশিষ্ট্য হলো ভিন্ন ধর্মের নতুন পদার্থ গঠন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_024',
@@ -406,7 +406,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অন্যান্য চলক স্থির রাখলে স্বাধীন চলকের প্রকৃত প্রভাব নির্ণয় করা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_025',
@@ -424,7 +424,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অনুকল্প বা hypothesis পর্যবেক্ষণভিত্তিক এবং পরীক্ষা করে যাচাইযোগ্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_026',
@@ -441,7 +441,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পুনরাবৃত্ত ফল দৈব ত্রুটির প্রভাব কমায় ও নির্ভরযোগ্যতা বাড়ায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_027',
@@ -458,7 +458,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'একক ছাড়া পরিমাপের সংখ্যামান কোন রাশির কত পরিমাণ বোঝায় তা অস্পষ্ট।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_028',
@@ -474,7 +474,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'SI পদ্ধতিতে ভরের মৌলিক একক কিলোগ্রাম (kg)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_029',
@@ -490,7 +490,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'তাপগতীয় তাপমাত্রার SI একক কেলভিন (K)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_030',
@@ -506,7 +506,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'পদার্থের পরিমাণের SI মৌলিক একক মোল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_031',
@@ -522,7 +522,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'মেজারিং সিলিন্ডারের দাগ থেকে তরলের আয়তন পড়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_032',
@@ -538,7 +538,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'চোখ মেনিস্কাসের সমতলে রাখলে প্যারাল্যাক্স ত্রুটি কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_033',
@@ -556,7 +556,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পানি-জাতীয় বর্ণহীন তরলের অবতল মেনিস্কাসের নিচের অংশ থেকে পাঠ নেওয়া হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_034',
@@ -573,7 +573,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Tare বা zero করলে পাত্রের ভর বাদ পড়ে এবং নমুনার নিট ভর পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_035',
@@ -591,7 +591,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ব্যবহৃত বা বাইরে নেওয়া পদার্থ ফেরালে সম্পূর্ণ মজুতটি দূষিত হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_036',
@@ -607,7 +607,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'দুইবার লেবেল যাচাই ভুল রাসায়নিক ব্যবহারের ঝুঁকি কমায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_037',
@@ -624,7 +624,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পারদ ও তার বাষ্প স্নায়ুতন্ত্রের জন্য বিষাক্ত; নির্ধারিত spill procedure অনুসরণ করতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_038',
@@ -640,7 +640,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ভালো ventilation বিষাক্ত বা দাহ্য বাষ্প জমতে দেয় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_039',
@@ -656,7 +656,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ফিউম হুড ক্ষতিকর বাষ্প টেনে বাইরে সরিয়ে দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_040',
@@ -674,7 +674,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'রাসায়নিক বা বৈদ্যুতিক আগুনে পানি বিপজ্জনক হতে পারে; প্রশিক্ষিত তত্ত্বাবধান জরুরি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_041',
@@ -691,7 +691,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পানি বিদ্যুৎ পরিবহন করে বিদ্যুৎস্পৃষ্টতার ঝুঁকি সৃষ্টি করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_042',
@@ -707,7 +707,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ভাঙা কাচ আলাদা শক্ত পাত্রে রাখলে কাটা ও দূষণের ঝুঁকি কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_043',
@@ -724,7 +724,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পিপেট ফিলার ব্যবহার করতে হয়; mouth pipetting মারাত্মক দুর্ঘটনা ঘটাতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_044',
@@ -741,7 +741,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সব রাসায়নিক নর্দমায় ফেলা যায় না; শ্রেণিভেদে সংগ্রহ ও নিষ্পত্তি করতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_045',
@@ -758,7 +758,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ঘটনার সঠিক রেকর্ড ঝুঁকি মূল্যায়ন ও নিরাপত্তা উন্নত করতে সাহায্য করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_046',
@@ -775,7 +775,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সবুজ রসায়ন উৎসেই দূষণ কমিয়ে নিরাপদ ও সম্পদ-দক্ষ প্রক্রিয়া তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_047',
@@ -792,7 +792,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'রাসায়নিক ও ভৌত প্রক্রিয়ায় জীবাণু ও ক্ষতিকর দূষক কমিয়ে পানি নিরাপদ করা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_048',
@@ -809,7 +809,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সারের রাসায়নিক উপাদান নাইট্রোজেন, ফসফরাস, পটাশিয়াম ইত্যাদি পুষ্টি দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_049',
@@ -826,7 +826,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'নির্ধারিত মাত্রায় সংরক্ষক খাদ্যের স্থায়িত্ব বাড়ায়; অতিরিক্ত ব্যবহার ক্ষতিকর।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c01_mcq_050',
@@ -844,7 +844,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সাবানের অণু তেল-ময়লাকে পানিতে বিচ্ছুরিত করে—এটি রাসায়নিক ধর্মের ব্যবহার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ২: পদার্থের অবস্থা — 50 MCQs
   Question(
@@ -862,7 +862,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'কঠিনে কণার মধ্যকার আকর্ষণ প্রবল; কণাগুলো নির্দিষ্ট অবস্থানে কম্পন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_002',
@@ -879,7 +879,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'তরল পাত্রের আকৃতি নেয়, কিন্তু সাধারণত আয়তন প্রায় নির্দিষ্ট থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_003',
@@ -895,7 +895,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'গ্যাসে কণা দূরে থাকে বলে গ্যাস সহজে সংকুচিত ও প্রসারিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_004',
@@ -913,7 +913,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'তাপমাত্রা কণার গড় গতিশক্তির পরিমাপক; তাপমাত্রা বাড়লে গতি বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_005',
@@ -929,7 +929,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তরল দশা অতিক্রম না করে কঠিন থেকে গ্যাস হওয়া ঊর্ধ্বপাতন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_006',
@@ -945,7 +945,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গ্যাস সরাসরি কঠিন হলে তাকে deposition বা অধঃক্ষেপণ বলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_007',
@@ -961,7 +961,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বাষ্পীভবন যেকোনো তাপমাত্রায় তরলের পৃষ্ঠ থেকে ঘটে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_008',
@@ -978,7 +978,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'স্ফুটনে তরলের ভেতরে বাষ্পবুদ তৈরি হওয়ায় সর্বত্র বাষ্পায়ন ঘটে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_009',
@@ -994,7 +994,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'বাষ্পচাপ বাহ্যিক চাপের সমান হলে তরল ফুটতে শুরু করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_010',
@@ -1010,7 +1010,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বাহ্যিক চাপ কম হলে কম তাপমাত্রায়ই বাষ্পচাপ সমান হয়ে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_011',
@@ -1027,7 +1027,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'উচ্চ চাপে পানি 100°C-এর বেশি তাপমাত্রায় ফুটে, ফলে রান্না দ্রুত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_012',
@@ -1043,7 +1043,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সুপ্ত তাপ দশা পরিবর্তনে ব্যবহৃত হয়, তাপমাত্রা বাড়াতে নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_013',
@@ -1060,7 +1060,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সুপ্ত তাপ কণার বিন্যাস বদলায়; দশা পরিবর্তনের সময় তাপমাত্রা স্থির থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_014',
@@ -1077,7 +1077,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'উচ্চশক্তির কণা বেরিয়ে গেলে অবশিষ্ট কণার গড় গতিশক্তি ও তাপমাত্রা কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_015',
@@ -1094,7 +1094,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'উচ্চ তাপমাত্রা, বড় পৃষ্ঠতল ও বাতাসের প্রবাহ বাষ্পীভবন দ্রুত করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_016',
@@ -1110,7 +1110,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'আর্দ্র বায়ু প্রায় সম্পৃক্ত থাকায় নতুন বাষ্প গ্রহণ কম করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_017',
@@ -1127,7 +1127,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'কণার এলোমেলো গতির ফলে ঘনত্ব সমান হওয়ার দিকে যে বিস্তার ঘটে তা ব্যাপন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_018',
@@ -1143,7 +1143,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গ্যাসে দুর্বল আকর্ষণ ও বেশি গতি ব্যাপন দ্রুত করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_019',
@@ -1160,7 +1160,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অতি ক্ষুদ্র ছিদ্র দিয়ে গ্যাসের নিম্নচাপ অঞ্চলে বের হওয়া নিঃসরণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_020',
@@ -1177,7 +1177,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'r ∝ 1/√M; হালকা গ্যাস দ্রুত ব্যাপিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_021',
@@ -1194,7 +1194,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'H₂-এর মোলার ভর 2, O₂-এর 32; কম মোলার ভরের H₂ দ্রুত ব্যাপিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_022',
@@ -1210,7 +1210,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'r(H₂)/r(O₂)=√(32/2)=√16=4।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_023',
@@ -1227,7 +1227,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'স্থির তাপমাত্রায় PV = ধ্রুবক; তাই P ∝ 1/V।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_024',
@@ -1244,7 +1244,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Boyle-এর সূত্র অনুযায়ী P₁V₁=P₂V₂; চাপ দ্বিগুণে আয়তন অর্ধেক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_025',
@@ -1261,7 +1261,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'P₁V₁=P₂V₂; V₂=(1×4)/2=2 L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_026',
@@ -1277,7 +1277,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'স্থির চাপে V/T = ধ্রুবক, যেখানে T কেলভিনে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_027',
@@ -1293,7 +1293,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'K = °C + 273; 27 + 273 = 300 K।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_028',
@@ -1309,7 +1309,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সেলসিয়াসের সঙ্গে 273 যোগ করলে কেলভিন পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_029',
@@ -1325,7 +1325,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'V₁/T₁=V₂/T₂; V₂=2×600/300=4 L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_030',
@@ -1341,7 +1341,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '0 K হলো তাত্ত্বিক সর্বনিম্ন তাপমাত্রা, প্রায় −273°C।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_031',
@@ -1358,7 +1358,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'স্থির T ও P-তে V ∝ n।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_032',
@@ -1374,7 +1374,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'চাপ, আয়তন, মোল ও পরম তাপমাত্রার সম্পর্ক PV=nRT।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_033',
@@ -1391,7 +1391,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'চলমান গ্যাসকণার দেয়ালে অসংখ্য সংঘর্ষের বল থেকে চাপ সৃষ্টি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_034',
@@ -1407,7 +1407,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বেশি ফাঁকা স্থান কমিয়ে গ্যাসের আয়তন সহজে কমানো যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_035',
@@ -1424,7 +1424,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'কঠিনে অতিরিক্ত ফাঁকা স্থান খুব কম, তাই চাপ দিয়ে আয়তন সামান্যই কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_036',
@@ -1440,7 +1440,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'তরল বা গ্যাসে সূক্ষ্ম কণার অনিয়মিত গতি অণুর সংঘর্ষের ফল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_037',
@@ -1456,7 +1456,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'অতি উচ্চ শক্তিতে গ্যাস আয়নিত হয়ে প্লাজমা তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_038',
@@ -1473,7 +1473,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সূর্যের উচ্চ তাপমাত্রায় পদার্থ আয়নিত প্লাজমা অবস্থায় থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_039',
@@ -1490,7 +1490,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Liquid crystal প্রবাহিত হতে পারে, আবার অণুগুলো নির্দিষ্ট অভিমুখে সাজানো থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_040',
@@ -1507,7 +1507,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Liquid Crystal Display-তে বৈদ্যুতিক ক্ষেত্র দ্বারা তরল স্ফটিকের আলোক ধর্ম নিয়ন্ত্রণ করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_041',
@@ -1523,7 +1523,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ন্যাফথালিন কঠিন থেকে সরাসরি বাষ্পে রূপান্তরিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_042',
@@ -1539,7 +1539,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'কঠিন আয়োডিন তরল দশা ছাড়াই বাষ্পে পরিণত হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_043',
@@ -1555,7 +1555,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'বায়ুর জলীয় বাষ্প ঠান্ডা পৃষ্ঠে তরল ফোঁটায় ঘনীভূত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_044',
@@ -1572,7 +1572,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'কঠিন বরফ থেকে সরাসরি গ্যাসীয় জলীয় বাষ্প হওয়া ঊর্ধ্বপাতন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_045',
@@ -1589,7 +1589,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'হিমায়নে অণুর গতি কমে এবং কঠিন কাঠামো তৈরি হয়; H₂O-র পরিচয় অপরিবর্তিত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_046',
@@ -1605,7 +1605,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'সান্দ্রতা যত বেশি, তরল তত ধীরে প্রবাহিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_047',
@@ -1622,7 +1622,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'তাপে অণু আকর্ষণ অতিক্রম সহজ হওয়ায় তরল বেশি সহজে প্রবাহিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_048',
@@ -1639,7 +1639,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পৃষ্ঠের অণু ভেতরের দিকে নিট আকর্ষণ অনুভব করায় পৃষ্ঠ সংকুচিত হতে চায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_049',
@@ -1655,7 +1655,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'সাবান surfactant হিসেবে পানির অণুর সংযোজী আকর্ষণ কমায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c02_mcq_050',
@@ -1672,7 +1672,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'তাপে অধিক অণু বাষ্পদশায় যাওয়ার শক্তি পায়, ফলে সাম্য বাষ্পচাপ বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৩: পদার্থের গঠন — 50 MCQs
   Question(
@@ -1689,7 +1689,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'প্রোটনের আধান +1 এবং এটি নিউক্লিয়াসে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_002',
@@ -1705,7 +1705,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'নিউট্রনের বৈদ্যুতিক আধান শূন্য এবং এটি নিউক্লিয়াসে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_003',
@@ -1721,7 +1721,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ইলেকট্রন একক ঋণাত্মক আধান বহন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_004',
@@ -1737,7 +1737,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ইলেকট্রনের ভর প্রোটনের প্রায় 1/1836 অংশ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_005',
@@ -1753,7 +1753,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'মৌলের পারমাণবিক সংখ্যা Z তার নিউক্লিয়াসের প্রোটন সংখ্যা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_006',
@@ -1769,7 +1769,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ভরসংখ্যা A = প্রোটন সংখ্যা + নিউট্রন সংখ্যা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_007',
@@ -1785,7 +1785,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'সমান সংখ্যক বিপরীত আধান থাকায় পরমাণুর নিট আধান শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_008',
@@ -1801,7 +1801,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'নিউট্রন = ভরসংখ্যা − পারমাণবিক সংখ্যা = 23 − 11 = 12।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_009',
@@ -1818,7 +1818,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'নিরপেক্ষ Cl পরমাণুতে ইলেকট্রন সংখ্যা পারমাণবিক সংখ্যা 17-এর সমান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_010',
@@ -1834,7 +1834,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'নিরপেক্ষ Mg-তে 12 ইলেকট্রন; Mg²⁺ গঠনে 2টি হারিয়ে থাকে 10টি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_011',
@@ -1850,7 +1850,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Cl পরমাণু একটি ইলেকট্রন গ্রহণ করে Cl⁻ হলে মোট ইলেকট্রন 18।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_012',
@@ -1866,7 +1866,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'আইসোটোপে প্রোটন সংখ্যা একই, নিউট্রন ও ভরসংখ্যা ভিন্ন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_013',
@@ -1882,7 +1882,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'আইসোবারের ভরসংখ্যা সমান কিন্তু পারমাণবিক সংখ্যা ভিন্ন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_014',
@@ -1898,7 +1898,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'উভয়ের প্রোটন 6, কিন্তু নিউট্রন ও ভরসংখ্যা আলাদা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_015',
@@ -1915,7 +1915,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'কার্বন-14-এর তেজস্ক্রিয় ক্ষয় ব্যবহার করে জৈব প্রত্নবস্তুর বয়স অনুমান করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_016',
@@ -1932,7 +1932,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'কোবাল্ট-60 থেকে নির্গত গামা রশ্মি রেডিওথেরাপিতে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_017',
@@ -1949,7 +1949,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ক্যাথোড রশ্মি পরীক্ষার মাধ্যমে থমসন ইলেকট্রনের অস্তিত্ব দেখান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_018',
@@ -1965,7 +1965,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '1932 সালে চ্যাডউইক নিউট্রন আবিষ্কার করেন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_019',
@@ -1983,7 +1983,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অধিকাংশ কণা বিচ্যুত না হওয়ায় বোঝা যায় পরমাণুর বৃহৎ অংশ শূন্যস্থান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_020',
@@ -2000,7 +2000,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ধনাত্মক α-কণা ক্ষুদ্র ধনাত্মক ঘন কেন্দ্রে বিকর্ষিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_021',
@@ -2017,7 +2017,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ক্লাসিক্যাল মতে ঘূর্ণায়মান ইলেকট্রন শক্তি হারিয়ে নিউক্লিয়াসে পড়ার কথা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_022',
@@ -2034,7 +2034,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'বোর অনুমান করেন নির্দিষ্ট অনুমোদিত কক্ষপথে ইলেকট্রন শক্তি বিকিরণ করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_023',
@@ -2050,7 +2050,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'দুই শক্তিস্তরের পার্থক্যের সমান শক্তির আলো নির্গত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_024',
@@ -2067,7 +2067,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'উচ্চতর স্তরে উত্তরণের জন্য স্তরদ্বয়ের পার্থক্যের সমান শক্তি শোষিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_025',
@@ -2083,7 +2083,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '2n² সূত্রে n=1 হলে সর্বোচ্চ 2টি ইলেকট্রন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_026',
@@ -2099,7 +2099,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '2n² সূত্রে n=2 হলে 2×2²=8।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_027',
@@ -2115,7 +2115,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '2n² সূত্রে n=3 হলে 18টি ইলেকট্রন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_028',
@@ -2131,7 +2131,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Na-এর পারমাণবিক সংখ্যা 11; শক্তিস্তর অনুযায়ী বিন্যাস 2,8,1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_029',
@@ -2147,7 +2147,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Mg-এর 12টি ইলেকট্রন K, L ও M স্তরে 2,8,2ভাবে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_030',
@@ -2163,7 +2163,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Cl-এর পারমাণবিক সংখ্যা 17, তাই বিন্যাস 2,8,7।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_031',
@@ -2179,7 +2179,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Ca-এর 20টি ইলেকট্রনের স্কুলস্তরের বিন্যাস 2,8,8,2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_032',
@@ -2195,7 +2195,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'রাসায়নিক বন্ধনে প্রধানত বহিঃস্থ স্তরের ইলেকট্রন অংশ নেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_033',
@@ -2212,7 +2212,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Ne-এর বিন্যাস 2,8; স্থিতিশীল অক্টেট থাকায় সাধারণত বন্ধন গঠন করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_034',
@@ -2228,7 +2228,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Na বহিঃস্থ একটি ইলেকট্রন হারিয়ে Na⁺ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_035',
@@ -2245,7 +2245,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অক্সিজেন অক্টেট পূরণে দুই ইলেকট্রন গ্রহণ বা দুই বন্ধন গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_036',
@@ -2261,7 +2261,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ইলেকট্রন হারালে ধনাত্মক ক্যাটায়ন তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_037',
@@ -2277,7 +2277,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ইলেকট্রন গ্রহণ করলে ঋণাত্মক অ্যানায়ন তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_038',
@@ -2293,7 +2293,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Na-এর বহিঃস্থ একটি ইলেকট্রন বের হলে +1 আধান হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_039',
@@ -2309,7 +2309,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'অক্সিজেন অক্টেট পূরণে 2টি ইলেকট্রন গ্রহণ করে O²⁻ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_040',
@@ -2325,7 +2325,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '1 u হলো কার্বন-12 পরমাণুর ভরের 1/12 অংশ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_041',
@@ -2342,7 +2342,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পরমাণুর গড় ভরকে 1/12 carbon-12 ভর দিয়ে ভাগ করা হয়; অনুপাতে একক বাতিল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_042',
@@ -2359,7 +2359,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         '³⁵Cl ও ³⁷Cl-এর প্রাকৃতিক প্রাচুর্যের weighted average প্রায় 35.5।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_043',
@@ -2375,7 +2375,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গড় = 35×0.75 + 37×0.25 = 35.5।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_044',
@@ -2391,7 +2391,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'আলফা ও বিটার তুলনায় গামা রশ্মির ভেদনক্ষমতা বেশি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_045',
@@ -2407,7 +2407,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'আলফা কণা He²⁺ নিউক্লিয়াস; এতে 2 প্রোটন ও 2 নিউট্রন থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_046',
@@ -2424,7 +2424,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'বিটা-মাইনাস ক্ষয়ে নিউক্লিয়াস থেকে উচ্চগতির ইলেকট্রন নির্গত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_047',
@@ -2441,7 +2441,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'গামা রশ্মির ভর ও আধান নেই; এটি উচ্চ কম্পাঙ্কের তড়িৎচুম্বকীয় বিকিরণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_048',
@@ -2458,7 +2458,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'প্রতিটি তেজস্ক্রিয় আইসোটোপের ক্ষয় হার অর্ধায়ু দিয়ে প্রকাশ করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_049',
@@ -2474,7 +2474,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '20 দিনে দুই অর্ধায়ু; অবশিষ্ট (1/2)² = 1/4।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c03_mcq_050',
@@ -2490,7 +2490,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'উৎস থেকে দূরত্ব বাড়লে প্রাপ্ত বিকিরণ ডোজ দ্রুত কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৪: পর্যায় সারণি — 51 MCQs
   Question(
@@ -2507,7 +2507,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'মৌলের ধর্ম পারমাণবিক সংখ্যার পর্যায়বৃত্ত ফাংশন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_002',
@@ -2523,7 +2523,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'মোসলে পারমাণবিক সংখ্যাকে মৌল সাজানোর মৌলিক ভিত্তি দেখান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_003',
@@ -2539,7 +2539,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'মেন্ডেলিভ পারমাণবিক ভর ও ধর্মের পর্যায়বৃত্ততা ব্যবহার করেন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_004',
@@ -2556,7 +2556,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'তিনি eka-aluminium ইত্যাদির ধর্ম পূর্বাভাস দেন, যা পরে মিলে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_005',
@@ -2572,7 +2572,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অনুভূমিক সাতটি সারিকে পর্যায় বলা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_006',
@@ -2588,7 +2588,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'উল্লম্ব 18টি স্তম্ভকে গ্রুপ বলা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_007',
@@ -2605,7 +2605,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ইলেকট্রন বিন্যাসে সর্বোচ্চ প্রধান শক্তিস্তরের মান পর্যায় নির্দেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_008',
@@ -2622,7 +2622,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'প্রধান গ্রুপে বহিঃস্থ ইলেকট্রন বিন্যাসের সঙ্গে গ্রুপের সম্পর্ক আছে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_009',
@@ -2638,7 +2638,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'তিনটি শক্তিস্তর ব্যবহৃত, তাই 3য় পর্যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_010',
@@ -2654,7 +2654,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'বহিঃস্থ স্তরে একটি ইলেকট্রন থাকায় এটি ক্ষার ধাতু, গ্রুপ 1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_011',
@@ -2670,7 +2670,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'সাত যোজ্যতা ইলেকট্রনের প্রধান গ্রুপ মৌল হ্যালোজেন, গ্রুপ 17।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_012',
@@ -2686,7 +2686,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পূর্ণ বহিঃস্তরযুক্ত আর্গন নিষ্ক্রিয় গ্যাস, গ্রুপ 18।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_013',
@@ -2702,7 +2702,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'হাইড্রোজেন ব্যতীত গ্রুপ 1-এর ধাতুগুলো ক্ষার ধাতু।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_014',
@@ -2718,7 +2718,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Be, Mg, Ca ইত্যাদি গ্রুপ 2-এর মৃৎক্ষার ধাতু।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_015',
@@ -2734,7 +2734,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'F, Cl, Br, I প্রভৃতি লবণ উৎপাদক বা হ্যালোজেন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_016',
@@ -2750,7 +2750,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পূর্ণ যোজ্যতা স্তরের কারণে এরা অত্যন্ত কম বিক্রিয়াশীল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_017',
@@ -2766,7 +2766,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সারণির বাম ও মধ্যভাগের অধিকাংশ মৌল ধাতু।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_018',
@@ -2783,7 +2783,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'B, Si, Ge-এর মতো উপধাতুতে ধাতু ও অধাতুর মধ্যবর্তী ধর্ম দেখা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_019',
@@ -2800,7 +2800,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সিলিকন অর্ধপরিবাহী এবং ধাতু-অধাতুর মধ্যবর্তী ধর্মযুক্ত উপধাতু।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_020',
@@ -2818,7 +2818,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'একই স্তরে কার্যকর নিউক্লীয় আধান বাড়ায় ইলেকট্রন নিউক্লিয়াসের কাছে আসে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_021',
@@ -2834,7 +2834,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'প্রতি ধাপে নতুন শক্তিস্তর যোগ হওয়ায় আকার বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_022',
@@ -2851,7 +2851,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পরমাণু ছোট ও কার্যকর নিউক্লীয় আকর্ষণ বেশি হওয়ায় ইলেকট্রন সরানো কঠিন হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_023',
@@ -2868,7 +2868,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ব্যাসার্ধ ও shielding বাড়ায় বহিঃস্থ ইলেকট্রন সরানো সহজ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_024',
@@ -2885,7 +2885,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সমযোজী বন্ধনের ভাগ করা ইলেকট্রন আকর্ষণের ক্ষমতা তড়িৎঋণাত্মকতা।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_025',
@@ -2902,7 +2902,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ফ্লোরিনের ছোট আকার ও উচ্চ কার্যকর নিউক্লীয় আধানের জন্য তড়িৎঋণাত্মকতা সর্বোচ্চ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_026',
@@ -2918,7 +2918,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ইলেকট্রন ত্যাগের প্রবণতা কমায় ধাতব ধর্ম কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_027',
@@ -2934,7 +2934,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'বহিঃস্থ ইলেকট্রন সহজে হারানোর প্রবণতা নিচে বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_028',
@@ -2950,7 +2950,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'একই 3য় পর্যায়ে Mg ডানে, তাই তার ব্যাসার্ধ Na-এর চেয়ে ছোট।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_029',
@@ -2966,7 +2966,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'একই পর্যায়ে ডানে গেলে আয়নীকরণ শক্তি সাধারণত বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_030',
@@ -2982,7 +2982,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'একই গ্রুপে নিচে Cl-এর অতিরিক্ত শক্তিস্তর থাকায় আকার বড়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_031',
@@ -2998,7 +2998,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'গ্রুপে ওপরের ছোট F বন্ধন ইলেকট্রন বেশি আকর্ষণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_032',
@@ -3015,7 +3015,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'গ্রুপ 1-এ নিচে ব্যাসার্ধ বাড়ে ও আয়নীকরণ শক্তি কমে; K বেশি সক্রিয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_033',
@@ -3032,7 +3032,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ইলেকট্রন গ্রহণের আকর্ষণ নিচে কমে; F সবচেয়ে সক্রিয় হ্যালোজেন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_034',
@@ -3048,7 +3048,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'বহিঃস্থ ইলেকট্রন নিচে সহজে ত্যাগ করা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_035',
@@ -3064,7 +3064,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ধাতব অক্সাইড Na₂O পানির সঙ্গে ক্ষার তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_036',
@@ -3081,7 +3081,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অধাতব অক্সাইড সাধারণত পানিতে অম্ল তৈরি বা ক্ষারের সঙ্গে বিক্রিয়া করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_037',
@@ -3097,7 +3097,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Al₂O₃ এসিড ও শক্ত ক্ষার উভয়ের সঙ্গে বিক্রিয়া করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_038',
@@ -3114,7 +3114,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'যে উপস্তরে বিভেদকারী ইলেকট্রন প্রবেশ করে তার নামে ব্লক নির্ধারিত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_039',
@@ -3130,7 +3130,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'এই গ্রুপগুলোর বিভেদকারী ইলেকট্রন p উপস্তরে প্রবেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_040',
@@ -3146,7 +3146,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গ্রুপ 3–12-এর মৌলে d উপস্তর পর্যায়ক্রমে পূর্ণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_041',
@@ -3162,7 +3162,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অভ্যন্তরীণ স্থানান্তর মৌলগুলোর f উপস্তর পূর্ণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_042',
@@ -3179,7 +3179,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'H-এর বিন্যাস 1s¹, যা গ্রুপ 1-এর ns¹ বিন্যাসের সঙ্গে সাদৃশ্যপূর্ণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_043',
@@ -3195,7 +3195,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'H একটি ইলেকট্রন হারাতে বা একটি গ্রহণ/ভাগ করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_044',
@@ -3212,7 +3212,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'He-এর 1s² পূর্ণ প্রথম স্তর তাকে নিষ্ক্রিয় গ্যাসের ধর্ম দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_045',
@@ -3229,7 +3229,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'নির্দিষ্ট ব্যবধানে অনুরূপ বহিঃস্থ বিন্যাস ফিরে আসায় ধর্ম পুনরাবৃত্ত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_046',
@@ -3246,7 +3246,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সাত যোজ্যতা ইলেকট্রনের Cl একটি ইলেকট্রন গ্রহণ করে অক্টেট পূরণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_047',
@@ -3262,7 +3262,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Mg বহিঃস্থ দুটি ইলেকট্রন ত্যাগ করে স্থিতিশীল বিন্যাস পায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_048',
@@ -3278,7 +3278,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Al তিনটি যোজ্যতা ইলেকট্রন ত্যাগ করে Al³⁺ গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_049',
@@ -3294,7 +3294,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অক্সিজেনের ছয় যোজ্যতা ইলেকট্রন; এটি chalcogen বা গ্রুপ 16।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_050',
@@ -3310,7 +3310,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'তৃতীয় পর্যায়ের হ্যালোজেন হলো ক্লোরিন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c04_mcq_051',
@@ -3327,7 +3327,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'দ্বিতীয় পর্যায় ও গ্রুপ 16-এর ছয় যোজ্যতা ইলেকট্রনযুক্ত মৌল অক্সিজেন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৫: রাসায়নিক বন্ধন — 50 MCQs
   Question(
@@ -3345,7 +3345,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'বন্ধন গঠনে পরমাণুগুলো সাধারণত নিম্নশক্তির স্থিতিশীল ইলেকট্রন বিন্যাস পায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_002',
@@ -3363,7 +3363,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'প্রধান গ্রুপের অনেক পরমাণু নিষ্ক্রিয় গ্যাসের মতো 8 ইলেকট্রনের বিন্যাস পেতে চায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_003',
@@ -3381,7 +3381,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'K স্তর সর্বোচ্চ 2 ইলেকট্রনে পূর্ণ; H ও He-সংক্রান্ত স্থিতিশীলতা ডুয়েট।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_004',
@@ -3398,7 +3398,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'এক পরমাণু থেকে অন্য পরমাণুতে ইলেকট্রন স্থানান্তরে বিপরীত আধানের আয়ন সৃষ্টি ও আকর্ষণ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_005',
@@ -3415,7 +3415,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'দুটি পরমাণু এক বা একাধিক ইলেকট্রন জোড়া ভাগ করলে covalent bond হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_006',
@@ -3431,7 +3431,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Na একটি ইলেকট্রন Cl-কে দিয়ে Na⁺ ও Cl⁻ তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_007',
@@ -3447,7 +3447,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'দুই H পরমাণু এক জোড়া ইলেকট্রন ভাগ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_008',
@@ -3463,7 +3463,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'O=O-তে দুই জোড়া ইলেকট্রন ভাগ হয়ে দ্বিবন্ধন তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_009',
@@ -3479,7 +3479,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'দুটি N পরমাণু তিন জোড়া ইলেকট্রন ভাগ করে N≡N গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_010',
@@ -3495,7 +3495,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'প্রতিটি Cl একটি করে ইলেকট্রন দিয়ে এক জোড়া ভাগ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_011',
@@ -3511,7 +3511,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Na (2,8,1) একটি ইলেকট্রন হারিয়ে Ne-এর 2,8 বিন্যাস পায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_012',
@@ -3527,7 +3527,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Cl (2,8,7) একটি ইলেকট্রন গ্রহণ করে Ar-এর 2,8,8 বিন্যাস পায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_013',
@@ -3543,7 +3543,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'দুটি Cl⁻-এর মোট −2 আধান সাম্য করতে Mg²⁺ দরকার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_014',
@@ -3559,7 +3559,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '2Al³⁺-এর +6 এবং 3O²⁻-এর −6 মিলে যৌগ নিরপেক্ষ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_015',
@@ -3575,7 +3575,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '3×(+2)=+6 এবং 2×(−3)=−6, তাই Ca₃(PO₄)₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_016',
@@ -3591,7 +3591,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'দুটি NH₄⁺ একটি SO₄²⁻-এর আধান সাম্য করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_017',
@@ -3607,7 +3607,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '2Al³⁺-এ +6 ও 3SO₄²⁻-এ −6 আধান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_018',
@@ -3623,7 +3623,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '3Mg²⁺ ও 2N³⁻-এর মোট আধান যথাক্রমে +6 ও −6।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_019',
@@ -3640,7 +3640,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'আয়নিক স্ফটিক ভাঙতে বিপরীত আধানের শক্তিশালী আকর্ষণ অতিক্রমে অনেক শক্তি লাগে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_020',
@@ -3656,7 +3656,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'চলনশীল আধানবাহক না থাকায় কঠিন আয়নিক যৌগ পরিবাহী নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_021',
@@ -3672,7 +3672,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'গলিত অবস্থায় Na⁺ ও Cl⁻ বৈদ্যুতিক ক্ষেত্রে বিপরীত দিকে চলে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_022',
@@ -3688,7 +3688,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'পোলার পানি আয়নকে hydration করে স্ফটিক থেকে পৃথক করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_023',
@@ -3705,7 +3705,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'গলনে শক্ত সমযোজী বন্ধন নয়, প্রধানত দুর্বল আন্তঃআণবিক আকর্ষণ অতিক্রম হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_024',
@@ -3721,7 +3721,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'কার্বন চারটি H-এর সঙ্গে চার জোড়া ইলেকট্রন ভাগ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_025',
@@ -3738,7 +3738,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'O-এর ছয় যোজ্যতা ইলেকট্রনের দুই জোড়া O–H বন্ধনে এবং দুই জোড়া lone pair হিসেবে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_026',
@@ -3754,7 +3754,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'N তিনটি N–H বন্ধন গঠন করে এবং একটি lone pair রেখে দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_027',
@@ -3771,7 +3771,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Lewis গঠন O=C=O; প্রতিটি C–O বন্ধনে দুই জোড়া ভাগ করা ইলেকট্রন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_028',
@@ -3789,7 +3789,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'দাতা পরমাণু একটি lone pair গ্রহণকারীকে দেয়; গঠনের পর এটি সমযোজী বন্ধনের মতো।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_029',
@@ -3805,7 +3805,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'NH₃-এর N তার lone pair H⁺-কে দিয়ে সমন্বয় বন্ধন গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_030',
@@ -3821,7 +3821,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'পানির O-এর lone pair H⁺-কে দান করে hydronium ion তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_031',
@@ -3839,7 +3839,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'এক পরমাণু ইলেকট্রনকে অনেক বেশি আকর্ষণ করলে charge separation ও ionic character বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_032',
@@ -3856,7 +3856,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Cl-এর তড়িৎঋণাত্মকতা বেশি হওয়ায় তার দিকে আংশিক ঋণাত্মক আধান সৃষ্টি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_033',
@@ -3872,7 +3872,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'সমান H পরমাণু ভাগ করা জোড়া সমানভাবে আকর্ষণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_034',
@@ -3888,7 +3888,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'O=C=O-এর বিপরীতমুখী সমান dipole-এর vector sum শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_035',
@@ -3904,7 +3904,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'দুই lone pair-এর কারণে অণু বাঁকা; O–H dipole বাতিল হয় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_036',
@@ -3921,7 +3921,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'delocalized valence electron ও metal cation-এর আকর্ষণ ধাতব বন্ধন সৃষ্টি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_037',
@@ -3938,7 +3938,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'delocalized electron বৈদ্যুতিক ক্ষেত্রের প্রভাবে প্রবাহ সৃষ্টি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_038',
@@ -3955,7 +3955,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'ধাতব cation-এর স্তর সরে গেলেও electron sea নতুন অবস্থায় আকর্ষণ বজায় রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_039',
@@ -3972,7 +3972,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'প্রতি C-এর একটি electron π ব্যবস্থায় delocalized হয়ে স্তর বরাবর চলতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_040',
@@ -3989,7 +3989,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সম্পূর্ণ giant covalent network ভাঙতে বহু শক্ত C–C বন্ধন ভাঙতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_041',
@@ -4006,7 +4006,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'tetrahedral জালে প্রতিটি C চারটি অন্য C-এর সঙ্গে একক বন্ধন গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_042',
@@ -4024,7 +4024,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সমতল ষড়ভুজ স্তরে প্রতিটি C তিনটি C-এর সঙ্গে σ বন্ধন গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_043',
@@ -4041,7 +4041,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'শক্ত স্তরগুলো দুর্বল van der Waals আকর্ষণের কারণে পরস্পরের ওপর সরে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_044',
@@ -4058,7 +4058,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'H সরাসরি উচ্চ তড়িৎঋণাত্মক O-এর সঙ্গে যুক্ত থাকায় পানির অণুগুলোর মধ্যে H-bond হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_045',
@@ -4074,7 +4074,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'H-bond বিচ্ছিন্ন করতে অতিরিক্ত শক্তি লাগে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_046',
@@ -4090,7 +4090,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অণুগুলোকে গ্যাসে আলাদা করতে অধিক শক্তি লাগে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_047',
@@ -4106,7 +4106,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সিলিকা শক্ত Si–O সমযোজী জাল গঠন করে; আলাদা সরল অণু নেই।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_048',
@@ -4122,7 +4122,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'মৌলের প্রতীকের চারপাশের বিন্দু বহিঃস্থ ইলেকট্রন দেখায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_049',
@@ -4139,7 +4139,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'H₂O-তে ₂ দুইটি H পরমাণু নির্দেশ করে; O-এর অনুল্লিখিত সংখ্যা 1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c05_mcq_050',
@@ -4156,7 +4156,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'formula unit-এ আধানের বীজগাণিতিক যোগফল শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৬: মোলের ধারণা ও রাসায়নিক গণনা — 50 MCQs
   Question(
@@ -4173,7 +4173,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Avogadro ধ্রুবক Nₐ = 6.022 × 10²³ mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_002',
@@ -4189,7 +4189,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'এক মোল পদার্থের ভরকে g mol⁻¹ এককে প্রকাশ করা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_003',
@@ -4205,7 +4205,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '2×1 + 16 = 18 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_004',
@@ -4221,7 +4221,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '12 + 2×16 = 44 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_005',
@@ -4237,7 +4237,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '23 + 35.5 = 58.5 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_006',
@@ -4253,7 +4253,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '40 + 12 + 3×16 = 100 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_007',
@@ -4269,7 +4269,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '2 + 32 + 64 = 98 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_008',
@@ -4285,7 +4285,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '2×23 + 12 + 3×16 = 106 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_009',
@@ -4301,7 +4301,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'n = m/M = 18/18 = 1 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_010',
@@ -4317,7 +4317,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'n = 9/18 = 0.5 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_011',
@@ -4333,7 +4333,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'CO₂-এর M=44; n=88/44=2 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_012',
@@ -4349,7 +4349,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'n=11/44=0.25 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_013',
@@ -4365,7 +4365,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'm=nM=0.5×58.5=29.25 g।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_014',
@@ -4381,7 +4381,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'O₂-এর M=32; 2 mol-এর ভর 2×32=64 g।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_015',
@@ -4397,7 +4397,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'এটি Avogadro সংখ্যার অর্ধেক, তাই 0.5 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_016',
@@ -4413,7 +4413,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'N=nNₐ=2×6.022×10²³=1.2044×10²⁴।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_017',
@@ -4429,7 +4429,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'প্রতি O₂ অণুতে 2টি O পরমাণু, তাই 1 mol O₂-তে 2 mol O atom।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_018',
@@ -4445,7 +4445,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'প্রতি অণুতে 3টি পরমাণু; মোট 3Nₐ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_019',
@@ -4461,7 +4461,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '0°C ও 1 atm-কে STP ধরলে 1 mol আদর্শ গ্যাস প্রায় 22.4 L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_020',
@@ -4477,7 +4477,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'V=0.5×22.4=11.2 L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_021',
@@ -4493,7 +4493,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'n=44.8/22.4=2 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_022',
@@ -4509,7 +4509,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'n=5.6/22.4=0.25 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_023',
@@ -4525,7 +4525,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'আণবিক সূত্র empirical formula-এর পূর্ণসংখ্যা গুণিতক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_024',
@@ -4541,7 +4541,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সাবস্ক্রিপ্ট 6,12,6-কে 6 দিয়ে ভাগ করলে CH₂O।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_025',
@@ -4557,7 +4557,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '2:2 অনুপাতকে 2 দিয়ে সরল করলে 1:1, অর্থাৎ HO।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_026',
@@ -4574,7 +4574,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'empirical mass=30; n=180/30=6, তাই (CH₂O)₆।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_027',
@@ -4591,7 +4591,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'NO₂-এর স্থূল ভর 46; n=92/46=2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_028',
@@ -4607,7 +4607,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'O-এর অংশ =16/18×100=88.89%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_029',
@@ -4623,7 +4623,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'C-এর অংশ=12/44×100=27.27%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_030',
@@ -4639,7 +4639,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'মোলার ভর 100; Ca-এর ভর 40, তাই 40%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_031',
@@ -4655,7 +4655,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'মোল অনুপাত 40/12 : 6.67/1 : 53.33/16 ≈ 1:2:1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_032',
@@ -4671,7 +4671,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'M = দ্রবের mol / দ্রবণের L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_033',
@@ -4687,7 +4687,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'M=n/V=1/1=1 mol L⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_034',
@@ -4703,7 +4703,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '500 mL=0.500 L; M=0.25/0.500=0.50 M।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_035',
@@ -4719,7 +4719,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'n=MV=0.20×0.250=0.050 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_036',
@@ -4735,7 +4735,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'n=0.050 mol; m=0.050×58.5=2.925 g।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_037',
@@ -4751,7 +4751,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'পাতলাকরণে দ্রবের mol অপরিবর্তিত থাকে, তাই M₁V₁=M₂V₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_038',
@@ -4767,7 +4767,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'V₂=M₁V₁/M₂=2.0×100/0.5=400 mL।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_039',
@@ -4784,7 +4784,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'সুষম সমীকরণের পূর্ণসংখ্যা সহগ reactant-product-এর stoichiometric ratio।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_040',
@@ -4800,7 +4800,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সমীকরণের সহগ থেকে 2 mol H₂ প্রতি 1 mol O₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_041',
@@ -4816,7 +4816,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'H₂:O₂=2:1, তাই 4 mol H₂-এর জন্য 2 mol O₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_042',
@@ -4832,7 +4832,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '1 mol O₂ → 2 mol H₂O; 2 mol → 4 mol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_043',
@@ -4849,7 +4849,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '1 mol (100 g) CaCO₃ থেকে 1 mol (44 g) CO₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_044',
@@ -4866,7 +4866,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '48 g Mg=2 mol; 2 mol MgO-এর ভর 2×40=80 g।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_045',
@@ -4882,7 +4882,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'এটি উৎপাদের সর্বোচ্চ পরিমাণ নির্ধারণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_046',
@@ -4899,7 +4899,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '3 mol H₂-এর জন্য 1.5 mol O₂ লাগে; O₂ অতিরিক্ত, H₂ শেষ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_047',
@@ -4916,7 +4916,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Actual yield-এর সঙ্গে theoretical yield তুলনা করে percent yield পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_048',
@@ -4933,7 +4933,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: '8/10×100=80%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_049',
@@ -4950,7 +4950,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'রাসায়নিক বিক্রিয়ায় পরমাণু পুনর্বিন্যস্ত হয়; মোট ভর সংরক্ষিত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c06_mcq_050',
@@ -4966,7 +4966,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'CaCO₃-এর M=100 g mol⁻¹; m=0.25×100=25 g।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৭: রাসায়নিক বিক্রিয়া — 50 MCQs
   Question(
@@ -4984,7 +4984,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'রাসায়নিক বন্ধন ভাঙা-গড়ার মাধ্যমে একই পরমাণু নতুন বিন্যাসে যুক্ত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_002',
@@ -5001,7 +5001,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'উভয় পাশে প্রতিটি মৌলের সমান পরমাণু রেখে ভর সংরক্ষণ দেখানো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_003',
@@ -5017,7 +5017,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'বাম ও ডানে H=4 এবং O=2 করতে সহগ 2,1,2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_004',
@@ -5033,7 +5033,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '4Fe + 3O₂ → 2Fe₂O₃-এ উভয় পাশে Fe=4 ও O=6।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_005',
@@ -5049,7 +5049,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'সর্বনিম্ন পূর্ণসংখ্যা সহগ 4:3:2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_006',
@@ -5065,7 +5065,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'একটি যৌগ ভেঙে দুইটি সরল পদার্থ তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_007',
@@ -5081,7 +5081,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'দুই বিক্রিয়ক যুক্ত হয়ে এক ধরনের উৎপাদ গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_008',
@@ -5097,7 +5097,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'অধিক সক্রিয় Zn, Cu²⁺-কে তার লবণ থেকে প্রতিস্থাপন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_009',
@@ -5113,7 +5113,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'আয়ন বিনিময়ে অদ্রবণীয় AgCl অধঃক্ষেপ তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_010',
@@ -5129,7 +5129,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'এসিড ও ক্ষার বিক্রিয়ায় লবণ ও পানি উৎপন্ন হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_011',
@@ -5145,7 +5145,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'পর্যাপ্ত O₂-তে হাইড্রোকার্বন CO₂ ও H₂O তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_012',
@@ -5163,7 +5163,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অসম্পূর্ণ দহনে carbon monoxide তৈরি হয়, যা hemoglobin-এর সঙ্গে দৃঢ়ভাবে যুক্ত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_013',
@@ -5180,7 +5180,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অদ্রবণীয় নতুন কঠিনের সৃষ্টি রাসায়নিক পরিবর্তনের লক্ষণ হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_014',
@@ -5197,7 +5197,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_015',
@@ -5213,7 +5213,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Oxidation Is Loss—জারণে oxidation number বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_016',
@@ -5229,7 +5229,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Reduction Is Gain—বিজারণে oxidation number কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_017',
@@ -5245,7 +5245,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'এক পদার্থের ত্যাগ করা electron অন্য পদার্থ গ্রহণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_018',
@@ -5262,7 +5262,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Oxidizing agent অন্যকে জারিত করে এবং নিজে electron গ্রহণ করে reduced হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_019',
@@ -5278,7 +5278,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Reducing agent অন্যকে electron দেয়, তাই নিজে oxidized হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_020',
@@ -5294,7 +5294,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Zn electron দিয়ে Zn²⁺ হয়; Cu²⁺-কে বিজারিত করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_021',
@@ -5310,7 +5310,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Cu²⁺ electron গ্রহণ করে Cu হয় এবং Zn-কে জারিত করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_022',
@@ -5326,7 +5326,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Na, O₂, Cl₂-এর মতো মুক্ত মৌলে oxidation number শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_023',
@@ -5342,7 +5342,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'যেমন Fe³⁺-এ Fe-এর জারণ সংখ্যা +3।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_024',
@@ -5359,7 +5359,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Peroxide প্রভৃতি ব্যতিক্রম ছাড়া O-এর সাধারণ oxidation state −2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_025',
@@ -5375,7 +5375,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ধাতব hydride ব্যতীত H-এর সাধারণ oxidation state +1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_026',
@@ -5391,7 +5391,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '2(+1)+S+4(−2)=0 ⇒ S=+6।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_027',
@@ -5407,7 +5407,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'K=+1, O₄=−8; Mn=+7 হলে যোগ শূন্য।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_028',
@@ -5423,7 +5423,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'N+3(+1)=0 ⇒ N=−3।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_029',
@@ -5439,7 +5439,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'C+2(−2)=0 ⇒ C=+4।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_030',
@@ -5455,7 +5455,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'জারণ সংখ্যা +2 থেকে +3 বাড়ে এবং একটি electron ত্যাগ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_031',
@@ -5471,7 +5471,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Cl-এর জারণ সংখ্যা 0 থেকে −1 কমে; electron গ্রহণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_032',
@@ -5487,7 +5487,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '⇌ চিহ্ন forward ও reverse উভয় বিক্রিয়া সম্ভব বোঝায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_033',
@@ -5504,7 +5504,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'হার সমান হওয়ায় দৃশ্যমান ঘনত্ব স্থির থাকে, কিন্তু উভয় বিক্রিয়া চলতে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_034',
@@ -5522,7 +5522,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পদার্থ বেরিয়ে গেলে reverse reaction ও স্থায়ী equilibrium বজায় নাও থাকতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_035',
@@ -5539,7 +5539,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'চাপ, ঘনত্ব বা তাপমাত্রার পরিবর্তন প্রতিরোধের দিকে equilibrium shifts।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_036',
@@ -5556,7 +5556,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'বামে 4 mol gas, ডানে 2 mol; চাপ বৃদ্ধিতে কম গ্যাস মোলের দিক অনুকূল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_037',
@@ -5572,7 +5572,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'উৎপাদ কমানো হলে আরও উৎপাদ তৈরির দিকে forward reaction বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_038',
@@ -5590,7 +5590,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'তাপকে উৎপাদ ধরে তাপ বৃদ্ধির প্রভাব কমাতে endothermic দিক অনুকূল হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_039',
@@ -5607,7 +5607,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অনুঘটক forward ও reverse উভয় হার একইভাবে বাড়িয়ে দ্রুত সাম্য আনে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_040',
@@ -5624,7 +5624,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Activation energy কমায়, কিন্তু thermodynamic equilibrium বদলায় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_041',
@@ -5640,7 +5640,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'উচ্চ তাপমাত্রায় অধিক শক্তি ও বেশি কার্যকর সংঘর্ষ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_042',
@@ -5656,7 +5656,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'গুঁড়া করলে একই ভরের বেশি surface area বিক্রিয়ায় অংশ নেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_043',
@@ -5673,7 +5673,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'reactant particle বেশি ঘন হলে effective collision-এর frequency বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_044',
@@ -5690,7 +5690,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Collision theory অনুযায়ী activation energy ও favorable orientation উভয়ই দরকার।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_045',
@@ -5707,7 +5707,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'যে energy barrier অতিক্রম করলে কার্যকর সংঘর্ষ থেকে বিক্রিয়া হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_046',
@@ -5723,7 +5723,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '2AgCl আলোতে → 2Ag + Cl₂; আলো বিক্রিয়ার শক্তি দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_047',
@@ -5740,7 +5740,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Electrolysis-এ বিদ্যুৎ ব্যবহার করে অস্ফূর্ত redox reaction ঘটানো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_048',
@@ -5757,7 +5757,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'দুটি দ্রবণীয় লবণের আয়ন থেকে অদ্রবণীয় compound precipitate হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_049',
@@ -5773,7 +5773,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Ba²⁺ + SO₄²⁻ → BaSO₄(s), যা পানিতে অদ্রবণীয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c07_mcq_050',
@@ -5790,7 +5790,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Ag⁺ সরাসরি precipitate-এ অংশ নেয়; তাই spectator নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৮: রসায়ন ও শক্তি — 50 MCQs
   Question(
@@ -5807,7 +5807,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Exothermic reaction system থেকে surroundings-এ heat দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_002',
@@ -5823,7 +5823,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Endothermic process-এ system heat গ্রহণ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_003',
@@ -5839,7 +5839,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Products-এর enthalpy কম; ΔH=Hproducts−Hreactants <0।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_004',
@@ -5855,7 +5855,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'System তাপ গ্রহণ করে এবং products-এর enthalpy বেশি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_005',
@@ -5871,7 +5871,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'দহনে রাসায়নিক শক্তি তাপ ও আলো হিসেবে মুক্ত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_006',
@@ -5887,7 +5887,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'CaCO₃ → CaO + CO₂ ঘটাতে ক্রমাগত তাপ দিতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_007',
@@ -5903,7 +5903,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'বন্ধন ভাঙতে আকর্ষণের বিপরীতে কাজ করতে energy লাগে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_008',
@@ -5920,7 +5920,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'স্থিতিশীল bonded state গঠনে system-এর energy কমে এবং energy মুক্ত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_009',
@@ -5936,7 +5936,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ΔH≈ΣE(bonds broken)−ΣE(bonds formed)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_010',
@@ -5952,7 +5952,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'ΔH=500−700=−200 kJ, তাই exothermic।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_011',
@@ -5968,7 +5968,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'ΔH=800−600=+200 kJ; positive হলে endothermic।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_012',
@@ -5985,7 +5985,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Transition state-এ পৌঁছানোর energy barrier-ই activation energy।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_013',
@@ -6001,7 +6001,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Catalyst pathway বদলায়, initial ও final state বদলায় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_014',
@@ -6017,7 +6017,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'বিকল্প reaction mechanism-এর energy barrier কম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_015',
@@ -6034,7 +6034,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Calorific value সাধারণত kJ kg⁻¹ বা MJ kg⁻¹-এ energy yield বোঝায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_016',
@@ -6051,7 +6051,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'প্রতি একক ভরে energy বেশি হওয়ায় transportation ও use efficient হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_017',
@@ -6067,7 +6067,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ভর m, specific heat c ও temperature change ΔT-এর গুণফল heat।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_018',
@@ -6084,7 +6084,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'q=100×4.2×5=2100 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_019',
@@ -6101,7 +6101,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'q=200×4.2×10=8400 J।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_020',
@@ -6118,7 +6118,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'স্বতঃস্ফূর্ত redox reaction-এর electron flow থেকে বিদ্যুৎ পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_021',
@@ -6134,7 +6134,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সব electrochemical cell-এ oxidation at anode।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_022',
@@ -6150,7 +6150,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Reduction at cathode—Red Cat স্মারক।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_023',
@@ -6166,7 +6166,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Zn → Zn²⁺ + 2e⁻; zinc oxidized at anode।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_024',
@@ -6182,7 +6182,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Cu²⁺ + 2e⁻ → Cu; reduction occurs on copper cathode।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_025',
@@ -6198,7 +6198,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ইলেকট্রন অ্যানোডে উৎপন্ন হয়ে তার দিয়ে ক্যাথোডে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_026',
@@ -6215,7 +6215,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Salt bridge circuit complete করে এবং half-cell-এ charge buildup ঠেকায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_027',
@@ -6232,7 +6232,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'স্বতঃস্ফূর্ত oxidation-এ anode electron source, তাই negative।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_028',
@@ -6249,7 +6249,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Electron cathode-এ পৌঁছে; বাহ্যিক current convention-এ cathode positive।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_029',
@@ -6266,7 +6266,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'External power nonspontaneous reaction চালায় এবং chemical change ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_030',
@@ -6283,7 +6283,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Power source অ্যানোড থেকে electron টেনে নেয়; oxidation electrode positive terminal-এ যুক্ত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_031',
@@ -6299,7 +6299,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Power source cathode-এ electron সরবরাহ করে; reduction ঘটে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_032',
@@ -6315,7 +6315,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Na⁺ + e⁻ → Na; molten salt-এ পানি নেই।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_033',
@@ -6331,7 +6331,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: '2Cl⁻ → Cl₂ + 2e⁻।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_034',
@@ -6347,7 +6347,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'H⁺ বা পানি reduction পেয়ে hydrogen gas তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_035',
@@ -6363,7 +6363,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '2H₂O → 2H₂ + O₂; একই অবস্থায় gas volume ratio 2:1।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_036',
@@ -6381,7 +6381,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Metal cation cathode-এ reduction পেয়ে বস্তুটির গায়ে জমা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_037',
@@ -6397,7 +6397,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Cu²⁺ + 2e⁻ → Cu coating cathode-এ জমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_038',
@@ -6414,7 +6414,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পাতলা protective/decorative metal layer বস্তু রক্ষা ও আকর্ষণীয় করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_039',
@@ -6431,7 +6431,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Primary cell-এর reaction সহজে reversible নয়; ব্যবহারের পর ফেলে দিতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_040',
@@ -6447,7 +6447,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Lead-acid battery-এর reaction charging-এ উল্টানো যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_041',
@@ -6464,7 +6464,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Semi-solid electrolyte leak কমায়; cell পুরোপুরি water-free নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_042',
@@ -6481,7 +6481,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Li-ion battery অল্প ভরে বেশি energy store করে এবং বহুবার charge করা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_043',
@@ -6498,7 +6498,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Low-resistance path large current, heating, fire বা explosion ঘটাতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_044',
@@ -6514,7 +6514,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Fuel ও oxidant সরবরাহ চললে fuel cell ধারাবাহিক বিদ্যুৎ দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_045',
@@ -6530,7 +6530,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'সামগ্রিক বিক্রিয়া 2H₂ + O₂ → 2H₂O।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_046',
@@ -6547,7 +6547,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Carbon-free hydrogen oxidation-এ water হয়, carbon dioxide নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_047',
@@ -6563,7 +6563,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Enthalpy state function; শুরু ও শেষ অবস্থা একই হলে ΔH একই।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_048',
@@ -6581,7 +6581,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Renewable electricity ব্যবহারে hydrogen production-এর carbon footprint কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_049',
@@ -6598,7 +6598,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Reactant ও product-এর bonding/electronic energy পার্থক্য থেকেই energy change।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c08_mcq_050',
@@ -6616,7 +6616,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Difference surroundings-এ heat হিসেবে বের হওয়ায় products lower enthalpy।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৯: এসিড-ক্ষারক সমতা — 50 MCQs
   Question(
@@ -6633,7 +6633,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Arrhenius acid পানিতে H⁺ বা বাস্তবে H₃O⁺ ঘনত্ব বাড়ায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_002',
@@ -6649,7 +6649,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Arrhenius base পানিতে hydroxide ion ঘনত্ব বাড়ায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_003',
@@ -6665,7 +6665,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'HCl পানিতে প্রায় সম্পূর্ণ ionized হয়ে H₃O⁺ ও Cl⁻ দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_004',
@@ -6681,7 +6681,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'এক অণু H₂SO₄ সর্বোচ্চ দুইটি ionizable H⁺ দিতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_005',
@@ -6697,7 +6697,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Phosphoric acid ধাপে ধাপে তিনটি H⁺ দিতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_006',
@@ -6713,7 +6713,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'NaOH পানিতে প্রায় সম্পূর্ণ Na⁺ ও OH⁻-এ বিভক্ত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_007',
@@ -6729,7 +6729,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'NH₃ + H₂O ⇌ NH₄⁺ + OH⁻ সাম্য আংশিক ডানদিকে যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_008',
@@ -6745,7 +6745,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Acetic acid পানিতে আংশিক ionized হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_009',
@@ -6761,7 +6761,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Strong acid প্রায় সম্পূর্ণ, weak acid আংশিক ionized হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_010',
@@ -6778,7 +6778,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Concentrated বলে solute amount বেশি; strong বলে ionization fraction বেশি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_011',
@@ -6795,7 +6795,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Hydrogen ion molar concentration-এর negative base-10 logarithm pH।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_012',
@@ -6811,7 +6811,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'বিশুদ্ধ পানিতে [H⁺]=[OH⁻]=10⁻⁷ M, তাই pH=7।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_013',
@@ -6827,7 +6827,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'অম্লীয় দ্রবণে [H⁺]>10⁻⁷ M।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_014',
@@ -6843,7 +6843,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ক্ষারীয় দ্রবণে [OH⁻]>[H⁺], তাই pH>7।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_015',
@@ -6859,7 +6859,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'pH=−log(10⁻³)=3।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_016',
@@ -6875,7 +6875,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: '10⁻⁵ M hydrogen ion concentration-এর pH 5।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_017',
@@ -6891,7 +6891,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'pH logarithmic; প্রতি একক বৃদ্ধিতে [H⁺] দশ ভাগের এক ভাগ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_018',
@@ -6907,7 +6907,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Kw=10⁻¹⁴ হওয়ায় pH+pOH=14।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_019',
@@ -6923,7 +6923,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'pH=14−4=10।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_020',
@@ -6939,7 +6939,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Acid blue litmus-কে red করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_021',
@@ -6955,7 +6955,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Base red litmus-কে blue করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_022',
@@ -6971,7 +6971,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Phenolphthalein acidic/neutral medium-এ colorless।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_023',
@@ -6987,7 +6987,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Alkaline medium-এ phenolphthalein pink হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_024',
@@ -7003,7 +7003,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Methyl orange acidic pH-তে red এবং alkaline-এ yellow।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_025',
@@ -7019,7 +7019,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Turmeric-এর curcumin base-এর সঙ্গে red-brown color দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_026',
@@ -7035,7 +7035,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Universal indicator বিভিন্ন pH-তে ধারাবাহিক ভিন্ন রং দেখায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_027',
@@ -7051,7 +7051,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'H⁺ ও OH⁻ মিলিয়ে পানি এবং সাধারণত salt তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_028',
@@ -7068,7 +7068,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Strong acid-base reaction-এ spectator ion বাদ দিলে এই সমীকরণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_029',
@@ -7084,7 +7084,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'HCl + NaOH → NaCl + H₂O।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_030',
@@ -7101,7 +7101,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_031',
@@ -7118,7 +7118,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'CO₂ পানিতে carbonic acid গঠন করে এবং base-এর সঙ্গে salt দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_032',
@@ -7134,7 +7134,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'CaO পানির সঙ্গে Ca(OH)₂ এবং acid-এর সঙ্গে salt তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_033',
@@ -7150,7 +7150,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'ZnO acid ও strong base উভয়ের সঙ্গে reaction করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_034',
@@ -7167,7 +7167,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Acid-base ও অন্যান্য reaction-এ ionic compound salt তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_035',
@@ -7183,7 +7183,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'CO₃²⁻ পানি থেকে proton নিয়ে OH⁻ তৈরি করে hydrolysis ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_036',
@@ -7200,7 +7200,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'NH₄⁺ hydrolysis করে H₃O⁺ তৈরি করে; এটি strong acid-weak base salt।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_037',
@@ -7217,7 +7217,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Strong acid HCl ও strong base NaOH-এর salt উল্লেখযোগ্য hydrolysis করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_038',
@@ -7234,7 +7234,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Weak acid/base ও conjugate pair যোগ করা H⁺/OH⁻ গ্রহণ করে pH স্থির রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_039',
@@ -7250,7 +7250,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Weak acid ও তার strong-base salt acidic buffer গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_040',
@@ -7267,7 +7267,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Mg(OH)₂, Al(OH)₃ ইত্যাদি base সীমিত মাত্রায় gastric acid neutralize করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_041',
@@ -7283,7 +7283,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Basic lime acidic soil neutralize করে pH উপযোগী করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_042',
@@ -7301,7 +7301,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Mild NaHCO₃ কিছু acid neutralize করতে পারে; গুরুতর allergy-তে চিকিৎসা জরুরি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_043',
@@ -7318,7 +7318,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'SO₂/NOₓ থেকে acids তৈরি হয়ে বৃষ্টির pH সাধারণ প্রাকৃতিক মানের নিচে নামায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_044',
@@ -7335,7 +7335,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Acid carbonate-এর সঙ্গে reaction করে soluble salt, H₂O ও CO₂ তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_045',
@@ -7352,7 +7352,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Burette থেকে titrant dropwise দিয়ে initial-final reading-এর পার্থক্য নেওয়া হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_046',
@@ -7369,7 +7369,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Indicator নির্বাচিত pH range-এ color change দিয়ে endpoint নির্দেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_047',
@@ -7385,7 +7385,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'HCl:NaOH=1:1 এবং concentration সমান, তাই volume সমান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_048',
@@ -7402,7 +7402,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'H₂SO₄:NaOH=1:2; acid mol=0.004, NaOH=0.008 mol, V=0.040 L।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_049',
@@ -7419,7 +7419,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Known buffer দিয়ে electrode response সমন্বয় করলে reliable pH reading পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c09_mcq_050',
@@ -7436,7 +7436,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Corrosive base দ্রুত পানি দিয়ে অপসারণ করতে হয়; সরাসরি neutralization heat তৈরি করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ১০: খনিজ সম্পদ: ধাতু-অধাতু — 51 MCQs
   Question(
@@ -7454,7 +7454,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'মুক্ত ইলেকট্রনের কারণে অধিকাংশ ধাতু তাপ ও বিদ্যুৎ ভালো পরিবহন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_002',
@@ -7471,7 +7471,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'অধাতুতে মুক্ত electron কম; graphite একটি উল্লেখযোগ্য ব্যতিক্রম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_003',
@@ -7487,7 +7487,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Mercury সাধারণ কক্ষ তাপমাত্রায় তরল থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_004',
@@ -7503,7 +7503,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Br₂ লালচে-বাদামি তরল অধাতু।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_005',
@@ -7519,7 +7519,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Graphite-এর delocalized electron বিদ্যুৎ পরিবহন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_006',
@@ -7536,7 +7536,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Mineral ভূত্বকে প্রাকৃতিক chemical compound বা element হিসেবে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_007',
@@ -7552,7 +7552,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Ore-এ ধাতুর পরিমাণ ও extraction feasibility লাভজনক হতে হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_008',
@@ -7569,7 +7569,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Economic extraction criterion mineral-কে ore হিসেবে আলাদা করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_009',
@@ -7585,7 +7585,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Hydrated aluminium oxide-সমৃদ্ধ bauxite থেকে Al উৎপাদিত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_010',
@@ -7601,7 +7601,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Hematite iron(III) oxide-এর প্রধান iron ore।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_011',
@@ -7617,7 +7617,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Magnetite mixed iron oxide Fe₃O₄ এবং চৌম্বকীয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_012',
@@ -7633,7 +7633,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Zinc blende বা sphalerite হলো zinc sulfide।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_013',
@@ -7649,7 +7649,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Galena PbS হলো lead-এর গুরুত্বপূর্ণ sulfide ore।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_014',
@@ -7665,7 +7665,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Chalcopyrite CuFeS₂ তামার গুরুত্বপূর্ণ sulfide ore।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_015',
@@ -7682,7 +7682,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Ore dressing-এ unwanted earthy impurities সরিয়ে metal content বাড়ানো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_016',
@@ -7699,7 +7699,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Gangue extraction-এর আগে concentration-এ যতটা সম্ভব সরানো হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_017',
@@ -7716,7 +7716,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Roasting-এ sulfide ore oxygen-এ oxide-এ রূপান্তরিত ও SO₂ নির্গত হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_018',
@@ -7734,7 +7734,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Calcination-এ carbonate/hydrated ore থেকে CO₂/H₂O সরিয়ে oxide হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_019',
@@ -7750,7 +7750,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'ZnCO₃ → ZnO + CO₂ হলো calcination।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_020',
@@ -7766,7 +7766,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Sulfide ore-কে excess air-এ oxide-এ রূপান্তর roasting।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_021',
@@ -7782,7 +7782,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Reduction-এ metal oxide oxygen হারিয়ে metal দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_022',
@@ -7799,7 +7799,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Activity series-এ carbon-এর নিচের metal oxide carbon/CO দিয়ে reduce করা যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_023',
@@ -7816,7 +7816,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Na compound খুব স্থিতিশীল; electrolysis-এ cathode-এ Na⁺ reduce হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_024',
@@ -7834,7 +7834,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Molten cryolite electrolysis-এর operating temperature ও energy need কমায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_025',
@@ -7851,7 +7851,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Coke থেকে তৈরি CO iron oxide reduce করে: Fe₂O₃ + 3CO → 2Fe + 3CO₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_026',
@@ -7868,7 +7868,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'CaCO₃ থেকে CaO হয়ে SiO₂-এর সঙ্গে calcium silicate slag তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_027',
@@ -7884,7 +7884,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'CaO + SiO₂ → CaSiO₃; molten slag iron-এর ওপর ভাসে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_028',
@@ -7900,7 +7900,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Coke burning provides heat এবং CO reducing gas তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_029',
@@ -7917,7 +7917,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Blast furnace iron-এ carbon ও অন্যান্য impurity বেশি, তাই এটি ভঙ্গুর।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_030',
@@ -7934,7 +7934,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Steel-এ iron-এর সঙ্গে সাধারণত কম শতাংশ carbon ও প্রয়োজনে alloying element থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_031',
@@ -7950,7 +7950,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Chromium surface-এ protective Cr₂O₃ passive film তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_032',
@@ -7966,7 +7966,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Brass = Cu + Zn।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_033',
@@ -7982,7 +7982,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Bronze = Cu + Sn।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_034',
@@ -7999,7 +7999,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Traditional soft solder Sn-Pb alloy; lead-free alternatives বর্তমানে ব্যবহৃত হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_035',
@@ -8016,7 +8016,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Composition নিয়ন্ত্রণে pure metal-এর চেয়ে উপযোগী mechanical/chemical property পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_036',
@@ -8033,7 +8033,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Iron corrosion electrochemicalভাবে water ও dissolved oxygen উপস্থিতিতে ঘটে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_037',
@@ -8050,7 +8050,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Rust সাধারণত Fe₂O₃·xH₂O দ্বারা উপস্থাপিত porous corrosion product।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_038',
@@ -8067,7 +8067,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Barrier coating intact থাকলে corrosive environment iron-এ পৌঁছায় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_039',
@@ -8083,7 +8083,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Zinc coating barrier ও sacrificial protection উভয় দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_040',
@@ -8099,7 +8099,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Zinc sacrificial anode হিসেবে iron-এর পরিবর্তে oxidized হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_041',
@@ -8116,7 +8116,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Tin nobler হওয়ায় exposed iron anodic হয়ে corrosion ত্বরান্বিত হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_042',
@@ -8134,7 +8134,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Mg/Zn sacrificial anode oxidized হয়ে steel structure-কে cathode রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_043',
@@ -8151,7 +8151,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'More reactive metal readily oxidized and reduces ions of less reactive metal।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_044',
@@ -8168,7 +8168,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Cu hydrogen-এর নিচে; non-oxidizing dilute acid থেকে H₂ মুক্ত করতে পারে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_045',
@@ -8184,7 +8184,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Zn + 2HCl → ZnCl₂ + H₂↑।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_046',
@@ -8200,7 +8200,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: '2Na + 2H₂O → 2NaOH + H₂; reaction highly exothermic।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_047',
@@ -8217,7 +8217,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'High electronegativity nonmetal electron gain করে negative ion হতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_048',
@@ -8233,7 +8233,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'S + O₂ → SO₂; gas acidic and irritating।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_049',
@@ -8250,7 +8250,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Controlled chlorination pathogens inactivate করে; মাত্রা নিয়ন্ত্রণ জরুরি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_050',
@@ -8267,7 +8267,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Mining ও smelting habitat damage, tailings, acid drainage ও emissions সৃষ্টি করতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c10_mcq_051',
@@ -8284,7 +8284,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Recycling primary mining/smelting-এর তুলনায় resources ও energy সাশ্রয় করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ১১: খনিজ সম্পদ: জীবাশ্ম — 50 MCQs
   Question(
@@ -8302,7 +8302,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'কোটি বছরের ভূতাত্ত্বিক প্রক্রিয়ায় organic matter coal, petroleum ও natural gas হয়েছে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_002',
@@ -8318,7 +8318,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Natural gas ভূগর্ভস্থ fossil hydrocarbon resource।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_003',
@@ -8335,7 +8335,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Coal-এ carbon প্রধান, সঙ্গে H, O, N, S ও mineral matter থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_004',
@@ -8352,7 +8352,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Coalification বাড়লে carbon content ও calorific value সাধারণত বাড়ে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_005',
@@ -8368,7 +8368,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Anthracite hard coal-এ carbon বেশি, volatile matter কম।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_006',
@@ -8384,7 +8384,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Natural gas সাধারণত প্রধানত CH₄, সঙ্গে অল্প অন্যান্য gas।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_007',
@@ -8400,7 +8400,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'CNG উচ্চচাপে সংরক্ষিত natural gas, মূলত methane।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_008',
@@ -8417,7 +8417,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Liquefied Petroleum Gas-এ propane/butane pressurized liquid হিসেবে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_009',
@@ -8434,7 +8434,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Crude oil-এ নানা chain length ও structure-এর hydrocarbon থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_010',
@@ -8451,7 +8451,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Boiling range-এর পার্থক্যে fractionating column-এ বিভিন্ন fraction আলাদা হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_011',
@@ -8467,7 +8467,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Crude oil নিচে উত্তপ্ত; column-এ ওপরে উঠলে temperature কমে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_012',
@@ -8483,7 +8483,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Small volatile molecule উচ্চতায় cooler zone-এ condense করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_013',
@@ -8500,7 +8500,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Heavy petroleum residue viscous bitumen paving ও waterproofing-এ ব্যবহৃত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_014',
@@ -8516,7 +8516,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'সংজ্ঞা অনুযায়ী hydrocarbon শুধু C ও H দ্বারা গঠিত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_015',
@@ -8532,7 +8532,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Alkane-এ carbon skeleton-এ কেবল C–C single bond।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_016',
@@ -8548,7 +8548,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Alkene/alkyne-তে multiple carbon-carbon bond আছে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_017',
@@ -8564,7 +8564,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Open-chain saturated alkane-এর formula CnH2n+2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_018',
@@ -8580,7 +8580,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'একটি C=C-যুক্ত open-chain alkene-এর formula CnH2n।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_019',
@@ -8596,7 +8596,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'একটি C≡C-যুক্ত open-chain alkyne-এর formula CnH2n−2।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_020',
@@ -8612,7 +8612,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'n=1 alkane: C₁H₄।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_021',
@@ -8628,7 +8628,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Alkane formula-তে n=2 হলে H=6।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_022',
@@ -8644,7 +8644,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'n=3 alkane: C₃H₈।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_023',
@@ -8660,7 +8660,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'n=2 alkene: C₂H₄।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_024',
@@ -8676,7 +8676,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'n=2 alkyne: C₂H₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_025',
@@ -8692,7 +8692,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'চার carbon saturated alkane-এর নাম butane।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_026',
@@ -8708,7 +8708,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'তিন carbon ও এক double bond: propene।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_027',
@@ -8724,7 +8724,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'তিন carbon ও এক triple bond: propyne।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_028',
@@ -8741,7 +8741,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Homologue adjacent members differ by CH₂, molar mass 14 g mol⁻¹।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_029',
@@ -8758,7 +8758,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Same functional group/general formula similar reaction behavior দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_030',
@@ -8774,7 +8774,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'C₄H₁₀-এর n-butane ও 2-methylpropane—দুটি carbon skeleton।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_031',
@@ -8791,7 +8791,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Structural isomer একই molecular formula-তে atoms ভিন্ন connectivity-তে থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_032',
@@ -8808,7 +8808,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Methane chlorination UV light-এ substitution chain reaction।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_033',
@@ -8824,7 +8824,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'এক H atom Cl দ্বারা replaced: CH₄+Cl₂→CH₃Cl+HCl।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_034',
@@ -8840,7 +8840,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'C=C π bond খুলে নতুন atoms/groups যোগ হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_035',
@@ -8857,7 +8857,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Br₂ C=C-তে addition হয়ে dibromo compound তৈরি করে, bromine color disappears।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_036',
@@ -8873,7 +8873,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Alkene/alkyne bromine add করে solution decolorize করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_037',
@@ -8889,7 +8889,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'C₂H₄ + H₂ → C₂H₆, Ni catalyst-এ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_038',
@@ -8905,7 +8905,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'C₂H₄ + H₂O → C₂H₅OH উপযুক্ত catalyst-এ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_039',
@@ -8921,7 +8921,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'উভয় পাশে C=4, H=4, O=10।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_040',
@@ -8937,7 +8937,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'C=1, H=4 ও O=4 উভয় পাশে সমান।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_041',
@@ -8954,7 +8954,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Heat/catalyst heavy fraction-কে useful smaller molecules-এ ভাঙে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_042',
@@ -8971,7 +8971,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Less useful long-chain fractions থেকে valuable fuel এবং petrochemical monomer পাওয়া যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_043',
@@ -8988,7 +8988,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Monomer units covalently linked হয়ে high molecular mass macromolecule গঠন করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_044',
@@ -9004,7 +9004,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'nCH₂=CH₂ → (−CH₂−CH₂−)ₙ poly(ethene)।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_045',
@@ -9020,7 +9020,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Poly(vinyl chloride) তৈরি হয় CH₂=CHCl monomer থেকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_046',
@@ -9037,7 +9037,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Stable C–C backbone ও microbes-এর উপযোগী enzyme না থাকায় degradation ধীর।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_047',
@@ -9055,7 +9055,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Carbon combustion-এর CO₂ infrared radiation শোষণ করে greenhouse effect বাড়ায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_048',
@@ -9072,7 +9072,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Sulfur oxidation-এ SO₂ হয়, যা respiratory problem ও acid rain ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_049',
@@ -9089,7 +9089,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Insufficient oxygen-এ soot/particulate carbon তৈরি হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c11_mcq_050',
@@ -9106,7 +9106,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Demand কমানো ও solar/wind substitution finite resource ও emission উভয় কমায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ১২: আমাদের জীবনে রসায়ন — 52 MCQs
   Question(
@@ -9124,7 +9124,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Bond dipole দুটো বাঁকা geometry-তে বাতিল না হওয়ায় net dipole থাকে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_002',
@@ -9141,7 +9141,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Water ion-dipole ও hydrogen bonding দ্বারা অনেক solute dissolve করে; সব পদার্থ নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_003',
@@ -9157,7 +9157,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'Dissolved calcium/magnesium salt soap scum ও scale তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_004',
@@ -9174,7 +9174,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Bicarbonate hardness boiling-এ insoluble carbonate/hydroxide হিসেবে কমানো যায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_005',
@@ -9190,7 +9190,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Sulfate/chloride hardness boiling-এ সহজে দূর হয় না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_006',
@@ -9206,7 +9206,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Bicarbonate heat-এ precipitate তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_007',
@@ -9223,7 +9223,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Soap anion calcium/magnesium-এর সঙ্গে insoluble salt হিসেবে নষ্ট হয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_008',
@@ -9240,7 +9240,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Synthetic detergent hard-water ion-এর সঙ্গে insoluble scum কম করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_009',
@@ -9256,7 +9256,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Hydrophilic carboxylate head পানির সঙ্গে interaction করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_010',
@@ -9272,7 +9272,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Nonpolar tail grease/oil-এর মধ্যে প্রবেশ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_011',
@@ -9289,7 +9289,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Heads বাইরে water-facing, tails inward around grease—rinsing removes micelle।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_012',
@@ -9305,7 +9305,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 0,
     explanation: 'Triglyceride + NaOH/KOH → soap salts + glycerol।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_013',
@@ -9321,7 +9321,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Sodium fatty acid salts তুলনামূলক hard bar soap।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_014',
@@ -9337,7 +9337,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Potassium salts বেশি soluble, soft/liquid soap-এ ব্যবহৃত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_015',
@@ -9354,7 +9354,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'School-level representation bleaching powder CaOCl₂; এটি available chlorine দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_016',
@@ -9371,7 +9371,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'পানিতে hypochlorous acidজাত oxidant microorganisms inactivate করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_017',
@@ -9388,7 +9388,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Dose control দরকার; যথেষ্ট disinfection কিন্তু unnecessary excess নয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_018',
@@ -9405,7 +9405,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Coagulation-flocculation suspended colloid একত্র করে settling সহজ করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_019',
@@ -9422,7 +9422,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Filter media particulate matter ধরে; dissolved chemicals-এর জন্য অন্য treatment লাগতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_020',
@@ -9439,7 +9439,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Sufficient boiling microbial risk কমায়, কিন্তু dissolved toxin/metal দূর করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_021',
@@ -9455,7 +9455,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'শুষ্ক বায়ুতে nitrogen প্রায় 78%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_022',
@@ -9471,7 +9471,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Atmospheric oxygen প্রায় 20.9% by volume।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_023',
@@ -9488,7 +9488,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'CO₂ trace gas, recent atmosphere-এ roughly 0.04% এর একটু বেশি; পরিবর্তনশীল।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_024',
@@ -9505,7 +9505,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Natural greenhouse gases outgoing infrared-এর কিছু ধরে পৃথিবীকে উষ্ণ রাখে; অতিরিক্ত বৃদ্ধি warming ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_025',
@@ -9522,7 +9522,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Fossil fuel ও land-use থেকে CO₂ concentration বৃদ্ধি প্রধান driver।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_026',
@@ -9538,7 +9538,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Stratospheric O₃ বিশেষত UV-B/UV-C শোষণ করে জীবকে রক্ষা করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_027',
@@ -9555,7 +9555,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'একটি chlorine radical বহু ozone molecule destruction cycle চালাতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_028',
@@ -9572,7 +9572,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'NOₓ ও VOC sunlight-এ reaction করে ozone ও oxidant smog তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_029',
@@ -9589,7 +9589,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Carboxyhemoglobin tissue hypoxia ঘটায়; CO বর্ণহীন ও গন্ধহীন।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_030',
@@ -9606,7 +9606,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'SO₂ respiratory irritant এবং atmosphere-এ sulfuric acidজাত species তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_031',
@@ -9623,7 +9623,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Nitrogen oxides photochemical ozone ও nitric acid formation-এ অংশ নেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_032',
@@ -9640,7 +9640,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Diameter ≤2.5 μm fine particulate respiratory ও cardiovascular risk বাড়ায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_033',
@@ -9656,7 +9656,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Microbes organic matter ভাঙতে বেশি oxygen demand করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_034',
@@ -9673,7 +9673,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Nutrient enrichment algal bloom, decay ও oxygen depletion ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_035',
@@ -9690,7 +9690,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'N promotes vegetative growth and protein/chlorophyll synthesis।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_036',
@@ -9707,7 +9707,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'P root, energy transfer ও reproductive development-এ গুরুত্বপূর্ণ।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_037',
@@ -9724,7 +9724,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'K water balance, enzyme function ও stress resistance-এ ভূমিকা রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_038',
@@ -9740,7 +9740,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Urea nitrogen fertilizer-এ molecule CO(NH₂)₂।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_039',
@@ -9757,7 +9757,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 1,
     explanation: 'M=60; N mass=28; 28/60×100=46.7%।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_040',
@@ -9774,7 +9774,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Unabsorbed nitrate water-এ গিয়ে algal bloom ও groundwater contamination ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_041',
@@ -9790,7 +9790,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 3,
     explanation: 'Carbohydrate oxidation দেহে ব্যবহারযোগ্য energy দেয়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_042',
@@ -9806,7 +9806,7 @@ const List<Question> chemistryMcqs = <Question>[
     correctIndex: 2,
     explanation: 'Amino acids peptide bond-এ যুক্ত হয়ে protein তৈরি করে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_043',
@@ -9823,7 +9823,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Fat energy dense এবং insulation; essential fatty acid ও vitamin absorption-এও ভূমিকা রাখে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_044',
@@ -9840,7 +9840,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Ascorbic acid deficiency collagen synthesis ব্যাহত করে scurvy ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_045',
@@ -9857,7 +9857,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Iron hemoglobin synthesis-এর জন্য দরকার; deficiency anemia ঘটাতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_046',
@@ -9874,7 +9874,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Iodine thyroid hormone তৈরিতে দরকার; deficiency thyroid enlargement ঘটায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_047',
@@ -9891,7 +9891,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Lower temperature spoilage process slow করে, sterilize করে না।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_048',
@@ -9908,7 +9908,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Milk/juice specified time-temperature treatment pathogen load কমায়।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_049',
@@ -9925,7 +9925,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Too little ineffective, too much harmful; prescription ও label follow করা উচিত।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_050',
@@ -9943,7 +9943,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Unnecessary antibiotic use resistance বাড়ায়; medical advice জরুরি।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_051',
@@ -9960,7 +9960,7 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Improper disposal poisoning ও environmental contamination ঘটাতে পারে।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   Question(
     id: 'chem_c12_mcq_052',
@@ -9977,6 +9977,6 @@ const List<Question> chemistryMcqs = <Question>[
     explanation:
         'Waste hierarchy-তে আগে উৎপাদন কমানো, পরে পুনর্ব্যবহার, শেষে recycling।',
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
 ];

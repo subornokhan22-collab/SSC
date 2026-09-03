@@ -293,10 +293,10 @@ class _ShimmerBoxState extends State<ShimmerBox>
             gradient: LinearGradient(
               begin: Alignment(pos - 0.3, 0),
               end: Alignment(pos + 0.3, 0),
-              colors: [
-                const Color(0xFF1B2029),
-                const Color(0xFF2A3140),
-                const Color(0xFF1B2029),
+              colors: const [
+                Color(0xFFE8ECF5),
+                Color(0xFFF6F8FC),
+                Color(0xFFE8ECF5),
               ],
             ),
           ),
@@ -368,7 +368,7 @@ class HaloRing extends StatefulWidget {
   const HaloRing({
     super.key,
     this.size = 120,
-    this.color = const Color(0xFFFFD86B),
+    this.color = const Color(0xFF3D5AFE),
     this.strokeWidth = 2,
     this.period = const Duration(seconds: 7),
   });

@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:a_learning/data/ict/ict_chapter_catalog.dart';
-import 'package:a_learning/data/ict/ict_mcqs.dart';
-import 'package:a_learning/data/questions_data.dart';
-import 'package:a_learning/services/chapter_catalog.dart';
-import 'package:a_learning/services/ict_board_pattern.dart';
+import 'package:mentors_companion/data/ict/ict_chapter_catalog.dart';
+import 'package:mentors_companion/data/ict/ict_mcqs.dart';
+import 'package:mentors_companion/data/questions_data.dart';
+import 'package:mentors_companion/services/chapter_catalog.dart';
+import 'package:mentors_companion/services/ict_board_pattern.dart';
 
 void main() {
   group('ICT MCQ-only chapter catalog', () {

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
-import '../widgets/molten_gold_river.dart';
+import '../widgets/aurora_ribbons.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
+import '../widgets/app_logo.dart';
 import 'teacher_home_screen.dart';
 
 /// Welcome screen — the tutor's first impression of the app.
@@ -15,19 +16,18 @@ class AuthChoiceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const cream = Color(0xFFFFF5CF);
     return Scaffold(
-      body: MoltenGoldRiver(
+      body: AuroraRibbons(
         child: DecoratedBox(
-          // Darkens the animated rivers so the copy stays legible.
+          // Veils the animated ribbons so the copy always stays legible.
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(.62),
-                Colors.black.withOpacity(.78),
-                Colors.black.withOpacity(.88),
+                Colors.white.withOpacity(.62),
+                Colors.white.withOpacity(.74),
+                Colors.white.withOpacity(.86),
               ],
             ),
           ),
@@ -51,44 +51,26 @@ class AuthChoiceScreen extends StatelessWidget {
                               const HaloRing(
                                 size: 128,
                                 strokeWidth: 2.4,
-                                color: Color(0xFFFFE080),
+                                color: AppTheme.primary,
                               ),
                               Pulse(
                                 min: .96,
                                 max: 1.04,
                                 period: const Duration(milliseconds: 2200),
-                                child: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black.withOpacity(.66),
-                                    border: Border.all(
-                                        color: const Color(0xFFFFE080),
-                                        width: 1.5),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                          color: Color(0x66D4A843),
-                                          blurRadius: 30),
-                                    ],
-                                  ),
-                                  child: const Icon(Icons.school_rounded,
-                                      size: 50, color: Color(0xFFFFE080)),
-                                ),
+                                child: const AppLogo(size: 92),
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 18),
                         const Text(
-                          'A-Learning',
+                          "Mentor's Companion",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: cream,
-                            fontSize: 36,
+                            color: AppTheme.textDark,
+                            fontSize: 34,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 1.6,
-                            shadows: [
-                              Shadow(color: Colors.black, blurRadius: 14),
-                            ],
+                            letterSpacing: .6,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -97,14 +79,15 @@ class AuthChoiceScreen extends StatelessWidget {
                               horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
-                            color: Colors.black.withOpacity(.45),
+                            color: AppTheme.primary.withOpacity(.10),
                             border: Border.all(
-                                color: const Color(0x99FFD86B), width: 1),
+                                color: AppTheme.primary.withOpacity(.35),
+                                width: 1),
                           ),
                           child: const Text(
                             'TUTOR EDITION',
                             style: TextStyle(
-                              color: Color(0xFFFFD86B),
+                              color: AppTheme.primary,
                               fontSize: 11,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 2.4,
@@ -116,8 +99,8 @@ class AuthChoiceScreen extends StatelessWidget {
                           'Build SSC 2027 question papers, model tests and OMR '
                           'sheets — print-ready in minutes.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(.86),
+                          style: const TextStyle(
+                            color: AppTheme.muted,
                             fontSize: 13.5,
                             height: 1.6,
                           ),
@@ -158,7 +141,7 @@ class AuthChoiceScreen extends StatelessWidget {
                           icon: const Icon(Icons.bolt_rounded, size: 18),
                           label: const Text('Continue offline'),
                           style: TextButton.styleFrom(
-                              foregroundColor: Colors.white.withOpacity(.72)),
+                              foregroundColor: AppTheme.muted),
                         ),
                       ],
                       step: const Duration(milliseconds: 85),
@@ -194,20 +177,26 @@ class _FeatureStrip extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(.46),
+                  color: Colors.white.withOpacity(.86),
                   borderRadius: BorderRadius.circular(16),
-                  border:
-                      Border.all(color: const Color(0xFFFFD86B).withOpacity(.28)),
+                  border: Border.all(color: AppTheme.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primary.withOpacity(.07),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
-                    Icon(item.$1, color: const Color(0xFFFFD86B), size: 21),
+                    Icon(item.$1, color: AppTheme.primary, size: 21),
                     const SizedBox(height: 8),
                     Text(
                       item.$2,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(.82),
+                      style: const TextStyle(
+                        color: AppTheme.muted,
                         fontSize: 11,
                         height: 1.35,
                         fontWeight: FontWeight.w600,
@@ -242,11 +231,7 @@ class _PrimaryAction extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFE080), Color(0xFFD4A72C)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppTheme.brandGradient,
             boxShadow: [
               BoxShadow(
                 color: AppTheme.primary.withOpacity(.32),
@@ -258,12 +243,12 @@ class _PrimaryAction extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: const Color(0xFF241900), size: 20),
+              Icon(icon, color: Colors.white, size: 20),
               const SizedBox(width: 9),
               Text(
                 label,
                 style: const TextStyle(
-                  color: Color(0xFF241900),
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
                 ),
@@ -293,19 +278,19 @@ class _SecondaryAction extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.black.withOpacity(.48),
-          border: const Border.fromBorderSide(
-              BorderSide(color: Color(0xFFFFD86B), width: 1.4)),
+          color: Colors.white.withOpacity(.92),
+          border: Border.fromBorderSide(
+              BorderSide(color: AppTheme.primary.withOpacity(.45), width: 1.4)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: const Color(0xFFFFF0B0), size: 20),
+            Icon(icon, color: AppTheme.primary, size: 20),
             const SizedBox(width: 9),
             Text(
               label,
               style: const TextStyle(
-                color: Color(0xFFFFF0B0),
+                color: AppTheme.primary,
                 fontSize: 15.5,
                 fontWeight: FontWeight.w800,
               ),
@@ -326,14 +311,14 @@ class _OfflineNotice extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(.6),
+        color: AppTheme.warning.withOpacity(.09),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x99FFE080)),
+        border: Border.all(color: AppTheme.warning.withOpacity(.35)),
       ),
       child: const Text(
         'Sign-in is not configured yet.\nAll offline paper-building features still work.',
         textAlign: TextAlign.center,
-        style: TextStyle(color: Color(0xFFFFF5CF), fontSize: 13, height: 1.55),
+        style: TextStyle(color: AppTheme.textDark, fontSize: 13, height: 1.55),
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'custom_paper_screen.dart';
 import 'profile_screen.dart';
 import 'question_paper_screen.dart';
 import 'subscription_screen.dart';
+import '../widgets/app_logo.dart';
 
 /// Tutor workspace — the single home of the app.
 /// Chapter papers, full model tests, custom MCQ + OMR, profile and Pro.
@@ -174,17 +175,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             alignment: Alignment.center,
             children: [
               const HaloRing(size: 56, strokeWidth: 1.8),
-              Container(
-                padding: const EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withOpacity(.42),
-                  border:
-                      Border.all(color: AppTheme.primary.withOpacity(.5), width: 1.2),
-                ),
-                child: const Icon(Icons.school_rounded,
-                    color: AppTheme.accent, size: 22),
-              ),
+              const AppLogo(size: 42),
             ],
           ),
         ),
@@ -194,7 +185,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'A-Learning',
+                "Mentor's Companion",
                 style: TextStyle(
                   color: AppTheme.textDark,
                   fontSize: 22,
@@ -238,10 +229,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             gradient: LinearGradient(
               begin: Alignment(-1 + t * .6, -1),
               end: Alignment(1 - t * .6, 1),
-              colors: const [
-                Color(0xFF221B0A),
-                Color(0xFF15181F),
-                Color(0xFF1D1809),
+              colors: [
+                Color.lerp(Colors.white, AppTheme.primary, .10)!,
+                Colors.white,
+                Color.lerp(Colors.white, AppTheme.secondary, .09)!,
               ],
             ),
             border: Border.all(color: AppTheme.primary.withOpacity(.28)),
@@ -320,13 +311,15 @@ class _ActionTile extends StatefulWidget {
 class _ActionTileState extends State<_ActionTile> {
   bool _pressed = false;
 
+  /// Light [tint, ink] pairs — the tint fills the icon badge, the ink is the
+  /// saturated version used for borders, shadows and the pressed state.
   static const _accents = <List<Color>>[
-    [Color(0xFFFFD86B), Color(0xFFB98A1B)],
-    [Color(0xFF8FD3FF), Color(0xFF2F6FA8)],
-    [Color(0xFFFFB3C7), Color(0xFFA8386B)],
-    [Color(0xFFB5F5C6), Color(0xFF2F8A55)],
-    [Color(0xFFCFC3FF), Color(0xFF5B49A8)],
-    [Color(0xFFFFD86B), Color(0xFFD4A72C)],
+    [Color(0xFF6B7BFF), Color(0xFF3D5AFE)],
+    [Color(0xFF4FB3F0), Color(0xFF0B84D9)],
+    [Color(0xFFF07EA0), Color(0xFFD3446E)],
+    [Color(0xFF4FC48A), Color(0xFF12A150)],
+    [Color(0xFF9B85EC), Color(0xFF7C5CE0)],
+    [Color(0xFF35C6BA), Color(0xFF00897B)],
   ];
 
   @override
@@ -342,22 +335,25 @@ class _ActionTileState extends State<_ActionTile> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: widget.highlighted
-              ? const [Color(0xFF2A230F), Color(0xFF1B1708)]
+              ? [
+                  Color.lerp(Colors.white, AppTheme.primary, .10)!,
+                  Color.lerp(Colors.white, AppTheme.primary, .04)!,
+                ]
               : [
-                  Color.lerp(const Color(0xFF161B26), colors[1], _pressed ? .16 : .07)!,
-                  const Color(0xFF11151E),
+                  Color.lerp(Colors.white, colors[1], _pressed ? .10 : .035)!,
+                  Colors.white,
                 ],
         ),
         border: Border.all(
           color: widget.highlighted
-              ? AppTheme.primary.withOpacity(.6)
-              : colors[0].withOpacity(_pressed ? .5 : .22),
+              ? AppTheme.primary.withOpacity(.5)
+              : colors[1].withOpacity(_pressed ? .45 : .20),
           width: widget.highlighted ? 1.4 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[1].withOpacity(_pressed ? .06 : .16),
-            blurRadius: _pressed ? 10 : 20,
+            color: colors[1].withOpacity(_pressed ? .08 : .15),
+            blurRadius: _pressed ? 10 : 18,
             offset: Offset(0, _pressed ? 3 : 8),
           ),
         ],
@@ -374,11 +370,11 @@ class _ActionTileState extends State<_ActionTile> {
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
-                BoxShadow(color: colors[1].withOpacity(.35), blurRadius: 14),
+                BoxShadow(color: colors[1].withOpacity(.32), blurRadius: 14),
               ],
             ),
             child: Icon(widget.icon,
-                color: Colors.black87, size: widget.compact ? 20 : 23),
+                color: Colors.white, size: widget.compact ? 20 : 23),
           ),
           const SizedBox(width: 14),
           Expanded(

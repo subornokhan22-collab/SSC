@@ -34,10 +34,10 @@ class ALearningApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'A-Learning Tutor',
+      title: "Mentor's Companion",
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark(),
-      themeMode: ThemeMode.dark,
+      theme: AppTheme.light(),
+      themeMode: ThemeMode.light,
       home: const RootGate(),
       // Every screen (pushed routes included) sits on the animated backdrop,
       // and text never scales past a readable size on large-font devices.

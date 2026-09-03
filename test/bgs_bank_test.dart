@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:a_learning/data/bgs/bgs_chapter_catalog.dart';
-import 'package:a_learning/data/bgs/bgs_cqs.dart';
-import 'package:a_learning/data/bgs/bgs_mcqs.dart';
-import 'package:a_learning/data/bgs/bgs_saqs.dart';
-import 'package:a_learning/data/questions_data.dart';
-import 'package:a_learning/services/chapter_catalog.dart';
+import 'package:mentors_companion/data/bgs/bgs_chapter_catalog.dart';
+import 'package:mentors_companion/data/bgs/bgs_cqs.dart';
+import 'package:mentors_companion/data/bgs/bgs_mcqs.dart';
+import 'package:mentors_companion/data/bgs/bgs_saqs.dart';
+import 'package:mentors_companion/data/questions_data.dart';
+import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
   group('BGS chapter catalog', () {

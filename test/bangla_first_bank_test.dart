@@ -2,14 +2,14 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:a_learning/data/bangla_1st/bangla_1st_catalog.dart';
-import 'package:a_learning/data/bangla_1st/bangla_1st_cqs.dart';
-import 'package:a_learning/data/bangla_1st/bangla_1st_literature_questions.dart';
-import 'package:a_learning/data/bangla_1st/bangla_1st_mcqs.dart';
-import 'package:a_learning/data/bangla_1st/bangla_1st_revision_questions.dart';
-import 'package:a_learning/data/questions_data.dart';
-import 'package:a_learning/services/bangla_first_board_pattern.dart';
-import 'package:a_learning/services/chapter_catalog.dart';
+import 'package:mentors_companion/data/bangla_1st/bangla_1st_catalog.dart';
+import 'package:mentors_companion/data/bangla_1st/bangla_1st_cqs.dart';
+import 'package:mentors_companion/data/bangla_1st/bangla_1st_literature_questions.dart';
+import 'package:mentors_companion/data/bangla_1st/bangla_1st_mcqs.dart';
+import 'package:mentors_companion/data/bangla_1st/bangla_1st_revision_questions.dart';
+import 'package:mentors_companion/data/questions_data.dart';
+import 'package:mentors_companion/services/bangla_first_board_pattern.dart';
+import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
   group('Bangla First Paper final syllabus catalog', () {

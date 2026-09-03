@@ -402,7 +402,7 @@ class PaperPdf {
     } catch (_) {
       // কিছু ফোনে system print dialog খোলে না (print service off/incompatible)।
       // তখন PDF সরাসরি Share/Save sheet-এ পাঠাই — সেখান থেকে save/print যায়।
-      await Printing.sharePdf(bytes: bytes, filename: 'a_learning_paper.pdf');
+      await Printing.sharePdf(bytes: bytes, filename: 'mentors_companion_paper.pdf');
     }
   }
 

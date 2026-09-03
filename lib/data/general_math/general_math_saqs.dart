@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • গণিত — 340 SAQs.
+// Mentor's Companion • SSC 2027 • গণিত — 340 SAQs.
 import '../questions_data.dart';
 
 const List<ShortQuestion> generalMathSaqs = <ShortQuestion>[

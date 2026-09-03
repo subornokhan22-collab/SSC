@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • পদার্থবিজ্ঞান (subjectId: 'physics')
+// Mentor's Companion • SSC 2027 • পদার্থবিজ্ঞান (subjectId: 'physics')
 // ---------------------------------------------------------------------------
 // সকল সৃজনশীল প্রশ্ন (CQ) — অধ্যায় ১ থেকে ১৩।
 //
@@ -27,7 +27,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সিলিন্ডারটির ব্যাস নির্ণয় করে দেখাও যে, ভার্নিয়ার স্কেল ছাড়া কেবল মিটার স্কেলে এই নির্ভুলতা পাওয়া সম্ভব নয়।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_002',
@@ -42,7 +42,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তারটির ব্যাস নির্ণয় কর এবং এর ক্ষেত্রফল প্রকাশে সার্থক অঙ্কের গুরুত্ব বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_003',
@@ -57,7 +57,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'মাত্রা বিশ্লেষণ করে দেখাও কোন শিক্ষার্থীর সমীকরণটি সঠিক এবং কেন।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_004',
@@ -72,7 +72,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দ্বিতীয় দোলকটির দোলনকাল প্রথমটির অর্ধেক হবে কি না—গাণিতিকভাবে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_005',
@@ -87,7 +87,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ব্যাকটেরিয়া ও পরমাণুর আকারের অনুপাত নির্ণয় করে ফলাফলের তাৎপর্য ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_006',
@@ -101,7 +101,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'ব্লকটি পানিতে ভাসবে না ডুববে—হিসাবসহ সিদ্ধান্ত দাও।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_007',
@@ -117,7 +117,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ভৌত ধ্রুবকের ভিত্তিতে একক নির্ধারণ করা প্রোটোটাইপভিত্তিক পদ্ধতির চেয়ে উত্তম কেন—যুক্তিসহ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_008',
@@ -132,7 +132,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'এখানে কোন ধরনের ত্রুটি প্রধান এবং তা কমানোর উপায় বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_009',
@@ -148,7 +148,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পদার্থবিজ্ঞানের জ্ঞান ছাড়া আধুনিক চিকিৎসা প্রযুক্তির উন্নয়ন সম্ভব নয়—উদ্দীপকের আলোকে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c01_cq_010',
@@ -163,7 +163,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'মন্দনের মান নির্ণয় করে এর মাত্রা যাচাই কর এবং দেখাও যে ফলাফলটি মাত্রাগতভাবে সঙ্গতিপূর্ণ।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ২: গতি ----
   CreativeQuestion(
@@ -179,7 +179,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সম্পূর্ণ যাত্রায় বাসটির গড় দ্রুতি নির্ণয় করে বিশ্লেষণ কর, তা সর্বোচ্চ বেগের চেয়ে কম কেন।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_002',
@@ -194,7 +194,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দ্বিতীয় পাথরটির সর্বোচ্চ উচ্চতা নির্ণয় করে দুটি পাথরের গতির তুলনামূলক বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_003',
@@ -209,7 +209,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পুরো যাত্রায় মোট সরণ নির্ণয় করে গড় বেগ হিসাব কর ও ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_004',
@@ -224,7 +224,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তার গড় দ্রুতি ও গড় বেগ নির্ণয় করে পার্থক্যের কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_005',
@@ -239,7 +239,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বেগ দ্বিগুণ হলে একই মন্দনে থামার দূরত্ব কত হতো—গণনা করে যানবাহনের গতিসীমার প্রয়োজনীয়তা বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_006',
@@ -254,7 +254,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         '1 মিনিট পরে ট্রেন দুটির মধ্যে দূরত্ব কত হবে—নির্ণয় করে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_007',
@@ -270,7 +270,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         '10 s-এ বস্তুটির মোট সরণ নির্ণয় করে দেখাও যে সরণ সময়ের বর্গের সমানুপাতিক।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_008',
@@ -285,7 +285,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বলটির মোট উড্ডয়নকাল নির্ণয় করে দেখাও যে ওঠা ও নামার সময় সমান।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_009',
@@ -300,7 +300,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ঐ 8 s-এ অতিক্রান্ত দূরত্ব দুটি ভিন্ন পদ্ধতিতে নির্ণয় করে ফলাফলের সঙ্গতি যাচাই কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c02_cq_010',
@@ -315,7 +315,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পরীক্ষা দুটির ফলাফলের পার্থক্য বিশ্লেষণ করে সিদ্ধান্ত দাও, পড়ন্ত বস্তুর সূত্র কোন শর্তে প্রযোজ্য।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৩: বল ----
   CreativeQuestion(
@@ -331,7 +331,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ব্রেকের সময় অর্ধেক করলে প্রয়োজনীয় বল কেমন হতো—হিসাব করে যাত্রীর নিরাপত্তার দৃষ্টিকোণ থেকে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_002',
@@ -346,7 +346,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বন্দুকের ভর দ্বিগুণ হলে পশ্চাৎ বেগ কেমন হতো—হিসাবসহ ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_003',
@@ -361,7 +361,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বস্তুটির ওজন পৃথিবী ও চাঁদে (চাঁদে g = 1.6 ms⁻²) নির্ণয় করে তুলনামূলক বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_004',
@@ -376,7 +376,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         '40 N অনুভূমিক বল প্রয়োগ করলে বাক্সটির ত্বরণ কত হবে—নির্ণয় করে ফলাফল ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_005',
@@ -391,7 +391,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দুই ফিল্ডারের ক্ষেত্রে প্রযুক্ত বলের তুলনা করে সিদ্ধান্ত দাও কার হাতে বেশি আঘাত লাগবে।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_006',
@@ -406,7 +406,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বস্তুটির ত্বরণ নির্ণয় করে দেখাও, বল দুটি একই দিকে ক্রিয়া করলে ত্বরণ কীভাবে পরিবর্তিত হতো।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_007',
@@ -421,7 +421,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দুটি ঘটনার কারণ বিশ্লেষণ করে যানবাহনে নিরাপত্তা বেল্ট ব্যবহারের যৌক্তিকতা মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_008',
@@ -436,7 +436,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সুতা ছিঁড়ে গেলে পাথরটির গতিপথ কেমন হবে—নিউটনের প্রথম সূত্রের আলোকে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_009',
@@ -452,7 +452,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'জ্বালানি পোড়ার সাথে রকেটের ত্বরণ কীভাবে পরিবর্তিত হয়—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c03_cq_010',
@@ -467,7 +467,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দূরত্ব অর্ধেক করলে বল কতগুণ হবে—হিসাব করে ব্যস্ত বর্গীয় সূত্রের তাৎপর্য বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৪: কাজ, ক্ষমতা ও শক্তি ----
   CreativeQuestion(
@@ -483,7 +483,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'শ্রমিকের গড় ক্ষমতা নির্ণয় করে অশ্বক্ষমতায় প্রকাশ কর ও ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_002',
@@ -499,7 +499,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ভূমি স্পর্শ করার মুহূর্তে পাথরটির বেগ ও গতিশক্তি নির্ণয় করে শক্তির নিত্যতা সূত্র যাচাই কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_003',
@@ -514,7 +514,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পাম্পটির কর্মদক্ষতা নির্ণয় করে অপচয়িত শক্তির পরিমাণ ও কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_004',
@@ -529,7 +529,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'উভয়ের ভরবেগ নির্ণয় করে তুলনা কর এবং ব্যাখ্যা কর কেন সমান গতিশক্তি হলেও ভরবেগ ভিন্ন হতে পারে।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_005',
@@ -544,7 +544,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         '৩০ দিনের বিদ্যুৎ বিল নির্ণয় করে শক্তি সাশ্রয়ের দুটি বাস্তব উপায় বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_006',
@@ -559,7 +559,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সাম্যাবস্থানে পিণ্ডের বেগ নির্ণয় করে দেখাও যে শক্তি সংরক্ষিত থেকেছে।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_007',
@@ -574,7 +574,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সূর্যে প্রতি সেকেন্ডে নির্গত শক্তির পরিমাণ নির্ণয় করে ফলাফলের তাৎপর্য বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_008',
@@ -589,7 +589,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         '10 মিনিটে ইঞ্জিনের কৃত মোট কাজ নির্ণয় করে তা kWh-এ প্রকাশ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_009',
@@ -605,7 +605,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'জীবাশ্ম জ্বালানির পরিবর্তে নবায়নযোগ্য শক্তির ব্যবহার বাড়ানো প্রয়োজন কেন—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c04_cq_010',
@@ -620,7 +620,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ব্রেকের গড় বাধাদানকারী বল নির্ণয় করে বেগ দ্বিগুণ হলে তা কীভাবে পরিবর্তিত হতো বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৫: পদার্থের অবস্থা ও চাপ ----
   CreativeQuestion(
@@ -636,7 +636,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সবচেয়ে ছোট তলের উপর রাখলে চাপ কত হতো—নির্ণয় করে তুলনামূলক বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_002',
@@ -651,7 +651,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ঢাকনার উপর প্রযুক্ত মোট বল নির্ণয় করে বাঁধের নিচের অংশ চওড়া রাখার যৌক্তিকতা ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_003',
@@ -666,7 +666,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বড় পিস্টনে প্রাপ্ত বল নির্ণয় করে দেখাও যন্ত্রটি কত গুণ বল বৃদ্ধি করেছে।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_004',
@@ -682,7 +682,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বস্তুটির ঘনত্ব ও আপেক্ষিক গুরুত্ব নির্ণয় করে সিদ্ধান্ত দাও এটি পানিতে ভাসবে কি না।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_005',
@@ -697,7 +697,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'একই গ্যাসকে স্থির চাপে উত্তপ্ত করলে আয়তনের কী পরিবর্তন হতো—চার্লসের সূত্রের আলোকে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_006',
@@ -712,7 +712,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পাহাড়ে চাপ কম হওয়ার কারণ বিশ্লেষণ করে রান্নার উপর এর প্রভাব ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_007',
@@ -726,7 +726,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'বরফের কত অংশ পানির উপরে থাকবে—নির্ণয় করে ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_008',
@@ -741,7 +741,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পানির এই ব্যতিক্রমী আচরণ না থাকলে জলজ বাস্তুতন্ত্রে কী প্রভাব পড়ত—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_009',
@@ -756,7 +756,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ইয়ং-এর গুণাঙ্ক নির্ণয় করে ব্যাখ্যা কর কেন নির্মাণকাজে ইস্পাত ব্যবহার করা হয়।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c05_cq_010',
@@ -771,7 +771,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সাবান পৃষ্ঠটান কমানোয় কাপড় পরিষ্কার সহজ হয়—কারণসহ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৬: বস্তুর ওপর তাপের প্রভাব ----
   CreativeQuestion(
@@ -788,7 +788,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ক্যালরিমিতির নীতি প্রয়োগ করে মিশ্রণের চূড়ান্ত অবস্থা বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_002',
@@ -802,7 +802,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'রেললাইনে ফাঁক না রাখলে কী ঘটত—হিসাবের আলোকে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_003',
@@ -817,7 +817,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'মিশ্রণের চূড়ান্ত তাপমাত্রা নির্ণয় করে ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_004',
@@ -833,7 +833,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পুরো প্রক্রিয়ায় মোট তাপ নির্ণয় করে তাপ-তাপমাত্রা লেখচিত্রের প্রকৃতি ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_005',
@@ -848,7 +848,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'রোগীর তাপমাত্রা স্বাভাবিকের চেয়ে কত কেলভিন বেশি—নির্ণয় করে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_006',
@@ -863,7 +863,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তিনটি সঞ্চালন পদ্ধতি কীভাবে রোধ করা হয়েছে—বিশ্লেষণ করে মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_007',
@@ -878,7 +878,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ইঞ্জিনটির দক্ষতা নির্ণয় করে ব্যাখ্যা কর কেন দক্ষতা কখনো 100% হয় না।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_008',
@@ -893,7 +893,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'মাটির কলসিতে পানি ঠান্ডা থাকার কারণ বিশ্লেষণ করে বাষ্পীভবনের ব্যবহারিক গুরুত্ব মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_009',
@@ -908,7 +908,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দক্ষতা বিবেচনা করে প্রয়োজনীয় সময় নির্ণয় কর ও শক্তি অপচয়ের কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c06_cq_010',
@@ -923,7 +923,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'শিশিরাঙ্ক বাতাসের তাপমাত্রার কাছাকাছি হলে আবহাওয়া কেমন অনুভূত হয়—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৭: তরঙ্গ ও শব্দ ----
   CreativeQuestion(
@@ -939,7 +939,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পাহাড়টির দূরত্ব নির্ণয় করে ব্যাখ্যা কর—তাপমাত্রা 0°C হলে ফলাফল কীভাবে বদলাত।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_002',
@@ -954,7 +954,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'SONAR-এর কার্যপদ্ধতি বিশ্লেষণ করে এর দুটি বাস্তব প্রয়োগ মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_003',
@@ -969,7 +969,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দৈর্ঘ্য 4 m করলে দোলনকালের কী পরিবর্তন হবে—গাণিতিকভাবে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_004',
@@ -984,7 +984,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'পানিতে তরঙ্গদৈর্ঘ্য নির্ণয় করে দুই মাধ্যমের ফলাফল তুলনা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_005',
@@ -999,7 +999,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'এলাকাটির শব্দদূষণ কমানোর বাস্তবসম্মত ব্যবস্থাগুলো বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_006',
@@ -1013,7 +1013,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'গৃহীত ব্যবস্থাগুলো কীভাবে সমস্যার সমাধান করল—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_007',
@@ -1027,7 +1027,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তরঙ্গটির বেগ নির্ণয় করে এটি বায়ুতে শব্দ তরঙ্গ কি না—যুক্তিসহ মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_008',
@@ -1043,7 +1043,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'চিকিৎসাক্ষেত্রে শব্দোত্তর তরঙ্গের প্রয়োগ ও সীমাবদ্ধতা মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_009',
@@ -1058,7 +1058,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বাতাসে শব্দের বেগ 340 ms⁻¹ ধরে সৃষ্ট শব্দের তরঙ্গদৈর্ঘ্য নির্ণয় করে ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c07_cq_010',
@@ -1073,7 +1073,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বজ্রপাতের স্থানের দূরত্ব নির্ণয় করে আলোর ভ্রমণকাল উপেক্ষা করার যৌক্তিকতা বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৮: আলোর প্রতিফলন ----
   CreativeQuestion(
@@ -1089,7 +1089,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'প্রতিবিম্বের আকার ও প্রকৃতি নির্ণয় করে রশ্মিচিত্রের সাহায্যে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_002',
@@ -1104,7 +1104,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'গাড়ির পশ্চাৎ-দর্পণে উত্তল দর্পণ ব্যবহারের সুবিধা ও অসুবিধা বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_003',
@@ -1119,7 +1119,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পূর্ণ প্রতিবিম্ব দেখতে দর্পণের ন্যূনতম দৈর্ঘ্য কত হবে—যুক্তিসহ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_004',
@@ -1135,7 +1135,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দুই অবস্থানের প্রতিবিম্ব তুলনা করে দর্পণটির ব্যবহারিক প্রয়োগ মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_005',
@@ -1149,7 +1149,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'দর্পণদ্বয়ের কোণ 45° বা 0° করলে ফলাফল কেমন হবে—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_006',
@@ -1164,7 +1164,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দুই ক্ষেত্রেই দর্পণ নির্বাচনের যৌক্তিকতা বিশ্লেষণ করে মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_007',
@@ -1180,7 +1180,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দর্পণ 10° ঘোরালে প্রতিফলিত রশ্মি কত কোণে ঘুরবে—বিশ্লেষণ করে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_008',
@@ -1195,7 +1195,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সমতল দর্পণের পরিবর্তে উত্তল দর্পণ ব্যবহার করলে কী সমস্যা হতো—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_009',
@@ -1209,7 +1209,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'বিবর্ধন নির্ণয় করে প্রতিবিম্বের প্রকৃতি ও আকার বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c08_cq_010',
@@ -1223,7 +1223,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'দৈনন্দিন জীবনে সমতল দর্পণের আরও তিনটি প্রয়োগ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ৯: আলোর প্রতিসরণ ----
   CreativeQuestion(
@@ -1239,7 +1239,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'স্নেলের সূত্র প্রয়োগ করে প্রতিসরণ কোণের সাইন নির্ণয় করে ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_002',
@@ -1254,7 +1254,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'হীরকের সংকট কোণের সাথে তুলনা করে হীরকের ঔজ্জ্বল্যের কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_003',
@@ -1268,7 +1268,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'এই ঘটনা সাঁতার না-জানা মানুষের জন্য কেন বিপজ্জনক—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_004',
@@ -1283,7 +1283,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'প্রতিবিম্বের আকার ও প্রকৃতি নির্ণয় করে রশ্মিচিত্রের সাহায্যে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_005',
@@ -1298,7 +1298,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'চশমার ফোকাস দূরত্ব নির্ণয় করে ত্রুটি সংশোধনের প্রক্রিয়া বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_006',
@@ -1313,7 +1313,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তামার তারের তুলনায় অপটিক্যাল ফাইবারের সুবিধাগুলো মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_007',
@@ -1327,7 +1327,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'এই ঘটনার সাথে রংধনু সৃষ্টির সম্পর্ক বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_008',
@@ -1341,7 +1341,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'মরীচিকা বাস্তব না অবাস্তব প্রতিবিম্ব—যুক্তিসহ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_009',
@@ -1355,7 +1355,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'গঠিত প্রতিবিম্বের অবস্থান ও প্রকৃতি নির্ণয় করে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c09_cq_010',
@@ -1370,7 +1370,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'চিকিৎসাক্ষেত্রে আলোর প্রতিসরণভিত্তিক প্রযুক্তির গুরুত্ব মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১০: স্থির বিদ্যুৎ ----
   CreativeQuestion(
@@ -1386,7 +1386,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দূরত্ব দ্বিগুণ করলে বলের কী পরিবর্তন হবে—গাণিতিকভাবে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_002',
@@ -1401,7 +1401,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সমান্তরাল সংযোগের পর সমতুল্য ধারকত্ব নির্ণয় করে ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_003',
@@ -1416,7 +1416,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দণ্ড সরালে পাত মিলে যাওয়ার কারণ বিশ্লেষণ করে আবেশ ও পরিবহনের পার্থক্য মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_004',
@@ -1431,7 +1431,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'P বিন্দুতে বিভব নির্ণয় করে দূরত্ব দ্বিগুণ হলে উভয় রাশির পরিবর্তন তুলনা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_005',
@@ -1446,7 +1446,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বজ্রনিরোধক ব্যবস্থার কার্যকারিতা বিশ্লেষণ করে এর প্রয়োজনীয়তা মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_006',
@@ -1461,7 +1461,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'সমান্তরাল সমবায়ের ফলাফলের সাথে তুলনা করে কোন সমবায় বেশি আধান ধারণ করে—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_007',
@@ -1476,7 +1476,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'শিকল ও আর্থিং ব্যবস্থার কার্যকারিতা বিশ্লেষণ করে নিরাপত্তা ব্যবস্থাটি মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_008',
@@ -1490,7 +1490,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'A ও B যদি একই সমবিভব তলে থাকত, তবে কৃতকাজ কত হতো—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_009',
@@ -1505,7 +1505,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দৈনন্দিন জীবনে স্থির বিদ্যুতের উপকারী ও ক্ষতিকর দিকগুলো মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c10_cq_010',
@@ -1519,7 +1519,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'স্পর্শের পর বলের মান নির্ণয় করে পরিবর্তনের কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১১: চল বিদ্যুৎ ----
   CreativeQuestion(
@@ -1535,7 +1535,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'মূল বর্তনীর মোট প্রবাহ ও প্রতিটি শাখার প্রবাহ নির্ণয় করে ফলাফল যাচাই কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_002',
@@ -1549,7 +1549,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: '৩০ দিনের বিদ্যুৎ বিল নির্ণয় করে সাশ্রয়ের উপায় বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_003',
@@ -1564,7 +1564,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'বাহ্যিক রোধের দুই প্রান্তের বিভব পার্থক্য নির্ণয় করে অভ্যন্তরীণ রোধে শক্তি ক্ষয়ের কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_004',
@@ -1579,7 +1579,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         '10 মিনিটে উৎপন্ন তাপশক্তি নির্ণয় করে তা কত কিলোওয়াট-ঘণ্টা—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_005',
@@ -1594,7 +1594,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'টেনে দৈর্ঘ্য দ্বিগুণ করলে (আয়তন অপরিবর্তিত) নতুন রোধ নির্ণয় করে পরিবর্তনের কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_006',
@@ -1609,7 +1609,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ফিউজ, সার্কিট ব্রেকার ও আর্থিংয়ের ভূমিকা তুলনা করে গৃহবিদ্যুতের নিরাপত্তা ব্যবস্থা মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_007',
@@ -1624,7 +1624,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'শ্রেণি সংযোগে প্রতিটি বাল্বের ক্ষমতা নির্ণয় করে উজ্জ্বলতার পার্থক্য বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_008',
@@ -1639,7 +1639,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ভোল্টমিটারের পাঠ নির্ণয় করে প্রতিটি রোধে বিভব বণ্টন বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_009',
@@ -1654,7 +1654,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'পরিবাহীর দুই প্রান্তের বিভব পার্থক্য ও 5 মিনিটে উৎপন্ন তাপ নির্ণয় করে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c11_cq_010',
@@ -1669,7 +1669,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'মাসিক সাশ্রয় নির্ণয় করে শক্তি সাশ্রয়ী প্রযুক্তির গুরুত্ব মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১২: বিদ্যুতের চৌম্বক ক্রিয়া ----
   CreativeQuestion(
@@ -1686,7 +1686,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'প্রবাহের মান দ্বিগুণ এবং তার থেকে দূরত্ব দ্বিগুণ করলে সুচের বিক্ষেপে কী পরিবর্তন হবে—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_002',
@@ -1701,7 +1701,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তড়িৎ চুম্বককে আরও শক্তিশালী করার উপায়সমূহ বিশ্লেষণ করে স্থায়ী চুম্বকের সাথে তুলনা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_003',
@@ -1716,7 +1716,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তারটিকে ক্ষেত্রের সাথে 30° কোণে এবং পরে সমান্তরালে রাখলে বলের মান নির্ণয় করে ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_004',
@@ -1732,7 +1732,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'কম্যুটেটর না থাকলে মোটরের গতি কেমন হতো—বিশ্লেষণ করে এর প্রয়োজনীয়তা মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_005',
@@ -1747,7 +1747,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'লেঞ্জের সূত্র প্রয়োগ করে আবিষ্ট প্রবাহের দিক নির্ণয় ও শক্তির নিত্যতার সাথে সম্পর্ক বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_006',
@@ -1762,7 +1762,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'গৌণ প্রবাহ নির্ণয় করে ক্ষমতা সংরক্ষণের দৃষ্টিকোণ থেকে ফলাফল বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_007',
@@ -1777,7 +1777,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ভোল্টেজ ১২ গুণ বাড়ালে একই ক্ষমতায় তাপ অপচয় কত গুণ কমবে—গাণিতিকভাবে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_008',
@@ -1792,7 +1792,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'DC জেনারেটরের সাথে তুলনা করে AC জেনারেটরের সুবিধা মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_009',
@@ -1807,7 +1807,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'ঘূর্ণি প্রবাহের ক্ষতিকর ও উপকারী প্রয়োগ বিশ্লেষণ করে ইন্ডাকশন চুলার কার্যনীতি ব্যাখ্যা কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c12_cq_010',
@@ -1822,7 +1822,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তড়িৎ চুম্বকের পরিবর্তে স্থায়ী চুম্বক ব্যবহার করলে যন্ত্রটি কাজ করত কি না—বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   // ---- অধ্যায় ১৩: তেজস্ক্রিয়তা ও ইলেকট্রনিকস ----
   CreativeQuestion(
@@ -1838,7 +1838,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'নমুনাটি সিসার পাত্রে রাখা হয় কেন—বিকিরণের ভেদন ক্ষমতার আলোকে বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_002',
@@ -1853,7 +1853,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তিনটি রশ্মির ভেদন ও আয়নীকরণ ক্ষমতা তুলনা করে চিকিৎসাক্ষেত্রে কোনটি বেশি উপযোগী—মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_003',
@@ -1869,7 +1869,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দুটি বিটা নিঃসরণের পর চূড়ান্ত নিউক্লিয়াসের ভরসংখ্যা ও পারমাণবিক সংখ্যা নির্ণয় করে মূল মৌলের সাথে সম্পর্ক বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_004',
@@ -1884,7 +1884,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'শক্তি উৎপাদনে ফিউশন ফিশনের চেয়ে বেশি সম্ভাবনাময় কিন্তু কম ব্যবহৃত—কারণ বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_005',
@@ -1900,7 +1900,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'তেজস্ক্রিয়তার উপকারী ও ক্ষতিকর দিক তুলনা করে নিরাপদ ব্যবহারের গুরুত্ব মূল্যায়ন কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_006',
@@ -1915,7 +1915,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'A ও B জোড়া লাগিয়ে তৈরি যন্ত্রটির গঠন ও কার্যকারিতা বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_007',
@@ -1930,7 +1930,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'দুই অবস্থার প্রবাহ তুলনা করে ডায়োডের রেক্টিফায়ার হিসেবে ব্যবহার বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_008',
@@ -1945,7 +1945,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'অর্ধতরঙ্গ ও পূর্ণতরঙ্গ রেক্টিফায়ারের কর্মদক্ষতা তুলনা করে চার্জারে পূর্ণতরঙ্গ ব্যবহারের যৌক্তিকতা বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_009',
@@ -1959,7 +1959,7 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
     questionGh: 'ট্রানজিস্টরের বিবর্ধক ও সুইচ হিসেবে ব্যবহার বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
   CreativeQuestion(
     id: 'phy_c13_cq_010',
@@ -1974,6 +1974,6 @@ const List<CreativeQuestion> physicsCqs = <CreativeQuestion>[
         'NOT গেটের আউটপুটসহ তিনটি গেটের সত্যক সারণি তৈরি করে ডিজিটাল যন্ত্রে এদের গুরুত্ব বিশ্লেষণ কর।',
     marks: [1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original',
+    sourceLabel: "Mentor's Companion Original",
   ),
 ];

@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • রসায়ন (subjectId: chemistry)
+// Mentor's Companion • SSC 2027 • রসায়ন (subjectId: chemistry)
 // Original NCTB-aligned chapter-wise creative-question bank.
 import '../questions_data.dart';
 
@@ -17,7 +17,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'রিমার প্রস্তাবিত পদ্ধতিতে কী দুর্ঘটনা ঘটতে পারে—তাপ পরিবর্তনসহ বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_002',
@@ -32,7 +32,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'দলটির কাজের ঝুঁকি মূল্যায়ন করে নিরাপদ পুনঃপরিকল্পনা প্রস্তাব কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_003',
@@ -47,7 +47,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'নির্ভুল 100 mL দ্রবণ প্রস্তুতির সম্পূর্ণ পদ্ধতি ও সম্ভাব্য ত্রুটি বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_004',
@@ -62,7 +62,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'দ্বিতীয় দলের একক ফলের তুলনায় প্রথম দলের সিদ্ধান্ত অধিক নির্ভরযোগ্য কি না বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_005',
@@ -77,7 +77,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'নতুন পদার্থ, প্রত্যাবর্তনযোগ্যতা ও শক্তির আলোকে পরিবর্তনদ্বয় তুলনা কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_006',
@@ -93,7 +93,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Data থেকে hypothesis মূল্যায়ন করে আরও নির্ভরযোগ্য experiment design কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_007',
@@ -108,7 +108,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'মানুষ ও পরিবেশের ঝুঁকি বিবেচনায় laboratory waste management protocol প্রণয়ন কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_008',
@@ -123,7 +123,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Waste amount, hazard ও resource efficiency বিবেচনায় উন্নত প্রক্রিয়াটি মূল্যায়ন কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_009',
@@ -138,7 +138,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'ব্যক্তিগত নিরাপত্তা ও data integrity—দুই দিক থেকে ভুলগুলো বিশ্লেষণ করে SOP লেখ।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c01_cq_010',
@@ -153,7 +153,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'শুধু একটি ধাপ ব্যবহার যথেষ্ট নয় কেন—রসায়ন ও জনস্বাস্থ্যের আলোকে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ২: পদার্থের অবস্থা — 10 CQs
   CreativeQuestion(
@@ -169,7 +169,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Kinetic molecular theory ও Boyle law দিয়ে পরিবর্তনটি বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_002',
@@ -183,7 +183,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Temperature increase-এ molecular motion ও volume change-এর সম্পর্ক বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_003',
@@ -198,7 +198,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'একই সময়ে বের হওয়া পরিমাণের তুলনা Graham law দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_004',
@@ -213,7 +213,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Temperature, humidity, airflow ও surface area-এর সম্মিলিত প্রভাব বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_005',
@@ -229,7 +229,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Pressure cooker-এর কার্যকারিতা ও safety valve-এর প্রয়োজন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_006',
@@ -244,7 +244,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Molecular energy ও arrangement দিয়ে দুই পর্যায়ের energy use বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_007',
@@ -259,7 +259,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'এ পদ্ধতিতে iodine purification সম্ভব কেন—nonvolatile impurity ধরে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_008',
@@ -273,7 +273,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Calculated result বাস্তব gas-এ উচ্চচাপে deviation করতে পারে কেন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_009',
@@ -288,7 +288,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Molecular attraction ও surfactant structure দিয়ে পর্যবেক্ষণ বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c02_cq_010',
@@ -303,7 +303,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Energy, charge mobility ও molecular order-এর আলোকে application দুটি বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৩: পদার্থের গঠন — 10 CQs
   CreativeQuestion(
@@ -317,7 +317,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'X³⁺-এর electron configuration ও stability বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_002',
@@ -331,7 +331,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Average mass 35.5 হলেও পৃথক atom-এর mass number ভগ্নাংশ নয়—ব্যাখ্যা কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_003',
@@ -346,7 +346,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Rutherford model-এর সাফল্য ও stability ব্যাখ্যার সীমাবদ্ধতা বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_004',
@@ -361,7 +361,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Continuous spectrum নয়, line spectrum হওয়ার কারণ Bohr model দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_005',
@@ -375,7 +375,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'A ও B-এর electron transfer এবং C-এর inertness তুলনা করে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_006',
@@ -389,7 +389,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Time, distance ও shielding ব্যবহার করে sample handling plan বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_007',
@@ -404,7 +404,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Benefit, dose ও radiation safety বিবেচনায় medical use মূল্যায়ন কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_008',
@@ -417,7 +417,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Proton-neutron সংখ্যা গণনা করে classification যাচাই কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_009',
@@ -431,7 +431,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Electron transfer-এ nucleus অপরিবর্তিত থেকেও chemical property বদলায় কেন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c03_cq_010',
@@ -446,7 +446,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Laboratory storage ও exposure control-এর সমন্বিত ব্যবস্থা প্রস্তাব কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৪: পর্যায় সারণি — 10 CQs
   CreativeQuestion(
@@ -461,7 +461,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Atomic radius, ionization energy ও metallic character-এ তাদের ক্রম বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_002',
@@ -475,7 +475,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Water-এর সঙ্গে K বেশি reactive হওয়ার periodic কারণ বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_003',
@@ -489,7 +489,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Oxidizing/reactivity trend-এর সঙ্গে তুলনাটি যুক্ত করে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_004',
@@ -503,7 +503,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Period জুড়ে metallic character ও oxide nature-এর পরিবর্তন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_005',
@@ -518,7 +518,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Prediction-এর সাফল্য ও atomic-mass ভিত্তির সীমাবদ্ধতা বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_006',
@@ -532,7 +532,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'তাদের ion থেকে compound formula এবং bond formation periodic position দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_007',
@@ -547,7 +547,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Electronic technology-তে Si-এর অবস্থান-ধর্ম সম্পর্ক বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_008',
@@ -561,7 +561,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'H-এর unique position-এর পক্ষে যুক্তি বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_009',
@@ -576,7 +576,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Block configuration ও chemical property-এর সম্ভাব্য দ্বন্দ্ব বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c04_cq_010',
@@ -590,7 +590,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Radius ও nonmetallic character-এর trend পূর্বাভাস দিয়ে ব্যাখ্যা কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৫: রাসায়নিক বন্ধন — 10 CQs
   CreativeQuestion(
@@ -607,7 +607,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'NaCl-এর high melting point ও molten conductivity ionic structure দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_002',
@@ -621,7 +621,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Mg ও N atom-এর electron transfer এবং resulting lattice stability বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_003',
@@ -635,7 +635,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Bond order বাড়লে bond strength ও length কীভাবে বদলায়—উদ্দীপক দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_004',
@@ -649,7 +649,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Vector dipole দিয়ে polarity-এর পার্থক্য বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_005',
@@ -662,7 +662,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'গঠনের পরে চার N–H bond সমতুল্য ধরা যায় কেন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_006',
@@ -677,7 +677,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Ionic, molecular covalent ও giant covalent structure দিয়ে ফল বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_007',
@@ -692,7 +692,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Structure-property-application সম্পর্ক দিয়ে বিপরীত ব্যবহার বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_008',
@@ -707,7 +707,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Layer movement-এর সময় charge arrangement তুলনা করে ductility ও brittleness বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_009',
@@ -721,7 +721,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Molar mass trend সত্ত্বেও boiling point বেশি হওয়ার কারণ বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c05_cq_010',
@@ -735,7 +735,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'ভুল formula CaOH₂ ও AlSO₄ কেন chemical neutrality প্রকাশ করে না বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৬: মোলের ধারণা ও রাসায়নিক গণনা — 10 CQs
   CreativeQuestion(
@@ -749,7 +749,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'মোট H ও O atom-এর সংখ্যা পৃথকভাবে নির্ণয় করে ratio যাচাই কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_002',
@@ -763,7 +763,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Cylinder-এ O₂ molecule ও O atom-এর সংখ্যা নির্ণয় করে পার্থক্য বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_003',
@@ -776,7 +776,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Molecular formula নির্ণয় করে molar mass দিয়ে যাচাই কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_004',
@@ -790,7 +790,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'এই solution থেকে 0.10 M, 500 mL solution তৈরির dilution plan বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_005',
@@ -804,7 +804,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Excess reactant-এর অবশিষ্ট mole ও water mass নির্ণয় করে mass accounting বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_006',
@@ -819,7 +819,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Product mass-এর যোগ reactant mass-এর সমান দেখিয়ে mass conservation বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_007',
@@ -834,7 +834,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Product loss, incomplete reaction ও side reaction-এর পৃথক প্রভাব বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_008',
@@ -849,7 +849,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Produced CO₂ mass নির্ণয় করে 100% pure sample-এর সঙ্গে তুলনা কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_009',
@@ -863,7 +863,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Volumetric glassware ব্যবহার করে নিরাপদ preparation procedure বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c06_cq_010',
@@ -878,7 +878,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'তৈরি Fe mass ও excess reactant নির্ণয় করে সম্পূর্ণ calculation বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৭: রাসায়নিক বিক্রিয়া — 10 CQs
   CreativeQuestion(
@@ -892,7 +892,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'উভয় পাশে atom count দেখিয়ে mass conservation যাচাই কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_002',
@@ -905,7 +905,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Electron transfer দিয়ে oxidizing ও reducing agent শনাক্ত কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_003',
@@ -919,7 +919,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Solubility ও ion exchange দিয়ে দৃশ্যমান পরিবর্তন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_004',
@@ -933,7 +933,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'একটি complementary oxidation ছাড়া change সম্ভব নয় কেন charge conservation দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_005',
@@ -948,7 +948,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Yield, rate, energy ও catalyst বিবেচনায় industrial compromise বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_006',
@@ -962,7 +962,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'High temperature rate বাড়ালেও yield কমাতে পারে কেন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_007',
@@ -977,7 +977,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Gas volume-time graph ও final CO₂ amount-এর তুলনা বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_008',
@@ -992,7 +992,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Rate বদলালেও ΔH ও final product amount কেন বদলায় না বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_009',
@@ -1006,7 +1006,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'CO ও soot-এর health/environment risk এবং ventilation plan বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c07_cq_010',
@@ -1020,7 +1020,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Heat, pH ও spectator ion-এর আলোকে reaction বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৮: রসায়ন ও শক্তি — 10 CQs
   CreativeQuestion(
@@ -1036,7 +1036,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Energy profile-এ activation energy যোগ করে catalyst-এর effect বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_002',
@@ -1050,7 +1050,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Heat loss ও calorimeter heat capacity ধরলে true reaction heat-এর মান কেন ভিন্ন হবে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_003',
@@ -1064,7 +1064,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Electron flow, ion migration ও electrode mass change বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_004',
@@ -1078,7 +1078,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Salt bridge পুনঃস্থাপনে ion movement কীভাবে circuit সচল করে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_005',
@@ -1093,7 +1093,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Galvanic cell-এর সঙ্গে electrode sign ও energy conversion তুলনা কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_006',
@@ -1108,7 +1108,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Half-reaction ও overall equation দিয়ে volume observation বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_007',
@@ -1123,7 +1123,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Cu anode ব্যবহার solution Cu²⁺ concentration বজায় রাখে কীভাবে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_008',
@@ -1138,7 +1138,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Charging safety, gas/heat এবং recycling বিবেচনায় battery choice মূল্যায়ন কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_009',
@@ -1152,7 +1152,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Tailpipe emission, hydrogen production source ও storage risk বিবেচনায় sustainability বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c08_cq_010',
@@ -1167,7 +1167,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Energy cycle এঁকে direct ও stepwise total সমান দেখিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ৯: এসিড-ক্ষারক সমতা — 10 CQs
   CreativeQuestion(
@@ -1181,7 +1181,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'কোনটি কত গুণ বেশি acidic—[H⁺] ratio দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_002',
@@ -1195,7 +1195,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Litmus, phenolphthalein ও universal indicator-এ সম্ভাব্য observation বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_003',
@@ -1209,7 +1209,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Burette reading, indicator selection ও concordant result দিয়ে নির্ভুলতা বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_004',
@@ -1223,7 +1223,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Balanced equation ও mole balance দিয়ে calculation যাচাই কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_005',
@@ -1238,7 +1238,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Concentration সমান হলেও acid strength ও reaction behavior ভিন্ন কেন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_006',
@@ -1253,7 +1253,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Buffer capacity সীমিত কেন এবং অতিরিক্ত acid-এ কী হবে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_007',
@@ -1267,7 +1267,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
     questionGh: 'Ion hydrolysis equation দিয়ে pH difference বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_008',
@@ -1282,7 +1282,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'কম ও অতিরিক্ত liming—দুই অবস্থায় nutrient availability বিবেচনায় dose মূল্যায়ন কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_009',
@@ -1296,7 +1296,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Emission source থেকে monument damage পর্যন্ত chemical pathway বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c09_cq_010',
@@ -1311,7 +1311,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Heat of neutralization, concentration ও tissue exposure ধরে proposed action-এর ঝুঁকি বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ১০: খনিজ সম্পদ: ধাতু-অধাতু — 10 CQs
   CreativeQuestion(
@@ -1326,7 +1326,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'CO formation, iron production ও slag removal-এর পূর্ণ ধারাবাহিকতা বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_002',
@@ -1340,7 +1340,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'SO₂ emission controlসহ process-এর environmental management বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_003',
@@ -1354,7 +1354,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Roasting-এর সঙ্গে calcination-এর atmosphere, ore type ও gaseous product তুলনা কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_004',
@@ -1369,7 +1369,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Cryolite-এর energy সুবিধা ও carbon anode consumption বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_005',
@@ -1384,7 +1384,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Electrolyte-এর ভূমিকা ও control variables দিয়ে experiment বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_006',
@@ -1399,7 +1399,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Scratch-এর পরে coating দুটি কোনটি ভালো protection দেয়—electrochemicalভাবে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_007',
@@ -1413,7 +1413,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Mg consumption, seawater electrolyte ও maintenance schedule-এর সম্পর্ক বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_008',
@@ -1428,7 +1428,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Building, cutting tool ও food container-এর জন্য উপযুক্ত material নির্বাচন বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_009',
@@ -1442,7 +1442,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'দুটি observation দিয়ে Zn ও Cu-এর relative position প্রমাণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c10_cq_010',
@@ -1457,7 +1457,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Energy, resource, pollution, community benefit ও remediation ধরে সিদ্ধান্ত বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ১১: খনিজ সম্পদ: জীবাশ্ম — 10 CQs
   CreativeQuestion(
@@ -1473,7 +1473,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Molecular size, volatility, viscosity ও use-এর trend বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_002',
@@ -1487,7 +1487,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Bromine water এবং combustion behavior দিয়ে তিনটির পার্থক্য বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_003',
@@ -1501,7 +1501,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Bromine water test ও hydrogenation equation দিয়ে compound শনাক্তকরণ বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_004',
@@ -1515,7 +1515,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Same molecular formula হলেও boiling point ভিন্ন হতে পারে—surface contact দিয়ে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_005',
@@ -1530,7 +1530,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Alkane ও alkene শনাক্তকরণে reaction conditions-এর গুরুত্ব বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_006',
@@ -1544,7 +1544,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Oxygen supply, energy yield, flame ও pollution-এর সম্পর্ক বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_007',
@@ -1558,7 +1558,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Fuel demand ও polymer industry—দুই দিক থেকে cracking-এর economic value বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_008',
@@ -1573,7 +1573,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'C=C disappearance দিয়ে monomer-product reactivity difference বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_009',
@@ -1588,7 +1588,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Fuel quality ভালো হলেও CO₂ emission কেন climate concern থাকে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c11_cq_010',
@@ -1603,7 +1603,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Tailpipe cleanliness, leakage, fossil origin ও renewable alternative ধরে lifecycle মূল্যায়ন কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   // অধ্যায় ১২: আমাদের জীবনে রসায়ন — 10 CQs
   CreativeQuestion(
@@ -1619,7 +1619,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Hardness type শনাক্ত করে household treatment plan বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_002',
@@ -1634,7 +1634,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Step বাদ দিলে final water quality ও safety কীভাবে বদলাবে বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_003',
@@ -1649,7 +1649,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Soap ও synthetic detergent-এর hard-water behavior তুলনা করে environmental choice বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_004',
@@ -1664,7 +1664,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Crop need, runoff, soil health ও dose management ধরে integrated fertilizer plan বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_005',
@@ -1679,7 +1679,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Treatment, discharge monitoring ও ecosystem recovery plan বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_006',
@@ -1693,7 +1693,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Transport emission, sunlight chemistry ও health protection নিয়ে control strategy বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_007',
@@ -1708,7 +1708,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'CFC phase-out, substitute selection ও ozone recovery time বিবেচনায় policy বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_008',
@@ -1723,7 +1723,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Time-temperature control, recontamination ও nutrition ধরে safe supply chain বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_009',
@@ -1738,7 +1738,7 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Selection pressure, resistance spread ও responsible medicine use দিয়ে জনস্বাস্থ্য ঝুঁকি বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
   CreativeQuestion(
     id: 'chem_c12_cq_010',
@@ -1753,6 +1753,6 @@ const List<CreativeQuestion> chemistryCqs = <CreativeQuestion>[
         'Microplastic, lifecycle energy ও waste hierarchy ধরে program-এর কার্যকারিতা বিশ্লেষণ কর।',
     marks: const <int>[1, 2, 3, 4],
     source: QuestionSource.original,
-    sourceLabel: 'A-Learning Original • NCTB-aligned',
+    sourceLabel: "Mentor's Companion Original • NCTB-aligned",
   ),
 ];

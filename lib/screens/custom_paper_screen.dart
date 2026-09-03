@@ -88,7 +88,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     'civics': '১৪০',
   };
 
-  static const _gold = Color(0xFFF7C948);
+  static const _accentColor = AppTheme.primary;
 
   // English detection
   static bool _isEnglish2nd(String? id) {
@@ -259,9 +259,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xCC161B26),
+        color: AppTheme.surfaceAlt,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(.08)),
+        border: Border.all(color: AppTheme.border),
       ),
       child: Row(
         children: [
@@ -339,17 +339,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: selected
-            ? _gold.withOpacity(.12)
-            : Colors.white.withOpacity(.03),
+        color: selected ? _accentColor.withOpacity(.09) : AppTheme.surfaceAlt,
         borderRadius: BorderRadius.circular(13),
         border: Border.all(
-            color: selected ? _gold.withOpacity(.65) : Colors.white24),
+            color: selected ? _accentColor.withOpacity(.55) : AppTheme.border),
       ),
       child: Row(children: [
         Checkbox(
             value: selected,
-            activeColor: _gold,
+            activeColor: _accentColor,
             onChanged: (v) => _toggleChapter(chapter, v ?? false)),
         Expanded(
             child:
@@ -998,9 +996,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-          color: const Color(0xCC161B26),
+          color: AppTheme.surfaceAlt,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _gold.withOpacity(0.45))),
+          border: Border.all(color: _accentColor.withOpacity(0.45))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -1157,9 +1155,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _gold.withOpacity(.10),
+                      color: _accentColor.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold.withOpacity(.5)),
+                      border: Border.all(color: _accentColor.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
@@ -1175,15 +1173,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 11),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
+                      color: AppTheme.surfaceAlt,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
+                      Icon(Icons.fact_check_outlined, color: _accentColor),
                       SizedBox(width: 9),
                       Text('মোট MCQ: 30 / 100',
                           style: TextStyle(
-                              color: Color(0xFFFFE08A),
+                              color: AppTheme.primary,
                               fontWeight: FontWeight.w800)),
                     ]),
                   ),
@@ -1223,9 +1221,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _gold.withOpacity(.10),
+                      color: _accentColor.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold.withOpacity(.5)),
+                      border: Border.all(color: _accentColor.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
@@ -1241,15 +1239,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 11),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
+                      color: AppTheme.surfaceAlt,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
+                      Icon(Icons.fact_check_outlined, color: _accentColor),
                       SizedBox(width: 9),
                       Text('মোট MCQ: 30 / 100',
                           style: TextStyle(
-                              color: Color(0xFFFFE08A),
+                              color: AppTheme.primary,
                               fontWeight: FontWeight.w800)),
                     ]),
                   ),
@@ -1318,9 +1316,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _gold.withOpacity(.10),
+                      color: _accentColor.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold.withOpacity(.5)),
+                      border: Border.all(color: _accentColor.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ২৫ • সময় ১ ঘণ্টা\n'
@@ -1335,15 +1333,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 11),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
+                      color: AppTheme.surfaceAlt,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
+                      Icon(Icons.fact_check_outlined, color: _accentColor),
                       SizedBox(width: 9),
                       Text('মোট MCQ: 25 / 100',
                           style: TextStyle(
-                              color: Color(0xFFFFE08A),
+                              color: AppTheme.primary,
                               fontWeight: FontWeight.w800)),
                     ]),
                   ),
@@ -1354,9 +1352,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _gold.withOpacity(.10),
+                      color: _accentColor.withOpacity(.10),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _gold.withOpacity(.5)),
+                      border: Border.all(color: _accentColor.withOpacity(.5)),
                     ),
                     child: const Text(
                       'পূর্ণমান ১০০ • সময় ৩ ঘণ্টা\n'
@@ -1373,15 +1371,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 11),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
+                      color: AppTheme.surfaceAlt,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Row(children: [
-                      Icon(Icons.fact_check_outlined, color: _gold),
+                      Icon(Icons.fact_check_outlined, color: _accentColor),
                       SizedBox(width: 9),
                       Text('মোট MCQ: 30 / 100',
                           style: TextStyle(
-                              color: Color(0xFFFFE08A),
+                              color: AppTheme.primary,
                               fontWeight: FontWeight.w800)),
                     ]),
                   ),
@@ -1402,15 +1400,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 11),
                     decoration: BoxDecoration(
-                        color: const Color(0xFF17130A),
+                        color: AppTheme.surfaceAlt,
                         borderRadius: BorderRadius.circular(14)),
                     child: Row(children: [
-                      const Icon(Icons.fact_check_outlined, color: _gold),
+                      const Icon(Icons.fact_check_outlined, color: _accentColor),
                       const SizedBox(width: 9),
                       Expanded(
                           child: Text('মোট MCQ: $_requestedMcqTotal / 100',
                               style: const TextStyle(
-                                  color: Color(0xFFFFE08A),
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w800))),
                     ]),
                   ),
@@ -1436,11 +1434,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                      color: const Color(0xFF17130A),
+                      color: AppTheme.surfaceAlt,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: _gold.withOpacity(0.5))),
+                      border: Border.all(color: _accentColor.withOpacity(0.5))),
                   child: Row(children: [
-                    const Icon(Icons.calculate_outlined, color: _gold),
+                    const Icon(Icons.calculate_outlined, color: _accentColor),
                     const SizedBox(width: 10),
                     Expanded(
                         child: Text(
@@ -1456,7 +1454,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                                                 ? 'Marks: $total • Time: ${_timeLine(_cqN * 12 + _saqN * 3)} + ${_timeLine(_mcqN)} MCQ'
                                                 : 'Custom MCQ: $total marks • Time: ${_timeLine(total)}'),
                             style: const TextStyle(
-                                color: Color(0xFFFFE08A), fontSize: 13)))
+                                color: AppTheme.primary, fontSize: 13)))
                   ]),
                 ),
                 const SizedBox(height: 16),
@@ -1466,15 +1464,15 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     height: 50,
                     child: FilledButton.icon(
                         style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF17130A),
-                            foregroundColor: const Color(0xFFFFE08A)),
+                            backgroundColor: AppTheme.primary,
+                            foregroundColor: Colors.white),
                         onPressed: _busy ? null : _generate,
                         icon: _busy
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Color(0xFFFFE08A)))
+                                    strokeWidth: 2, color: Colors.white))
                             : const Icon(Icons.visibility_rounded),
                         label: Text(
                             _busy ? 'Building...' : 'Generate & Preview'))),

@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:a_learning/data/chemistry/chemistry_chapter_catalog.dart';
-import 'package:a_learning/data/chemistry/chemistry_cqs.dart';
-import 'package:a_learning/data/chemistry/chemistry_mcqs.dart';
-import 'package:a_learning/data/chemistry/chemistry_saqs.dart';
-import 'package:a_learning/data/questions_data.dart';
-import 'package:a_learning/services/chapter_catalog.dart';
+import 'package:mentors_companion/data/chemistry/chemistry_chapter_catalog.dart';
+import 'package:mentors_companion/data/chemistry/chemistry_cqs.dart';
+import 'package:mentors_companion/data/chemistry/chemistry_mcqs.dart';
+import 'package:mentors_companion/data/chemistry/chemistry_saqs.dart';
+import 'package:mentors_companion/data/questions_data.dart';
+import 'package:mentors_companion/services/chapter_catalog.dart';
 
 void main() {
   group('Chemistry chapter catalog', () {

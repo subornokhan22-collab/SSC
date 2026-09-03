@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 🎨 Workspace theme — the accent/backdrop tone the teacher picks for the
-/// paper-building screens. Every preset is a dark, print-studio friendly
-/// palette so text stays readable and the app keeps one consistent look.
+/// paper-building screens. Every preset is a light, paper-friendly palette so
+/// dark text stays crisp and the app keeps one consistent, printable look.
 class AppStyle {
   AppStyle._();
 
@@ -12,39 +12,39 @@ class AppStyle {
   /// Current selection (also a notifier so screens repaint instantly).
   static final ValueNotifier<int> bgIndex = ValueNotifier<int>(0);
 
-  /// Deep backdrop colours (base layer behind the frosted cards).
+  /// Light backdrop colours (base layer behind the frosted cards).
   static const List<Color> colors = [
-    Color(0xFF0A0D14), // Midnight (default)
-    Color(0xFF0B1210), // Forest
-    Color(0xFF0A0F1A), // Deep Sea
-    Color(0xFF130C10), // Wine
-    Color(0xFF100C18), // Violet
-    Color(0xFF13100A), // Amber Dusk
-    Color(0xFF091413), // Teal Night
-    Color(0xFF0E0F11), // Graphite
+    Color(0xFFF4F6FB), // Daylight (default)
+    Color(0xFFF1F7F3), // Mint Paper
+    Color(0xFFEFF5FC), // Sky
+    Color(0xFFFDF2F4), // Blush
+    Color(0xFFF4F1FC), // Lavender
+    Color(0xFFFDF6EC), // Sand
+    Color(0xFFEFF8F7), // Seafoam
+    Color(0xFFF5F6F8), // Slate Mist
   ];
 
   /// Matching accent used for glows/edges of the selected preset.
   static const List<Color> accents = [
-    Color(0xFFD4A72C),
-    Color(0xFF4ADE80),
-    Color(0xFF4C8DFF),
-    Color(0xFFFF7B9C),
-    Color(0xFFA78BFA),
-    Color(0xFFFFB347),
-    Color(0xFF2DD4BF),
-    Color(0xFFB0BAC9),
+    Color(0xFF3D5AFE),
+    Color(0xFF12A150),
+    Color(0xFF0B84D9),
+    Color(0xFFE05A78),
+    Color(0xFF7C5CE0),
+    Color(0xFFE08700),
+    Color(0xFF00897B),
+    Color(0xFF5B6B8C),
   ];
 
   static const labels = [
-    'Midnight (default)',
-    'Forest',
-    'Deep Sea',
-    'Wine',
-    'Violet',
-    'Amber Dusk',
-    'Teal Night',
-    'Graphite',
+    'Daylight (default)',
+    'Mint Paper',
+    'Sky',
+    'Blush',
+    'Lavender',
+    'Sand',
+    'Seafoam',
+    'Slate Mist',
   ];
 
   static Color get bg => colors[bgIndex.value % colors.length];
@@ -57,7 +57,7 @@ class AppStyle {
         end: Alignment.bottomRight,
         colors: [
           bg,
-          Color.alphaBlend(accent.withOpacity(.05), bg),
+          Color.alphaBlend(accent.withOpacity(.06), bg),
           bg,
         ],
       );

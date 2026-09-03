@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../services/app_style.dart';
 
-/// Low-cost premium backdrop: deep gradient, slow drifting auras, fine
-/// particles and a very soft vignette. Painted once behind the whole app.
+/// Low-cost premium backdrop: airy gradient, slow drifting auras, fine
+/// particles and a very soft edge shade. Painted once behind the whole app.
 ///
 /// Everything lives in a single [RepaintBoundary] driven by one controller,
 /// so adding it globally costs one animation ticker for the entire app.
@@ -64,7 +64,7 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
                     end: Alignment.bottomRight,
                     colors: [
                       base,
-                      Color.alphaBlend(Colors.white.withOpacity(.035), base),
+                      Color.alphaBlend(Colors.white.withOpacity(.85), base),
                       base,
                     ],
                   ),
@@ -112,20 +112,20 @@ class _PremiumScene extends CustomPainter {
       Offset(size.width * (.74 + .13 * cos(a)), size.height * (.10 + .07 * sin(a))),
       size.width * .58,
       accent,
-      .13,
+      .10,
     );
     glow(
       Offset(size.width * (.16 + .09 * sin(a * .8)),
           size.height * (.74 + .11 * cos(a))),
       size.width * .50,
-      const Color(0xFF2A4270),
-      .30,
+      const Color(0xFFBFD2F5),
+      .34,
     );
     glow(
       Offset(size.width * (.50 + .18 * sin(a * .55)), size.height * .45),
       size.width * .40,
       accent,
-      .05,
+      .045,
     );
 
     // Fine rising particles — deterministic seed keeps them stable.
@@ -134,7 +134,7 @@ class _PremiumScene extends CustomPainter {
       final x = r.nextDouble() * size.width;
       final speed = .035 + r.nextDouble() * .05;
       final y = ((r.nextDouble() - t * speed) % 1) * size.height;
-      final alpha = .03 + .09 * (sin(a * 2 + i) + 1) / 2;
+      final alpha = .04 + .10 * (sin(a * 2 + i) + 1) / 2;
       canvas.drawCircle(
         Offset(x, y),
         .7 + r.nextDouble() * 1.7,
@@ -142,13 +142,14 @@ class _PremiumScene extends CustomPainter {
       );
     }
 
-    // Soft vignette focuses attention on the content.
+    // Very soft edge shade keeps attention on the content without dimming
+    // the light canvas.
     canvas.drawRect(
       Offset.zero & size,
       Paint()
         ..shader = RadialGradient(
           radius: .95,
-          colors: [Colors.transparent, Colors.black.withOpacity(.30)],
+          colors: [Colors.transparent, const Color(0xFF16203A).withOpacity(.06)],
           stops: const [.62, 1],
         ).createShader(Offset.zero & size),
     );

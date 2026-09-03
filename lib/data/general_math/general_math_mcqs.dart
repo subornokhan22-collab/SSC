@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • গণিত (subjectId: general_math)
+// Mentor's Companion • SSC 2027 • গণিত (subjectId: general_math)
 // 850 original chapter-wise MCQs: 50 in each official chapter.
 import '../questions_data.dart';
 

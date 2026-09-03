@@ -1,4 +1,4 @@
-// A-Learning • SSC 2027 • জীববিজ্ঞান (subjectId: biology)
+// Mentor's Companion • SSC 2027 • জীববিজ্ঞান (subjectId: biology)
 // 280 original chapter-wise short-answer questions.
 import '../questions_data.dart';
 
