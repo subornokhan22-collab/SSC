@@ -41,6 +41,6 @@ jobs:
           gh release create "apk-${{ github.run_id }}" \
             "build/app/outputs/flutter-apk/app-release.apk" \
             --repo "${{ github.repository }}" \
-            --title "A-Learning APK (build ${{ github.run_number }})" \
+            --title "Mentor's Companion APK (build ${{ github.run_number }})" \
             --notes "Auto-built APK. Download and install." \
             --latest
