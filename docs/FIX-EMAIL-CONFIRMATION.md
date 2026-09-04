@@ -1,110 +1,124 @@
-# Fixing "localhost refused to connect" on the confirmation email
+# No confirmation code arriving
 
-## What is going wrong
+## Do this first — it takes one toggle
 
-The app asks new users for a **6-digit code**. Supabase is instead emailing
-a **confirmation link**, and that link points at `localhost` — a web address
-that only means anything on the machine that generated it. Your phone has
-nothing running there, so Chrome shows `ERR_CONNECTION_REFUSED`.
+**Turn email confirmation off.** Open this on your phone:
 
-Nothing is broken in the app. Supabase's default email template sends a
-link, and its default Site URL is `http://localhost:3000`. Both are dashboard
-settings.
+<https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/auth/providers>
 
-This is a one-time change and takes about two minutes on your phone.
+Expand **Email**, switch **Confirm email** to **OFF**, tap **Save**.
+
+Now sign-up sends no email at all — the tutor types an email and password
+and goes straight into the app.
+
+**No app change is needed.** The code already handles this:
+
+```dart
+// signup_screen.dart
+if (AuthService.hasSession) {   // session came back immediately
+  await _finish();              // skip the code step entirely
+  return;
+}
+```
+
+Try signing up again straight after saving. If it works, you are done and
+can ignore the rest of this file.
+
+**Trade-off:** anyone can register with an address they do not own. For a
+tutor tool with a small known user base that is normally fine.
 
 ---
 
-## The fix: make Supabase send a code instead of a link
+## Why no email is arriving
 
-**1.** Open the email template settings:
+The app is not at fault. `signUpWithPassword` really does call Supabase, and
+any failure is surfaced through `friendlyError` rather than swallowed. The
+config is correct too — the project URL and the anon key both point at
+`vxexidxdoghdmzvkvgqk`, and the key is valid until 2036.
+
+That leaves the mail server, and there are three usual causes.
+
+### 1. Supabase's built-in email is rate-limited (most likely)
+
+A free Supabase project sends through a shared testing mailer capped at
+roughly **2–4 emails per hour**, across the whole project. During testing
+that cap is very easy to hit, and once you do, later sign-ups silently send
+nothing — no error appears in the app.
+
+Check it here:
+
+<https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/auth/rate-limits>
+
+If "Rate limit for sending emails" is a small number, that is your answer.
+Wait an hour, or switch confirmation off as above.
+
+### 2. The template sends a link, not a code
+
+Even when email does arrive, the default template contains a
+`localhost` **link** rather than the 6-digit code the app asks for. That is
+the `ERR_CONNECTION_REFUSED` page you saw.
+
+Fix at:
 
 <https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/auth/templates>
 
-**2.** Make sure the **Confirm signup** template is selected.
-
-**3.** Delete everything in the message box and paste this in:
+With **Confirm signup** selected, replace the body with:
 
 ```html
 <h2>Confirm your email</h2>
 <p>Enter this code in the app to finish signing up:</p>
 <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
-<p>The code expires in one hour. If you did not create an account, ignore this email.</p>
+<p>The code expires in one hour.</p>
 ```
 
-**4.** Tap **Save**.
+`{{ .Token }}` is the 6-digit code. The default `{{ .ConfirmationURL }}` is
+the broken link.
 
-The important part is `{{ .Token }}` — that is the 6-digit code. The default
-template uses `{{ .ConfirmationURL }}`, which is the link that fails.
-
----
-
-## Also set the Site URL
-
-Even with the code template, Supabase warns when the Site URL is still
-`localhost`.
-
-**1.** Open:
+Also set **Site URL** away from `localhost` at:
 
 <https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/auth/url-configuration>
 
-**2.** Change **Site URL** from `http://localhost:3000` to:
+Any real address works, e.g. `https://tutorsdesk.app`. The app never opens
+it.
 
-```
-https://tutorsdesk.app
-```
+### 3. The mail is in spam
 
-The app never opens this address — it only needs to be a real URL rather
-than localhost. Any domain you own works.
-
-**3.** Tap **Save**.
+Supabase's shared sender is frequently filtered. Check the spam folder
+before assuming nothing was sent.
 
 ---
 
-## Test it
+## Where to see the truth
 
-1. Open Tutor's Desk and create an account with an email you can read.
-2. The email should now contain **a 6-digit number, not a button**.
-3. Type the number into the app.
+The auth log shows every sign-up attempt and whether the mail was accepted:
 
-You should land in the app with your workspace created.
+<https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/logs/auth-logs>
+
+Sign up once, then refresh that page.
+
+- **A row appears, no email** → rate limit or spam (causes 1 and 3).
+- **No row at all** → the request never reached Supabase; check the phone's
+  internet.
 
 ---
 
-## The quicker alternative: skip confirmation entirely
+## For real users later
 
-If you would rather people sign up and get straight in with no email at all:
+The built-in mailer is for testing only and should not be used in
+production. When you are ready, connect your own SMTP — Resend, SendGrid and
+Brevo all have free tiers — at:
 
-**1.** Open:
+<https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/settings/auth>
 
-<https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/auth/providers>
-
-**2.** Expand **Email**.
-
-**3.** Turn **Confirm email** OFF, and save.
-
-The app already handles this. `signUpWithPassword` checks whether a session
-came back immediately:
-
-```dart
-final res = await _c.auth.signUp(email: e, password: password);
-// When email confirmation is disabled in the Supabase project the session
-// arrives immediately and no code needs to be entered.
-if (res.session != null) _profileCache = null;
-```
-
-and `signup_screen.dart` skips the code step when that happens. So turning
-confirmation off needs no code change at all.
-
-**Trade-off:** anyone can sign up with an address they do not own. For a
-tutor tool with a small, known user base that is usually fine. Keep
-confirmation on if you plan to open sign-ups publicly.
+Under **SMTP Settings**, enable custom SMTP and paste the host, port, user
+and password your provider gives you. Delivery becomes reliable and the
+hourly cap disappears.
 
 ---
 
 ## Why this could not be fixed in code
 
-Both the email template and the Site URL live in your Supabase project, not
-in the repository. This sandbox also cannot reach `supabase.co` at all
-(every request returns `000`), so the change has to be made from your
-browser while signed in to the dashboard.
+Every one of these is a setting inside your Supabase project rather than
+something in this repository, and this sandbox cannot reach `supabase.co`
+at all — every request to it returns `000`. The changes have to be made
+from your browser while signed in to the dashboard.
