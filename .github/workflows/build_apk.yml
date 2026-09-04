@@ -32,15 +32,15 @@ jobs:
         run: dart run flutter_launcher_icons
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --split-per-abi
 
       - name: Upload APK to Releases (no storage quota!)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "apk-${{ github.run_id }}" \
-            "build/app/outputs/flutter-apk/app-release.apk" \
+            build/app/outputs/flutter-apk/app-*-release.apk \
             --repo "${{ github.repository }}" \
-            --title "A-Learning APK (build ${{ github.run_number }})" \
-            --notes "Auto-built APK. Download and install." \
+            --title "Tutor's Desk (build ${{ github.run_number }})" \
+            --notes "Tutor's Desk. Most phones need app-arm64-v8a-release.apk." \
             --latest
