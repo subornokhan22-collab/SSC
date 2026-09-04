@@ -5,7 +5,7 @@ import 'dart:math';
 /// Transcribed SAME-TO-SAME from the teacher's scanned board-question book
 /// (Model Questions Based on Board Exam Questions [Paper-II], sets 51–59).
 /// Layout (word boxes, 3-column matching tables, item letters) is preserved
-/// exactly as printed; see services/english_board_pdf.dart for the renderer.
+/// exactly as printed; rendered via EnglishPaperAdapter + services/paper_pdf.dart.
 
 /// One row of a Q2 three-column matching table. Empty cells stay ''.
 class EBMatchRow {

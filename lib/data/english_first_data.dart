@@ -5,7 +5,7 @@ import 'dart:math';
 /// Transcribed SAME-TO-SAME from the teacher's scanned board-question book
 /// (Model Questions Based on Board Exam Questions [Paper-I], sets 61–69).
 /// Word boxes, matching columns, info tables, passages and item letters are
-/// kept exactly as printed. See services/english_board_pdf.dart (renderer).
+/// kept exactly as printed. Rendered via EnglishPaperAdapter + paper_pdf.dart.
 
 /// One Q1 item: bold stem + options i.–iv.
 class EF1McqItem {
