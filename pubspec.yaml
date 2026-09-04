@@ -1,5 +1,5 @@
-name: mentors_companion
-description: "Mentor's Companion - SSC 2027 question-paper studio for tutors"
+name: tutors_desk
+description: "Tutor's Desk - SSC 2027 question-paper studio for tutors"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -37,6 +37,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   image_path: "assets/icon/icon.png"
-  adaptive_icon_background: "#2A3EB1"
+  adaptive_icon_background: "#0A2A80"
   adaptive_icon_foreground: "assets/icon/icon_foreground.png"
   min_sdk_android: 21

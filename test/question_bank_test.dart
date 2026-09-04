@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:mentors_companion/data/questions_data.dart';
+import 'package:tutors_desk/data/questions_data.dart';
 
 import 'support/bank_fixture.dart';
 

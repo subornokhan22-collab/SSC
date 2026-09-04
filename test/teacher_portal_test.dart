@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:mentors_companion/models/subject_info.dart';
-import 'package:mentors_companion/services/app_style.dart';
-import 'package:mentors_companion/services/auth_service.dart';
-import 'package:mentors_companion/theme/app_theme.dart';
+import 'package:tutors_desk/models/subject_info.dart';
+import 'package:tutors_desk/services/app_style.dart';
+import 'package:tutors_desk/services/auth_service.dart';
+import 'package:tutors_desk/theme/app_theme.dart';
 
 /// Guards the teacher-only shape of the app: the student portal must stay
 /// removed, and the shared pieces it used to own must live in their new homes.
@@ -139,13 +139,13 @@ void main() {
   });
 
   group('Branding', () {
-    test('the package and app are named after Mentor\'s Companion', () {
+    test('the package and app are named after Tutor\'s Desk', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
-      expect(pubspec.contains('name: mentors_companion'), isTrue);
+      expect(pubspec.contains('name: tutors_desk'), isTrue);
       expect(pubspec.contains('a_learning'), isFalse);
       final manifest =
           File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
-      expect(manifest.contains("Mentor\'s Companion"), isTrue);
+      expect(manifest.contains("Tutor\'s Desk"), isTrue);
       expect(manifest.contains('ssc_prep_app'), isFalse);
     });
 

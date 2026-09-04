@@ -41,6 +41,6 @@ jobs:
           gh release create "apk-${{ github.run_id }}" \
             build/app/outputs/flutter-apk/app-*-release.apk \
             --repo "${{ github.repository }}" \
-            --title "Mentor's Companion (build ${{ github.run_number }})" \
-            --notes "Mentor's Companion. Most phones need app-arm64-v8a-release.apk." \
+            --title "Tutor's Desk (build ${{ github.run_number }})" \
+            --notes "Tutor's Desk. Most phones need app-arm64-v8a-release.apk." \
             --latest

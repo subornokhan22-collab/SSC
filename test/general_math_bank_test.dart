@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support/bank_fixture.dart';
 
-import 'package:mentors_companion/data/general_math/general_math_chapter_catalog.dart';
+import 'package:tutors_desk/data/general_math/general_math_chapter_catalog.dart';
 
-import 'package:mentors_companion/data/general_math/general_math_divisions.dart';
+import 'package:tutors_desk/data/general_math/general_math_divisions.dart';
 
-import 'package:mentors_companion/data/questions_data.dart';
-import 'package:mentors_companion/services/chapter_catalog.dart';
-import 'package:mentors_companion/services/general_math_board_pattern.dart';
+import 'package:tutors_desk/data/questions_data.dart';
+import 'package:tutors_desk/services/chapter_catalog.dart';
+import 'package:tutors_desk/services/general_math_board_pattern.dart';
 
 void main() {
   late final List<CreativeQuestion> generalMathCqs;

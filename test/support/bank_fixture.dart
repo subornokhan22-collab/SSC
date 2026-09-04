@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:mentors_companion/data/question_bank.dart';
-import 'package:mentors_companion/data/questions_data.dart';
+import 'package:tutors_desk/data/question_bank.dart';
+import 'package:tutors_desk/data/questions_data.dart';
 
 /// Loads the exported JSON bank straight from disk for unit tests.
 ///

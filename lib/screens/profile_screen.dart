@@ -297,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               const Center(
                 child: Text(
-                  "Mentor's Companion — Tutor Edition",
+                  "Tutor's Desk — Tutor Edition",
                   style: TextStyle(fontSize: 11.5, color: AppTheme.muted),
                 ),
               ),

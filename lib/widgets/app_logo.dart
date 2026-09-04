@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// The Mentor's Companion mark, drawn from the real launcher icon.
+/// The Tutor's Desk mark, drawn from the real launcher icon.
 ///
 /// Every place that used to show a generic graduation-cap glyph now shows
 /// this, so the brand is identical from the splash screen to the profile

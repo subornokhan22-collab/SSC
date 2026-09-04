@@ -185,7 +185,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Mentor's Companion",
+                "Tutor's Desk",
                 style: TextStyle(
                   color: AppTheme.textDark,
                   fontSize: 22,

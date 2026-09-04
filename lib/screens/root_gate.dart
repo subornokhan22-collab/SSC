@@ -11,7 +11,7 @@ import '../widgets/app_logo.dart';
 ///  • not signed in → welcome / sign-in screen
 ///  • signed in     → the teacher (tutor) portal
 ///
-/// Mentor's Companion is a teacher-only product, so there is no role branching:
+/// Tutor's Desk is a teacher-only product, so there is no role branching:
 /// every authenticated account lands in the tutor workspace.
 class RootGate extends StatefulWidget {
   const RootGate({super.key});
@@ -101,7 +101,7 @@ class _BootSplash extends StatelessWidget {
             FadeSlideIn(
               delay: const Duration(milliseconds: 120),
               child: const Text(
-                "Mentor's Companion",
+                "Tutor's Desk",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,

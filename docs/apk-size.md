@@ -45,7 +45,7 @@ The three changes it makes:
 
 1. `flutter build apk --release` -> `flutter build apk --release --split-per-abi`
 2. uploads `app-*-release.apk` instead of the single fat `app-release.apk`
-3. titles releases "Mentor's Companion" instead of "A-Learning APK"
+3. titles releases "Tutor's Desk" instead of "A-Learning APK"
 
 Each release then carries three files. Users on modern phones want
 `app-arm64-v8a-release.apk`.

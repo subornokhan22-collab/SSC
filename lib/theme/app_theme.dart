@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/animations.dart';
 
-/// Light "Indigo & Teal" design system for Mentor's Companion.
+/// Light "Indigo & Teal" design system for Tutor's Desk.
 ///
 /// The palette is built for long reading sessions and for screens that sit
 /// next to printed paper: a soft paper-white canvas, deep indigo as the

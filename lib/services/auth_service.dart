@@ -12,7 +12,7 @@ import 'supabase_config.dart';
 ///  2) Sign in — email + password. No code, no email round-trip.
 ///  3) If `profiles.is_pro` is true, syncing turns Pro on for this device.
 ///
-/// Mentor's Companion is a tutor-only product, so every account is a teacher account.
+/// Tutor's Desk is a tutor-only product, so every account is a teacher account.
 /// When Supabase is not configured ([SupabaseConfig] empty) every call degrades
 /// gracefully instead of throwing, and the offline features keep working.
 class AuthService {

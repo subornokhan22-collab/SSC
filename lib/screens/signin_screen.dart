@@ -49,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
         email: _emailCtrl.text,
         password: _passCtrl.text,
       );
-      // Every Mentor's Companion account is a tutor account; make sure the
+      // Every Tutor's Desk account is a tutor account; make sure the
       // row exists so returning users are never blocked by a missing profile.
       await AuthService.ensureTeacherProfile();
       await AuthService.syncProFromServer();

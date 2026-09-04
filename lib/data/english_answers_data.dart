@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------
-//  Mentor's Companion — English Board Paper ANSWER DATA (সম্পূর্ণ নিজস্ব উত্তরমালা)
+//  Tutor's Desk — English Board Paper ANSWER DATA (সম্পূর্ণ নিজস্ব উত্তরমালা)
 //  English (Compulsory) 2nd Paper 2024 — serial 51–59
 //  English (Compulsory) 1st Paper 2024 — serial 61–69
 //  প্রতিটি উত্তর প্রশ্নের ডেটার সাথে মিলিয়ে আমার নিজের লেখা।

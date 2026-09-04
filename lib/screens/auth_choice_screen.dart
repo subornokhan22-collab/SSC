@@ -64,7 +64,7 @@ class AuthChoiceScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 18),
                         const Text(
-                          "Mentor's Companion",
+                          "Tutor's Desk",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: AppTheme.textDark,

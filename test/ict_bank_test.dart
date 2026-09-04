@@ -4,11 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support/bank_fixture.dart';
 
-import 'package:mentors_companion/data/ict/ict_chapter_catalog.dart';
+import 'package:tutors_desk/data/ict/ict_chapter_catalog.dart';
 
-import 'package:mentors_companion/data/questions_data.dart';
-import 'package:mentors_companion/services/chapter_catalog.dart';
-import 'package:mentors_companion/services/ict_board_pattern.dart';
+import 'package:tutors_desk/data/questions_data.dart';
+import 'package:tutors_desk/services/chapter_catalog.dart';
+import 'package:tutors_desk/services/ict_board_pattern.dart';
 
 void main() {
   late final List<Question> ictMcqs;

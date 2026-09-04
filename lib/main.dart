@@ -38,7 +38,7 @@ class ALearningApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Mentor's Companion",
+      title: "Tutor's Desk",
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       themeMode: ThemeMode.light,

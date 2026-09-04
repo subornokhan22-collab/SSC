@@ -1,4 +1,4 @@
-package com.mentorscompanion.app
+package com.tutorsdesk.app
 
 import io.flutter.embedding.android.FlutterActivity
 
