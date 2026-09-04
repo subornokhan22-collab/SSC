@@ -154,6 +154,16 @@ class AuthService {
     await _c.auth.resetPasswordForEmail(_validEmail(email));
   }
 
+  /// Sends the sign-up confirmation code again.
+  ///
+  /// Supabase's built-in mailer is rate limited (a handful of messages per
+  /// hour for the whole project) and drops anything over the cap without
+  /// reporting an error, so a retry is worth having.
+  static Future<void> resendSignUpCode(String email) async {
+    _requireReady();
+    await _c.auth.resend(type: OtpType.signup, email: _validEmail(email));
+  }
+
   // ── Reading the profile ───────────────────────────────────────────
   static Future<Map<String, dynamic>?> fetchProfile({bool refresh = true}) async {
     if (!isLoggedIn) return null;

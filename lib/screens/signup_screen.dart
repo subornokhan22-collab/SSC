@@ -117,6 +117,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  /// Asks Supabase to send the confirmation code again.
+  Future<void> _resend() async {
+    setState(() {
+      _busy = true;
+      _err = null;
+      _msg = null;
+    });
+    try {
+      await AuthService.resendSignUpCode(_emailCtrl.text);
+      if (!mounted) return;
+      setState(() => _msg =
+          'Code sent again. If nothing arrives, check spam — the free mail '
+          'service only allows a few messages an hour.');
+    } catch (e) {
+      if (mounted) setState(() => _err = AuthService.friendlyError(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _verify() async {
     FocusScope.of(context).unfocus();
     setState(() {
@@ -325,6 +345,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           Center(
             child: TextButton(
+              onPressed: _busy ? null : _resend,
+              child: const Text('Send the code again'),
+            ),
+          ),
+          Center(
+            child: TextButton(
               onPressed: _busy
                   ? null
                   : () => setState(() {
@@ -333,7 +359,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         _msg = null;
                         _codeCtrl.clear();
                       }),
-              child: const Text('Edit details / resend code'),
+              child: const Text('Edit details'),
             ),
           ),
         ],
