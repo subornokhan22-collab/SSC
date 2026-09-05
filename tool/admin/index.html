@@ -598,26 +598,75 @@ function extractArray(text){
  *  browser showing this page clearly does. Going direct also means the API
  *  key never leaves the browser at all.
  */
-async function geminiFormat(key, type, raw){
+/** Models to try, in order. gemini-flash-latest is the best quality but is
+ *  the busiest; the lite and pinned variants usually answer when it is
+ *  overloaded. A 503 "high demand" is a capacity problem on Google's side,
+ *  not a bad request, so falling through to a sibling model fixes it far
+ *  more often than telling the user to come back later. */
+const GEMINI_MODELS = [
+  'gemini-flash-latest',
+  'gemini-flash-lite-latest',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+];
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+async function callGemini(model, key, prompt){
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/'
-            + 'gemini-flash-latest:generateContent?key=' + encodeURIComponent(key);
+            + model + ':generateContent?key=' + encodeURIComponent(key);
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: buildPrompt(type, raw) }] }],
+      contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.1, maxOutputTokens: 8192 },
     }),
   });
   const data = await r.json().catch(() => ({}));
   if (!r.ok){
-    const m = (data.error && data.error.message) || ('Gemini returned ' + r.status);
-    throw new Error(m);
+    const msg = (data.error && data.error.message) || ('HTTP ' + r.status);
+    const err = new Error(msg);
+    err.status = r.status;
+    // 503/429/500 are transient: worth retrying or trying another model.
+    // 400/403 mean the key or the request is wrong — retrying cannot help.
+    err.transient = r.status === 503 || r.status === 429 || r.status === 500;
+    throw err;
   }
-  const parts = ((data.candidates || [])[0] || {}).content;
-  const text = parts ? (parts.parts || []).map(p => p.text || '').join('') : '';
+  const c = (data.candidates || [])[0];
+  const text = c && c.content ? (c.content.parts || []).map(p => p.text || '').join('') : '';
   if (!text.trim()) throw new Error('Gemini sent an empty reply — try a smaller batch.');
   return extractArray(text);
+}
+
+/** Calls Gemini from this page, retrying briefly and then trying the next
+ *  model when the first is overloaded. */
+async function geminiFormat(key, type, raw){
+  const prompt = buildPrompt(type, raw);
+  let last = null;
+
+  for (let m = 0; m < GEMINI_MODELS.length; m++){
+    const model = GEMINI_MODELS[m];
+    // Two attempts per model with a short backoff; capacity blips are brief.
+    for (let attempt = 0; attempt < 2; attempt++){
+      try {
+        if (m > 0 || attempt > 0){
+          $('fmtStatus').textContent =
+            `Busy — trying ${model}${attempt ? ' again' : ''}…`;
+        }
+        return await callGemini(model, key, prompt);
+      } catch (e) {
+        last = e;
+        if (!e.transient) throw e;          // real error: stop immediately
+        if (attempt === 0) await sleep(1200);
+      }
+    }
+  }
+  const detail = last && last.message ? last.message : 'unknown error';
+  throw new Error(
+    'All Gemini models are busy right now (' + detail + '). ' +
+    'Wait a minute and try again, or paste fewer questions at once.'
+  );
 }
 
 $('testKey').onclick = async () => {
