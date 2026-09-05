@@ -354,14 +354,20 @@ const server = http.createServer(async (req, res) => {
         chapters: idx.chapters[id] || [],
       }));
       const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
-      return json(res, 200, { subjects, total: manifest.total });
+      // Every chapter that actually has questions, for the Bank filter.
+      const allChapters = {};
+      for (const [sid, set] of Object.entries(idx.chapters)) {
+        allChapters[sid] = set;
+      }
+      return json(res, 200, { subjects, chapters: allChapters, total: manifest.total });
     }
 
     if (req.method === 'GET' && u.pathname === '/api/questions') {
-      const { subject, type, q, limit } = u.query;
+      const { subject, type, chapter, q, limit, sort } = u.query;
       let rows = allRows();
       if (subject) rows = rows.filter((r) => r.subjectId === subject);
       if (type) rows = rows.filter((r) => r.type === type);
+      if (chapter) rows = rows.filter((r) => r.chapter === chapter);
       if (q) {
         const needle = String(q).toLowerCase();
         rows = rows.filter((r) => {
@@ -369,6 +375,21 @@ const server = http.createServer(async (req, res) => {
           return t.includes(needle) || r.id.toLowerCase().includes(needle);
         });
       }
+
+      // Newest first by default. Only questions added through this panel carry
+      // addedAt; the 15,392 exported from Dart have none, so they sort after
+      // anything you have just written — which is what you want to see.
+      if (sort !== 'id') {
+        rows = rows.slice().sort((a, b) => {
+          const x = a.addedAt || '';
+          const y = b.addedAt || '';
+          if (x && y) return y.localeCompare(x);
+          if (x) return -1;
+          if (y) return 1;
+          return a.id.localeCompare(b.id);
+        });
+      }
+
       const total = rows.length;
       const n = Math.min(Number(limit) || 50, 200);
       return json(res, 200, {
@@ -379,6 +400,7 @@ const server = http.createServer(async (req, res) => {
           subjectId: r.subjectId,
           chapter: r.chapter,
           source: r.source,
+          addedAt: r.addedAt || null,
           text: r.payload.questionText || r.payload.stem || '',
         })),
       });
@@ -402,6 +424,7 @@ const server = http.createServer(async (req, res) => {
         subjectId: body.subjectId,
         chapter: body.chapter.trim(),
         source: body.source || 'original',
+        addedAt: new Date().toISOString(),
         payload,
       };
       if ((body.sourceLabel || '').trim()) row.sourceLabel = body.sourceLabel.trim();
@@ -593,6 +616,7 @@ const server = http.createServer(async (req, res) => {
           subjectId: item.subjectId,
           chapter: String(item.chapter).trim(),
           source: item.source || 'original',
+          addedAt: new Date().toISOString(),
           payload,
         };
         if ((item.sourceLabel || '').trim()) row.sourceLabel = item.sourceLabel.trim();

@@ -84,6 +84,8 @@
   .pill.saq{background:#E0F6F3;color:#046B60}
   .pill.cq{background:#FFF1DC;color:#8A5200}
   .hide{display:none}
+  .new{font-size:10px;font-weight:800;letter-spacing:.4px;padding:2px 6px;
+       border-radius:20px;background:#E6F7EE;color:var(--success)}
   .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--surface-alt);
         padding:4px;border-radius:12px}
   .tab{flex:1;background:transparent;color:var(--muted);font-size:13.5px;
@@ -293,7 +295,15 @@
         <option value="cq">CQ</option>
       </select>
     </div>
+    <select id="f-chapter" style="margin-bottom:10px">
+      <option value="">All chapters</option>
+    </select>
     <input id="f-search" type="text" placeholder="Search text or id…">
+    <div class="opt" style="margin-top:9px">
+      <input type="checkbox" id="f-recent" checked style="width:auto;flex:none">
+      <label for="f-recent" style="margin:0;font-weight:600;color:var(--text)">
+        Newest first</label>
+    </div>
     <div class="list" id="list" style="margin-top:12px"></div>
   </div>
 
@@ -1036,21 +1046,32 @@ let listTimer = null;
 async function loadList(){
   const p = new URLSearchParams();
   if ($('f-subject').value) p.set('subject', $('f-subject').value);
-  if ($('f-type').value) p.set('type', $('f-type').value);
+  if ($('f-type').value)    p.set('type', $('f-type').value);
+  if ($('f-chapter').value) p.set('chapter', $('f-chapter').value);
   if ($('f-search').value.trim()) p.set('q', $('f-search').value.trim());
+  if (!$('f-recent').checked) p.set('sort', 'id');
+
   const r = await fetch('/api/questions?' + p);
   const data = await r.json();
   $('s-shown').textContent = data.rows.length + ' / ' + data.total;
-  $('list').innerHTML = data.rows.map(row => `
+
+  $('list').innerHTML = data.rows.map(row => {
+    // Anything written through this panel carries addedAt; flag today's work.
+    const fresh = row.addedAt &&
+      (Date.now() - Date.parse(row.addedAt)) < 86400000;
+    return `
     <div class="q">
       <div class="meta">
         <span class="pill ${row.type}">${row.type}</span>
         <span class="id">${escapeHtml(row.id)}</span>
+        ${fresh ? '<span class="new">NEW</span>' : ''}
         <span style="flex:1"></span>
         <button class="danger" data-del="${escapeHtml(row.id)}">delete</button>
       </div>
       <div class="text">${escapeHtml(row.text).slice(0,220)}</div>
-    </div>`).join('') || '<p class="hint">Nothing matches.</p>';
+      <div class="id" style="margin-top:4px">${escapeHtml(row.chapter || '')}</div>
+    </div>`;
+  }).join('') || '<p class="hint">Nothing matches.</p>';
 
   for (const b of document.querySelectorAll('[data-del]')){
     b.onclick = async () => {
@@ -1059,6 +1080,22 @@ async function loadList(){
       await loadMeta(); await loadList();
     };
   }
+}
+
+/** Chapter list for the Bank filter follows the chosen subject. */
+function syncFilterChapters(){
+  const sid = $('f-subject').value;
+  const sel = $('f-chapter');
+  const keep = sel.value;
+  sel.innerHTML = '<option value="">All chapters</option>';
+  const list = sid ? (META.chapters && META.chapters[sid]) || [] : [];
+  for (const c of list){
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  }
+  sel.value = [...sel.options].some(o => o.value === keep) ? keep : '';
+  sel.disabled = !sid;
 }
 
 async function loadMeta(){
@@ -1084,12 +1121,14 @@ $('subject').onchange = syncTypes;
 $('type').onchange = syncFields;
 $('save').onclick = save;
 $('clear').onclick = clearForm;
-$('f-subject').onchange = loadList;
+$('f-subject').onchange = () => { syncFilterChapters(); loadList(); };
+$('f-chapter').onchange = loadList;
+$('f-recent').onchange = loadList;
 $('f-type').onchange = loadList;
 $('f-search').oninput = () => { clearTimeout(listTimer); listTimer = setTimeout(loadList, 250); };
 
 renderOptions();
-loadMeta().then(() => { syncTypes(); loadList(); });
+loadMeta().then(() => { syncTypes(); syncFilterChapters(); loadList(); });
 </script>
 </body>
 </html>
