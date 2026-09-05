@@ -84,6 +84,22 @@
   .pill.saq{background:#E0F6F3;color:#046B60}
   .pill.cq{background:#FFF1DC;color:#8A5200}
   .hide{display:none}
+  .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--surface-alt);
+        padding:4px;border-radius:12px}
+  .tab{flex:1;background:transparent;color:var(--muted);font-size:13.5px;
+       padding:9px 6px;border-radius:9px}
+  .tab.on{background:var(--surface);color:var(--primary);
+          box-shadow:0 1px 3px rgba(22,32,58,.10)}
+  .tab:hover{background:rgba(255,255,255,.6)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+  .thumb{border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--surface)}
+  .thumb img{width:100%;border-radius:6px;display:block}
+  .thumb .nm{font-size:10.5px;color:var(--muted);margin-top:5px;word-break:break-all}
+  .qprev{border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:9px}
+  .qprev .t{font-size:13.5px;margin-bottom:6px}
+  .qprev .o{font-size:12.5px;color:var(--muted)}
+  .bar{height:6px;background:var(--surface-alt);border-radius:4px;overflow:hidden;margin:8px 0}
+  .bar > i{display:block;height:100%;background:var(--primary);width:0}
   .hint{font-size:12px;color:var(--muted);margin-top:5px}
   .grow{flex:1}
 </style>
@@ -99,7 +115,11 @@
 
   <!-- ── add form ─────────────────────────────────────── -->
   <div class="card">
-    <h2>Add a question</h2>
+    <div class="tabs">
+      <button class="tab on" data-tab="single">Single</button>
+      <button class="tab" data-tab="batch">Paste many</button>
+      <button class="tab" data-tab="images">Images</button>
+    </div>
     <div id="msg" class="msg"></div>
 
     <div class="row">
@@ -117,6 +137,7 @@
     <select id="chapter"></select>
     <div class="hint">Chapters come from the questions already in the bank.</div>
 
+    <div id="pane-single">
     <!-- MCQ + SAQ share the question box -->
     <div id="f-question">
       <label for="questionText">Question</label>
@@ -191,6 +212,63 @@
       <button id="clear" class="ghost" type="button">Clear</button>
       <span class="grow"></span>
       <span class="hint" id="saving"></span>
+    </div>
+    </div><!-- /pane-single -->
+
+    <!-- ── paste many ─────────────────────────────────────── -->
+    <div id="pane-batch" class="hide">
+      <label for="apiKey">Gemini API key</label>
+      <input id="apiKey" type="password" placeholder="AIza…">
+      <div class="hint">Stored only in this browser. Get one free at aistudio.google.com/apikey</div>
+
+      <label for="rawText">Paste questions — as many as you like</label>
+      <textarea id="rawText" style="min-height:190px"
+        placeholder="১। বল কাকে বলে?&#10;(ক) ভর × ত্বরণ (খ) ভর × বেগ (গ) ভর ÷ ত্বরণ (ঘ) ভর + ত্বরণ&#10;&#10;২। ..."></textarea>
+      <div class="hint">Messy PDF text is fine — numbering, line breaks and mixed option markers are cleaned up.</div>
+
+      <div class="actions">
+        <button id="formatBtn">Format with AI</button>
+        <span class="grow"></span>
+        <span class="hint" id="fmtStatus"></span>
+      </div>
+
+      <div id="batchOut" class="hide">
+        <label>Preview — check before saving</label>
+        <div id="batchList"></div>
+        <div class="actions">
+          <button id="batchSave">Save all</button>
+          <button id="batchCancel" class="ghost" type="button">Discard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── images ─────────────────────────────────────────── -->
+    <div id="pane-images" class="hide">
+      <label for="imgFiles">Question images — pick several at once</label>
+      <input id="imgFiles" type="file" accept="image/png,image/jpeg" multiple>
+      <div class="hint">Each image becomes one question. Use this for questions with figures or diagrams.</div>
+
+      <div class="opt" style="margin-top:8px">
+        <input type="checkbox" id="imgMono" checked style="width:auto;flex:none">
+        <label for="imgMono" style="margin:0;font-weight:600;color:var(--text)">High-contrast black &amp; white</label>
+      </div>
+      <div class="opt">
+        <input type="checkbox" id="imgTrim" checked style="width:auto;flex:none">
+        <label for="imgTrim" style="margin:0;font-weight:600;color:var(--text)">Trim blank background edges</label>
+      </div>
+
+      <label for="imgText">Question text for each image <span style="font-weight:500">(optional)</span></label>
+      <input id="imgText" type="text" value="চিত্রটি লক্ষ কর এবং প্রশ্নের উত্তর দাও।">
+
+      <div class="bar hide" id="imgBar"><i></i></div>
+      <div id="imgGrid" class="grid2" style="margin-top:10px"></div>
+
+      <div class="actions">
+        <button id="imgSave" disabled>Save all as questions</button>
+        <button id="imgClear" class="ghost" type="button">Clear</button>
+        <span class="grow"></span>
+        <span class="hint" id="imgStatus"></span>
+      </div>
     </div>
   </div>
 
@@ -383,6 +461,229 @@ $('figClear').onclick = () => {
   $('figFile').value = '';
   $('figCaption').value = '';
   $('figPreviewWrap').classList.add('hide');
+};
+
+
+// ── tabs ─────────────────────────────────────────────────
+for (const b of document.querySelectorAll('.tab')){
+  b.onclick = () => {
+    for (const x of document.querySelectorAll('.tab')) x.classList.toggle('on', x === b);
+    for (const n of ['single','batch','images'])
+      $('pane-' + n).classList.toggle('hide', n !== b.dataset.tab);
+    $('msg').className = 'msg';
+  };
+}
+
+// ── shared image processing ──────────────────────────────
+/** Grayscale + contrast stretch so scans print cleanly in mono. */
+function processImage(img, { mono = true, trim = true } = {}){
+  const MAX = 1400;
+  let w = img.naturalWidth, h = img.naturalHeight;
+  if (Math.max(w, h) > MAX){ const k = MAX / Math.max(w, h); w = Math.round(w*k); h = Math.round(h*k); }
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);
+  g.drawImage(img, 0, 0, w, h);
+
+  const d = g.getImageData(0, 0, w, h), p = d.data;
+  if (mono){
+    // Not a 1-bit threshold: that destroys thin diagram lines and Bengali
+    // matras. Stretch contrast, then clean paper white and deepen ink.
+    for (let i = 0; i < p.length; i += 4){
+      const v = 0.299*p[i] + 0.587*p[i+1] + 0.114*p[i+2];
+      let o = (v - 128) * 1.45 + 128;
+      o = o < 0 ? 0 : o > 255 ? 255 : o;
+      if (o > 224) o = 255;
+      if (o < 42)  o = 0;
+      p[i] = p[i+1] = p[i+2] = o; p[i+3] = 255;
+    }
+    g.putImageData(d, 0, 0);
+  }
+
+  if (!trim) return c;
+
+  // Crop away uniform light margins — the practical form of "background
+  // removal" for a scanned question: it drops desk/shadow borders without
+  // needing a segmentation model.
+  const q = g.getImageData(0, 0, w, h).data;
+  const LIGHT = 232;
+  let top = 0, bot = h - 1, left = 0, right = w - 1;
+  const rowBlank = (y) => { for (let x = 0; x < w; x++) if (q[(y*w+x)*4] < LIGHT) return false; return true; };
+  const colBlank = (x) => { for (let y = 0; y < h; y++) if (q[(y*w+x)*4] < LIGHT) return false; return true; };
+  while (top < bot && rowBlank(top)) top++;
+  while (bot > top && rowBlank(bot)) bot--;
+  while (left < right && colBlank(left)) left++;
+  while (right > left && colBlank(right)) right--;
+
+  const pad = 12;
+  top = Math.max(0, top - pad); left = Math.max(0, left - pad);
+  bot = Math.min(h - 1, bot + pad); right = Math.min(w - 1, right + pad);
+  const cw = right - left + 1, ch = bot - top + 1;
+  if (cw < 40 || ch < 40 || (cw === w && ch === h)) return c;   // nothing useful to trim
+
+  const c2 = document.createElement('canvas');
+  c2.width = cw; c2.height = ch;
+  c2.getContext('2d').drawImage(c, left, top, cw, ch, 0, 0, cw, ch);
+  return c2;
+}
+
+async function uploadCanvas(c, name){
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  const r = await fetch('/api/figure?name=' + encodeURIComponent(name), {
+    method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: blob,
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error((data.errors || ['upload failed']).join(', '));
+  return data;
+}
+
+// ── paste many + Gemini ──────────────────────────────────
+let BATCH = [];
+$('apiKey').value = localStorage.getItem('gemKey') || '';
+$('apiKey').onchange = () => localStorage.setItem('gemKey', $('apiKey').value.trim());
+
+$('formatBtn').onclick = async () => {
+  const type = $('type').value;
+  $('formatBtn').disabled = true;
+  $('fmtStatus').textContent = 'Asking Gemini…';
+  try {
+    const r = await fetch('/api/format', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey: $('apiKey').value.trim(), text: $('rawText').value, type }),
+    });
+    const data = await r.json();
+    if (!r.ok){ showMsg('err', '<b>Could not format:</b>', data.errors); return; }
+    BATCH = data.questions || [];
+    if (!BATCH.length){ showMsg('err', '<b>No questions found in that text.</b>'); return; }
+    renderBatch();
+    showMsg('ok', `Found <b>${BATCH.length}</b> question(s). Check them, then Save all.`);
+  } catch(e){
+    showMsg('err', '<b>Request failed:</b>', [String(e)]);
+  } finally {
+    $('formatBtn').disabled = false;
+    $('fmtStatus').textContent = '';
+  }
+};
+
+function renderBatch(){
+  $('batchList').innerHTML = BATCH.map((q, i) => {
+    const t = escapeHtml(q.questionText || q.stem || '');
+    let sub = '';
+    if (q.options) sub = q.options.map((o, n) =>
+      `${n === q.correctIndex ? '<b>✓ </b>' : ''}${escapeHtml(o)}`).join(' • ');
+    else if (q.answer) sub = escapeHtml(q.answer);
+    else if (q.questionK) sub = ['ক','খ','গ','ঘ']
+      .map((L, n) => escapeHtml([q.questionK,q.questionKh,q.questionG,q.questionGh][n] || ''))
+      .filter(Boolean).map((x, n) => `${['ক','খ','গ','ঘ'][n]}) ${x}`).join('<br>');
+    return `<div class="qprev"><div class="t"><b>${i+1}.</b> ${t}</div><div class="o">${sub}</div></div>`;
+  }).join('');
+  $('batchOut').classList.remove('hide');
+}
+
+$('batchCancel').onclick = () => { BATCH = []; $('batchOut').classList.add('hide'); };
+
+$('batchSave').onclick = async () => {
+  $('batchSave').disabled = true;
+  $('fmtStatus').textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/questions/batch', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        common: {
+          subjectId: $('subject').value, chapter: $('chapter').value,
+          source: $('source').value, sourceLabel: $('sourceLabel').value,
+        },
+        questions: BATCH,
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok){ showMsg('err', '<b>Save failed:</b>', data.errors); return; }
+    let m = `Saved <b>${data.saved.length}</b> question(s). Bank now holds ${data.total}.`;
+    if (data.failed.length)
+      m += `<br>${data.failed.length} skipped: ` +
+           data.failed.map(f => `#${f.n} ${escapeHtml(f.errors[0])}`).join('; ');
+    showMsg('ok', m);
+    BATCH = []; $('batchOut').classList.add('hide'); $('rawText').value = '';
+    await loadMeta(); await loadList();
+  } finally {
+    $('batchSave').disabled = false;
+    $('fmtStatus').textContent = '';
+  }
+};
+
+// ── batch images ─────────────────────────────────────────
+let IMAGES = [];
+
+$('imgFiles').onchange = async () => {
+  const files = [...$('imgFiles').files];
+  if (!files.length) return;
+  IMAGES = [];
+  $('imgGrid').innerHTML = '';
+  $('imgBar').classList.remove('hide');
+  const bar = $('imgBar').firstElementChild;
+
+  for (let i = 0; i < files.length; i++){
+    const f = files[i];
+    $('imgStatus').textContent = `Processing ${i+1} of ${files.length}…`;
+    bar.style.width = ((i / files.length) * 100) + '%';
+    try {
+      const img = new Image();
+      img.src = URL.createObjectURL(f);
+      await img.decode();
+      const c = processImage(img, { mono: $('imgMono').checked, trim: $('imgTrim').checked });
+      const up = await uploadCanvas(c, f.name.replace(/\.[^.]+$/, '') + '.png');
+      IMAGES.push(up);
+      $('imgGrid').insertAdjacentHTML('beforeend',
+        `<div class="thumb"><img src="/figure/${encodeURIComponent(up.imagePath)}?t=${Date.now()}">
+         <div class="nm">${escapeHtml(up.imagePath)}<br>${up.width}x${up.height}</div></div>`);
+    } catch(e){
+      showMsg('err', `<b>${escapeHtml(f.name)} failed:</b>`, [String(e)]);
+    }
+  }
+  bar.style.width = '100%';
+  $('imgStatus').textContent = `${IMAGES.length} image(s) ready`;
+  $('imgSave').disabled = IMAGES.length === 0;
+};
+
+$('imgClear').onclick = () => {
+  IMAGES = []; $('imgFiles').value = ''; $('imgGrid').innerHTML = '';
+  $('imgBar').classList.add('hide'); $('imgSave').disabled = true; $('imgStatus').textContent = '';
+};
+
+$('imgSave').onclick = async () => {
+  if (!IMAGES.length) return;
+  $('imgSave').disabled = true;
+  $('imgStatus').textContent = 'Saving…';
+  const type = $('type').value;
+  const stem = $('imgText').value.trim() || 'চিত্রটি লক্ষ কর।';
+  const questions = IMAGES.map(im => {
+    const q = { type, figure: { imagePath: im.imagePath, aspect: im.aspect } };
+    if (type === 'mcq'){ q.questionText = stem; q.options = ['ক','খ','গ','ঘ']; q.correctIndex = 0; }
+    else if (type === 'saq'){ q.questionText = stem; q.answer = 'উত্তর ছবিতে দেওয়া আছে।'; }
+    else { q.stem = stem; q.questionK = 'ক'; q.questionKh = 'খ'; q.questionG = 'গ'; q.questionGh = 'ঘ'; q.marks = [1,2,3,4]; }
+    return q;
+  });
+  try {
+    const r = await fetch('/api/questions/batch', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        common: {
+          subjectId: $('subject').value, chapter: $('chapter').value,
+          source: $('source').value, sourceLabel: $('sourceLabel').value,
+        },
+        questions,
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok){ showMsg('err', '<b>Save failed:</b>', data.errors); return; }
+    showMsg('ok', `Saved <b>${data.saved.length}</b> image question(s). Bank now holds ${data.total}.`);
+    $('imgClear').click();
+    await loadMeta(); await loadList();
+  } finally {
+    $('imgSave').disabled = false;
+    $('imgStatus').textContent = '';
+  }
 };
 
 async function save(){

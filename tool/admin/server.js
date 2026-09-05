@@ -20,6 +20,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const https = require('https');
 
 const REPO = path.resolve(__dirname, '..', '..');
 const DIR = path.join(REPO, 'assets', 'questions');
@@ -459,6 +460,151 @@ const server = http.createServer(async (req, res) => {
         'Content-Length': b.length,
       });
       return res.end(b);
+    }
+
+    // Formats raw pasted text into structured questions using Gemini.
+    // The key is sent per-request from the browser and never stored here.
+    if (req.method === 'POST' && u.pathname === '/api/format') {
+      const body = await readBody(req);
+      const key = (body.apiKey || '').trim();
+      const raw = (body.text || '').trim();
+      const type = body.type || 'mcq';
+      if (!key) return json(res, 400, { errors: ['Add your Gemini API key first.'] });
+      if (!raw) return json(res, 400, { errors: ['Paste some question text first.'] });
+
+      const shape = {
+        mcq: '{"type":"mcq","questionText":"...","options":["..","..","..",".."],"correctIndex":0,"explanation":"..."}',
+        saq: '{"type":"saq","questionText":"...","answer":"...","explanation":"..."}',
+        cq: '{"type":"cq","stem":"...","questionK":"...","questionKh":"...","questionG":"...","questionGh":"...","marks":[1,2,3,4]}',
+      }[type];
+
+      const prompt = [
+        'You are formatting Bangla SSC exam questions for a database.',
+        'The input is raw text pasted from a PDF or book and may be messy:',
+        'broken lines, stray numbering, inconsistent option markers (ক) ক. ক- etc.',
+        '',
+        'Return ONLY a JSON array. No markdown, no commentary, no code fences.',
+        'Each element must match exactly this shape:',
+        shape,
+        '',
+        'Rules:',
+        '- Split the input into as many separate questions as it contains.',
+        '- Keep the Bangla text exactly as written; fix only spacing and line breaks.',
+        '- Never invent questions, options or answers that are not in the input.',
+        '- correctIndex is 0-based. If the answer is not marked in the input, use 0.',
+        '- For cq, ক/খ/গ/ঘ map to questionK/questionKh/questionG/questionGh.',
+        '- If a cq has only three parts, leave questionGh as "" and use marks [2,4,4].',
+        '- Drop anything that is not part of a question.',
+        '',
+        'INPUT:',
+        raw,
+      ].join('\n');
+
+      const payload = JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 8192 },
+      });
+
+      const out = await new Promise((resolve) => {
+        const r = https.request(
+          {
+            hostname: 'generativelanguage.googleapis.com',
+            path: `/v1beta/models/gemini-flash-latest:generateContent?key=${encodeURIComponent(key)}`,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(payload),
+            },
+          },
+          (r2) => {
+            let d = '';
+            r2.on('data', (c) => (d += c));
+            r2.on('end', () => resolve({ status: r2.statusCode, body: d }));
+          },
+        );
+        r.on('error', (e) => resolve({ status: 0, body: String(e) }));
+        r.write(payload);
+        r.end();
+      });
+
+      if (out.status !== 200) {
+        let msg = `Gemini returned ${out.status}`;
+        try {
+          const j = JSON.parse(out.body);
+          if (j.error && j.error.message) msg = j.error.message;
+        } catch (_) {
+          if (out.status === 0) msg = 'Could not reach Gemini — check the connection.';
+        }
+        return json(res, 400, { errors: [msg] });
+      }
+
+      let text = '';
+      try {
+        const j = JSON.parse(out.body);
+        text = j.candidates[0].content.parts.map((p) => p.text || '').join('');
+      } catch (_) {
+        return json(res, 400, { errors: ['Gemini sent an unexpected response.'] });
+      }
+
+      // Models often wrap JSON in ```json fences despite instructions.
+      text = text.replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, '').trim();
+      const a = text.indexOf('['), b = text.lastIndexOf(']');
+      if (a >= 0 && b > a) text = text.slice(a, b + 1);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (_) {
+        return json(res, 400, {
+          errors: ['Could not read the formatted result. Try a smaller batch.'],
+        });
+      }
+      if (!Array.isArray(parsed)) parsed = [parsed];
+      return json(res, 200, { ok: true, questions: parsed });
+    }
+
+    // Saves several prepared questions in one go.
+    if (req.method === 'POST' && u.pathname === '/api/questions/batch') {
+      const body = await readBody(req);
+      const list = Array.isArray(body.questions) ? body.questions : [];
+      if (!list.length) return json(res, 400, { errors: ['Nothing to save.'] });
+
+      const saved = [], failed = [];
+      for (let i = 0; i < list.length; i++) {
+        const item = { ...body.common, ...list[i] };
+        const idx = index();                       // re-read so ids stay unique
+        const { errors, payload } = validate(item, idx);
+        if (errors.length) { failed.push({ n: i + 1, errors }); continue; }
+
+        const bank = BANKS[item.subjectId][item.type];
+        const id = nextId(item.subjectId, item.type, item.chapter, idx.ids);
+        const rows = readBank(bank);
+        const row = {
+          id,
+          type: item.type,
+          bank: rows[0] ? rows[0].bank : bank,
+          subjectId: item.subjectId,
+          chapter: String(item.chapter).trim(),
+          source: item.source || 'original',
+          payload,
+        };
+        if ((item.sourceLabel || '').trim()) row.sourceLabel = item.sourceLabel.trim();
+        if (item.figure && item.figure.imagePath) {
+          row.figure = {
+            kind: 'image',
+            imagePath: String(item.figure.imagePath),
+            aspect: Number(item.figure.aspect) || 1.4,
+          };
+          if ((item.figure.caption || '').trim()) {
+            row.figure.caption = item.figure.caption.trim();
+          }
+        }
+        rows.push(row);
+        writeBank(bank, rows);
+        saved.push(id);
+      }
+      const total = refreshManifest();
+      return json(res, 200, { ok: true, saved, failed, total });
     }
 
     if (req.method === 'DELETE' && u.pathname.startsWith('/api/questions/')) {
