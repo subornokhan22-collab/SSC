@@ -533,7 +533,14 @@ const server = http.createServer(async (req, res) => {
           const j = JSON.parse(out.body);
           if (j.error && j.error.message) msg = j.error.message;
         } catch (_) {
-          if (out.status === 0) msg = 'Could not reach Gemini — check the connection.';
+          if (out.status === 0) {
+            // The machine running this server has no route to Google. That is
+            // not the user's connection — the browser calls Gemini directly
+            // now, and this proxy is only a fallback.
+            msg = 'This server cannot reach Gemini. The browser normally '
+                + 'calls Google directly; if you see this, both routes are '
+                + 'blocked on this network.';
+          }
         }
         return json(res, 400, { errors: [msg] });
       }
