@@ -1490,25 +1490,30 @@ class PaperPdf {
       final perColumn =
           ((total + questionColumns - 1) ~/ questionColumns).clamp(1, maxPerColumn).toInt();
       final questionGap = 8 * _k;
-      final questionWidth =
+      final rawQuestionWidth =
           (contentW - (questionColumns - 1) * questionGap) / questionColumns;
       final rowH = 11.2 * _k;
-      // Reserve room for the question number, then spread four bubbles across
-      // the remaining width so they never collide or spill past the border.
       final numberW = 26 * _k;
+      // Width one question row actually needs: number + four bubbles.
+      // Without a cap, a 10-question sheet stretched a single column across
+      // the whole page and left ~400pt of blank paper to the right of every
+      // row, so the answer boxes floated in the middle of nowhere.
+      const maxBubbleStep = 22.0;
+      final naturalRowW = numberW +
+          bubbleR * _k +
+          2 * _k +
+          6 * _k +
+          maxBubbleStep * 3 * _k +
+          (bubbleR + 6) * _k;
+      final questionWidth = rawQuestionWidth > naturalRowW
+          ? naturalRowW
+          : rawQuestionWidth;
       final bubbleAreaX = numberW + bubbleR * _k + 2 * _k;
       final bubbleSpan = questionWidth - bubbleAreaX - (bubbleR + 4) * _k;
-      // Keep ক/খ/গ/ঘ visually grouped. Spreading them across the whole row
-      // put 148pt between 9.6pt bubbles on a single-column sheet, which reads
-      // as four unrelated marks rather than one answer set. Cap the pitch at
-      // a little over two bubble widths and centre the group in the space.
-      const maxBubbleStep = 22.0;
+      // Keep ক/খ/গ/ঘ visually grouped rather than spread across the row.
       final bubbleStep =
           (bubbleSpan / 3) > maxBubbleStep * _k ? maxBubbleStep * _k : bubbleSpan / 3;
-      // Left-align the group just after the question number instead of
-      // centring it. Centring pushed the bubbles into the middle of a wide
-      // row, far from the number they belong to, so the eye had to travel
-      // across empty space to find them.
+      // Left-align the group just after the question number.
       final bubbleLeft = bubbleAreaX + 6 * _k;
       final headerH = 13 * _k;
 

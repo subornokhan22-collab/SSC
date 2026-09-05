@@ -998,6 +998,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             icon: Icons.tune_rounded,
           ),
           DropdownButtonFormField<SubjectInfo>(
+            // DropdownButtonFormField draws its own text; it does not read
+            // dropdownMenuTheme, so the colour must be set here or items fall
+            // back to a near-white default on the light menu.
+            style: const TextStyle(color: AppTheme.textDark, fontSize: 15),
             value: _subject,
             decoration: const InputDecoration(labelText: 'Subject'),
             items: allSubjects
@@ -1043,6 +1047,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           if (_mode == 'chapter') ...[
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              // DropdownButtonFormField draws its own text; it does not read
+              // dropdownMenuTheme, so the colour must be set here or items fall
+              // back to a near-white default on the light menu.
+              style: const TextStyle(color: AppTheme.textDark, fontSize: 15),
               value: _chapter,
               decoration: const InputDecoration(labelText: 'Chapter'),
               items: chapters

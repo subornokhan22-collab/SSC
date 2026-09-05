@@ -1086,6 +1086,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                           icon: Icons.tune_rounded,
                         ),
                         DropdownButtonFormField<SubjectInfo>(
+                          // DropdownButtonFormField draws its own text; it does not read
+                          // dropdownMenuTheme, so the colour must be set here or items fall
+                          // back to a near-white default on the light menu.
+                          style: const TextStyle(color: AppTheme.textDark, fontSize: 15),
                             value: _subject,
                             decoration:
                                 const InputDecoration(labelText: 'Subject'),
