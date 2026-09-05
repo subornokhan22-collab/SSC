@@ -319,17 +319,51 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final curved = CurvedAnimation(
+    // Incoming page: slide up a touch, fade and scale in.
+    final inCurve = CurvedAnimation(
       parent: animation,
       curve: Curves.easeOutCubic,
       reverseCurve: Curves.easeInCubic,
     );
+
+    // Outgoing page: the screen being covered. Without this the old screen
+    // stays fully opaque underneath, and because every Scaffold in this app
+    // is transparent (the animated backdrop shows through) you briefly see
+    // both screens stacked on top of each other.
+    final outCurve = CurvedAnimation(
+      parent: secondaryAnimation,
+      curve: Curves.easeInCubic,
+      reverseCurve: Curves.easeOutCubic,
+    );
+
     return SlideTransition(
+      // Push the old page slightly left and behind as the new one arrives.
       position: Tween<Offset>(
-        begin: const Offset(0.06, 0.02),
-        end: Offset.zero,
-      ).animate(curved),
-      child: FadeTransition(opacity: curved, child: child),
+        begin: Offset.zero,
+        end: const Offset(-0.18, 0),
+      ).animate(outCurve),
+      child: FadeTransition(
+        // Fade it out fast so the two never read as one jumbled screen.
+        opacity: Tween<double>(begin: 1, end: 0).animate(
+          CurvedAnimation(parent: secondaryAnimation, curve: const Interval(0, 0.55)),
+        ),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 1, end: 0.94).animate(outCurve),
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.10, 0),
+              end: Offset.zero,
+            ).animate(inCurve),
+            child: FadeTransition(
+              opacity: inCurve,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.97, end: 1).animate(inCurve),
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
