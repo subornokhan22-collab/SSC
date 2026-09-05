@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'data/question_bank.dart';
+import 'data/question_sync.dart';
 import 'services/app_style.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
@@ -26,8 +28,15 @@ Future<void> main() async {
   // The question bank now lives in assets/questions/*.json rather than in
   // Dart source, so it must be read before any screen touches allMCQs.
   await QuestionBank.load();
+  // Questions published from the web panel since the last release. The cache
+  // read is instant and offline; the network pull happens after startup so
+  // nothing waits on it.
+  await QuestionSync.loadCache();
   await AppStyle.load();
   await AuthService.init();
+
+  // Fire-and-forget: errors are swallowed inside refresh().
+  unawaited(QuestionSync.refresh());
 
   runApp(const ALearningApp());
 }

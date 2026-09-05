@@ -71,6 +71,32 @@ class QuestionBank {
     }
   }
 
+  /// Adds questions pulled from the server on top of the bundled bank.
+  ///
+  /// Ids are unique across the whole bank, so a remote row with an id that
+  /// already exists is treated as an edit and replaces the bundled copy
+  /// rather than appearing twice. Safe to call repeatedly.
+  static void addRemote({
+    List<Question> mcqs = const [],
+    List<ShortQuestion> saqs = const [],
+    List<CreativeQuestion> cqs = const [],
+  }) {
+    if (mcqs.isEmpty && saqs.isEmpty && cqs.isEmpty) return;
+
+    List<T> merge<T>(List<T> base, List<T> extra, String Function(T) idOf) {
+      if (extra.isEmpty) return base;
+      final ids = {for (final e in extra) idOf(e)};
+      return List<T>.unmodifiable([
+        ...base.where((b) => !ids.contains(idOf(b))),
+        ...extra,
+      ]);
+    }
+
+    _mcqs = merge(_mcqs, mcqs, (q) => q.id);
+    _saqs = merge(_saqs, saqs, (q) => q.id);
+    _cqs = merge(_cqs, cqs, (q) => q.id);
+  }
+
   /// Test seam — lets widget tests install a small bank without touching
   /// the asset bundle.
   @visibleForTesting

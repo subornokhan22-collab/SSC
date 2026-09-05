@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tutor's Desk — Question Admin</title>
+<style>
+  :root{
+    --primary:#3D5AFE; --primary-dark:#2A3EB1; --accent:#00B8A9;
+    --canvas:#F4F6FB; --surface:#FFFFFF; --surface-alt:#EDF1F9;
+    --border:#DDE3EF; --text:#16203A; --muted:#66739A;
+    --success:#12A150; --danger:#E5484D; --warning:#E08700;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--canvas);color:var(--text);
+    font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Bengali",sans-serif;
+  }
+  header{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;padding:20px 24px;
+  }
+  header h1{margin:0;font-size:19px;letter-spacing:.2px}
+  header p{margin:4px 0 0;opacity:.85;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 24px 60px}
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+  @media(max-width:960px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:20px;
+    box-shadow:0 1px 2px rgba(22,32,58,.04);
+  }
+  .card h2{margin:0 0 16px;font-size:15px;font-weight:650}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:14px 0 6px}
+  input,select,textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--border);
+    border-radius:10px;font:inherit;background:var(--surface);color:var(--text);
+  }
+  textarea{resize:vertical;min-height:74px}
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(61,90,254,.13);
+  }
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .opt input[type=radio]{width:auto;flex:none;accent-color:var(--success)}
+  .opt input[type=text]{flex:1}
+  .opt .tag{
+    width:24px;height:24px;flex:none;border-radius:50%;
+    background:var(--surface-alt);color:var(--muted);
+    display:grid;place-items:center;font-size:12px;font-weight:700;
+  }
+  button{
+    padding:11px 18px;border:0;border-radius:10px;font:inherit;font-weight:650;
+    cursor:pointer;background:var(--primary);color:#fff;
+  }
+  button:hover{background:var(--primary-dark)}
+  button.ghost{background:var(--surface-alt);color:var(--text)}
+  button.tiny{padding:4px 9px;font-size:12px;font-weight:600}
+  button.danger{background:transparent;color:var(--danger);padding:4px 8px;font-size:12px}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .actions{display:flex;gap:10px;align-items:center;margin-top:20px}
+  .msg{padding:11px 14px;border-radius:10px;font-size:13.5px;margin-bottom:14px;display:none}
+  .msg.err{background:#FDF0F0;color:#A3282C;border:1px solid #F6D5D6;display:block}
+  .msg.ok{background:#EAF8F0;color:#0B7038;border:1px solid #CBEBD8;display:block}
+  .msg ul{margin:6px 0 0;padding-left:18px}
+  .stat{display:flex;gap:20px;margin-bottom:14px;flex-wrap:wrap}
+  .stat div{font-size:12.5px;color:var(--muted)}
+  .stat b{display:block;font-size:20px;color:var(--text);font-weight:700}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .list{max-height:560px;overflow:auto;margin:0 -6px;padding:0 6px}
+  .q{
+    border:1px solid var(--border);border-radius:11px;padding:11px 13px;
+    margin-bottom:9px;background:var(--surface);
+  }
+  .q .meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+  .q .id{font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  .q .text{font-size:13.5px}
+  .pill{
+    font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;background:var(--surface-alt);color:var(--muted);
+  }
+  .pill.mcq{background:#E8ECFF;color:var(--primary-dark)}
+  .pill.saq{background:#E0F6F3;color:#046B60}
+  .pill.cq{background:#FFF1DC;color:#8A5200}
+  .hide{display:none}
+  .new{font-size:10px;font-weight:800;letter-spacing:.4px;padding:2px 6px;
+       border-radius:20px;background:#E6F7EE;color:var(--success)}
+  .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--surface-alt);
+        padding:4px;border-radius:12px}
+  .tab{flex:1;background:transparent;color:var(--muted);font-size:13.5px;
+       padding:9px 6px;border-radius:9px}
+  .tab.on{background:var(--surface);color:var(--primary);
+          box-shadow:0 1px 3px rgba(22,32,58,.10)}
+  .tab:hover{background:rgba(255,255,255,.6)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+  .thumb{border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--surface)}
+  .thumb img{width:100%;border-radius:6px;display:block}
+  .thumb .nm{font-size:10.5px;color:var(--muted);margin-top:5px;word-break:break-all}
+  .qprev{border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:9px}
+  .qprev .t{font-size:13.5px;margin-bottom:6px}
+  .qprev .o{font-size:12.5px;color:var(--muted)}
+  .bar{height:6px;background:var(--surface-alt);border-radius:4px;overflow:hidden;margin:8px 0}
+  .bar > i{display:block;height:100%;background:var(--primary);width:0}
+  .hint{font-size:12px;color:var(--muted);margin-top:5px}
+  .grow{flex:1}
+
+  .login{max-width:420px;margin:60px auto}
+  .muted{color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tutor's Desk — Question Admin</h1>
+  <p>Questions published here reach the app without an update</p>
+</header>
+
+<div class="wrap">
+
+  <!-- sign in -->
+  <div id="login" class="card login">
+    <h2>Sign in</h2>
+    <div id="loginMsg" class="msg"></div>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="pass">Password</label>
+    <input id="pass" type="password" autocomplete="current-password">
+    <div class="actions">
+      <button id="signin">Sign in</button>
+      <span class="grow"></span>
+      <span class="hint" id="loginBusy"></span>
+    </div>
+    <div class="muted" style="margin-top:10px">
+      Use the same account you sign in with on the app.
+    </div>
+  </div>
+
+  <!-- panel -->
+  <div id="app" class="hide">
+    <div class="grid">
+      <div class="card">
+        <div class="tabs">
+          <button class="tab on" data-tab="single">Single</button>
+          <button class="tab" data-tab="batch">Paste many</button>
+          <button class="tab" data-tab="images">Images</button>
+        </div>
+        <div id="msg" class="msg"></div>
+
+        <div class="row">
+          <div>
+            <label for="subject">Subject</label>
+            <select id="subject" style="color:var(--text)"></select>
+          </div>
+          <div>
+            <label for="type">Type</label>
+            <select id="type" style="color:var(--text)"></select>
+          </div>
+        </div>
+
+        <label for="chapter">Chapter</label>
+        <input id="chapter" type="text" placeholder="অধ্যায় ৩: কোষ বিভাজন" list="chapterList">
+        <datalist id="chapterList"></datalist>
+
+        <div id="pane-single">
+          <div id="f-question">
+            <label for="questionText">Question</label>
+            <textarea id="questionText" placeholder="প্রশ্নটি এখানে লিখুন…"></textarea>
+          </div>
+
+          <div id="f-mcq">
+            <label>Options — tick the correct one</label>
+            <div id="options"></div>
+          </div>
+
+          <div id="f-saq" class="hide">
+            <label for="answer">Answer</label>
+            <textarea id="answer"></textarea>
+          </div>
+
+          <div id="f-cq" class="hide">
+            <label for="stem">Stem (উদ্দীপক)</label>
+            <textarea id="stem"></textarea>
+            <label for="questionK">ক</label><input id="questionK" type="text">
+            <label for="questionKh">খ</label><input id="questionKh" type="text">
+            <label for="questionG">গ</label><input id="questionG" type="text">
+            <label for="questionGh">ঘ <span style="font-weight:500">(blank for 3-part maths)</span></label>
+            <input id="questionGh" type="text">
+            <label for="marks">Marks</label>
+            <input id="marks" type="text" value="1,2,3,4">
+          </div>
+
+          <div id="f-expl">
+            <label for="explanation">Explanation <span style="font-weight:500">(optional)</span></label>
+            <textarea id="explanation"></textarea>
+          </div>
+
+          <label for="figFile">Question image <span style="font-weight:500">(optional)</span></label>
+          <input id="figFile" type="file" accept="image/png,image/jpeg">
+          <div class="opt" style="margin-top:8px">
+            <input type="checkbox" id="figMono" checked style="width:auto;flex:none">
+            <label for="figMono" style="margin:0;font-weight:600;color:var(--text)">Black &amp; white</label>
+          </div>
+          <div class="opt">
+            <input type="checkbox" id="figTrim" checked style="width:auto;flex:none">
+            <label for="figTrim" style="margin:0;font-weight:600;color:var(--text)">Trim blank edges</label>
+          </div>
+          <div id="figPreviewWrap" class="hide" style="margin-top:10px">
+            <img id="figPreview" style="max-width:100%;border:1px solid var(--border);border-radius:10px">
+            <div class="hint" id="figInfo"></div>
+            <label for="figCaption">Caption</label>
+            <input id="figCaption" type="text">
+            <button type="button" class="ghost tiny" id="figClear" style="margin-top:8px">Remove</button>
+          </div>
+
+          <div class="actions">
+            <button id="save">Publish question</button>
+            <button id="clear" class="ghost" type="button">Clear</button>
+            <span class="grow"></span>
+            <span class="hint" id="saving"></span>
+          </div>
+        </div>
+
+        <div id="pane-batch" class="hide">
+          <label for="apiKey">Gemini API key</label>
+          <input id="apiKey" type="password" placeholder="AIza…">
+          <div class="hint">Stored in this browser only. aistudio.google.com/apikey</div>
+          <div class="actions" style="margin-top:8px">
+            <button id="testKey" class="ghost" type="button">Test connection</button>
+          </div>
+          <label for="rawText">Paste questions</label>
+          <textarea id="rawText" style="min-height:180px"></textarea>
+          <div class="actions">
+            <button id="formatBtn">Format with AI</button>
+            <span class="grow"></span>
+            <span class="hint" id="fmtStatus"></span>
+          </div>
+          <div id="batchOut" class="hide">
+            <label>Preview — check before publishing</label>
+            <div id="batchList"></div>
+            <div class="actions">
+              <button id="batchSave">Publish all</button>
+              <button id="batchCancel" class="ghost" type="button">Discard</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pane-images" class="hide">
+          <label for="imgFiles">Question images — several at once</label>
+          <input id="imgFiles" type="file" accept="image/png,image/jpeg" multiple>
+          <div class="opt" style="margin-top:8px">
+            <input type="checkbox" id="imgMono" checked style="width:auto;flex:none">
+            <label for="imgMono" style="margin:0;font-weight:600;color:var(--text)">Black &amp; white</label>
+          </div>
+          <div class="opt">
+            <input type="checkbox" id="imgTrim" checked style="width:auto;flex:none">
+            <label for="imgTrim" style="margin:0;font-weight:600;color:var(--text)">Trim blank edges</label>
+          </div>
+          <label for="imgText">Question text for each</label>
+          <input id="imgText" type="text" value="চিত্রটি লক্ষ কর এবং প্রশ্নের উত্তর দাও।">
+          <div class="bar hide" id="imgBar"><i></i></div>
+          <div id="imgGrid" class="grid2" style="margin-top:10px"></div>
+          <div class="actions">
+            <button id="imgSave" disabled>Publish all</button>
+            <button id="imgClear" class="ghost" type="button">Clear</button>
+            <span class="grow"></span>
+            <span class="hint" id="imgStatus"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Published</h2>
+        <div class="stat">
+          <div>On the server<b id="s-total">—</b></div>
+          <div>Showing<b id="s-shown">—</b></div>
+        </div>
+        <div class="filters">
+          <select id="f-subject" style="color:var(--text)"><option value="">All subjects</option></select>
+          <select id="f-type" style="color:var(--text)">
+            <option value="">All types</option>
+            <option value="mcq">MCQ</option>
+            <option value="saq">SAQ</option>
+            <option value="cq">CQ</option>
+          </select>
+        </div>
+        <input id="f-search" type="text" placeholder="Search text or id…">
+        <div class="list" id="list" style="margin-top:12px"></div>
+        <div class="actions">
+          <span class="grow"></span>
+          <button id="signout" class="ghost" type="button">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
