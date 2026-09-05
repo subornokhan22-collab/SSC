@@ -545,6 +545,7 @@ async function uploadCanvas(c, name){
 
 // ── paste many + Gemini ──────────────────────────────────
 let BATCH = [];
+let RAW_BATCH = [];
 $('apiKey').value = localStorage.getItem('gemKey') || '';
 $('apiKey').onchange = () => localStorage.setItem('gemKey', $('apiKey').value.trim());
 
@@ -694,7 +695,8 @@ $('formatBtn').onclick = async () => {
       list = d.questions || [];
     }
 
-    BATCH = list;
+    RAW_BATCH = list.slice();
+    BATCH = list.map(q => normalizeQuestion(q, type));
     if (!BATCH.length){ showMsg('err', '<b>No questions found in that text.</b>'); return; }
     renderBatch();
     showMsg('ok', `Found <b>${BATCH.length}</b> question(s). Check them, then Save all.`);
@@ -706,17 +708,118 @@ $('formatBtn').onclick = async () => {
   }
 };
 
+/** Models do not always use the field names we asked for. They wrap things
+ *  in "payload", call the stem "question", return options as objects, or give
+ *  the answer as a Bangla letter. Normalise all of that into the exact shape
+ *  /api/questions/batch validates, so the preview and the save agree. */
+function normalizeQuestion(raw, type){
+  const q = { ...(raw || {}) };
+  // Unwrap a nested payload/question/data object.
+  for (const k of ['payload','question','data','fields']){
+    if (q[k] && typeof q[k] === 'object' && !Array.isArray(q[k])) Object.assign(q, q[k]);
+  }
+  const pick = (...names) => {
+    for (const n of names){
+      const v = q[n];
+      if (typeof v === 'string' && v.trim()) return v.trim();
+    }
+    return '';
+  };
+
+  const out = { type: q.type || type };
+
+  if (out.type === 'cq'){
+    out.stem = pick('stem','uddipok','passage','questionText','question','text','body');
+    out.questionK  = pick('questionK','k','ka','ক');
+    out.questionKh = pick('questionKh','kh','kha','খ');
+    out.questionG  = pick('questionG','g','ga','গ');
+    out.questionGh = pick('questionGh','gh','gha','ঘ');
+    let marks = q.marks;
+    if (typeof marks === 'string') marks = marks.split(/[^0-9]+/).filter(Boolean).map(Number);
+    if (!Array.isArray(marks) || !marks.length) marks = out.questionGh ? [1,2,3,4] : [2,4,4];
+    out.marks = marks.map(Number).filter(n => n > 0);
+    return out;
+  }
+
+  out.questionText = pick('questionText','question','text','stem','title','ques','prompt');
+
+  if (out.type === 'saq'){
+    out.answer = pick('answer','ans','correctAnswer','solution','uttor');
+    const ex = pick('explanation','reason','byakkha');
+    if (ex) out.explanation = ex;
+    return out;
+  }
+
+  // MCQ options: an array of strings, an array of objects, or separate keys.
+  let opts = q.options || q.choices || q.answers || q.option;
+  if (!Array.isArray(opts)){
+    const letters = ['ক','খ','গ','ঘ','a','b','c','d','A','B','C','D','1','2','3','4'];
+    const found = [];
+    for (const L of letters){
+      for (const key of ['option'+L, 'opt'+L, L]){
+        if (typeof q[key] === 'string' && q[key].trim()){ found.push(q[key].trim()); break; }
+      }
+    }
+    opts = found;
+  }
+  opts = (opts || []).map(o => {
+    if (typeof o === 'string') return o.trim();
+    if (o && typeof o === 'object') return String(o.text ?? o.value ?? o.option ?? o.label ?? '').trim();
+    return String(o ?? '').trim();
+  }).filter(Boolean)
+    // Strip a leading marker the model left in place: "ক) ...", "(খ) ...", "A. ..."
+    // Strip a leading marker: "ক) ...", "(খ) ...", "A. ...". A hyphen is NOT
+    // treated as a separator here - "ক-টেক্সট" is real option text, and an
+    // earlier version silently cut it down to "টেক্সট".
+    .map(o => o.replace(/^[\(\[]\s*[ক-ঘa-dA-D1-4]\s*[\)\]]\s*/, '')
+               .replace(/^[ক-ঘa-dA-D1-4]\s*[\)\].:]\s+/, '')
+               .trim());
+  out.options = opts;
+
+  // Correct answer: an index, or a letter, or the answer text itself.
+  let ci = q.correctIndex ?? q.correct ?? q.answerIndex ?? q.correctOption ?? q.answer;
+  if (typeof ci === 'string'){
+    const t = ci.trim();
+    const map = { 'ক':0,'খ':1,'গ':2,'ঘ':3,'a':0,'b':1,'c':2,'d':3,'A':0,'B':1,'C':2,'D':3,
+                  '1':0,'2':1,'3':2,'4':3 };
+    if (t in map) ci = map[t];
+    else {
+      const hit = opts.findIndex(o => o === t);
+      ci = hit >= 0 ? hit : 0;
+    }
+  }
+  ci = Number(ci);
+  out.correctIndex = Number.isInteger(ci) && ci >= 0 && ci < opts.length ? ci : 0;
+
+  const ex = pick('explanation','reason','byakkha','solution');
+  if (ex) out.explanation = ex;
+  return out;
+}
+
 function renderBatch(){
   $('batchList').innerHTML = BATCH.map((q, i) => {
     const t = escapeHtml(q.questionText || q.stem || '');
     let sub = '';
-    if (q.options) sub = q.options.map((o, n) =>
-      `${n === q.correctIndex ? '<b>✓ </b>' : ''}${escapeHtml(o)}`).join(' • ');
-    else if (q.answer) sub = escapeHtml(q.answer);
-    else if (q.questionK) sub = ['ক','খ','গ','ঘ']
-      .map((L, n) => escapeHtml([q.questionK,q.questionKh,q.questionG,q.questionGh][n] || ''))
-      .filter(Boolean).map((x, n) => `${['ক','খ','গ','ঘ'][n]}) ${x}`).join('<br>');
-    return `<div class="qprev"><div class="t"><b>${i+1}.</b> ${t}</div><div class="o">${sub}</div></div>`;
+    if (q.options && q.options.length) {
+      sub = q.options.map((o, n) =>
+        `${n === q.correctIndex ? '<b>&#10003; </b>' : ''}${escapeHtml(o)}`).join(' &bull; ');
+    } else if (q.answer) {
+      sub = escapeHtml(q.answer);
+    } else if (q.questionK) {
+      const L = ['ক','খ','গ','ঘ'];
+      sub = [q.questionK, q.questionKh, q.questionG, q.questionGh]
+        .map((x, n) => x ? `${L[n]}) ${escapeHtml(x)}` : '')
+        .filter(Boolean).join('<br>');
+    }
+    // If normalising still found nothing, show the raw JSON rather than a
+    // blank card — a silent empty row hides the real problem.
+    const empty = !t && !sub;
+    const bodyHtml = empty
+      ? `<div class="o" style="color:var(--danger)">Could not read this one. Raw reply:</div>
+         <pre style="font-size:11px;white-space:pre-wrap;word-break:break-all;margin:6px 0 0">${
+           escapeHtml(JSON.stringify(RAW_BATCH[i] ?? q, null, 1)).slice(0, 700)}</pre>`
+      : `<div class="t"><b>${i+1}.</b> ${t}</div><div class="o">${sub}</div>`;
+    return `<div class="qprev">${bodyHtml}</div>`;
   }).join('');
   $('batchOut').classList.remove('hide');
 }
