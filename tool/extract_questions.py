@@ -466,10 +466,15 @@ def collect() -> list[dict[str, Any]]:
     return records
 
 
+# Hand-maintained banks that this script must never overwrite. They are not
+# generated from Dart, so regenerating the export has to leave them alone.
+PRESERVED = {"my_questions.json"}
+
+
 def write_assets(records: list[dict[str, Any]]) -> dict[str, int]:
     os.makedirs(OUT_DIR, exist_ok=True)
     for f in os.listdir(OUT_DIR):
-        if f.endswith(".json"):
+        if f.endswith(".json") and f not in PRESERVED:
             os.remove(os.path.join(OUT_DIR, f))
 
     groups: dict[str, list[dict[str, Any]]] = {}
@@ -487,6 +492,18 @@ def write_assets(records: list[dict[str, Any]]) -> dict[str, int]:
         manifest["files"].append(name)
         manifest["counts"][name] = len(rows)
         written[name] = len(rows)
+
+    # Re-list any hand-maintained bank so it survives a regeneration.
+    for name in sorted(PRESERVED):
+        fp = os.path.join(OUT_DIR, name)
+        if os.path.exists(fp) and name not in manifest["files"]:
+            with open(fp, encoding="utf-8") as fh:
+                try:
+                    n = len(json.load(fh))
+                except Exception:
+                    n = 0
+            manifest["files"].append(name)
+            manifest["counts"][name] = n
 
     # Sort so re-running this and the admin panel produce identical manifests.
     manifest["files"].sort()

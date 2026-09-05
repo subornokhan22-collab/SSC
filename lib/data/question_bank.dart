@@ -48,7 +48,12 @@ class QuestionBank {
 
     final sources = <String>[];
     for (final name in files) {
-      sources.add(await rootBundle.loadString('assets/questions/$name'));
+      try {
+        sources.add(await rootBundle.loadString('assets/questions/$name'));
+      } catch (e) {
+        // One unreadable file must not cost the tutor every other question.
+        debugPrint('QuestionBank: skipped $name ($e)');
+      }
     }
 
     final parsed = await compute(_decodeAll, sources);
@@ -96,16 +101,27 @@ _Decoded _decodeAll(List<String> sources) {
   final cqs = <CreativeQuestion>[];
 
   for (final raw in sources) {
-    final rows = json.decode(raw) as List;
+    final List rows;
+    try {
+      rows = json.decode(raw) as List;
+    } catch (_) {
+      // A hand-edited file with a stray comma should not blank the bank.
+      continue;
+    }
     for (final row in rows) {
-      final map = row as Map<String, dynamic>;
-      switch (map['type']) {
-        case 'mcq':
-          mcqs.add(questionFromJson(map));
-        case 'saq':
-          saqs.add(shortQuestionFromJson(map));
-        case 'cq':
-          cqs.add(creativeQuestionFromJson(map));
+      try {
+        final map = row as Map<String, dynamic>;
+        switch (map['type']) {
+          case 'mcq':
+            mcqs.add(questionFromJson(map));
+          case 'saq':
+            saqs.add(shortQuestionFromJson(map));
+          case 'cq':
+            cqs.add(creativeQuestionFromJson(map));
+        }
+      } catch (_) {
+        // Skip a malformed entry; keep the rest of the file.
+        continue;
       }
     }
   }
