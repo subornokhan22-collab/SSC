@@ -142,6 +142,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _busy = true;
       _err = null;
+      // Drop the "code sent" banner so it cannot sit next to an error.
+      _msg = null;
     });
     try {
       await AuthService.verifySignUpCode(
@@ -149,8 +151,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         code: _codeCtrl.text,
       );
       // Confirming by code can create the user without the password being
-      // attached yet — set it now so the next sign-in works.
-      await AuthService.setPassword(_passCtrl.text);
+      // attached yet. This is a no-op when signUp already attached it.
+      await AuthService.ensurePassword(_passCtrl.text);
       await _finish();
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));

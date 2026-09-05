@@ -137,8 +137,7 @@ class AuthService {
     _profileCache = null;
   }
 
-  /// Sets a password on the signed-in account (used right after sign-up when
-  /// the account was confirmed by code, and by "change password").
+  /// Sets a password on the signed-in account (used by "change password").
   static Future<void> setPassword(String password) async {
     _requireReady();
     if (password.length < minPasswordLength) {
@@ -146,6 +145,25 @@ class AuthService {
           'Password must be at least $minPasswordLength characters');
     }
     await _c.auth.updateUser(UserAttributes(password: password));
+  }
+
+  /// Makes sure the account carries [password], for use right after sign-up.
+  ///
+  /// `signUp` already attaches the password, so once the code is verified the
+  /// account usually has it. Supabase then rejects re-setting the same value
+  /// with "New password should be different from the old password" — which is
+  /// a success for our purposes, not a failure. Anything else is rethrown.
+  static Future<void> ensurePassword(String password) async {
+    try {
+      await setPassword(password);
+    } on AuthException catch (e) {
+      final m = e.message.toLowerCase();
+      final alreadySet = m.contains('should be different') ||
+          m.contains('different from the old password') ||
+          m.contains('same as the old password') ||
+          m.contains('same_password');
+      if (!alreadySet) rethrow;
+    }
   }
 
   /// Emails a password-reset link/code for tutors who forgot their password.
