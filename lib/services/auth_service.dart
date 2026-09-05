@@ -286,17 +286,32 @@ class AuthService {
 
   /// Turns any auth/network failure into a short, human message.
   static String friendlyError(Object e) {
-    if (e is AuthException && e.message.trim().isNotEmpty) return e.message;
     final s = e.toString().toLowerCase();
+
+    // Network problems are checked BEFORE the AuthException shortcut below.
+    // supabase_flutter wraps connection failures in
+    // AuthRetryableFetchException, which extends AuthException and carries
+    // the raw socket text as its message — returning that early dumped
+    // "ClientException with SocketException: Failed host lookup ..." straight
+    // onto the sign-in screen.
+    if (s.contains('socketexception') ||
+        s.contains('failed host lookup') ||
+        s.contains('no address associated') ||
+        s.contains('clientexception') ||
+        s.contains('connection closed') ||
+        s.contains('connection refused') ||
+        s.contains('connection reset') ||
+        s.contains('handshake') ||
+        s.contains('timeout') ||
+        s.contains('timed out') ||
+        s.contains('network is unreachable')) {
+      return 'Cannot reach the server — check your internet connection '
+          '(try switching between Wi-Fi and mobile data) and try again.';
+    }
     if (s.contains('rate') || s.contains('429') || s.contains('too many')) {
       return 'Too many attempts — please wait a moment and try again.';
     }
-    if (s.contains('socketexception') ||
-        s.contains('failed host lookup') ||
-        s.contains('network') ||
-        s.contains('timeout')) {
-      return 'No internet — check your connection and try again.';
-    }
+    if (e is AuthException && e.message.trim().isNotEmpty) return e.message;
     if (s.contains('invalid login credentials') ||
         s.contains('invalid_credentials')) {
       return 'Wrong email or password — please try again.';
