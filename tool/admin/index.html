@@ -154,6 +154,22 @@
       <textarea id="explanation" placeholder="ব্যাখ্যা…"></textarea>
     </div>
 
+    <!-- whole-question picture -->
+    <label for="figFile">Question image <span style="font-weight:500">(optional — figure, diagram or the whole printed question)</span></label>
+    <input id="figFile" type="file" accept="image/png,image/jpeg">
+    <div class="hint">Papers print in black and white. Tick the filter to convert to clean high-contrast mono before uploading.</div>
+    <div class="opt" style="margin-top:8px">
+      <input type="checkbox" id="figMono" checked style="width:auto;flex:none">
+      <label for="figMono" style="margin:0;font-weight:600;color:var(--text)">Convert to high-contrast black &amp; white</label>
+    </div>
+    <div id="figPreviewWrap" class="hide" style="margin-top:10px">
+      <img id="figPreview" style="max-width:100%;border:1px solid var(--border);border-radius:10px">
+      <div class="hint" id="figInfo"></div>
+      <label for="figCaption">Image caption <span style="font-weight:500">(optional)</span></label>
+      <input id="figCaption" type="text" placeholder="চিত্র: মানব হৃৎপিণ্ড">
+      <button type="button" class="ghost tiny" id="figClear" style="margin-top:8px">Remove image</button>
+    </div>
+
     <div class="row">
       <div>
         <label for="source">Source</label>
@@ -279,6 +295,10 @@ function escapeHtml(s){
 }
 
 function clearForm(){
+  FIGURE = null;
+  const ff = $('figFile'); if (ff) ff.value = '';
+  const fc = $('figCaption'); if (fc) fc.value = '';
+  const fw = $('figPreviewWrap'); if (fw) fw.classList.add('hide');
   $('questionText').value = '';
   $('answer').value = '';
   $('explanation').value = '';
@@ -287,6 +307,83 @@ function clearForm(){
   $('sourceLabel').value = '';
   renderOptions();
 }
+
+// ── question image ───────────────────────────────────────
+let FIGURE = null;   // { imagePath, aspect } once uploaded
+
+/** Grayscale + contrast stretch, so scans print cleanly in mono. */
+function toMono(img){
+  const c = document.createElement('canvas');
+  // Cap the long edge; textbook scans are often far larger than needed.
+  const MAX = 1400;
+  let { naturalWidth: w, naturalHeight: h } = img;
+  if (Math.max(w, h) > MAX){ const k = MAX / Math.max(w, h); w = Math.round(w*k); h = Math.round(h*k); }
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);      // flatten transparency
+  g.drawImage(img, 0, 0, w, h);
+  const d = g.getImageData(0, 0, w, h);
+  const p = d.data;
+  // Luminance, then a soft contrast curve. Not a hard threshold: pure 1-bit
+  // destroys thin diagram lines and Bengali matras.
+  for (let i = 0; i < p.length; i += 4){
+    const v = 0.299*p[i] + 0.587*p[i+1] + 0.114*p[i+2];
+    let o = (v - 128) * 1.45 + 128;        // stretch contrast
+    o = o < 0 ? 0 : o > 255 ? 255 : o;
+    if (o > 224) o = 255;                  // clean the paper white
+    if (o < 42)  o = 0;                    // deepen the ink
+    p[i] = p[i+1] = p[i+2] = o; p[i+3] = 255;
+  }
+  g.putImageData(d, 0, 0);
+  return c;
+}
+
+function canvasBlob(c){
+  return new Promise(r => c.toBlob(r, 'image/png'));
+}
+
+$('figFile').onchange = async () => {
+  const f = $('figFile').files[0];
+  if (!f) return;
+  $('saving').textContent = 'Processing image…';
+  try {
+    const img = new Image();
+    img.src = URL.createObjectURL(f);
+    await img.decode();
+
+    let blob = f, name = f.name;
+    if ($('figMono').checked){
+      const c = toMono(img);
+      blob = await canvasBlob(c);
+      name = name.replace(/\.[^.]+$/, '') + '.png';
+    }
+
+    const r = await fetch('/api/figure?name=' + encodeURIComponent(name), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: blob,
+    });
+    const data = await r.json();
+    if (!r.ok){ showMsg('err', '<b>Upload failed:</b>', data.errors); return; }
+
+    FIGURE = { imagePath: data.imagePath, aspect: data.aspect };
+    $('figPreview').src = '/figure/' + encodeURIComponent(data.imagePath) + '?t=' + Date.now();
+    $('figInfo').textContent =
+      `${data.imagePath} — ${data.width}x${data.height}px, ${(data.bytes/1024).toFixed(0)} KB`;
+    $('figPreviewWrap').classList.remove('hide');
+  } catch(e){
+    showMsg('err', '<b>Could not read that image:</b>', [String(e)]);
+  } finally {
+    $('saving').textContent = '';
+  }
+};
+
+$('figClear').onclick = () => {
+  FIGURE = null;
+  $('figFile').value = '';
+  $('figCaption').value = '';
+  $('figPreviewWrap').classList.add('hide');
+};
 
 async function save(){
   const type = $('type').value;
@@ -310,6 +407,10 @@ async function save(){
     body.stem = $('stem').value;
     for (const k of ['questionK','questionKh','questionG','questionGh']) body[k] = $(k).value;
     body.marks = $('marks').value;
+  }
+
+  if (FIGURE){
+    body.figure = { ...FIGURE, caption: $('figCaption').value };
   }
 
   $('save').disabled = true;

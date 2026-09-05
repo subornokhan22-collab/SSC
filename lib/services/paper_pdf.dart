@@ -63,6 +63,45 @@ class PaperPdf {
   static String? _dvb;
   static bool _fontsTried = false;
 
+  /// Cache of decoded figure pictures, keyed by file name.
+  static final Map<String, ui.Image> _figureImageCache = {};
+
+  /// Decodes every `FigureKind.image` picture referenced by [figures].
+  ///
+  /// paintFig runs synchronously while the page is being drawn, so the bytes
+  /// have to be turned into ui.Image objects before rendering begins. A
+  /// missing or unreadable file is skipped — paintFig then draws a visible
+  /// placeholder instead of failing the whole paper.
+  static Future<Map<String, ui.Image>> _decodeFigureImages(
+    Iterable<QuestionFigure?> figures,
+  ) async {
+    final names = <String>{
+      for (final f in figures)
+        if (f != null && f.kind == FigureKind.image && f.imagePath != null)
+          f.imagePath!,
+    };
+    final out = <String, ui.Image>{};
+    for (final name in names) {
+      final cached = _figureImageCache[name];
+      if (cached != null) {
+        out[name] = cached;
+        continue;
+      }
+      try {
+        final data = await rootBundle.load('assets/question_figures/$name');
+        final codec = await ui.instantiateImageCodec(
+          data.buffer.asUint8List(),
+        );
+        final frame = await codec.getNextFrame();
+        _figureImageCache[name] = frame.image;
+        out[name] = frame.image;
+      } catch (_) {
+        // Leave it out; paintFig shows a '[ছবি পাওয়া যায়নি]' box.
+      }
+    }
+    return out;
+  }
+
   static Future<void> _loadFonts() async {
     if (_fontsTried) return; // একবার চেষ্টা করলেই যথেষ্ট
     _fontsTried = true;
@@ -534,6 +573,14 @@ class PaperPdf {
     String? subjectCode,
     String? setCode,
   }) async {
+    // Decode every picture up front. paintFig is synchronous, so images have
+    // to be ready before any drawing starts.
+    final figureImages = await _decodeFigureImages([
+      ...mcqs.map((q) => q.figure),
+      ...cqs.map((q) => q.figure),
+      ...saqs.map((q) => q.figure),
+    ]);
+
     final pages = <Uint8List>[];
     const double sw = 1654.0;
     const double sh = 2339.0;
@@ -717,6 +764,14 @@ class PaperPdf {
           return 120 * _k + pad;
         case FigureKind.barChart:
           return 132 * _k + pad;
+        case FigureKind.image:
+          // The picture is drawn at the column width, so its height follows
+          // from the stored aspect ratio. Capped so one photo cannot swallow
+          // a whole page.
+          final aspect = (f.aspect ?? 1.4).clamp(0.35, 4.0);
+          final h = w / aspect;
+          final maxH = 300.0 * _k;
+          return (h > maxH ? maxH : h) + pad;
       }
     }
 
@@ -927,6 +982,37 @@ class PaperPdf {
                       base + 2 * _k));
             }
           }
+        }
+      } else if (f.kind == FigureKind.image) {
+        // A whole question captured as one picture. The bytes were decoded
+        // before rendering started (see _figureImages) because this painter
+        // is synchronous.
+        final img = figureImages[f.imagePath];
+        final aspect = (f.aspect ?? 1.4).clamp(0.35, 4.0);
+        var drawW = w;
+        var drawH = drawW / aspect;
+        final maxH = 300.0 * _k;
+        if (drawH > maxH) {
+          drawH = maxH;
+          drawW = drawH * aspect;
+        }
+        bodyH = drawH;
+        final dx = x + (w - drawW) / 2;
+        if (img != null) {
+          canvas.drawImageRect(
+            img,
+            Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+            Rect.fromLTWH(dx, y0, drawW, drawH),
+            Paint()..filterQuality = FilterQuality.high,
+          );
+        } else {
+          // Missing file: leave a labelled placeholder rather than a blank
+          // gap, so the problem is obvious on the printed page.
+          canvas.drawRect(Rect.fromLTWH(dx, y0, drawW, drawH), line);
+          final tp = makePainter('[ছবি পাওয়া যায়নি]', 9.5, align: TextAlign.center);
+          tp.layout(maxWidth: drawW);
+          tp.paint(canvas,
+              Offset(dx + (drawW - tp.width) / 2, y0 + drawH / 2 - tp.height / 2));
         }
       }
 

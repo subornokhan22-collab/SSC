@@ -147,6 +147,12 @@ QuestionFigure? _figureFrom(Object? v) {
         values: (m['values'] as List?)?.cast<int>() ?? const <int>[],
         caption: caption,
       );
+    case 'image':
+      return QuestionFigure.image(
+        imagePath: m['imagePath'] as String? ?? '',
+        aspect: (m['aspect'] as num?)?.toDouble() ?? 1.4,
+        caption: caption,
+      );
   }
   return null;
 }

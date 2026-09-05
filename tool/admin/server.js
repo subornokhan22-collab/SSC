@@ -23,6 +23,7 @@ const url = require('url');
 
 const REPO = path.resolve(__dirname, '..', '..');
 const DIR = path.join(REPO, 'assets', 'questions');
+const FIG_DIR = path.join(REPO, 'assets', 'question_figures');
 const MANIFEST = path.join(DIR, 'manifest.json');
 const PORT = process.env.PORT || 5055;
 
@@ -169,6 +170,40 @@ function nextId(subjectId, type, chapter, ids) {
   return base + String(i).padStart(3, '0');
 }
 
+// ── figure images ─────────────────────────────────────────────────────
+
+/** Reads width/height out of a PNG or JPEG header. No dependencies. */
+function imageSize(buf) {
+  // PNG: 8-byte signature, then IHDR with width/height as big-endian uint32.
+  if (buf.length > 24 && buf.readUInt32BE(0) === 0x89504e47) {
+    return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20), type: 'png' };
+  }
+  // JPEG: walk the segment markers to the first SOFn frame header.
+  if (buf.length > 4 && buf[0] === 0xff && buf[1] === 0xd8) {
+    let i = 2;
+    while (i < buf.length - 9) {
+      if (buf[i] !== 0xff) { i++; continue; }
+      const marker = buf[i + 1];
+      const len = buf.readUInt16BE(i + 2);
+      // SOF0..SOF15, excluding the non-frame markers DHT/JPG/DAC.
+      if (marker >= 0xc0 && marker <= 0xcf &&
+          marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+        return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7), type: 'jpg' };
+      }
+      i += 2 + len;
+    }
+  }
+  return null;
+}
+
+function safeName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 60) || 'figure';
+}
+
 // ── validation ────────────────────────────────────────────────────────
 
 function validate(body, idx) {
@@ -282,6 +317,20 @@ function readBody(req) {
   });
 }
 
+function readRaw(req, limit = 12e6) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let n = 0;
+    req.on('data', (c) => {
+      n += c.length;
+      if (n > limit) { reject(new Error('Image too large (max 12 MB)')); return; }
+      chunks.push(c);
+    });
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const u = url.parse(req.url, true);
 
@@ -355,6 +404,17 @@ const server = http.createServer(async (req, res) => {
         payload,
       };
       if ((body.sourceLabel || '').trim()) row.sourceLabel = body.sourceLabel.trim();
+      // Whole-question picture (figure, equations and all).
+      if (body.figure && body.figure.imagePath) {
+        row.figure = {
+          kind: 'image',
+          imagePath: String(body.figure.imagePath),
+          aspect: Number(body.figure.aspect) || 1.4,
+        };
+        if ((body.figure.caption || '').trim()) {
+          row.figure.caption = body.figure.caption.trim();
+        }
+      }
 
       const rows = readBank(bank);
       rows.push(row);
@@ -362,6 +422,43 @@ const server = http.createServer(async (req, res) => {
       const total = refreshManifest();
 
       return json(res, 200, { ok: true, id, bank, total });
+    }
+
+    if (req.method === 'POST' && u.pathname === '/api/figure') {
+      const buf = await readRaw(req);
+      const size = imageSize(buf);
+      if (!size) {
+        return json(res, 400, {
+          errors: ['Only PNG or JPEG images are supported.'],
+        });
+      }
+      fs.mkdirSync(FIG_DIR, { recursive: true });
+      const base = safeName(u.query.name || 'figure').replace(/\.(png|jpe?g)$/i, '');
+      const ext = size.type === 'png' ? 'png' : 'jpg';
+      let file = `${base}.${ext}`;
+      let i = 2;
+      while (fs.existsSync(path.join(FIG_DIR, file))) file = `${base}-${i++}.${ext}`;
+      fs.writeFileSync(path.join(FIG_DIR, file), buf);
+      return json(res, 200, {
+        ok: true,
+        imagePath: file,
+        aspect: Number((size.w / size.h).toFixed(4)),
+        width: size.w,
+        height: size.h,
+        bytes: buf.length,
+      });
+    }
+
+    if (req.method === 'GET' && u.pathname.startsWith('/figure/')) {
+      const name = safeName(decodeURIComponent(u.pathname.slice('/figure/'.length)));
+      const p2 = path.join(FIG_DIR, name);
+      if (!fs.existsSync(p2)) return json(res, 404, { errors: ['not found'] });
+      const b = fs.readFileSync(p2);
+      res.writeHead(200, {
+        'Content-Type': name.endsWith('.png') ? 'image/png' : 'image/jpeg',
+        'Content-Length': b.length,
+      });
+      return res.end(b);
     }
 
     if (req.method === 'DELETE' && u.pathname.startsWith('/api/questions/')) {

@@ -1,5 +1,5 @@
 /// চিত্রের ধরন
-enum FigureKind { table, triangle, barChart }
+enum FigureKind { table, triangle, barChart, image }
 
 /// প্রশ্নসহ ছাপার চিত্র/সারণির বর্ণনা
 class QuestionFigure {
@@ -12,6 +12,16 @@ class QuestionFigure {
   final String? rightAngleAt;
   final String? caption;
 
+  /// File name of a picture in assets/question_figures/, e.g. 'heart.png'.
+  /// Used by FigureKind.image, where the whole question — figure and all —
+  /// is a single scanned/photographed image rather than drawn shapes.
+  final String? imagePath;
+
+  /// Width divided by height of that picture. Stored alongside the name so
+  /// the paper layout can reserve the right amount of vertical space without
+  /// having to decode the file first.
+  final double? aspect;
+
   const QuestionFigure._(
     this.kind, {
     this.headers = const [],
@@ -21,6 +31,8 @@ class QuestionFigure {
     this.values = const [],
     this.rightAngleAt,
     this.caption,
+    this.imagePath,
+    this.aspect,
   });
 
   const QuestionFigure.table({
@@ -50,4 +62,12 @@ class QuestionFigure {
     String? caption,
   }) : this._(FigureKind.barChart,
             headers: labels, values: values, caption: caption);
+
+  /// A whole question captured as one picture (figure, equations and all).
+  const QuestionFigure.image({
+    required String imagePath,
+    double aspect = 1.4,
+    String? caption,
+  }) : this._(FigureKind.image,
+            imagePath: imagePath, aspect: aspect, caption: caption);
 }
