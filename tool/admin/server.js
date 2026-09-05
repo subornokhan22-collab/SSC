@@ -211,6 +211,15 @@ function validate(body, idx) {
   const errors = [];
   const { type, subjectId, chapter } = body;
 
+  // Refuse text that already contains U+FFFD. That character only appears
+  // when bytes were decoded wrongly somewhere upstream, and saving it bakes
+  // permanent mojibake into the bank.
+  if (JSON.stringify(body).includes('\uFFFD')) {
+    errors.push(
+      'The text contains corrupted characters (\uFFFD). Re-paste it — do not save.',
+    );
+  }
+
   if (!BANKS[subjectId]) errors.push(`Unknown subject "${subjectId}".`);
   else if (!BANKS[subjectId][type]) {
     errors.push(
@@ -303,18 +312,28 @@ function json(res, code, obj) {
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
-    let data = '';
+    // Collect raw bytes and decode ONCE at the end.
+    //
+    // `data += chunk` converts each chunk to a string on its own, so a
+    // multi-byte character split across a chunk boundary is decoded as two
+    // invalid fragments and replaced with U+FFFD. Bengali letters are three
+    // bytes each, which turned ক্রোমোজোম into ক্<3x U+FFFD>োমোজোম.
+    const chunks = [];
+    let n = 0;
     req.on('data', (c) => {
-      data += c;
-      if (data.length > 5e6) reject(new Error('body too large'));
+      n += c.length;
+      if (n > 5e6) { reject(new Error('body too large')); return; }
+      chunks.push(c);
     });
     req.on('end', () => {
       try {
-        resolve(data ? JSON.parse(data) : {});
+        const text = Buffer.concat(chunks).toString('utf8');
+        resolve(text ? JSON.parse(text) : {});
       } catch (e) {
         reject(e);
       }
     });
+    req.on('error', reject);
   });
 }
 
