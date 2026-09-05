@@ -1,4 +1,3 @@
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
@@ -33,10 +32,14 @@ class GlassCard extends StatelessWidget {
     final border = highlighted
         ? AppTheme.primary.withOpacity(.45)
         : AppTheme.border;
+    // No BackdropFilter here on purpose. The card fill is 88-94% opaque, so
+    // the blur behind it was barely visible, but it is one of the most
+    // expensive things Flutter can draw — and during a page transition two
+    // screens' worth of them render at once, which is what made navigation
+    // feel laggy.
     final body = ClipRRect(
       borderRadius: BorderRadius.circular(radius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+      child: RepaintBoundary(
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeOut,

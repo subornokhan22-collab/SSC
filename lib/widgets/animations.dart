@@ -336,31 +336,35 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
       reverseCurve: Curves.easeOutCubic,
     );
 
+    // Slide + fade only: no ScaleTransition. Scaling forces the whole page
+    // layer to be resampled every frame, which is the expensive part on
+    // mid-range Android. Two transform layers per page is enough to read as
+    // a proper transition and stays cheap.
     return SlideTransition(
-      // Push the old page slightly left and behind as the new one arrives.
+      // Push the old page a little left as the new one arrives.
       position: Tween<Offset>(
         begin: Offset.zero,
-        end: const Offset(-0.18, 0),
+        end: const Offset(-0.14, 0),
       ).animate(outCurve),
       child: FadeTransition(
-        // Fade it out fast so the two never read as one jumbled screen.
+        // Fade it out over the first 55% so the two never read as one
+        // jumbled screen.
         opacity: Tween<double>(begin: 1, end: 0).animate(
-          CurvedAnimation(parent: secondaryAnimation, curve: const Interval(0, 0.55)),
+          CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: const Interval(0, 0.55),
+          ),
         ),
-        child: ScaleTransition(
-          scale: Tween<double>(begin: 1, end: 0.94).animate(outCurve),
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.10, 0),
-              end: Offset.zero,
-            ).animate(inCurve),
-            child: FadeTransition(
-              opacity: inCurve,
-              child: ScaleTransition(
-                scale: Tween<double>(begin: 0.97, end: 1).animate(inCurve),
-                child: child,
-              ),
-            ),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.12, 0),
+            end: Offset.zero,
+          ).animate(inCurve),
+          child: FadeTransition(
+            opacity: inCurve,
+            // Isolate the page so the animated backdrop behind it does not
+            // repaint together with the moving content.
+            child: RepaintBoundary(child: child),
           ),
         ),
       ),

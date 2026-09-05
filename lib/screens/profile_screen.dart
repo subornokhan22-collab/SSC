@@ -468,19 +468,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text('Edit details'),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _busy ? null : _syncPro,
-                  icon: _busy
-                      ? const SizedBox(
-                          width: 15,
-                          height: 15,
-                          child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.sync_rounded, size: 18),
-                  label: const Text('Sync Pro'),
+              // Once Pro is active on the server there is nothing left to
+              // pull, so the button retires rather than sitting there
+              // inviting a pointless tap.
+              if (!serverPro) ...[
+                const SizedBox(width: 10),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _busy ? null : _syncPro,
+                    icon: _busy
+                        ? const SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.sync_rounded, size: 18),
+                    label: const Text('Sync Pro'),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
           const SizedBox(height: 10),

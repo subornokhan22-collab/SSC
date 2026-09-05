@@ -1413,6 +1413,26 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     ]),
                   ),
                   const SizedBox(height: 10),
+                  // Full-paper mode also writes short-answer and creative
+                  // questions. The counts existed but had no controls, so the
+                  // screen looked MCQ-only despite the menu promising more.
+                  if (!widget.mcqOnly && !_usesAutomaticBoardPattern) ...[
+                    const SizedBox(height: 2),
+                    _stepper(
+                      'সংক্ষিপ্ত প্রশ্ন (SAQ)',
+                      _saqN,
+                      (v) => setState(() => _saqN = v),
+                      max: 20,
+                    ),
+                    const SizedBox(height: 8),
+                    _stepper(
+                      'সৃজনশীল প্রশ্ন (CQ)',
+                      _cqN,
+                      (v) => setState(() => _cqN = v),
+                      max: 12,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                 ],
                 if (_isEnglish)
                   Container(

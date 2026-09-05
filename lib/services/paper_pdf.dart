@@ -1498,7 +1498,17 @@ class PaperPdf {
       final numberW = 26 * _k;
       final bubbleAreaX = numberW + bubbleR * _k + 2 * _k;
       final bubbleSpan = questionWidth - bubbleAreaX - (bubbleR + 4) * _k;
-      final bubbleStep = bubbleSpan / 3;
+      // Keep ক/খ/গ/ঘ visually grouped. Spreading them across the whole row
+      // put 148pt between 9.6pt bubbles on a single-column sheet, which reads
+      // as four unrelated marks rather than one answer set. Cap the pitch at
+      // a little over two bubble widths and centre the group in the space.
+      const maxBubbleStep = 22.0;
+      final bubbleStep =
+          (bubbleSpan / 3) > maxBubbleStep * _k ? maxBubbleStep * _k : bubbleSpan / 3;
+      final bubbleGroupW = bubbleStep * 3;
+      // Centre the grouped bubbles in the area left over after the number.
+      final bubbleLeft =
+          bubbleAreaX + ((bubbleSpan - bubbleGroupW) / 2).clamp(0.0, bubbleSpan);
       final headerH = 13 * _k;
 
       void questionBox(
@@ -1527,7 +1537,7 @@ class PaperPdf {
             isBold: true,
             align: TextAlign.center,
           )..layout();
-          final cx = x + bubbleAreaX + option * bubbleStep;
+          final cx = x + bubbleLeft + option * bubbleStep;
           letter.paint(
             canvas,
             Offset(cx - letter.width / 2, top + (headerH - letter.height) / 2),
@@ -1549,7 +1559,7 @@ class PaperPdf {
           );
           for (var option = 0; option < 4; option++) {
             bubble(
-              x + bubbleAreaX + option * bubbleStep,
+              x + bubbleLeft + option * bubbleStep,
               yy,
               _optionLetters[option],
             );
