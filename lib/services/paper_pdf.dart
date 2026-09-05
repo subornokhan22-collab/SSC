@@ -1505,10 +1505,11 @@ class PaperPdf {
       const maxBubbleStep = 22.0;
       final bubbleStep =
           (bubbleSpan / 3) > maxBubbleStep * _k ? maxBubbleStep * _k : bubbleSpan / 3;
-      final bubbleGroupW = bubbleStep * 3;
-      // Centre the grouped bubbles in the area left over after the number.
-      final bubbleLeft =
-          bubbleAreaX + ((bubbleSpan - bubbleGroupW) / 2).clamp(0.0, bubbleSpan);
+      // Left-align the group just after the question number instead of
+      // centring it. Centring pushed the bubbles into the middle of a wide
+      // row, far from the number they belong to, so the eye had to travel
+      // across empty space to find them.
+      final bubbleLeft = bubbleAreaX + 6 * _k;
       final headerH = 13 * _k;
 
       void questionBox(

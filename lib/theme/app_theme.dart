@@ -80,15 +80,27 @@ class AppTheme {
             displayColor: textDark,
             fontFamily: 'Hind Siliguri',
           )
+          // These replace the styles `.apply` just coloured, so each one has
+          // to name its colour again. Without it `titleMedium` (dropdown menu
+          // items) and `bodyMedium` fell back to a default that rendered
+          // near-white, making subject and chapter names unreadable against
+          // the light menu.
           .copyWith(
             titleLarge: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: .2),
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: .2,
+                color: textDark),
             titleMedium: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: .1),
-            bodyMedium: const TextStyle(fontSize: 13.5, height: 1.5),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: .1,
+                color: textDark),
+            bodyMedium: const TextStyle(
+                fontSize: 13.5, height: 1.5, color: textDark),
             bodySmall: const TextStyle(fontSize: 12.2, height: 1.5, color: muted),
-            labelLarge:
-                const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+            labelLarge: const TextStyle(
+                fontSize: 14.5, fontWeight: FontWeight.w800, color: textDark),
           ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xF2FFFFFF),
@@ -203,6 +215,9 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
+        // Pin the item colour too — menu entries are drawn outside the normal
+        // page, so they must not rely on inheriting it.
+        textStyle: const TextStyle(color: textDark, fontSize: 15),
         menuStyle: MenuStyle(
           backgroundColor: const WidgetStatePropertyAll(surface),
           surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
