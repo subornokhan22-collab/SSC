@@ -220,6 +220,11 @@
       <label for="apiKey">Gemini API key</label>
       <input id="apiKey" type="password" placeholder="AIza…">
       <div class="hint">Stored only in this browser. Get one free at aistudio.google.com/apikey</div>
+      <div class="actions" style="margin-top:8px">
+        <button id="testKey" class="ghost" type="button">Test connection</button>
+        <span class="grow"></span>
+        <span class="hint" id="testOut"></span>
+      </div>
 
       <label for="rawText">Paste questions — as many as you like</label>
       <textarea id="rawText" style="min-height:190px"
@@ -614,6 +619,36 @@ async function geminiFormat(key, type, raw){
   return extractArray(text);
 }
 
+$('testKey').onclick = async () => {
+  const key = $('apiKey').value.trim();
+  if (!key){ showMsg('err', '<b>Paste your API key first.</b>'); return; }
+  $('testKey').disabled = true;
+  $('testOut').textContent = 'Testing…';
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models?key='
+            + encodeURIComponent(key);
+  try {
+    const r = await fetch(url);
+    const d = await r.json().catch(() => ({}));
+    if (r.ok){
+      const n = (d.models || []).length;
+      showMsg('ok', `<b>Connected.</b> Google answered and the key works (${n} models available).`);
+    } else {
+      const m = (d.error && d.error.message) || ('HTTP ' + r.status);
+      showMsg('err', '<b>Google rejected the key:</b>', [m]);
+    }
+  } catch (e) {
+    showMsg('err', '<b>The browser could not reach Google.</b>', [
+      String(e.message || e),
+      'This is a network or CORS block, not a bad key.',
+      'Try mobile data instead of Wi-Fi, or turn off any VPN/ad-blocker.',
+      'Running the panel locally with: node tool/admin/server.js  also avoids it.',
+    ]);
+  } finally {
+    $('testKey').disabled = false;
+    $('testOut').textContent = '';
+  }
+};
+
 $('formatBtn').onclick = async () => {
   const type = $('type').value;
   const key = $('apiKey').value.trim();
@@ -628,14 +663,34 @@ $('formatBtn').onclick = async () => {
     try {
       list = await geminiFormat(key, type, raw);        // straight from the browser
     } catch (direct) {
-      // If the browser call is blocked, try the server proxy as a fallback —
-      // that one works when the panel runs on a machine with internet.
-      const r = await fetch('/api/format', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: key, text: raw, type }),
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error((d.errors || [String(direct)]).join(', '));
+      const dm = String(direct && direct.message ? direct.message : direct);
+
+      // A CORS/network block surfaces as an opaque "Failed to fetch". Anything
+      // else — a bad key, a quota error, a malformed reply — is a real answer
+      // from Google and must be shown as-is rather than hidden behind a
+      // fallback attempt.
+      const looksBlocked = /failed to fetch|networkerror|load failed|cors/i.test(dm);
+      if (!looksBlocked) throw direct;
+
+      $('fmtStatus').textContent = 'Browser blocked — trying the server…';
+      let d = {};
+      let ok = false;
+      try {
+        const r = await fetch('/api/format', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiKey: key, text: raw, type }),
+        });
+        d = await r.json();
+        ok = r.ok;
+      } catch (proxyErr) {
+        d = { errors: [String(proxyErr)] };
+      }
+      if (!ok) {
+        throw new Error(
+          'The browser could not reach Google (' + dm + '), and the server ' +
+          'could not either (' + ((d.errors || ['unknown']).join(', ')) + ').'
+        );
+      }
       list = d.questions || [];
     }
 
