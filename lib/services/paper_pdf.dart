@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show FontLoader, rootBundle;
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -88,18 +91,54 @@ class PaperPdf {
         continue;
       }
       try {
-        final data = await rootBundle.load('assets/question_figures/$name');
-        final codec = await ui.instantiateImageCodec(
-          data.buffer.asUint8List(),
-        );
+        Uint8List bytes;
+        if (name.startsWith('http://') || name.startsWith('https://')) {
+          // Published from the web panel: the picture lives in Supabase
+          // Storage, not in the APK. Fetch it once, then keep a base64 copy
+          // so later papers print offline.
+          bytes = await _remoteFigureBytes(name);
+        } else {
+          final data = await rootBundle.load('assets/question_figures/$name');
+          bytes = data.buffer.asUint8List();
+        }
+        final codec = await ui.instantiateImageCodec(bytes);
         final frame = await codec.getNextFrame();
         _figureImageCache[name] = frame.image;
         out[name] = frame.image;
-      } catch (_) {
+      } catch (e) {
         // Leave it out; paintFig shows a '[ছবি পাওয়া যায়নি]' box.
+        debugPrint('PaperPdf: figure unavailable ($name): $e');
       }
     }
     return out;
+  }
+
+  /// Downloads a figure published from the web panel, caching the bytes in
+  /// SharedPreferences so a paper still prints when offline later.
+  static Future<Uint8List> _remoteFigureBytes(String url) async {
+    final key = 'figure_cache_${url.hashCode}';
+    final prefs = await SharedPreferences.getInstance();
+
+    final cached = prefs.getString(key);
+    if (cached != null && cached.isNotEmpty) {
+      try {
+        return base64Decode(cached);
+      } catch (_) {
+        await prefs.remove(key);
+      }
+    }
+
+    final res =
+        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 20));
+    if (res.statusCode != 200) {
+      throw Exception('HTTP ${res.statusCode}');
+    }
+    final bytes = res.bodyBytes;
+    // Keep the cache sane: skip anything unusually large.
+    if (bytes.lengthInBytes <= 2 * 1024 * 1024) {
+      await prefs.setString(key, base64Encode(bytes));
+    }
+    return bytes;
   }
 
   static Future<void> _loadFonts() async {
