@@ -339,16 +339,16 @@ function renderOptions(n = 4){
   }
 }
 
-/** Offers the real chapters for the chosen subject. */
+/** Fills the chapter dropdown for the chosen subject. */
 function syncChapters(){
   const list = CHAPTERS[$('subject').value] || [];
-  $('chapterList').innerHTML =
-    list.map(c => `<option value="${c.replace(/"/g, '&quot;')}">`).join('');
-  $('chapter').placeholder = list.length
-    ? list[0]
-    : 'Type the chapter name';
-  // Clear a chapter left over from another subject.
-  if ($('chapter').value && !list.includes($('chapter').value)) $('chapter').value = '';
+  const sel = $('chapter');
+  const keep = sel.value;
+  sel.innerHTML = list.length
+    ? list.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('')
+    : '<option value="">— no chapters yet for this subject —</option>';
+  // Keep the choice when it still belongs to the new subject.
+  sel.value = list.includes(keep) ? keep : (list[0] || '');
 }
 
 function syncTypes(){
@@ -852,8 +852,16 @@ $('imgFiles').onchange = async () => {
       const c = processImage(img, { mono: $('imgMono').checked, trim: $('imgTrim').checked });
       const up = await uploadCanvas(c, files[i].name);
       IMAGES.push(up);
+      // Each image gets its own question box, so a batch can carry different
+      // wording per picture instead of one line repeated across all of them.
       $('imgGrid').insertAdjacentHTML('beforeend',
-        `<div class="thumb"><img src="${up.imagePath}"><div class="nm">${up.width}x${up.height}</div></div>`);
+        `<div class="thumb">
+           <img src="${up.imagePath}">
+           <div class="nm">${up.width}x${up.height}</div>
+           <textarea class="img-q" data-img="${IMAGES.length - 1}" rows="2"
+             style="margin-top:6px;font-size:12px;min-height:44px"
+             placeholder="Question for this image (optional)"></textarea>
+         </div>`);
     } catch (e) {
       showMsg('err', `<b>${escapeHtml(files[i].name)} failed:</b>`, [String(e.message || e)]);
     }
@@ -872,11 +880,18 @@ $('imgSave').onclick = async () => {
   const common = { subjectId: $('subject').value, chapter: $('chapter').value.trim() };
   const type = $('type').value;
   const stem = $('imgText').value.trim() || 'চিত্রটি লক্ষ কর।';
-  const rows = IMAGES.map(im => {
+  // Per-image text when given, otherwise the shared default.
+  const perImage = {};
+  for (const box of document.querySelectorAll('.img-q')){
+    const v = box.value.trim();
+    if (v) perImage[box.dataset.img] = v;
+  }
+  const rows = IMAGES.map((im, i) => {
+    const text = perImage[String(i)] || stem;
     const q = { type, figure: { kind: 'image', imagePath: im.imagePath, aspect: im.aspect } };
-    if (type === 'mcq'){ q.questionText = stem; q.options = ['ক','খ','গ','ঘ']; q.correctIndex = 0; }
-    else if (type === 'saq'){ q.questionText = stem; q.answer = 'উত্তর ছবিতে দেওয়া আছে।'; }
-    else { q.stem = stem; q.questionK = 'ক'; q.questionKh = 'খ'; q.questionG = 'গ'; q.questionGh = 'ঘ'; q.marks = [1,2,3,4]; }
+    if (type === 'mcq'){ q.questionText = text; q.options = ['ক','খ','গ','ঘ']; q.correctIndex = 0; }
+    else if (type === 'saq'){ q.questionText = text; q.answer = 'উত্তর ছবিতে দেওয়া আছে।'; }
+    else { q.stem = text; q.questionK = 'ক'; q.questionKh = 'খ'; q.questionG = 'গ'; q.questionGh = 'ঘ'; q.marks = [1,2,3,4]; }
     return buildRow(q, common);
   });
   if (!common.chapter){ showMsg('err', '<b>Chapter is required.</b>'); return; }

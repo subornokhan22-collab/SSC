@@ -158,8 +158,8 @@
         </div>
 
         <label for="chapter">Chapter</label>
-        <input id="chapter" type="text" placeholder="অধ্যায় ৩: কোষ বিভাজন" list="chapterList">
-        <datalist id="chapterList"></datalist>
+        <select id="chapter" style="color:var(--text)"></select>
+        <div class="hint">Only chapters belonging to the chosen subject are listed.</div>
 
         <div id="pane-single">
           <div id="f-question">
@@ -255,8 +255,9 @@
             <input type="checkbox" id="imgTrim" checked style="width:auto;flex:none">
             <label for="imgTrim" style="margin:0;font-weight:600;color:var(--text)">Trim blank edges</label>
           </div>
-          <label for="imgText">Question text for each</label>
+          <label for="imgText">Default question text</label>
           <input id="imgText" type="text" value="চিত্রটি লক্ষ কর এবং প্রশ্নের উত্তর দাও।">
+          <div class="hint">Used for any image you leave blank below.</div>
           <div class="bar hide" id="imgBar"><i></i></div>
           <div id="imgGrid" class="grid2" style="margin-top:10px"></div>
           <div class="actions">
