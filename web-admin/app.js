@@ -224,6 +224,7 @@ const CHAPTERS = {
 };
 
 let TOKEN = localStorage.getItem('sb_token') || '';
+let REFRESH = localStorage.getItem('sb_refresh') || '';
 let USER_ID = localStorage.getItem('sb_uid') || '';
 let FIGURE = null;
 let BATCH = [];
@@ -245,7 +246,27 @@ function showMsg(kind, text, items){
 }
 
 /** Every REST call to Supabase goes through here. */
-async function sb(path, opts = {}){
+/** Swaps the stored refresh token for a fresh access token.
+ *  Supabase access tokens last about an hour, so without this every session
+ *  died with "JWT expired" and had to be signed in again by hand. */
+async function renewToken(){
+  if (!REFRESH) return false;
+  const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+    method: 'POST',
+    headers: { apikey: SUPABASE_ANON, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: REFRESH }),
+  });
+  if (!r.ok) return false;
+  const d = await r.json().catch(() => null);
+  if (!d || !d.access_token) return false;
+  TOKEN = d.access_token;
+  REFRESH = d.refresh_token || REFRESH;
+  localStorage.setItem('sb_token', TOKEN);
+  localStorage.setItem('sb_refresh', REFRESH);
+  return true;
+}
+
+async function sbOnce(path, opts){
   const r = await fetch(SUPABASE_URL + path, {
     ...opts,
     headers: {
@@ -258,12 +279,29 @@ async function sb(path, opts = {}){
   const text = await r.text();
   let data = null;
   try { data = text ? JSON.parse(text) : null; } catch (_) { data = text; }
-  if (!r.ok){
-    const msg = (data && (data.message || data.error_description || data.error || data.msg))
-              || ('HTTP ' + r.status);
+  return { ok: r.ok, status: r.status, data };
+}
+
+async function sb(path, opts = {}){
+  let res = await sbOnce(path, opts);
+
+  // An expired token is recoverable: renew and replay the call once, so the
+  // work is not lost and no re-login is needed.
+  const msg0 = res.data && (res.data.message || res.data.error_description || res.data.msg);
+  if (!res.ok && (res.status === 401 || /jwt expired|invalid jwt/i.test(String(msg0 || '')))){
+    if (await renewToken()) res = await sbOnce(path, opts);
+  }
+
+  if (!res.ok){
+    const d = res.data;
+    let msg = (d && (d.message || d.error_description || d.error || d.msg))
+            || ('HTTP ' + res.status);
+    if (/jwt expired|invalid jwt/i.test(msg) || res.status === 401){
+      msg = 'Your session expired and could not be renewed. Sign in again.';
+    }
     throw new Error(msg);
   }
-  return data;
+  return res.data;
 }
 
 // ── auth ──────────────────────────────────────────────────────────────
@@ -284,7 +322,9 @@ $('signin').onclick = async () => {
     });
     TOKEN = d.access_token;
     USER_ID = d.user && d.user.id;
+    REFRESH = d.refresh_token || '';
     localStorage.setItem('sb_token', TOKEN);
+    localStorage.setItem('sb_refresh', REFRESH);
     localStorage.setItem('sb_uid', USER_ID);
     enterApp();
   } catch (e) {
@@ -297,8 +337,9 @@ $('signin').onclick = async () => {
 };
 
 $('signout').onclick = () => {
-  TOKEN = ''; USER_ID = '';
+  TOKEN = ''; REFRESH = ''; USER_ID = '';
   localStorage.removeItem('sb_token');
+  localStorage.removeItem('sb_refresh');
   localStorage.removeItem('sb_uid');
   location.reload();
 };
@@ -434,7 +475,7 @@ async function uploadCanvas(c, name){
   const blob = await new Promise(r => c.toBlob(r, 'image/png'));
   const safe = name.toLowerCase().replace(/[^a-z0-9._-]+/g, '_').replace(/\.[^.]+$/, '');
   const file = `${safe}-${Date.now()}.png`;
-  const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${file}`, {
+  const put = () => fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${file}`, {
     method: 'POST',
     headers: {
       apikey: SUPABASE_ANON,
@@ -443,6 +484,9 @@ async function uploadCanvas(c, name){
     },
     body: blob,
   });
+  let r = await put();
+  // Uploads bypass sb(), so they need the same expired-token recovery.
+  if (r.status === 401 && await renewToken()) r = await put();
   if (!r.ok){
     const body = await r.text();
     // A storage select policy does not grant insert; without the write policy
