@@ -496,7 +496,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'chapters-all';
+const PANEL_BUILD = 'chunked-1';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -1014,7 +1014,7 @@ async function callGemini(model, key, prompt){
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }],
-                             generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } }) });
+                             generationConfig: { temperature: 0.1, maxOutputTokens: 32768 } }) });
   const d = await r.json().catch(() => ({}));
   if (!r.ok){
     const e = new Error((d.error && d.error.message) || ('HTTP ' + r.status));
@@ -1024,6 +1024,13 @@ async function callGemini(model, key, prompt){
   const c = (d.candidates || [])[0];
   const text = c && c.content ? (c.content.parts || []).map(p => p.text || '').join('') : '';
   if (!text.trim()) throw new Error('Gemini sent an empty reply — try a smaller batch.');
+  // MAX_TOKENS means the reply was cut off mid-JSON. Say so plainly rather
+  // than letting JSON.parse fail with a character offset.
+  if (c && c.finishReason === 'MAX_TOKENS'){
+    const e = new Error('TRUNCATED');
+    e.truncated = true;
+    throw e;
+  }
   return extractArray(text);
 }
 
@@ -1043,6 +1050,28 @@ $('testKey').onclick = async () => {
   }
 };
 
+/** Splits a long paste into smaller pieces on blank lines.
+ *
+ *  A single request can only return so much JSON before the model stops
+ *  mid-object, so a big paste is formatted in several passes and the results
+ *  are concatenated. Splitting on blank lines keeps each question whole.
+ */
+function splitPaste(raw, maxChars){
+  const blocks = String(raw).split(/\n\s*\n/);
+  const parts = [];
+  let cur = '';
+  for (const b of blocks){
+    if (cur && (cur.length + b.length + 2) > maxChars){
+      parts.push(cur);
+      cur = b;
+    } else {
+      cur = cur ? cur + '\n\n' + b : b;
+    }
+  }
+  if (cur.trim()) parts.push(cur);
+  return parts;
+}
+
 $('formatBtn').onclick = async () => {
   const type = $('type').value;
   const key = $('apiKey').value.trim();
@@ -1053,27 +1082,50 @@ $('formatBtn').onclick = async () => {
   $('formatBtn').disabled = true;
   $('fmtStatus').textContent = 'Checking what is already published…';
   await loadServerPrints();
-  $('fmtStatus').textContent = 'Asking Gemini…';
-  const prompt = buildPrompt(type, raw);
-  let last = null;
-  try {
+
+  /** One chunk through the model list, retrying and shrinking as needed. */
+  async function formatChunk(text, label){
+    let last = null;
     for (const model of GEMINI_MODELS){
       for (let attempt = 0; attempt < 2; attempt++){
         try {
-          $('fmtStatus').textContent = `Asking ${model}…`;
-          RAW_BATCH = await callGemini(model, key, prompt);
-          BATCH = RAW_BATCH.map(q => normalizeQuestion(q, type));
-          renderBatch();
-          showMsg('ok', `Found <b>${BATCH.length}</b> question(s). Check them, then Publish all.`);
-          return;
+          $('fmtStatus').textContent = `${label} — ${model}…`;
+          return await callGemini(model, key, buildPrompt(type, text));
         } catch (e) {
           last = e;
+          // Reply cut off: halve the text and format each half.
+          if (e.truncated){
+            const halves = splitPaste(text, Math.max(600, Math.floor(text.length / 2)));
+            if (halves.length < 2) throw new Error(
+              'One question is too long for the model to return. Split it up.');
+            const out = [];
+            for (let h = 0; h < halves.length; h++){
+              out.push(...await formatChunk(halves[h], `${label}.${h + 1}`));
+            }
+            return out;
+          }
           if (!e.transient) throw e;
           if (attempt === 0) await sleep(1200);
         }
       }
     }
     throw new Error('All Gemini models are busy (' + (last && last.message) + ').');
+  }
+
+  try {
+    // Roughly 6k characters per request keeps the reply well inside the cap.
+    const chunks = splitPaste(raw, 6000);
+    const all = [];
+    for (let i = 0; i < chunks.length; i++){
+      const label = chunks.length > 1 ? `Part ${i + 1} of ${chunks.length}` : 'Asking Gemini';
+      all.push(...await formatChunk(chunks[i], label));
+    }
+    RAW_BATCH = all;
+    BATCH = all.map(q => normalizeQuestion(q, type));
+    renderBatch();
+    showMsg('ok', `Found <b>${BATCH.length}</b> question(s)`
+      + (chunks.length > 1 ? ` across ${chunks.length} parts` : '')
+      + `. Check them, then Publish all.`);
   } catch (e) {
     showMsg('err', '<b>Could not format:</b>', [String(e.message || e)]);
   } finally {
