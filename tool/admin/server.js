@@ -31,6 +31,16 @@ const PORT = process.env.PORT || 5055;
 // Which file new questions go into, per subject + type. Mirrors the banks
 // created by the migration.
 const BANKS = {
+  english_1st: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  english_2nd: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  religion: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  general_science: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  agriculture: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  business_ent: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  physical_edu: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  career: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  history: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
+  civics: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
   physics: { mcq: 'physics_mcqs', saq: 'physics_saqs', cq: 'physics_cqs' },
   chemistry: { mcq: 'chemistry_mcqs', saq: 'chemistry_saqs', cq: 'chemistry_cqs' },
   biology: { mcq: 'biology_mcqs', saq: 'biology_saqs', cq: 'biology_cqs' },

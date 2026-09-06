@@ -4,6 +4,7 @@ import '../data/biology/biology_chapter_catalog.dart';
 import '../data/bgs/bgs_chapter_catalog.dart';
 import '../data/chemistry/chemistry_chapter_catalog.dart';
 import '../data/general_math/general_math_chapter_catalog.dart';
+import '../data/extra_chapter_catalogs.dart';
 import '../data/ict/ict_chapter_catalog.dart';
 
 /// One source of truth for chapter ribbons/dropdowns.
@@ -91,6 +92,13 @@ class ChapterCatalog {
     if (subjectId == IctChapterCatalog.subjectId) {
       return List<String>.from(IctChapterCatalog.chapters);
     }
+    // Subjects that have no bank yet still need their chapters listed, so a
+    // tutor can file new questions without typing Bengali names by hand.
+    if (subjectId != null) {
+      final extra = ExtraChapterCatalogs.forSubject(subjectId);
+      if (extra.isNotEmpty) return List<String>.from(extra);
+    }
+
     final clean =
         values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
     clean.sort((a, b) {
