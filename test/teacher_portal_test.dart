@@ -67,19 +67,19 @@ void main() {
       expect(allSubjects, isNotEmpty);
       final ids = allSubjects.map((s) => s.id).toList();
       expect(ids.toSet().length, ids.length, reason: 'subject ids must be unique');
-      // Only the five subjects that still have a question bank are offered.
+      // The full catalogue stays available even where a subject has no
+      // questions yet; the bank is what was trimmed, not the subject list.
       for (final wanted in [
         'physics',
         'chemistry',
         'biology',
         'general_math',
         'higher_math',
+        'ict',
+        'bangla_1st',
+        'bgs',
       ]) {
         expect(ids, contains(wanted));
-      }
-      for (final gone in ['ict', 'bangla_1st', 'bgs', 'english_1st']) {
-        expect(ids, isNot(contains(gone)),
-            reason: '$gone was removed along with its questions');
       }
     });
 

@@ -19,20 +19,91 @@ const $ = (id) => document.getElementById(id);
 const SUBJECTS = {
   physics: 'পদার্থবিজ্ঞান (Physics)',
   chemistry: 'রসায়ন (Chemistry)',
-  biology: 'জীববিজ্ঞান (Biology)',
-  general_math: 'সাধারণ গণিত (General Math)',
   higher_math: 'উচ্চতর গণিত (Higher Math)',
+  biology: 'জীববিজ্ঞান (Biology)',
+  general_math: 'গণিত (General Math)',
+  bangla_1st: 'বাংলা প্রথম পত্র (Bangla 1st)',
+  bangla_2nd: 'বাংলা দ্বিতীয় পত্র (Bangla 2nd)',
+  english_1st: 'ইংরেজি ১ম পত্র (English 1st)',
+  english_2nd: 'ইংরেজি ২য় পত্র (English 2nd)',
+  bgs: 'বাংলাদেশ ও বিশ্বপরিচয় (BGS)',
+  religion: 'ইসলাম ও নৈতিক শিক্ষা (Religion & Moral Ed.)',
+  general_science: 'বিজ্ঞান (General Science)',
+  agriculture: 'কৃষিশিক্ষা (Agriculture)',
+  business_ent: 'ব্যবসায় উদ্যোগ (Business Entre.)',
+  accounting: 'হিসাববিজ্ঞান (Accounting)',
+  finance: 'ফিন্যান্স ও ব্যাংকিং (Finance & Banking)',
+  ict: 'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)',
+  physical_edu: 'শারীরিক শিক্ষা (Physical Education)',
+  career: 'ক্যারিয়ার শিক্ষা (Career Education)',
+  history: 'বাংলাদেশের ইতিহাস ও বিশ্বসভ্যতা (History of Bangladesh)',
+  civics: 'পৌরনীতি ও নাগরিকতা (Civics & Citizenship)',
 };
 
 const ID_PREFIX = {
-  physics: 'phy', chemistry: 'chem', biology: 'bio', general_math: 'gm',
-  higher_math: 'hm', ict: 'ict', bangla_1st: 'b1', bangla_2nd: 'b2', accounting: 'acc', finance: 'fin',
+  physics: 'phy',
+  chemistry: 'chem',
+  higher_math: 'hm',
+  biology: 'bio',
+  general_math: 'gm',
+  bangla_1st: 'b1',
+  bangla_2nd: 'b2',
+  english_1st: 'e1',
+  english_2nd: 'e2',
+  bgs: 'bgs',
+  religion: 'rel',
+  general_science: 'gsci',
+  agriculture: 'agr',
+  business_ent: 'bent',
+  accounting: 'acc',
+  finance: 'fin',
+  ict: 'ict',
+  physical_edu: 'pe',
+  career: 'car',
+  history: 'hist',
+  civics: 'civ',
 };
 
 // Every chapter that already has questions, per subject, in textbook order.
 // Typing these Bengali names by hand is error-prone, and a mismatched name
 // means the question silently never shows under any chapter.
 const CHAPTERS = {
+ "physics": [
+  "অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ",
+  "অধ্যায় ১ ও ২: পরিমাপ ও গতি",
+  "অধ্যায় ২ ও ৫: গতি ও স্থিতিস্থাপকতা",
+  "অধ্যায় ২: গতি",
+  "অধ্যায় ৩: বল",
+  "অধ্যায় ৪: কাজ, ক্ষমতা ও শক্তি",
+  "অধ্যায় ৫: পদার্থের অবস্থা ও চাপ",
+  "অধ্যায় ৬: বস্তুর ওপর তাপের প্রভাব",
+  "অধ্যায় ৭: তরঙ্গ ও শব্দ",
+  "অধ্যায় ৮: আলোর প্রতিফলন",
+  "অধ্যায় ৯: আলোর প্রতিসরণ",
+  "অধ্যায় ১০: স্থির বিদ্যুৎ",
+  "অধ্যায় ১১: চল বিদ্যুৎ",
+  "অধ্যায় ১২: বিদ্যুতের চৌম্বক ক্রিয়া",
+  "অধ্যায় ১৩: তেজস্ক্রিয়তা ও ইলেকট্রনিকস"
+ ],
+ "chemistry": [
+  "অধ্যায় ১: রসায়নের ধারণা",
+  "অধ্যায় ২: পদার্থের অবস্থা",
+  "অধ্যায় ৩: পদার্থের গঠন",
+  "অধ্যায় ৪: পর্যায় সারণি",
+  "অধ্যায় ৫: রাসায়নিক বন্ধন",
+  "অধ্যায় ৬: মোলের ধারণা ও রাসায়নিক গণনা",
+  "অধ্যায় ৭: রাসায়নিক বিক্রিয়া",
+  "অধ্যায় ৮: রসায়ন ও শক্তি",
+  "অধ্যায় ৯: এসিড-ক্ষারক সমতা",
+  "অধ্যায় ১০: খনিজ সম্পদ: ধাতু-অধাতু",
+  "অধ্যায় ১১: খনিজ সম্পদ: জীবাশ্ম",
+  "অধ্যায় ১২: আমাদের জীবনে রসায়ন"
+ ],
+ "higher_math": [
+  "অধ্যায় ১: সেট ও ফাংশন",
+  "অধ্যায় ২: বীজগাণিতিক রাশি",
+  "অধ্যায় ৭: অসীম ধারা"
+ ],
  "biology": [
   "অধ্যায় ১: জীবন পাঠ",
   "অধ্যায় ২: জীবকোষ ও টিস্যু",
@@ -48,20 +119,6 @@ const CHAPTERS = {
   "অধ্যায় ১২: জীবের বংশগতি ও জৈব অভিব্যক্তি",
   "অধ্যায় ১৩: জীবের পরিবেশ",
   "অধ্যায় ১৪: জীবপ্রযুক্তি"
- ],
- "chemistry": [
-  "অধ্যায় ১: রসায়নের ধারণা",
-  "অধ্যায় ২: পদার্থের অবস্থা",
-  "অধ্যায় ৩: পদার্থের গঠন",
-  "অধ্যায় ৪: পর্যায় সারণি",
-  "অধ্যায় ৫: রাসায়নিক বন্ধন",
-  "অধ্যায় ৬: মোলের ধারণা ও রাসায়নিক গণনা",
-  "অধ্যায় ৭: রাসায়নিক বিক্রিয়া",
-  "অধ্যায় ৮: রসায়ন ও শক্তি",
-  "অধ্যায় ৯: এসিড-ক্ষারক সমতা",
-  "অধ্যায় ১০: খনিজ সম্পদ: ধাতু-অধাতু",
-  "অধ্যায় ১১: খনিজ সম্পদ: জীবাশ্ম",
-  "অধ্যায় ১২: আমাদের জীবনে রসায়ন"
  ],
  "general_math": [
   "অধ্যায় ১: বাস্তব সংখ্যা",
@@ -82,28 +139,22 @@ const CHAPTERS = {
   "অধ্যায় ১৬: পরিমিতি",
   "অধ্যায় ১৭: পরিসংখ্যান"
  ],
- "higher_math": [
-  "অধ্যায় ১: সেট ও ফাংশন",
-  "অধ্যায় ২: বীজগাণিতিক রাশি",
-  "অধ্যায় ৭: অসীম ধারা"
- ],
- "physics": [
-  "অধ্যায় ১ ও ২: পরিমাপ ও গতি",
-  "অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ",
-  "অধ্যায় ২: গতি",
-  "অধ্যায় ২ ও ৫: গতি ও স্থিতিস্থাপকতা",
-  "অধ্যায় ৩: বল",
-  "অধ্যায় ৪: কাজ, ক্ষমতা ও শক্তি",
-  "অধ্যায় ৫: পদার্থের অবস্থা ও চাপ",
-  "অধ্যায় ৬: বস্তুর ওপর তাপের প্রভাব",
-  "অধ্যায় ৭: তরঙ্গ ও শব্দ",
-  "অধ্যায় ৮: আলোর প্রতিফলন",
-  "অধ্যায় ৯: আলোর প্রতিসরণ",
-  "অধ্যায় ১০: স্থির বিদ্যুৎ",
-  "অধ্যায় ১১: চল বিদ্যুৎ",
-  "অধ্যায় ১২: বিদ্যুতের চৌম্বক ক্রিয়া",
-  "অধ্যায় ১৩: তেজস্ক্রিয়তা ও ইলেকট্রনিকস"
- ]
+ "bangla_1st": [],
+ "bangla_2nd": [],
+ "english_1st": [],
+ "english_2nd": [],
+ "bgs": [],
+ "religion": [],
+ "general_science": [],
+ "agriculture": [],
+ "business_ent": [],
+ "accounting": [],
+ "finance": [],
+ "ict": [],
+ "physical_edu": [],
+ "career": [],
+ "history": [],
+ "civics": []
 };
 
 let TOKEN = localStorage.getItem('sb_token') || '';
@@ -227,7 +278,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'dedupe-1';
+const PANEL_BUILD = 'subjects-back';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -270,15 +321,32 @@ function renderOptions(n = 4){
 }
 
 /** Fills the chapter dropdown for the chosen subject. */
+const NEW_CHAPTER = '__new__';
+
 function syncChapters(){
   const list = CHAPTERS[$('subject').value] || [];
   const sel = $('chapter');
   const keep = sel.value;
-  sel.innerHTML = list.length
-    ? list.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('')
-    : '<option value="">— no chapters yet for this subject —</option>';
-  // Keep the choice when it still belongs to the new subject.
-  sel.value = list.includes(keep) ? keep : (list[0] || '');
+  // Always offer "+ new chapter": a subject with no questions yet has no
+  // chapters to list, and every subject can gain one later.
+  sel.innerHTML =
+    list.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('')
+    + `<option value="${NEW_CHAPTER}">+ new chapter…</option>`;
+  sel.value = list.includes(keep) ? keep : (list[0] || NEW_CHAPTER);
+  syncNewChapter();
+}
+
+/** Shows the free-text box only when "+ new chapter" is selected. */
+function syncNewChapter(){
+  const isNew = $('chapter').value === NEW_CHAPTER;
+  $('chapterNew').classList.toggle('hide', !isNew);
+  if (!isNew) $('chapterNew').value = '';
+}
+
+/** The chapter to publish with: either the picked one or the typed one. */
+function currentChapter(){
+  const v = $('chapter').value;
+  return (v === NEW_CHAPTER ? $('chapterNew').value : v).trim();
 }
 
 function syncTypes(){
@@ -487,7 +555,10 @@ function validate(q, common){
   if (!chap) e.push('Chapter is required.');
   else if (common.subjectId){
     const known = CHAPTERS[common.subjectId] || [];
-    if (known.length && !known.includes(chap)){
+    // A chapter typed via "+ new chapter" is deliberate, so only flag a
+    // mismatch when the subject already has chapters and this is not one.
+    const typedNew = $('chapter').value === NEW_CHAPTER;
+    if (!typedNew && known.length && !known.includes(chap)){
       e.push(
         `"${chap}" is not a chapter of this subject. Pick one from the list, `
         + 'or the question will not appear under any chapter.'
@@ -552,7 +623,7 @@ async function publish(rows){
 
 $('save').onclick = async () => {
   const type = $('type').value;
-  const common = { subjectId: $('subject').value, chapter: $('chapter').value.trim() };
+  const common = { subjectId: $('subject').value, chapter: currentChapter() };
   const q = { type };
   if (type === 'mcq'){
     q.questionText = $('questionText').value.trim();
@@ -858,7 +929,7 @@ function guessChapter(hint, subjectId){
 function renderBatch(){
   const subject = $('subject').value;
   const list = CHAPTERS[subject] || [];
-  const fallback = $('chapter').value;
+  const fallback = currentChapter();
 
   // Flag anything already on the server, or repeated inside this paste.
   const seenHere = new Map();
@@ -944,7 +1015,7 @@ $('batchSave').onclick = async () => {
   BATCH.forEach((q, i) => {
     if (q._skip){ skipped += 1; return; }
     // Each question carries the chapter chosen on its own row.
-    const common = { subjectId, chapter: (q.chapter || $('chapter').value).trim() };
+    const common = { subjectId, chapter: (q.chapter || currentChapter()).trim() };
     const e = validate(q, common);
     if (e.length) bad.push(`#${i+1} ${e[0]}`);
     else rows.push(buildRow(q, common));
@@ -1019,7 +1090,7 @@ $('imgClear').onclick = () => {
 };
 
 $('imgSave').onclick = async () => {
-  const common = { subjectId: $('subject').value, chapter: $('chapter').value.trim() };
+  const common = { subjectId: $('subject').value, chapter: currentChapter() };
   const type = $('type').value;
   const stem = $('imgText').value.trim() || 'চিত্রটি লক্ষ কর।';
   // Per-image text when given, otherwise the shared default.
@@ -1108,6 +1179,7 @@ for (const b of document.querySelectorAll('.tab')){
 }
 $('type').onchange = syncFields;
 $('subject').onchange = syncChapters;
+$('chapter').onchange = syncNewChapter;
 $('f-subject').onchange = loadList;
 $('f-type').onchange = loadList;
 let t = null;
