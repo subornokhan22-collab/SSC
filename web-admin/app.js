@@ -344,9 +344,15 @@ $('signout').onclick = () => {
   location.reload();
 };
 
+const PANEL_BUILD = 'id-fix-2';
+
 async function enterApp(){
   $('login').classList.add('hide');
   $('app').classList.remove('hide');
+  // Visible build marker: if this is missing, the browser is running a
+  // cached copy of app.js and the deploy has not taken effect.
+  const h = document.querySelector('header p');
+  if (h) h.textContent += `  ·  build ${PANEL_BUILD}`;
   buildSubjects();
   syncChapters();
   syncTypes();
@@ -625,6 +631,15 @@ function validate(q, common){
 }
 
 async function publish(rows){
+  // Last line of defence: guarantee the batch itself carries no repeated id
+  // before it ever reaches Postgres.
+  const seen = new Set();
+  for (const r of rows){
+    while (seen.has(r.id)){
+      r.id = r.id + '-' + Math.random().toString(36).slice(2, 6);
+    }
+    seen.add(r.id);
+  }
   try {
     return await sb('/rest/v1/questions', {
       method: 'POST',
