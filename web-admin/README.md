@@ -59,18 +59,40 @@ app launch ──► cached locally ──► merged into the bundled bank
 
 ---
 
-## Security
+## Who sees what
 
-Row-level security is on from day one:
+**Everything you publish here is visible to every user of the app.** That is
+the point: one shared bank, updated without a release.
+
+Row-level security enforces it:
 
 | Row | Who can read | Who can write |
 |---|---|---|
-| `owner_id IS NULL` | everyone | admin panel only |
-| `owner_id = a user` | that tutor | that tutor |
+| `owner_id IS NULL` — official | **every user**, signed in or not | listed admins only |
+| `owner_id = a user` — private | only that tutor | only that tutor |
 
-Everything you publish is written with `owner_id = null`, i.e. official
-content for all tutors. The `owner_id` column exists so per-teacher question
-banks can be added later without a migration.
+The panel always writes `owner_id = null`, so your questions join the shared
+bank. Nobody else can publish to it unless you add them to
+`question_admins`.
+
+### Making yourself an admin
+
+`schema.sql` ends with a block that adds your account to `question_admins`.
+It matches on `subornokhan22@gmail.com` — change that line if you publish
+from a different account, and sign in to the app once first so the account
+exists.
+
+If you skip this, publishing fails with a message telling you so. Reading is
+unaffected.
+
+### Adding another teacher later
+
+```sql
+insert into public.question_admins (user_id, note)
+select id, 'co-author' from auth.users where email = 'them@example.com';
+```
+
+Removing them is a `delete` on the same table. Their questions stay.
 
 The anon key in `app.js` is safe to publish — it is designed to be public,
 and RLS is what actually protects the data.

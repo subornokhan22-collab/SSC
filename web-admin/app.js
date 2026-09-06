@@ -347,11 +347,25 @@ function validate(q, common){
 }
 
 async function publish(rows){
-  return sb('/rest/v1/questions', {
-    method: 'POST',
-    headers: { Prefer: 'return=representation' },
-    body: JSON.stringify(rows),
-  });
+  try {
+    return await sb('/rest/v1/questions', {
+      method: 'POST',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify(rows),
+    });
+  } catch (e) {
+    // Row-level security rejects a non-admin trying to publish official
+    // content. The raw Postgres wording is opaque, so say what to do.
+    const m = String(e.message || e);
+    if (/row-level security|violates row-level|42501|permission denied/i.test(m)) {
+      throw new Error(
+        'This account is not on the publisher list, so it cannot add questions '
+        + 'that every tutor sees. Run the "Make yourself an admin" block at the '
+        + 'bottom of schema.sql with your email, then sign out and back in.'
+      );
+    }
+    throw e;
+  }
 }
 
 $('save').onclick = async () => {

@@ -47,23 +47,57 @@ create policy questions_read on public.questions
   for select
   using (owner_id is null or owner_id = auth.uid());
 
+-- Who may publish official content (owner_id null). Add yourself below.
+-- Anyone not listed can still write their own rows, but cannot touch the
+-- shared bank every tutor sees.
+create table if not exists public.question_admins (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  note    text
+);
+alter table public.question_admins enable row level security;
+
+drop policy if exists admins_read_self on public.question_admins;
+create policy admins_read_self on public.question_admins
+  for select to authenticated using (user_id = auth.uid());
+
+create or replace function public.is_question_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.question_admins where user_id = auth.uid());
+$$;
+
+-- Writing: an admin may publish official rows (owner_id null) or their own;
+-- everyone else is limited to their own.
 drop policy if exists questions_insert_own on public.questions;
 create policy questions_insert_own on public.questions
   for insert to authenticated
-  with check (owner_id = auth.uid());
+  with check (
+    owner_id = auth.uid()
+    or (owner_id is null and public.is_question_admin())
+  );
 
 drop policy if exists questions_update_own on public.questions;
 create policy questions_update_own on public.questions
   for update to authenticated
-  using (owner_id = auth.uid());
+  using (
+    owner_id = auth.uid()
+    or (owner_id is null and public.is_question_admin())
+  );
 
 drop policy if exists questions_delete_own on public.questions;
 create policy questions_delete_own on public.questions
   for delete to authenticated
-  using (owner_id = auth.uid());
+  using (
+    owner_id = auth.uid()
+    or (owner_id is null and public.is_question_admin())
+  );
 
--- Official rows (owner_id null) are deliberately writable only with the
--- service key — that is, from the admin panel, never from the app.
+-- ── Make yourself an admin ────────────────────────────────────────────
+-- Sign in to the app at least once so the account exists, then run this.
+-- Change the email if you publish from a different account.
+insert into public.question_admins (user_id, note)
+select id, 'panel admin' from auth.users
+where email = 'subornokhan22@gmail.com'
+on conflict (user_id) do nothing;
 
 -- ── Figure images ─────────────────────────────────────────────────────
 -- A public bucket for question pictures. Public read is fine: these are
