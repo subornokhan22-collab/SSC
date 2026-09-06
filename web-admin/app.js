@@ -443,7 +443,19 @@ async function uploadCanvas(c, name){
     },
     body: blob,
   });
-  if (!r.ok) throw new Error('Image upload failed: ' + (await r.text()).slice(0, 120));
+  if (!r.ok){
+    const body = await r.text();
+    // A storage select policy does not grant insert; without the write policy
+    // Supabase returns 403 "new row violates row-level security policy".
+    if (/row-level security|Unauthorized|403/i.test(body)) {
+      throw new Error(
+        'Image uploads are not permitted for this account yet. Re-run '
+        + 'schema.sql in the Supabase SQL editor — it now adds the storage '
+        + 'write policy — then sign out and back in.'
+      );
+    }
+    throw new Error('Image upload failed: ' + body.slice(0, 160));
+  }
   return {
     imagePath: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${file}`,
     aspect: Number((c.width / c.height).toFixed(4)),
