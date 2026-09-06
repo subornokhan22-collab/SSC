@@ -2,3 +2,6 @@
 # Python bytecode from tool/ scripts
 __pycache__/
 *.pyc
+
+# Downloadable bundle, rebuilt on demand
+web-admin.zip
