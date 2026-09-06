@@ -227,7 +227,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'chapters-2';
+const PANEL_BUILD = 'dedupe-1';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -578,6 +578,17 @@ $('save').onclick = async () => {
   const errs = validate(q, common);
   if (errs.length){ showMsg('err', '<b>Could not publish:</b>', errs); return; }
 
+  // Same-text check, so the one-at-a-time route cannot quietly re-add a
+  // question that is already on the server.
+  await loadServerPrints();
+  const fp = fingerprint(q);
+  if (fp && SERVER_PRINTS.has(fp)){
+    showMsg('err', '<b>Already published:</b>', [
+      `This question is already on the server as ${SERVER_PRINTS.get(fp)}.`,
+    ]);
+    return;
+  }
+
   $('save').disabled = true;
   $('saving').textContent = 'Publishing…';
   try {
@@ -751,6 +762,8 @@ $('formatBtn').onclick = async () => {
   if (!raw){ showMsg('err', '<b>Paste some question text first.</b>'); return; }
 
   $('formatBtn').disabled = true;
+  $('fmtStatus').textContent = 'Checking what is already published…';
+  await loadServerPrints();
   $('fmtStatus').textContent = 'Asking Gemini…';
   const prompt = buildPrompt(type, raw);
   let last = null;
@@ -780,6 +793,48 @@ $('formatBtn').onclick = async () => {
   }
 };
 
+/** Normalised fingerprint of a question's text, used to spot duplicates.
+ *
+ *  Ignores the things that differ between two copies of the same question
+ *  without changing its meaning: leading numbers, whitespace, punctuation
+ *  and the Bengali/Latin digit split. Two questions with the same
+ *  fingerprint are treated as the same question.
+ */
+function fingerprint(q){
+  const bn = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+  let t = stripLeadingNumber(q.questionText || q.stem || '');
+  t = t.replace(/[০-৯]/g, c => bn[c]);
+  // Drop punctuation and collapse whitespace so spacing differences do not
+  // hide a duplicate.
+  t = t.replace(/[।?.,;:!()\[\]{}'"“”‘’\-–—\/\\]/g, ' ')
+       .replace(/\s+/g, ' ')
+       .trim()
+       .toLowerCase();
+  return t;
+}
+
+/** Questions already on the server, as fingerprint -> id. */
+let SERVER_PRINTS = new Map();
+
+/** Loads fingerprints of everything published for the chosen subject, so a
+ *  re-paste can be spotted before it is written. */
+async function loadServerPrints(){
+  SERVER_PRINTS = new Map();
+  const subject = $('subject').value;
+  if (!subject) return;
+  try {
+    const rows = await sb('/rest/v1/questions?select=id,payload,type'
+      + '&subject_id=eq.' + encodeURIComponent(subject) + '&limit=5000');
+    for (const r of rows || []){
+      const p = r.payload || {};
+      const fp = fingerprint({ questionText: p.questionText, stem: p.stem });
+      if (fp) SERVER_PRINTS.set(fp, r.id);
+    }
+  } catch (_) {
+    // Detection is a convenience; never block publishing because of it.
+  }
+}
+
 /** Best-guess chapter for a question, from any hint the model returned. */
 function guessChapter(hint, subjectId){
   const list = CHAPTERS[subjectId] || [];
@@ -805,6 +860,22 @@ function renderBatch(){
   const list = CHAPTERS[subject] || [];
   const fallback = $('chapter').value;
 
+  // Flag anything already on the server, or repeated inside this paste.
+  const seenHere = new Map();
+  for (let i = 0; i < BATCH.length; i++){
+    const fp = fingerprint(BATCH[i]);
+    BATCH[i]._dupOf = null;
+    BATCH[i]._dupHere = false;
+    if (!fp) continue;
+    if (SERVER_PRINTS.has(fp)) BATCH[i]._dupOf = SERVER_PRINTS.get(fp);
+    else if (seenHere.has(fp)) BATCH[i]._dupHere = true;
+    else seenHere.set(fp, i);
+    // Default: skip a duplicate, keep everything else.
+    if (BATCH[i]._skip === undefined) {
+      BATCH[i]._skip = !!(BATCH[i]._dupOf || BATCH[i]._dupHere);
+    }
+  }
+
   $('batchList').innerHTML = BATCH.map((q, i) => {
     const t = escapeHtml(q.questionText || q.stem || '');
     let sub = '';
@@ -828,14 +899,39 @@ function renderBatch(){
          <pre style="font-size:11px;white-space:pre-wrap">${escapeHtml(JSON.stringify(RAW_BATCH[i] ?? q)).slice(0,600)}</pre>`
       : `<div class="t"><b>${i+1}.</b> ${t}</div><div class="o">${sub}</div>`;
 
-    return `<div class="qprev">${body}
+    const dup = q._dupOf
+      ? `<span class="new" style="background:#FFF1DC;color:#8A5200">ALREADY PUBLISHED</span>`
+      : (q._dupHere
+        ? `<span class="new" style="background:#FFF1DC;color:#8A5200">REPEATED IN THIS PASTE</span>`
+        : '');
+    const skipBox = dup
+      ? `<label class="opt" style="margin-top:8px;font-size:12px">
+           <input type="checkbox" class="q-skip" data-i="${i}" ${q._skip ? 'checked' : ''}
+                  style="width:auto;flex:none">
+           <span style="color:var(--muted)">Skip this one</span>
+         </label>`
+      : '';
+    return `<div class="qprev"${q._skip ? ' style="opacity:.55"' : ''}>
+      ${dup}${body}
       <select class="q-chap" data-i="${i}" style="margin-top:8px;font-size:12px;padding:6px 8px">${opts}</select>
+      ${skipBox}
     </div>`;
   }).join('');
 
   for (const sel of document.querySelectorAll('.q-chap')){
     sel.onchange = () => { BATCH[Number(sel.dataset.i)].chapter = sel.value; };
   }
+  for (const box of document.querySelectorAll('.q-skip')){
+    box.onchange = () => {
+      BATCH[Number(box.dataset.i)]._skip = box.checked;
+      renderBatch();
+    };
+  }
+  const dups = BATCH.filter(q => q._dupOf || q._dupHere).length;
+  const skipping = BATCH.filter(q => q._skip).length;
+  $('fmtStatus').textContent = dups
+    ? `${dups} duplicate(s) found, ${skipping} will be skipped`
+    : '';
   $('batchOut').classList.remove('hide');
 }
 
@@ -844,23 +940,34 @@ $('batchCancel').onclick = () => { BATCH = []; $('batchOut').classList.add('hide
 $('batchSave').onclick = async () => {
   const subjectId = $('subject').value;
   const rows = [], bad = [];
+  let skipped = 0;
   BATCH.forEach((q, i) => {
+    if (q._skip){ skipped += 1; return; }
     // Each question carries the chapter chosen on its own row.
     const common = { subjectId, chapter: (q.chapter || $('chapter').value).trim() };
     const e = validate(q, common);
     if (e.length) bad.push(`#${i+1} ${e[0]}`);
     else rows.push(buildRow(q, common));
   });
-  if (!rows.length){ showMsg('err', '<b>Nothing valid to publish:</b>', bad); return; }
+  if (!rows.length){
+    if (skipped && !bad.length){
+      showMsg('ok', `All ${skipped} question(s) were already published — nothing new to add.`);
+      BATCH = []; $('batchOut').classList.add('hide'); $('rawText').value = '';
+      return;
+    }
+    showMsg('err', '<b>Nothing valid to publish:</b>', bad); return;
+  }
 
   $('batchSave').disabled = true;
   $('fmtStatus').textContent = 'Publishing…';
   try {
     const out = await publish(rows);
     let m = `Published <b>${out.length}</b> question(s).`;
-    if (bad.length) m += `<br>${bad.length} skipped: ${bad.map(escapeHtml).join('; ')}`;
+    if (skipped) m += `<br>${skipped} duplicate(s) skipped.`;
+    if (bad.length) m += `<br>${bad.length} rejected: ${bad.map(escapeHtml).join('; ')}`;
     showMsg('ok', m);
     BATCH = []; $('batchOut').classList.add('hide'); $('rawText').value = '';
+    await loadServerPrints();
     await loadList();
   } catch (e) {
     showMsg('err', '<b>Could not publish:</b>', [String(e.message || e)]);
