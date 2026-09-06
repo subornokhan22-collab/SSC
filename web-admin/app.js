@@ -535,6 +535,8 @@ $('figClear').onclick = () => {
 };
 
 // ── publishing ────────────────────────────────────────────────────────
+let idSeq = 0;
+
 function nextId(subjectId, type, chapter){
   const prefix = ID_PREFIX[subjectId] || subjectId.slice(0, 3);
   const m = /([০-৯0-9]+)/.exec(chapter || '');
@@ -542,8 +544,16 @@ function nextId(subjectId, type, chapter){
   let n = 0;
   if (m){ for (const ch of m[1]) n = n * 10 + (bn[ch] ?? Number(ch)); }
   const cc = n ? String(n).padStart(2, '0') : 'x';
-  // A timestamp suffix keeps ids unique without asking the server first.
-  return `${prefix}_web${cc}_${type}_${Date.now().toString(36)}`;
+  // Date.now() alone is not enough: a batch builds every row inside the same
+  // millisecond, so all of them got the identical id and the insert failed
+  // with "duplicate key value violates unique constraint questions_pkey".
+  // A per-call counter plus randomness makes collisions effectively
+  // impossible, both within a batch and across two devices publishing at once.
+  idSeq += 1;
+  const stamp = Date.now().toString(36);
+  const seq = idSeq.toString(36);
+  const rand = Math.random().toString(36).slice(2, 7);
+  return `${prefix}_web${cc}_${type}_${stamp}${seq}${rand}`;
 }
 
 function buildRow(q, common){
@@ -625,6 +635,12 @@ async function publish(rows){
     // Row-level security rejects a non-admin trying to publish official
     // content. The raw Postgres wording is opaque, so say what to do.
     const m = String(e.message || e);
+    if (/duplicate key|questions_pkey|23505/i.test(m)) {
+      throw new Error(
+        'One of these questions already exists on the server. Reload the page '
+        + 'and publish again — if it repeats, the same batch was already saved.'
+      );
+    }
     if (/row-level security|violates row-level|42501|permission denied/i.test(m)) {
       throw new Error(
         'This account is not on the publisher list, so it cannot add questions '
