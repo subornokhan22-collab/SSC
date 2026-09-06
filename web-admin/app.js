@@ -227,7 +227,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'id-fix-2';
+const PANEL_BUILD = 'chapters-2';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -620,6 +620,13 @@ function buildPrompt(type, raw){
     '- Never invent questions, options or answers that are not in the input.',
     '- correctIndex is 0-based. If the answer is not marked, use 0.',
     '- If a cq has only three parts, leave questionGh empty and use marks [2,4,4].',
+    '- If the input marks which chapter a question belongs to (a heading such',
+    '  as "অধ্যায় ৩" or "Chapter 3" before a group), copy that heading text',
+    '  into a "chapterHint" field on every question under it. Omit the field',
+    '  when the input gives no such heading.',
+    '- Strip the leading question number. "২৪। জবাগোষ্ঠীতে..." becomes',
+    '  "জবাগোষ্ঠীতে...". The app adds its own numbering when it prints a paper,',
+    '  so a number left in the text would appear twice.',
     '', 'INPUT:', raw,
   ].join('\n');
 }
@@ -632,15 +639,33 @@ function extractArray(text){
   return Array.isArray(p) ? p : [p];
 }
 
+/** Removes a leading question number the model left in place.
+ *  "২৪। প্রশ্ন" / "24. প্রশ্ন" / "(২৪) প্রশ্ন" -> "প্রশ্ন".
+ *  The app prints its own Bengali numbering, so a number kept in the text
+ *  shows up twice on the paper. Only a number followed by a real separator
+ *  is stripped, so text that genuinely opens with a figure survives.
+ */
+function stripLeadingNumber(t){
+  const v = String(t || '').trim();
+  // A decimal like "0.5 T ..." must not lose its leading digit, so a dot only
+  // counts as a separator when it is not followed by another digit.
+  return v
+    .replace(/^[\(\[]?\s*[০-৯0-9]{1,3}\s*[\)\]]?\s*(?:।|:|\)|-|\.(?![০-৯0-9]))\s*/, '')
+    .trim();
+}
+
 function normalizeQuestion(raw, type){
   const q = { ...(raw || {}) };
   for (const k of ['payload','question','data','fields'])
     if (q[k] && typeof q[k] === 'object' && !Array.isArray(q[k])) Object.assign(q, q[k]);
   const pick = (...n) => { for (const x of n){ const v = q[x]; if (typeof v === 'string' && v.trim()) return v.trim(); } return ''; };
   const out = { type: q.type || type };
+  // Carried through so a batch can span several chapters.
+  const hint = pick('chapterHint','chapter','adhyay');
+  if (hint) out.chapterHint = hint;
 
   if (out.type === 'cq'){
-    out.stem = pick('stem','uddipok','passage','questionText','question','text');
+    out.stem = stripLeadingNumber(pick('stem','uddipok','passage','questionText','question','text'));
     out.questionK = pick('questionK','k','ka');
     out.questionKh = pick('questionKh','kh','kha');
     out.questionG = pick('questionG','g','ga');
@@ -650,7 +675,7 @@ function normalizeQuestion(raw, type){
     out.marks = Array.isArray(m) && m.length ? m.map(Number) : (out.questionGh ? [1,2,3,4] : [2,4,4]);
     return out;
   }
-  out.questionText = pick('questionText','question','text','stem','prompt');
+  out.questionText = stripLeadingNumber(pick('questionText','question','text','stem','prompt'));
   if (out.type === 'saq'){
     out.answer = pick('answer','ans','correctAnswer','solution');
     const ex = pick('explanation','reason'); if (ex) out.explanation = ex;
@@ -755,7 +780,31 @@ $('formatBtn').onclick = async () => {
   }
 };
 
+/** Best-guess chapter for a question, from any hint the model returned. */
+function guessChapter(hint, subjectId){
+  const list = CHAPTERS[subjectId] || [];
+  if (!hint) return '';
+  const h = String(hint).trim();
+  if (list.includes(h)) return h;
+  // Match on the chapter number, so "অধ্যায় ৩" finds "অধ্যায় ৩: কোষ বিভাজন".
+  const bn = {'০':0,'১':1,'২':2,'৩':3,'৪':4,'৫':5,'৬':6,'৭':7,'৮':8,'৯':9};
+  const num = (t) => {
+    const m = /([০-৯0-9]+)/.exec(t || '');
+    if (!m) return null;
+    let n = 0;
+    for (const c of m[1]) n = n * 10 + (bn[c] ?? Number(c));
+    return n;
+  };
+  const want = num(h);
+  if (want == null) return '';
+  return list.find(c => num(c) === want) || '';
+}
+
 function renderBatch(){
+  const subject = $('subject').value;
+  const list = CHAPTERS[subject] || [];
+  const fallback = $('chapter').value;
+
   $('batchList').innerHTML = BATCH.map((q, i) => {
     const t = escapeHtml(q.questionText || q.stem || '');
     let sub = '';
@@ -767,21 +816,37 @@ function renderBatch(){
       sub = [q.questionK,q.questionKh,q.questionG,q.questionGh]
         .map((x, n) => x ? `${L[n]}) ${escapeHtml(x)}` : '').filter(Boolean).join('<br>');
     }
+
+    // Per-question chapter, so one paste can cover several chapters.
+    const chosen = q.chapter || guessChapter(q.chapterHint, subject) || fallback;
+    q.chapter = chosen;
+    const opts = list.map(c =>
+      `<option value="${c.replace(/"/g,'&quot;')}"${c === chosen ? ' selected' : ''}>${c}</option>`).join('');
+
     const body = (!t && !sub)
       ? `<div class="o" style="color:var(--danger)">Could not read this one:</div>
          <pre style="font-size:11px;white-space:pre-wrap">${escapeHtml(JSON.stringify(RAW_BATCH[i] ?? q)).slice(0,600)}</pre>`
       : `<div class="t"><b>${i+1}.</b> ${t}</div><div class="o">${sub}</div>`;
-    return `<div class="qprev">${body}</div>`;
+
+    return `<div class="qprev">${body}
+      <select class="q-chap" data-i="${i}" style="margin-top:8px;font-size:12px;padding:6px 8px">${opts}</select>
+    </div>`;
   }).join('');
+
+  for (const sel of document.querySelectorAll('.q-chap')){
+    sel.onchange = () => { BATCH[Number(sel.dataset.i)].chapter = sel.value; };
+  }
   $('batchOut').classList.remove('hide');
 }
 
 $('batchCancel').onclick = () => { BATCH = []; $('batchOut').classList.add('hide'); };
 
 $('batchSave').onclick = async () => {
-  const common = { subjectId: $('subject').value, chapter: $('chapter').value.trim() };
+  const subjectId = $('subject').value;
   const rows = [], bad = [];
   BATCH.forEach((q, i) => {
+    // Each question carries the chapter chosen on its own row.
+    const common = { subjectId, chapter: (q.chapter || $('chapter').value).trim() };
     const e = validate(q, common);
     if (e.length) bad.push(`#${i+1} ${e[0]}`);
     else rows.push(buildRow(q, common));
