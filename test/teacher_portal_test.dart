@@ -67,8 +67,19 @@ void main() {
       expect(allSubjects, isNotEmpty);
       final ids = allSubjects.map((s) => s.id).toList();
       expect(ids.toSet().length, ids.length, reason: 'subject ids must be unique');
-      for (final wanted in ['physics', 'chemistry', 'general_math', 'ict']) {
+      // Only the five subjects that still have a question bank are offered.
+      for (final wanted in [
+        'physics',
+        'chemistry',
+        'biology',
+        'general_math',
+        'higher_math',
+      ]) {
         expect(ids, contains(wanted));
+      }
+      for (final gone in ['ict', 'bangla_1st', 'bgs', 'english_1st']) {
+        expect(ids, isNot(contains(gone)),
+            reason: '$gone was removed along with its questions');
       }
     });
 

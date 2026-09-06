@@ -39,14 +39,8 @@ const BANKS = {
     saq: 'general_math_saqs',
     cq: 'general_math_cqs',
   },
-  ict: { mcq: 'ict_mcqs' },
-  bangla_1st: { mcq: 'bangla_1st_mcqs', saq: 'bangla_1st_saqs', cq: 'bangla_1st_cqs' },
-  bangla_2nd: { mcq: 'bangla_2nd_mcqs' },
-  bgs: { mcq: 'bgs_mcqs', saq: 'bgs_saqs', cq: 'bgs_cqs' },
   // Subjects without a dedicated bank fall back to the shared core files.
   higher_math: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
-  accounting: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
-  finance: { mcq: 'core_mcqs', saq: 'core_saqs', cq: 'core_cqs' },
 };
 
 const SUBJECT_NAMES = {
@@ -55,12 +49,6 @@ const SUBJECT_NAMES = {
   biology: 'জীববিজ্ঞান (Biology)',
   general_math: 'সাধারণ গণিত (General Math)',
   higher_math: 'উচ্চতর গণিত (Higher Math)',
-  ict: 'তথ্য ও যোগাযোগ প্রযুক্তি (ICT)',
-  bangla_1st: 'বাংলা ১ম পত্র',
-  bangla_2nd: 'বাংলা ২য় পত্র',
-  bgs: 'বাংলাদেশ ও বিশ্বপরিচয় (BGS)',
-  accounting: 'হিসাববিজ্ঞান (Accounting)',
-  finance: 'ফিন্যান্স (Finance)',
 };
 
 const ID_PREFIX = {
@@ -69,12 +57,6 @@ const ID_PREFIX = {
   biology: 'bio',
   general_math: 'gm',
   higher_math: 'hm',
-  ict: 'ict',
-  bangla_1st: 'b1',
-  bangla_2nd: 'b2',
-  bgs: 'bgs',
-  accounting: 'acc',
-  finance: 'fin',
 };
 
 // ── data helpers ──────────────────────────────────────────────────────

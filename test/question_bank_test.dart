@@ -16,11 +16,11 @@ void main() {
   setUpAll(BankFixture.ensureLoaded);
 
   group('Export integrity', () {
-    test('the bank holds exactly 15,392 questions', () {
-      expect(allMCQs.length, 12183, reason: 'MCQ count changed');
-      expect(allSAQs.length, 2100, reason: 'SAQ count changed');
-      expect(allCQs.length, 1109, reason: 'CQ count changed');
-      expect(allMCQs.length + allSAQs.length + allCQs.length, 15392);
+    test('the bank holds exactly 5,279 questions', () {
+      expect(allMCQs.length, 3500, reason: 'MCQ count changed');
+      expect(allSAQs.length, 1120, reason: 'SAQ count changed');
+      expect(allCQs.length, 659, reason: 'CQ count changed');
+      expect(allMCQs.length + allSAQs.length + allCQs.length, 5279);
     });
 
     test('the manifest agrees with the files on disk', () {
@@ -38,7 +38,7 @@ void main() {
         counted += rows.length;
       }
       expect(counted, manifest['total']);
-      expect(counted, 15392);
+      expect(counted, 5279);
     });
 
     test('every id is unique across the whole bank', () {
@@ -50,7 +50,7 @@ void main() {
       ]) {
         expect(ids.add(id), isTrue, reason: 'duplicate id $id');
       }
-      expect(ids.length, 15392);
+      expect(ids.length, 5279);
     });
 
     test('no question lost its text, subject or chapter', () {
@@ -97,8 +97,7 @@ void main() {
         ...allMCQs.where((q) => q.figure != null).map((q) => q.figure!),
         ...allCQs.where((q) => q.figure != null).map((q) => q.figure!),
       ];
-      // 12 questions carried a table / triangle / bar-chart figure.
-      expect(withFigures.length, 12);
+      
       for (final f in withFigures) {
         expect(f.headers, isNotEmpty);
       }

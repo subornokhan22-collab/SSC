@@ -1,13 +1,6 @@
 {
   "version": 1,
   "files": [
-    "bangla_1st_cqs.json",
-    "bangla_1st_mcqs.json",
-    "bangla_1st_saqs.json",
-    "bangla_2nd_mcqs.json",
-    "bgs_cqs.json",
-    "bgs_mcqs.json",
-    "bgs_saqs.json",
     "biology_cqs.json",
     "biology_mcqs.json",
     "biology_saqs.json",
@@ -21,20 +14,12 @@
     "general_math_cqs.json",
     "general_math_mcqs.json",
     "general_math_saqs.json",
-    "ict_mcqs.json",
     "my_questions.json",
     "physics_cqs.json",
     "physics_mcqs.json",
     "physics_saqs.json"
   ],
   "counts": {
-    "bangla_1st_cqs.json": 300,
-    "bangla_1st_mcqs.json": 1700,
-    "bangla_1st_saqs.json": 680,
-    "bangla_2nd_mcqs.json": 4300,
-    "bgs_cqs.json": 150,
-    "bgs_mcqs.json": 1500,
-    "bgs_saqs.json": 300,
     "biology_cqs.json": 140,
     "biology_mcqs.json": 719,
     "biology_saqs.json": 280,
@@ -44,15 +29,14 @@
     "core_cqs.json": 97,
     "core_mcqs.json": 569,
     "extra_cqs.json": 2,
-    "extra_mcqs.json": 10,
+    "extra_mcqs.json": 8,
     "general_math_cqs.json": 170,
     "general_math_mcqs.json": 850,
     "general_math_saqs.json": 340,
-    "ict_mcqs.json": 1200,
     "my_questions.json": 0,
     "physics_cqs.json": 130,
     "physics_mcqs.json": 750,
     "physics_saqs.json": 260
   },
-  "total": 15411
+  "total": 5279
 }
