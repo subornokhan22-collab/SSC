@@ -229,6 +229,17 @@
           <div class="actions" style="margin-top:8px">
             <button id="testKey" class="ghost" type="button">Test connection</button>
           </div>
+          <label for="pageFiles">Read pages with AI — photo or screenshot of a whole page</label>
+          <input id="pageFiles" type="file" accept="image/png,image/jpeg" multiple>
+          <div class="hint">Questions are transcribed and any figure is cropped out
+            automatically. Several pages at once is fine.</div>
+          <div class="bar hide" id="pageBar"><i></i></div>
+          <div class="hint" id="pageStatus"></div>
+
+          <div style="text-align:center;color:var(--muted);font-size:12px;margin:14px 0">
+            — or paste the text yourself —
+          </div>
+
           <label for="rawText">Paste questions — several chapters at once is fine</label>
           <textarea id="rawText" style="min-height:180px"></textarea>
           <div class="actions">
@@ -296,6 +307,6 @@
     </div>
   </div>
 </div>
-<script src="app.js?v=ae23b30a"></script>
+<script src="app.js?v=c1fda6d9"></script>
 </body>
 </html>
