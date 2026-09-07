@@ -140,7 +140,7 @@ const CHAPTERS = {
  "bangla_1st": [
   "গদ্য: প্রত্যুপকার",
   "গদ্য: ফুলের বিবাহ",
-  "গদ্য: শুভা",
+  "গদ্য: সুভা",
   "গদ্য: বই পড়া",
   "গদ্য: অভাগীর স্বর্গ",
   "গদ্য: নিরীহ বাঙালি",
@@ -496,7 +496,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'chunked-1';
+const PANEL_BUILD = 'chapters-byname';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -902,7 +902,31 @@ const GEMINI_MODELS = [
 ];
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-function buildPrompt(type, raw){
+/** Tells the model which chapter each question belongs to.
+ *
+ *  Listing the subject's real chapters lets it choose one even when the paste
+ *  has no headings — which is the common case for a Bangla literature paper,
+ *  where the chapter is the story or poem the question is about.
+ */
+function chapterRule(subjectId){
+  const list = CHAPTERS[subjectId] || [];
+  if (!list.length){
+    return [
+      '- If the input marks which chapter a question belongs to, copy that',
+      '  heading into a "chapterHint" field on every question under it.',
+    ];
+  }
+  return [
+    '- Set "chapterHint" on every question to the chapter it belongs to,',
+    '  chosen from this list and copied EXACTLY:',
+    ...list.map(c => '    ' + c),
+    '  Use a heading in the input when there is one. Otherwise infer it from',
+    '  the question itself — the story, poem, topic or characters it refers',
+    '  to. Only omit chapterHint if you genuinely cannot tell.',
+  ];
+}
+
+function buildPrompt(type, raw, subjectId){
   const shape = {
     mcq: '{"type":"mcq","questionText":"...","options":["..","..","..",".."],"correctIndex":0,"explanation":"..."}',
     saq: '{"type":"saq","questionText":"...","answer":"...","explanation":"..."}',
@@ -920,10 +944,7 @@ function buildPrompt(type, raw){
     '- Never invent questions, options or answers that are not in the input.',
     '- correctIndex is 0-based. If the answer is not marked, use 0.',
     '- If a cq has only three parts, leave questionGh empty and use marks [2,4,4].',
-    '- If the input marks which chapter a question belongs to (a heading such',
-    '  as "অধ্যায় ৩" or "Chapter 3" before a group), copy that heading text',
-    '  into a "chapterHint" field on every question under it. Omit the field',
-    '  when the input gives no such heading.',
+    ...chapterRule(subjectId),
     '- Strip the leading question number. "২৪। জবাগোষ্ঠীতে..." becomes',
     '  "জবাগোষ্ঠীতে...". The app adds its own numbering when it prints a paper,',
     '  so a number left in the text would appear twice.',
@@ -1090,7 +1111,7 @@ $('formatBtn').onclick = async () => {
       for (let attempt = 0; attempt < 2; attempt++){
         try {
           $('fmtStatus').textContent = `${label} — ${model}…`;
-          return await callGemini(model, key, buildPrompt(type, text));
+          return await callGemini(model, key, buildPrompt(type, text, $('subject').value));
         } catch (e) {
           last = e;
           // Reply cut off: halve the text and format each half.
@@ -1179,21 +1200,50 @@ async function loadServerPrints(){
 /** Best-guess chapter for a question, from any hint the model returned. */
 function guessChapter(hint, subjectId){
   const list = CHAPTERS[subjectId] || [];
-  if (!hint) return '';
+  if (!hint || !list.length) return '';
   const h = String(hint).trim();
   if (list.includes(h)) return h;
-  // Match on the chapter number, so "অধ্যায় ৩" finds "অধ্যায় ৩: কোষ বিভাজন".
+
+  // Strip a leading section label and any punctuation, so "গদ্য: সুভা",
+  // "সুভা" and "পদ্য - প্রাণ" all reduce to the bare chapter name.
+  const bare = (t) => String(t || '')
+    .replace(/^\s*(গদ্য|পদ্য|কবিতা|সহপাঠ|prose|poetry)\s*[:\-–—]\s*/i, '')
+    .replace(/[।:\-–—'"“”‘’()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  // 1. Name match. Bangla 1st chapters are titles, not numbers, so this is
+  //    the only thing that can work there — numeric matching always failed
+  //    and every question fell back to the first chapter.
+  const hb = bare(h);
+  if (hb){
+    const exact = list.find(c => bare(c) === hb);
+    if (exact) return exact;
+    // Allow the hint to be contained in the title or vice versa, which
+    // covers "সুভা" against "গদ্য: সুভা" and minor spelling drift.
+    const partial = list.find(c => {
+      const cb = bare(c);
+      return cb && (cb.includes(hb) || hb.includes(cb));
+    });
+    if (partial) return partial;
+  }
+
+  // 2. Number match, for subjects whose chapters are numbered.
   const bn = {'০':0,'১':1,'২':2,'৩':3,'৪':4,'৫':5,'৬':6,'৭':7,'৮':8,'৯':9};
   const num = (t) => {
-    const m = /([০-৯0-9]+)/.exec(t || '');
+    const m = /(?:অধ্যায়|পরিচ্ছেদ|unit|chapter)\s*([০-৯0-9]+)/i.exec(t || '');
     if (!m) return null;
     let n = 0;
     for (const c of m[1]) n = n * 10 + (bn[c] ?? Number(c));
     return n;
   };
   const want = num(h);
-  if (want == null) return '';
-  return list.find(c => num(c) === want) || '';
+  if (want != null){
+    const byNum = list.find(c => num(c) === want);
+    if (byNum) return byNum;
+  }
+  return '';
 }
 
 function renderBatch(){
