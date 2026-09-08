@@ -169,7 +169,7 @@ class OMrScanner {
       final fallback = _paperCornerFallback(c, paper, w, h);
       if (fallback == null) {
         return OmScanResult.failed(
-            'পেজের চার কোণের চিহ্ন পাওয়া যায়নি। পুরো OMR শিটটি ফ্রেমের ভেতরে, সমান আলোয় ফটো নাও।');
+            'Corner marks not found. Keep the whole OMR sheet in frame, in even light, and take the photo again.');
       }
       corners.add(fallback);
     }
@@ -179,7 +179,7 @@ class OMrScanner {
         _bestRotationHomography(geo, corners, ink, w, h);
     if (solved == null) {
       return OmScanResult.failed(
-          'শিটটি ঠিকভাবে সাজানো যায়নি। শিটটিকে ফ্রেমের কোণায় না রেখে মাঝখানে, চারপাশে একটু ফাঁকা জায়গা রেখে আবার ফটো নাও।');
+          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
     }
     final homography = solved;
 
@@ -192,7 +192,7 @@ class OMrScanner {
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
       return OmScanResult.failed(
-          'শিটটি ছবিতে খুব ছোট। ফোনটিকে শিটের কাছাকাছি নিয়ে আবার ফটো নাও।');
+          'The sheet is too small in the photo. Move closer and take the photo again.');
     }
     final sampleR = (bubbleR * 0.55).clamp(3.5, 22.0);
 

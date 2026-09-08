@@ -1019,7 +1019,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         context: context,
         builder: (c) => StatefulBuilder(
               builder: (c, setDialog) => AlertDialog(
-                title: const Text('OMR শিট কয় কপি?'),
+                title: const Text('How many OMR sheets?'),
                 content: Column(mainAxisSize: MainAxisSize.min, children: [
                   Text('${_bn(_mcqs.length)}টি প্রশ্ন • সেট $_setLetter',
                       style:
@@ -1048,10 +1048,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(c),
-                      child: const Text('বাতিল')),
+                      child: const Text('Cancel')),
                   FilledButton(
                       onPressed: () => Navigator.pop(c, copies),
-                      child: const Text('ছাপাও')),
+                      child: const Text('Print')),
                 ],
               ),
             ));
@@ -1636,7 +1636,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     if (_mcqs.isNotEmpty)
                       Expanded(
                           child: AppButton(
-                              label: 'OMR ছাপাও',
+                              label: 'Print OMR',
                               icon: Icons.crop_original_rounded,
                               outlined: true,
                               onPressed: _printOmr)),
@@ -1656,7 +1656,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                             icon: const Icon(Icons.qr_code_scanner_rounded,
                                 size: 18),
                             label: Text(
-                                'এই টেস্টের OMR স্ক্যান করো (key: ${_bn(_mcqs.length)}টি)'))),
+                                "Scan this test's OMR (key: ${_mcqs.length} questions)"))),
                   ],
                   if (_showAnswerKey) ...[
                     const SizedBox(height: 12),

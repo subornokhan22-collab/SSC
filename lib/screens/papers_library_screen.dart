@@ -68,7 +68,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
                   decoration: const InputDecoration(
                       labelText: 'শিরোনাম (যেমন: মডেল পরীক্ষা ১ — গণিত)'),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'শিরোনাম দাও' : null,
+                      (v == null || v.trim().isEmpty) ? 'Enter a title' : null,
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
@@ -96,10 +96,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(c), child: const Text('বাতিল')),
+                onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
             FilledButton.icon(
               icon: const Icon(Icons.photo_camera_rounded, size: 18),
-              label: const Text('ফটো থেকে'),
+              label: const Text('From photos'),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
                 Navigator.pop(c);
@@ -116,7 +116,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
             ),
             FilledButton.icon(
               icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
-              label: const Text('PDF থেকে'),
+              label: const Text('From PDF'),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
                 Navigator.pop(c);
@@ -153,10 +153,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       }
       await PaperLibrary.addFromImages(
           title: title, subject: subject, year: year, pages: bytes);
-      _snack('${bytes.length}টি পৃষ্ঠার প্রশ্নপত্র যোগ হয়েছে।');
+      _snack('${bytes.length}-page paper added.');
       await _reload();
     } catch (e) {
-      _snack('যোগ করা যায়নি: $e');
+      _snack('Could not add: $e');
     } finally {
       if (mounted) setState(() => _busyAdd = false);
     }
@@ -176,16 +176,16 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       if (result == null || result.files.isEmpty) return;
       final path = result.files.single.path;
       if (path == null) {
-        _snack('PDF-এর পথ পাওয়া যায়নি।');
+        _snack('PDF path not found.');
         return;
       }
       final bytes = await File(path).readAsBytes();
       await PaperLibrary.addFromPdf(
           title: title, subject: subject, year: year, bytes: bytes);
-      _snack('PDF প্রশ্নপত্র যোগ হয়েছে।');
+      _snack('PDF paper added.');
       await _reload();
     } catch (e) {
-      _snack('যোগ করা যায়নি: $e');
+      _snack('Could not add: $e');
     } finally {
       if (mounted) setState(() => _busyAdd = false);
     }
@@ -195,7 +195,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
     if (e.kind == 'pdf') {
       final bytes = await PaperLibrary.pdfBytes(e.id);
       if (bytes == null) {
-        _snack('PDF পাওয়া যায়নি।');
+        _snack('PDF not found.');
         return;
       }
       if (!mounted) return;
@@ -210,7 +210,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       if (b != null) thumbs.add(b);
     }
     if (thumbs.isEmpty) {
-      _snack('পৃষ্ঠাগুলো পাওয়া যায়নি।');
+      _snack('Pages not found.');
       return;
     }
     if (!mounted) return;
@@ -224,7 +224,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
     try {
       await PaperLibrary.printEntry(e);
     } catch (err) {
-      _snack('ছাপা যায়নি: $err');
+      _snack('Could not print: $err');
     }
   }
 
@@ -232,7 +232,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
     try {
       await PaperLibrary.shareEntry(e);
     } catch (err) {
-      _snack('শেয়ার করা যায়নি: $err');
+      _snack('Could not share: $err');
     }
   }
 
@@ -241,14 +241,14 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('মুছে ফেলা হবে?'),
-        content: Text('"${e.title}" প্রশ্নপত্রটি স্থায়ীভাবে মুছে যাবে।'),
+        content: Text('"${e.title}" will be permanently deleted.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('বাতিল')),
+              child: const Text('Cancel')),
           FilledButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('মুছে ফেলো')),
+              child: const Text('Delete')),
         ],
       ),
     );
@@ -264,7 +264,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
         icon: const Icon(Icons.add_photo_alternate_rounded),
-        label: const Text('যোগ করো'),
+        label: const Text('Add'),
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -298,8 +298,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
               style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           const Text(
-            'নিজের পুরানো বোর্ড/মডেল প্রশ্নপত্র ফটো বা PDF আকারে যোগ করো —\n'
-            'আপ-এর ভেতরে দেখাও, ছাপাও বা শেয়ার করো।',
+            'Add your own board/model papers as photos or PDF —\n'
+            'view, print or share them inside the app.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.5),
           ),
@@ -339,10 +339,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
         Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _iconBtn(Icons.visibility_rounded, 'দেখো', () => _view(e)),
-              _iconBtn(Icons.print_rounded, 'ছাপাও', () => _print(e)),
-              _iconBtn(Icons.share_rounded, 'শেয়ার', () => _share(e)),
-              _iconBtn(Icons.delete_outline_rounded, 'মুছুন', () => _delete(e),
+              _iconBtn(Icons.visibility_rounded, 'View', () => _view(e)),
+              _iconBtn(Icons.print_rounded, 'Print', () => _print(e)),
+              _iconBtn(Icons.share_rounded, 'Share', () => _share(e)),
+              _iconBtn(Icons.delete_outline_rounded, 'Delete', () => _delete(e),
                   color: AppTheme.danger),
             ]),
       ]),

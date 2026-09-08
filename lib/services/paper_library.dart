@@ -107,7 +107,7 @@ class PaperLibrary {
     required List<Uint8List> pages,
   }) async {
     if (pages.isEmpty) {
-      throw Exception('কমপক্ষে এক পজের ছবি দাও।');
+      throw Exception('Add at least one page photo.');
     }
     final id = 'p_${DateTime.now().millisecondsSinceEpoch}';
     final dir = await _dirFor(id);
@@ -147,7 +147,7 @@ class PaperLibrary {
     required Uint8List bytes,
     int pages = 0,
   }) async {
-    if (bytes.isEmpty) throw Exception('PDF ফাইল খালি।');
+    if (bytes.isEmpty) throw Exception('The PDF file is empty.');
     final id = 'p_${DateTime.now().millisecondsSinceEpoch}';
     final dir = await _dirFor(id);
     await File('${dir.path}${Platform.pathSeparator}doc.pdf')
@@ -201,7 +201,7 @@ class PaperLibrary {
   static Future<void> printEntry(PaperEntry entry) async {
     if (entry.kind == 'pdf') {
       final bytes = await pdfBytes(entry.id);
-      if (bytes == null) throw Exception('PDF পাওয়া যায়নি।');
+      if (bytes == null) throw Exception('PDF not found.');
       await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
       return;
     }
@@ -230,7 +230,7 @@ class PaperLibrary {
   static Future<void> shareEntry(PaperEntry entry) async {
     if (entry.kind == 'pdf') {
       final bytes = await pdfBytes(entry.id);
-      if (bytes == null) throw Exception('PDF পাওয়া যায়নি।');
+      if (bytes == null) throw Exception('PDF not found.');
       await Printing.sharePdf(
         bytes: bytes,
         filename: '${_safeName(entry.title)}.pdf',

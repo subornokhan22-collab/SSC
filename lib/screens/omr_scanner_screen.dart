@@ -99,7 +99,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _overlayJpg = null;
       });
     } catch (e) {
-      _snack('ছবি লোড করা যায়নি: $e');
+      _snack('Could not load the image: $e');
     }
   }
 
@@ -129,11 +129,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _scan() async {
     final photo = _photoBytes;
     if (photo == null) {
-      _snack('আগে OMR শিটের একটা পরিষ্কার ফটো নাও।');
+      _snack('Take a clear photo of the OMR sheet first.');
       return;
     }
     if (_key.any((k) => k < 0)) {
-      _snack('Answer key-এর ${_total - _keyDone}টি প্রশ্ন এখনো বোঝা হয়নি।');
+      _snack('${_total - _keyDone} answer key question(s) still empty.');
       return;
     }
     setState(() {
@@ -299,7 +299,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       key: _key,
       savedAt: DateTime.now(),
     ));
-    _snack('Answer key সংরক্ষিত হয়েছে।');
+    _snack('Answer key saved.');
   }
 
   void _scanNext() {
@@ -339,27 +339,27 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('১। OMR শিটের ফটো',
+                  const Text('1. OMR sheet photo',
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 3),
-                  Text(
-                      'পুরো শিট ফ্রেমের ভেতরে, চার কোণের কালো চিহ্নসহ, সমান আলোয়।',
-                      style: const TextStyle(
+                  const Text(
+                      'Keep the whole sheet in frame with all four corner marks visible, in even light.',
+                      style: TextStyle(
                           fontSize: 11.5, color: AppTheme.muted)),
                   const SizedBox(height: 10),
                   if (_photoBytes == null)
                     Row(children: [
                       Expanded(
                           child: AppButton(
-                              label: '📷 Camera',
+                              label: 'Camera',
                               icon: Icons.photo_camera_rounded,
                               onPressed:
                                   () => _pickPhoto(ImageSource.camera))),
                       const SizedBox(width: 10),
                       Expanded(
                           child: AppButton(
-                              label: '🖼️ Gallery',
+                              label: 'Gallery',
                               icon: Icons.photo_library_rounded,
                               outlined: true,
                               onPressed: () => _pickPhoto(ImageSource.gallery))),
@@ -377,7 +377,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     TextButton.icon(
                       onPressed: () => _scanNext(),
                       icon: const Icon(Icons.close_rounded, size: 16),
-                      label: const Text('ছবি বদলাও / মুছুন'),
+                      label: const Text('Change / remove photo'),
                     ),
                   ],
                 ],
@@ -391,10 +391,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 children: [
                   Row(children: [
                     const Expanded(
-                        child: Text('২। Paper & Answer key',
+                        child: Text('2. Paper & answer key',
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w800))),
-                    Text('$_keyDone/$_total বোঝা হয়েছে',
+                    Text('$_keyDone/$_total filled',
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -442,7 +442,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     const Spacer(),
                     TextButton(
                         onPressed: _key.any((k) => k >= 0) ? _clearKey : null,
-                        child: const Text('সব মুছুন')),
+                        child: const Text('Clear all')),
                   ]),
                   const SizedBox(height: 6),
                   _keyGrid(),
@@ -490,7 +490,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
-                          'রেজিস্ট্রেশন নং অস্পষ্ট: ${result.registration}',
+                          'Registration no. unclear: ${result.registration}',
                           style: const TextStyle(
                               fontSize: 11.5, color: AppTheme.warning),
                         ),
@@ -507,13 +507,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     Row(children: [
                       Expanded(
                           child: AppButton(
-                              label: 'স্কোর কার্ড ছাপাও',
+                              label: 'Print scorecard',
                               icon: Icons.print_rounded,
                               onPressed: _printScorecard)),
                       const SizedBox(width: 10),
                       Expanded(
                           child: AppButton(
-                              label: 'Key সংরক্ষণ',
+                              label: 'Save key',
                               icon: Icons.save_rounded,
                               outlined: true,
                               onPressed: _saveKey)),
@@ -524,8 +524,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         child: OutlinedButton.icon(
                             onPressed: _scanNext,
                             icon: const Icon(Icons.person_rounded, size: 18),
-                            label:
-                                const Text('পরবর্তী পরীক্ষার্থীর OMR স্ক্যান করো'))),
+                            label: const Text(
+                                "Scan next student's OMR sheet"))),
                   ],
                 ),
               ),
@@ -545,7 +545,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       }
                       _loadHistory();
                     },
-                    child: const Text('সব মুছুন')),
+                    child: const Text('Clear all')),
               ]),
               for (final r in _history)
                 Container(
@@ -748,7 +748,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
               ),
               actions: [
                 TextButton(
-                    onPressed: () => Navigator.pop(c), child: const Text('বন্ধ করো')),
+                    onPressed: () => Navigator.pop(c), child: const Text('Close')),
               ],
             ));
   }
@@ -756,7 +756,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _restoreKeyDraft() async {
     final draft = await OmrStore.loadKeyDraft();
     if (draft == null || draft.key.isEmpty) {
-      _snack('কোনো সংরক্ষিত key পাওয়া যায়নি।');
+      _snack('No saved key found.');
       return;
     }
     setState(() {
@@ -767,6 +767,6 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       }
       if (draft.paperTitle.isNotEmpty) _titleCtrl.text = draft.paperTitle;
     });
-    _snack('সংরক্ষিত key ফেরত আনা হয়েছে (${draft.total}টি প্রশ্ন)।');
+    _snack('Saved key restored (${draft.total} questions).');
   }
 }
