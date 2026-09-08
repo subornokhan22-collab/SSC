@@ -496,7 +496,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'page-ocr';
+const PANEL_BUILD = 'chapters-byname';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -1030,18 +1030,11 @@ function normalizeQuestion(raw, type){
   return out;
 }
 
-/** Calls Gemini. `inlineImages` are {mimeType, data} parts sent alongside the
- *  prompt — the Flash models are multimodal, so a page photograph can be read
- *  directly instead of being typed out by hand. */
-async function callGemini(model, key, prompt, inlineImages){
-  const parts = [{ text: prompt }];
-  for (const img of (inlineImages || [])){
-    parts.push({ inline_data: { mime_type: img.mimeType, data: img.data } });
-  }
+async function callGemini(model, key, prompt){
   const r = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts }],
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }],
                              generationConfig: { temperature: 0.1, maxOutputTokens: 32768 } }) });
   const d = await r.json().catch(() => ({}));
   if (!r.ok){
@@ -1309,13 +1302,8 @@ function renderBatch(){
            <span style="color:var(--muted)">Skip this one</span>
          </label>`
       : '';
-    // Thumbnail of the auto-cropped figure, so a bad crop is obvious.
-    const fig = q.figure && q.figure.imagePath
-      ? `<img src="${q.figure.imagePath}" alt="figure"
-             style="max-width:100%;margin-top:8px;border:1px solid var(--border);border-radius:8px">`
-      : '';
     return `<div class="qprev"${q._skip ? ' style="opacity:.55"' : ''}>
-      ${dup}${body}${fig}
+      ${dup}${body}
       <select class="q-chap" data-i="${i}" style="margin-top:8px;font-size:12px;padding:6px 8px">${opts}</select>
       ${skipBox}
     </div>`;
@@ -1379,156 +1367,6 @@ $('batchSave').onclick = async () => {
     $('fmtStatus').textContent = '';
   }
 };
-
-// ── read a whole page ─────────────────────────────────────────────────
-
-/** Prompt for reading a page photograph.
- *
- *  Figure boxes come back as percentages of the page rather than pixels, so
- *  the same numbers work whatever resolution the upload happens to be.
- */
-function pagePrompt(type, subjectId){
-  const shape = {
-    mcq: '{"type":"mcq","questionText":"...","options":["..","..","..",".."],"correctIndex":0,"chapterHint":"...","figure":null}',
-    saq: '{"type":"saq","questionText":"...","answer":"...","chapterHint":"...","figure":null}',
-    cq:  '{"type":"cq","stem":"...","questionK":"...","questionKh":"...","questionG":"...","questionGh":"...","marks":[1,2,3,4],"chapterHint":"...","figure":null}',
-  }[type];
-  return [
-    'The image is a page of Bangla SSC exam questions. Read every question on it.',
-    '',
-    'Return ONLY a JSON array. No markdown, no commentary, no code fences.',
-    'Each element must match exactly this shape:',
-    shape,
-    '',
-    'Rules:',
-    '- Transcribe the Bangla exactly as printed. Do not translate or reword.',
-    '- Do NOT include the printed question number in questionText or stem.',
-    '- correctIndex is 0-based. If the answer is not marked, use 0.',
-    '- Skip page headers, footers, page numbers and any answer key.',
-    '',
-    'Figures:',
-    '- If a question has a diagram, circuit, graph, table or picture, set',
-    '  "figure" to {"x":..,"y":..,"w":..,"h":..} giving the box around JUST',
-    '  that figure, as percentages of the whole page (0-100), where x,y is the',
-    '  top-left corner.',
-    '- Include the figure and its labels, but not the question text or options.',
-    '- Set "figure" to null when the question has no figure.',
-    '',
-    ...chapterRule(subjectId),
-  ].join('\n');
-}
-
-/** Reads a File into the base64 form the API expects, downscaling first so a
- *  phone photo does not blow the request size. */
-async function fileToInline(file, maxEdge = 1600){
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
-  await img.decode();
-  let w = img.naturalWidth, h = img.naturalHeight;
-  const k = Math.min(1, maxEdge / Math.max(w, h));
-  w = Math.round(w * k); h = Math.round(h * k);
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  c.getContext('2d').drawImage(img, 0, 0, w, h);
-  const dataUrl = c.toDataURL('image/jpeg', 0.9);
-  return {
-    inline: { mimeType: 'image/jpeg', data: dataUrl.split(',')[1] },
-    canvas: c,
-  };
-}
-
-/** Cuts the figure box out of the page, with a small margin so a label sitting
- *  right on the boundary is not clipped. */
-function cropFigure(pageCanvas, box){
-  const pad = 0.01;
-  const x = Math.max(0, (Number(box.x) / 100 - pad)) * pageCanvas.width;
-  const y = Math.max(0, (Number(box.y) / 100 - pad)) * pageCanvas.height;
-  const w = Math.min(1, (Number(box.w) / 100 + pad * 2)) * pageCanvas.width;
-  const h = Math.min(1, (Number(box.h) / 100 + pad * 2)) * pageCanvas.height;
-  // Reject a box too small to be a real figure. A stray tiny box would
-  // otherwise attach a few meaningless pixels to the question.
-  if (!(w >= 60 && h >= 40)) return null;
-  const c = document.createElement('canvas');
-  c.width = Math.round(Math.min(w, pageCanvas.width - x));
-  c.height = Math.round(Math.min(h, pageCanvas.height - y));
-  c.getContext('2d').drawImage(
-    pageCanvas, Math.round(x), Math.round(y), c.width, c.height,
-    0, 0, c.width, c.height);
-  return c;
-}
-
-$('pageFiles').onchange = async () => {
-  const files = [...$('pageFiles').files];
-  if (!files.length) return;
-  const key = $('apiKey').value.trim();
-  if (!key){ showMsg('err', '<b>Add your Gemini API key first.</b>'); return; }
-
-  const type = $('type').value;
-  const subject = $('subject').value;
-  $('pageBar').classList.remove('hide');
-  const bar = $('pageBar').firstElementChild;
-  const all = [];
-
-  try {
-    for (let i = 0; i < files.length; i++){
-      bar.style.width = ((i / files.length) * 100) + '%';
-      $('pageStatus').textContent = `Reading page ${i + 1} of ${files.length}…`;
-
-      const { inline, canvas } = await fileToInline(files[i]);
-
-      let rows = null, last = null;
-      for (const model of GEMINI_MODELS){
-        try {
-          rows = await callGemini(model, key, pagePrompt(type, subject), [inline]);
-          break;
-        } catch (e) {
-          last = e;
-          if (!e.transient && !e.truncated) throw e;
-        }
-      }
-      if (!rows) throw new Error('Could not read that page (' + (last && last.message) + ').');
-
-      for (const raw of rows){
-        const q = normalizeQuestion(raw, type);
-        // Crop and upload the figure this question pointed at.
-        const box = raw && raw.figure;
-        if (box && box.w && box.h){
-          const cut = cropFigure(canvas, box);
-          if (cut){
-            const mono = processImage(await canvasToImage(cut), { mono: true, trim: true });
-            const up = await uploadCanvas(mono, `page${i + 1}-fig`);
-            q.figure = { kind: 'image', imagePath: up.imagePath, aspect: up.aspect };
-          }
-        }
-        all.push(q);
-      }
-    }
-
-    bar.style.width = '100%';
-    RAW_BATCH = all.slice();
-    BATCH = all;
-    renderBatch();
-    const withFig = all.filter(q => q.figure).length;
-    showMsg('ok', `Read <b>${all.length}</b> question(s) from ${files.length} page(s)`
-      + (withFig ? `, ${withFig} with a figure` : '')
-      + '. Check them, then Publish all.');
-  } catch (e) {
-    showMsg('err', '<b>Could not read the page:</b>', [String(e.message || e)]);
-  } finally {
-    $('pageStatus').textContent = '';
-    $('pageFiles').value = '';
-  }
-};
-
-/** processImage expects an <img>; wrap a canvas so the same mono/trim pass
- *  can be reused on a crop. */
-function canvasToImage(canvas){
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.src = canvas.toDataURL('image/png');
-  });
-}
 
 // ── batch images ──────────────────────────────────────────────────────
 $('imgFiles').onchange = async () => {
