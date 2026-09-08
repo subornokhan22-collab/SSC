@@ -158,15 +158,23 @@ class OMrScanner {
     final double otsuT = _otsu(pixels);
     final ink = Uint8List(w * h);
     final paper = Uint8List(w * h);
+    // A stricter mask for the corner-mark search: the printed corner
+    // squares are the darkest things on the sheet, so thresholding at
+    // well below Otsu keeps them isolated even when a shadow darkens
+    // the paper around them (which would otherwise merge mark + shadow
+    // band into one giant component in the Otsu mask).
+    final darkT = otsuT * 0.55;
+    final dark = Uint8List(w * h);
     for (var i = 0; i < w * h; i++) {
       ink[i] = pixels[i] < otsuT ? 1 : 0;
       paper[i] = 1 - ink[i];
+      dark[i] = pixels[i] < darkT ? 1 : 0;
     }
 
     // ── 3. corner marks ────────────────────────────────────────────
     final corners = <DetectedCorner>[];
     for (var c = 0; c < 4; c++) {
-      final mark = _detectCornerMark(c, ink, w, h);
+      final mark = _detectCornerMark(c, dark, w, h);
       if (mark != null) {
         corners.add(mark);
         continue;
@@ -176,12 +184,21 @@ class OMrScanner {
         return OmScanResult.failed(
             'Corner marks not found. Keep the whole OMR sheet in frame, in even light, and take the photo again.');
       }
-      corners.add(DetectedCorner(fallback, false));
+      corners.add(fallback);
+    }
+
+    // If the four "marks" do not outline a consistent A4 sheet, one of
+    // them is a false positive (tape, a dark stain, …) — swap it for the
+    // paper-corner fallback so the homography stage can still anchor well.
+    final outlier = _outlierMarkIndex(corners, w, h);
+    if (outlier >= 0) {
+      final fb = _paperCornerFallback(outlier, paper, w, h);
+      if (fb != null) corners[outlier] = fb;
     }
 
     // ── 4. homography (try all four sheet rotations) ───────────────
     final List<double>? solved =
-        _bestRotationHomography(geo, corners, ink, w, h);
+        _bestRotationHomography(geo, corners, ink, pixels, w, h);
     if (solved == null) {
       return OmScanResult.failed(
           'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
@@ -357,14 +374,22 @@ class OMrScanner {
   /// Finds the filled corner square in quadrant [corner]
   /// (0 TL, 1 TR, 2 BL, 3 BR of the *photo*).
   ///
-  /// The mark is picked by connected-component compactness: it is the only
-  /// *solid* blob in its corner (a filled square), while printed grid ink,
-  /// shadows or fingers form thin or scattered components. This keeps the
-  /// centre on the mark even when the page nearly fills the frame and the
-  /// question grid intrudes into the quadrant.
+  /// Runs on the *dark* mask (luma < 0.55×Otsu): the printed corner squares
+  /// are the darkest things on the sheet, so a shadow band, a dark desk
+  /// strip or the grid ink around them is not even in the mask, and the
+  /// mark stays an isolated solid blob no matter how the sheet is lit.
+  ///
+  /// A candidate must look like a *solid square*: high fill (a filled
+  /// square inks ≥ ~0.85 of its box; a filled bubble is a circle at π/4
+  /// ≈ 0.78, text glyphs far below) and a ~1:1 bounding box, a plausible
+  /// mark size, and it must not be clipped by the search region (clipped
+  /// blobs are regions — desk/shadow — not the mark).
   static DetectedCorner? _detectCornerMark(
-      int corner, Uint8List ink, int w, int h) {
-    const s = 0.22;
+      int corner, Uint8List dark, int w, int h) {
+    // Wide enough for a sheet that lies sideways in the frame (a phone
+    // photo with a 90° EXIF orientation puts the marks far from the photo
+    // corners); the shape gate below keeps the intruding grid out.
+    const s = 0.45;
     final x0 = [0, (w * (1 - s)).round(), 0, (w * (1 - s)).round()][corner];
     final x1 = [(w * s).round(), w, (w * s).round(), w][corner];
     final y0 = [0, 0, (h * (1 - s)).round(), (h * (1 - s)).round()][corner];
@@ -378,15 +403,16 @@ class OMrScanner {
     // Flood-fill connected components (4-connectivity) over the quadrant.
     final visited = Uint8List(rw * rh);
     var bestScore = 0.0;
-    var bestCx = 0.0, bestCy = 0.0;
+    var bestCx = 0.0, bestCy = 0.0, bestDiag = 0.0;
     final stack = List<int>.filled(rw * rh, 0);
+    final diag = math.sqrt(w * w + h * h);
 
     for (var ly = 0; ly < rh; ly++) {
       for (var lx = 0; lx < rw; lx++) {
         if (visited[ly * rw + lx] == 1) continue;
         final gx = x0 + insetX + lx;
         final gy = y0 + insetY + ly;
-        if (ink[gy * w + gx] == 0) continue;
+        if (dark[gy * w + gx] == 0) continue;
         // BFS one component.
         var top = 0;
         stack[top++] = ly * rw + lx;
@@ -397,7 +423,7 @@ class OMrScanner {
           if (nx < 0 || ny < 0 || nx >= rw || ny >= rh) return;
           final idx = ny * rw + nx;
           if (visited[idx] == 1) return;
-          if (ink[(y0 + insetY + ny) * w + (x0 + insetX + nx)] == 0) return;
+          if (dark[(y0 + insetY + ny) * w + (x0 + insetX + nx)] == 0) return;
           visited[idx] = 1;
           stack[top++] = idx;
         }
@@ -419,38 +445,90 @@ class OMrScanner {
         final bw = maxX - minX + 1;
         final bh = maxY - minY + 1;
         final fill = area / (bw * bh);
+        final ratio = bw < bh ? bw / bh : bh / bw;
         final blobD = math.sqrt(bw * bw + bh * bh);
-        final diag = math.sqrt(w * w + h * h);
-        if (area < 40 || fill < 0.35) continue; // too small / not a solid square
-        if (blobD < diag * 0.006 || blobD > diag * 0.14) continue;
+        if (area < 40) continue; // too small to be a mark
+        if (fill < 0.85) continue; // not solid (bubble circle ≈ 0.78, text ≪)
+        if (ratio < 0.75 || ratio > 1.35) continue; // band/line, not square
+        if (blobD < diag * 0.003 || blobD > diag * 0.08) continue;
+        // Clipped by the search boundary → a region (desk/shadow/grid),
+        // not the mark (the mark always sits well inside the sheet).
+        if (minX == 0 || minY == 0 || maxX == rw - 1 || maxY == rh - 1) {
+          continue;
+        }
         final score = area * fill;
         if (score > bestScore) {
           bestScore = score;
           bestCx = x0 + insetX + (sumX / area);
           bestCy = y0 + insetY + (sumY / area);
+          bestDiag = blobD;
         }
       }
     }
     if (bestScore <= 0) return null;
+    return DetectedCorner(
+      ui.Offset(bestCx, bestCy),
+      true,
+      blobDiag: bestDiag,
+    );
+  }
 
-    // The mark sits near the outer corner of its quadrant.
-    final qcx = (x0 + x1) / 2, qcy = (y0 + y1) / 2;
-    switch (corner) {
-      case 0:
-        if (bestCx > qcx || bestCy > qcy) return null;
-      case 1:
-        if (bestCx < qcx || bestCy > qcy) return null;
-      case 2:
-        if (bestCx > qcx || bestCy < qcy) return null;
-      default:
-        if (bestCx < qcx || bestCy < qcy) return null;
+  /// Global sanity check over the four detected marks. The marks are equal
+  /// solid squares on one sheet, so their sizes must agree and their
+  /// centres must outline a plausible A4 quadrilateral. Returns the index
+  /// (TL=0, TR=1, BL=2, BR=3) of the one "mark" to discard — the caller
+  /// re-runs the paper-corner fallback for it — or -1 when the marks are
+  /// consistent.
+  static int _outlierMarkIndex(List<DetectedCorner> corners, int w, int h) {
+    if (corners.where((c) => c.fromMark).length < 4) return -1;
+    final q = [
+      corners[0].point, // TL
+      corners[1].point, // TR
+      corners[3].point, // BR
+      corners[2].point, // BL
+    ];
+    var bad = !_isConvexQuadrilateral(q);
+    if (!bad) {
+      double len(ui.Offset a, ui.Offset b) => math.sqrt(
+          (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
+      final aW = (len(q[0], q[1]) + len(q[3], q[2])) / 2;
+      final aH = (len(q[0], q[3]) + len(q[1], q[2])) / 2;
+      final aspect = aW < aH ? aW / aH : aH / aW;
+      // Quadrilateral area (shoelace).
+      var area2 = 0.0;
+      for (var i = 0; i < 4; i++) {
+        final a = q[i], b = q[(i + 1) % 4];
+        area2 += a.dx * b.dy - b.dx * a.dy;
+      }
+      if (aspect < 0.45 || aspect > 1.45 || area2.abs() / 2 < w * h * 0.08) {
+        bad = true;
+      }
     }
-    return DetectedCorner(ui.Offset(bestCx, bestCy), true);
+    if (!bad) return -1;
+    final diags = [for (final c in corners) if (c.fromMark) c.blobDiag];
+    final sorted = [...diags]..sort();
+    final median = (sorted[1] + sorted[2]) / 2 < 1 ? 1.0 : (sorted[1] + sorted[2]) / 2;
+    var worst = -1;
+    var worstDev = -1.0;
+    for (var i = 0; i < 4; i++) {
+      if (!corners[i].fromMark) continue;
+      final dev = (corners[i].blobDiag / median - 1).abs();
+      if (dev > worstDev) {
+        worstDev = dev;
+        worst = i;
+      }
+    }
+    if (worstDev < 0.35) return -1; // no clear outlier; keep everything
+    return worst;
   }
 
   /// Fallback registration point: the extreme bright (paper) pixel in the
   /// corner's diagonal band — the page corner itself.
-  static ui.Offset? _paperCornerFallback(
+  ///
+  /// A point that lands *on the frame border* is flagged [DetectedCorner.
+  /// edgeSuspect]: it is usually the photo's own corner, captured because
+  /// a bright desk/bedsheet merged with the sheet in the paper mask.
+  static DetectedCorner? _paperCornerFallback(
       int corner, Uint8List paper, int w, int h) {
     final band = 0.45;
     var best = double.infinity;
@@ -481,79 +559,181 @@ class OMrScanner {
         }
       }
     }
-    return found ? bestP : null;
+    if (!found) return null;
+    final edgeSuspect =
+        bestP.dx < 2 || bestP.dy < 2 || bestP.dx > w - 3 || bestP.dy > h - 3;
+    return DetectedCorner(bestP, false, edgeSuspect: edgeSuspect);
   }
 
-  /// Solves page→photo homographies for all four possible sheet rotations
-  /// and returns the best one. A candidate must (a) map the four registration
-  /// corners to a convex quadrilateral (rejects crossed "butterfly" matches),
-  /// (b) look like a portrait A4 sheet, and (c) put the dense question grid
-  /// at the *top* of the sheet — the sheet's bottom is mostly blank, which
-  /// kills the 180° and 90°/270° ambiguities the aspect ratio alone cannot.
+  /// Solves the page→photo homography.
+  ///
+  /// Each detected photo corner can anchor the sheet in two ways: its solid
+  /// *mark* centre (page anchor = the mark centre on the page) or its
+  /// extreme *paper* pixel (page anchor = the page corner itself). The
+  /// page-side anchor must match what the photo point actually is, so every
+  /// one of the 16 anchor combinations is tried — together with all four
+  /// sheet rotations — and the mapping that looks most like a real
+  /// photograph of an A4 sheet wins:
+  ///
+  ///  1. the four photo points form a convex quadrilateral,
+  ///  2. the fit is nearly affine: the projected page centre must land near
+  ///     the detected quadrilateral's diagonal crossing — a heavily
+  ///     distorted projective fit (wrong pairing, or a photo-corner anchor)
+  ///     fails this,
+  ///  3. the sheet keeps its portrait A4 proportions,
+  ///  4. the dense question grid sits at the *top* of the sheet (content
+  ///     probe) and the bottom is not denser than the top,
+  ///  5. mark anchors are preferred over paper anchors, and a photo-corner
+  ///     ("edge suspect") anchor is heavily penalised.
   static List<double>? _bestRotationHomography(
       OMrGeometry geo, List<DetectedCorner> corners,
-      [Uint8List? ink, int w = 0, int h = 0]) {
-    // Cyclic clockwise orders.
-    final pageCw = [
-      OMrGeometry.markCenter(0), // TL
-      OMrGeometry.markCenter(1), // TR
-      OMrGeometry.markCenter(3), // BR
-      OMrGeometry.markCenter(2), // BL
+      [Uint8List? ink, Uint8List? luma, int w = 0, int h = 0]) {
+    // Clockwise corner order: TL, TR, BR, BL.
+    // `corners` is indexed TL(0), TR(1), BL(2), BR(3).
+    final markAnchor = [
+      OMrGeometry.markCenter(0),
+      OMrGeometry.markCenter(1),
+      OMrGeometry.markCenter(3),
+      OMrGeometry.markCenter(2),
     ];
-    final photoCw = [
-      corners[0], // TL
-      corners[1], // TR
-      corners[3], // BR
-      corners[2], // BL
+    final pageAnchor = [
+      const ui.Offset(0, 0),
+      ui.Offset(OMrGeometry.pageW, 0),
+      ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH),
+      const ui.Offset(0, OMrGeometry.pageH),
     ];
-    const targetAspect = OMrGeometry.pageW / OMrGeometry.pageH; // 0.707
+    final hasMark = [
+      corners[0].fromMark,
+      corners[1].fromMark,
+      corners[3].fromMark,
+      corners[2].fromMark,
+    ];
+    final photoPoint = [
+      corners[0].point,
+      corners[1].point,
+      corners[3].point,
+      corners[2].point,
+    ];
+    final suspect = [
+      corners[0].edgeSuspect,
+      corners[1].edgeSuspect,
+      corners[3].edgeSuspect,
+      corners[2].edgeSuspect,
+    ];
+
     List<double>? bestH;
     var bestErr = 1e18;
-    for (var rot = 0; rot < 4; rot++) {
-      final q = <ui.Offset>[];
-      for (var j = 0; j < 4; j++) {
-        q.add(photoCw[(j + rot) % 4].point);
-      }
-      if (!_isConvexQuadrilateral(q)) continue;
-      final hHom = homographyFrom4(pageCw, q);
-      if (hHom == null) continue;
-      // Project the four page corners, measure width & height.
-      final pts = [
-        applyHomography(hHom, const ui.Offset(0, 0)),
-        applyHomography(hHom, const ui.Offset(OMrGeometry.pageW, 0)),
-        applyHomography(hHom, ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
-        applyHomography(hHom, const ui.Offset(0, OMrGeometry.pageH)),
-      ];
-      double len(ui.Offset a, ui.Offset b) => math.sqrt(
-          (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
-      final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
-      final height = (len(pts[0], pts[3]) + len(pts[1], pts[2])) / 2;
-      if (width < 200 || height < 200) continue;
-      final aspect = width / height;
-      var err = (aspect - targetAspect).abs() +
-          (width > height ? 0.5 : 0.0); // mild penalty for landscape
 
-      // Content probe: the question grid (top of the sheet) must be
-      // denser in ink than the signature strip (bottom of the sheet).
-      if (ink != null && w > 0 && h > 0) {
-        final gridH = geo.perColumn * OMrGeometry.rowH;
-        final halfGrid = gridH * 0.5;
-        final probeY = OMrGeometry.questionsTop +
-            (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
-        final top = applyHomography(
-            hHom, ui.Offset(OMrGeometry.pageW / 2, probeY));
-        final bottom =
-            applyHomography(hHom, const ui.Offset(OMrGeometry.pageW / 2, 2189));
-        final topInk = _inkRatio(ink, w, h, top.dx, top.dy, 24);
-        final botInk = _inkRatio(ink, w, h, bottom.dx, bottom.dy, 24);
-        if (botInk > topInk) {
-          // Denser at the bottom: this rotation is wrong.
-          err += 10 + (botInk - topInk) * 20;
+    for (var mask = 0; mask < 16; mask++) {
+      final p = <ui.Offset>[];
+      final q = <ui.Offset>[];
+      var paperAnchors = 0;
+      var suspects = 0;
+      var valid = true;
+      for (var k = 0; k < 4; k++) {
+        final useMark = ((mask >> k) & 1) == 1;
+        if (useMark && !hasMark[k]) {
+          valid = false;
+          break;
+        }
+        p.add(useMark ? markAnchor[k] : pageAnchor[k]);
+        q.add(photoPoint[k]);
+        if (!useMark) {
+          paperAnchors++;
+          if (suspect[k]) suspects++;
         }
       }
-      if (err < bestErr) {
-        bestErr = err;
-        bestH = hHom;
+      if (!valid) continue;
+
+      for (var rot = 0; rot < 4; rot++) {
+        // Rotate only the photo side: page corner k is paired with photo
+        // corner (k + rot) — a sheet turned rot × 90° in the frame.
+        // (Shifting both sides would leave the correspondence — and the
+        // homography — unchanged.)
+        final qq = [for (var j = 0; j < 4; j++) q[(j + rot) % 4]];
+        if (!_isConvexQuadrilateral(qq)) continue;
+        final hHom = homographyFrom4(p, qq);
+        if (hHom == null) continue;
+        // Project the four page corners, measure width & height.
+        final pts = [
+          applyHomography(hHom, const ui.Offset(0, 0)),
+          applyHomography(hHom, const ui.Offset(OMrGeometry.pageW, 0)),
+          applyHomography(hHom, ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
+          applyHomography(hHom, const ui.Offset(0, OMrGeometry.pageH)),
+        ];
+        double len(ui.Offset a, ui.Offset b) => math.sqrt(
+            (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
+        final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
+        final height = (len(pts[0], pts[3]) + len(pts[1], pts[2])) / 2;
+        if (width < 200 || height < 200) continue;
+        // Hard sanity gate: the projected sheet must keep A4 proportions,
+        // even under strong perspective.
+        final aspect = width < height ? width / height : height / width;
+        if (aspect < 0.45) continue;
+        var err = 0.0;
+
+        // Affine-ness: the projected page centre should sit near the
+        // detected quadrilateral's diagonal crossing.
+        final pc = applyHomography(
+            hHom, ui.Offset(OMrGeometry.pageW / 2, OMrGeometry.pageH / 2));
+        final icx = (qq[0].dx + qq[2].dx) / 2, icy = (qq[0].dy + qq[2].dy) / 2;
+        final jcX = (qq[1].dx + qq[3].dx) / 2, jcY = (qq[1].dy + qq[3].dy) / 2;
+        final ic = ui.Offset((icx + jcX) / 2, (icy + jcY) / 2);
+        final centerDev = len(pc, ic) / math.min(width, height);
+        if (centerDev > 0.12) continue; // distorted fit — not a real sheet
+        err += centerDev;
+
+        // Orientation probe — shadow-invariant. The question grid (top of
+        // the sheet) must be the more structured of the two probe regions:
+        // a raw ink ratio saturates under a shadow (a shaded blank margin
+        // reads "denser" than the bright grid), but the grid's luma
+        // variance — bubble outlines, numbers, filled inks — stays far
+        // above a blank or smoothly shaded area, so it survives shading.
+        if (luma != null && ink != null && w > 0 && h > 0) {
+          final gridH = geo.perColumn * OMrGeometry.rowH;
+          final halfGrid = gridH * 0.5;
+          final probeY = OMrGeometry.questionsTop +
+              (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
+          final top = applyHomography(
+              hHom, ui.Offset(OMrGeometry.pageW / 2, probeY));
+          final bottom =
+              applyHomography(hHom, const ui.Offset(OMrGeometry.pageW / 2, 2189));
+          final topVar = _diskVariance(luma, w, h, top.dx, top.dy, 24);
+          final botVar = _diskVariance(luma, w, h, bottom.dx, bottom.dy, 24);
+          if (topVar < 100) {
+            // No grid structure at the top — the strip is desk, blank paper
+            // or flat shadow, not the question grid. A 180°-flipped mapping
+            // can be numerically tied with the correct one otherwise.
+            err += 0.35;
+          }
+          if (botVar > topVar * 0.5) {
+            // The page's bottom strip carries the signature space — it must
+            // be far less structured than the grid strip. A shadowed blank
+            // strip stays low-variance, so this stays shadow-invariant too.
+            err += 0.6;
+          }
+          // Grid visibility: max over three grid columns — a single small
+          // disk can miss the row lines, which wrongly penalises a correct
+          // alignment (the grid has ink in every column).
+          double topInk = 0;
+          for (final qx in const [400.0, OMrGeometry.pageW / 2, 1254.0]) {
+            final pp = applyHomography(hHom, ui.Offset(qx, probeY));
+            final v = _inkRatio(ink, w, h, pp.dx, pp.dy, 24);
+            if (v > topInk) topInk = v;
+            if (topInk > 0.4) break; // clearly grid — no need to sample more
+          }
+          if (topInk < 0.15) {
+            err += 0.15 - topInk; // grid not visible at the top
+          }
+        }
+
+        // Prefer the unambiguous mark centres; distrust photo corners.
+        err += paperAnchors * 0.05 + suspects * 0.3;
+
+        if (err < bestErr) {
+          bestErr = err;
+          bestH = hHom;
+        }
       }
     }
     return bestH;
@@ -649,5 +829,34 @@ class OMrScanner {
       }
     }
     return tot == 0 ? 0 : dark / tot;
+  }
+
+  /// Luma variance inside a disc — a shadow-invariant measure of local
+  /// structure (a smooth darkening barely changes a region's variance).
+  /// The question grid scores far higher than a blank margin or a
+  /// smoothly shaded area.
+  static double _diskVariance(
+      Uint8List luma, int w, int h, double cx, double cy, double r) {
+    final cxI = cx.round(), cyI = cy.round();
+    final ri = r.ceil();
+    if (cxI - ri < 0 || cyI - ri < 0 || cxI + ri >= w || cyI + ri >= h) {
+      return 0;
+    }
+    var sum = 0, sum2 = 0, tot = 0;
+    final r2 = r * r;
+    for (var dy = -ri; dy <= ri; dy++) {
+      final row = (cyI + dy) * w;
+      for (var dx = -ri; dx <= ri; dx++) {
+        if (dx * dx + dy * dy > r2) continue;
+        final v = luma[row + cxI + dx];
+        sum += v;
+        sum2 += v * v;
+        tot++;
+      }
+    }
+    if (tot == 0) return 0;
+    final mean = sum / tot;
+    final v = sum2 / tot - mean * mean;
+    return v < 0 ? 0 : v;
   }
 }

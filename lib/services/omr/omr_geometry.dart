@@ -185,10 +185,20 @@ class OMrGeometry {
           math.pow(markCenter(0).dy - markCenter(3).dy, 2));
 }
 
-/// A registration corner found in a photo (or taken from the paper-mask
-/// fallback), with a flag showing whether a corner mark was actually seen.
+/// A registration corner found in a photo, with flags describing how it
+/// was found:
+///  • [fromMark] — a solid corner *square* was detected (best accuracy);
+///  • otherwise the extreme paper pixel (the sheet's own corner) was used.
+///  • [edgeSuspect] — the paper point sits on the frame border, which
+///    usually means the *photo* corner was captured (e.g. a bright desk
+///    merged with the sheet in the paper mask), so the anchor is unreliable.
+///  • [blobDiag] — bounding-box diagonal of the detected mark blob, used
+///    to sanity-check the four marks against each other.
 class DetectedCorner {
   final Offset point;
   final bool fromMark;
-  const DetectedCorner(this.point, this.fromMark);
+  final bool edgeSuspect;
+  final double blobDiag;
+  const DetectedCorner(this.point, this.fromMark,
+      {this.edgeSuspect = false, this.blobDiag = 0.0});
 }
