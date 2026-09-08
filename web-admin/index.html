@@ -260,6 +260,34 @@
           <label for="imgText">Default question text</label>
           <input id="imgText" type="text" value="চিত্রটি লক্ষ কর এবং প্রশ্নের উত্তর দাও।">
           <div class="hint">Used for any image you leave blank below.</div>
+
+          <div id="img-f-mcq" class="hide">
+            <label>Options — one set for every image, tick the correct one</label>
+            <div id="imgOptions"></div>
+          </div>
+
+          <div id="img-f-saq" class="hide">
+            <label for="imgAnswer">Answer — one answer for every image</label>
+            <textarea id="imgAnswer" style="min-height:54px">উত্তর ছবিতে দেওয়া আছে।</textarea>
+          </div>
+
+          <div id="img-f-cq" class="hide">
+            <label for="imgQuestionK">ক</label>
+            <input id="imgQuestionK" type="text" placeholder="প্রথম অংশের প্রশ্ন">
+            <label for="imgQuestionKh">খ</label>
+            <input id="imgQuestionKh" type="text" placeholder="দ্বিতীয় অংশের প্রশ্ন">
+            <label for="imgQuestionG">গ</label>
+            <input id="imgQuestionG" type="text" placeholder="তৃতীয় অংশের প্রশ্ন">
+            <label for="imgQuestionGh">ঘ</label>
+            <input id="imgQuestionGh" type="text" placeholder="চতুর্থ অংশের প্রশ্ন">
+            <label for="imgMarks">Marks</label>
+            <input id="imgMarks" type="text" value="1,2,3,4">
+            <div class="hint">
+              Every image in the batch gets these fields. A sub-question left
+              blank falls back to its letter (ক, খ, গ, ঘ).
+            </div>
+          </div>
+
           <div class="bar hide" id="imgBar"><i></i></div>
           <div id="imgGrid" class="grid2" style="margin-top:10px"></div>
           <div class="actions">
@@ -296,6 +324,6 @@
     </div>
   </div>
 </div>
-<script src="app.js?v=ae23b30a"></script>
+<script src="app.js?v=6a558ba1"></script>
 </body>
 </html>

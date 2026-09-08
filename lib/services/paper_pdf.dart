@@ -472,8 +472,64 @@ class PaperPdf {
     String? subjectCode, // বিষয় কোড বাক্সে আগে থেকে লেখা (যেমন '১০৯')
     String? setCode, // সেট কোড বাক্সে (যেমন 'ক')
   }) async {
-    await _loadFonts();
+    final bytes = await buildPaperPdf(
+      title: title,
+      modeLine: modeLine,
+      subjectName: subjectName,
+      mcqs: mcqs,
+      cqs: cqs,
+      literatureQuestions: literatureQuestions,
+      literatureNote: literatureNote,
+      bangla2WrittenQuestions: bangla2WrittenQuestions,
+      headerLine1: headerLine1,
+      headerLine2: headerLine2,
+      time: time,
+      marks: marks,
+      cqAnswerCount: cqAnswerCount,
+      saqs: saqs,
+      saqAnswerCount: saqAnswerCount,
+      cqNote: cqNote,
+      writtenTime: writtenTime,
+      writtenMarks: writtenMarks,
+      mcqTime: mcqTime,
+      mcqMarks: mcqMarks,
+      mathCqThreePart: mathCqThreePart,
+      subjectCode: subjectCode,
+      setCode: setCode,
+    );
+    await _printOrSharePdf(bytes, 'tutors_desk_paper.pdf');
+  }
 
+  /// Builds the paper (question pages + OMR page) as PDF bytes without
+  /// opening the print dialog — used by the Save button and the My Papers
+  /// archive, and internally by [printPaper].
+  static Future<Uint8List> buildPaperPdf({
+    required String title,
+    required String modeLine,
+    String? subjectName,
+    required List<Question> mcqs,
+    required List<CreativeQuestion> cqs,
+    List<LiteratureQuestion> literatureQuestions = const <LiteratureQuestion>[],
+    String? literatureNote,
+    List<Bangla2WrittenQuestion> bangla2WrittenQuestions =
+        const <Bangla2WrittenQuestion>[],
+    String headerLine1 = 'মডেল টেস্ট পরীক্ষা — ২০২৭',
+    String headerLine2 = 'দশম শ্রেণি',
+    String time = '৩ ঘণ্টা',
+    String marks = '১০০',
+    int cqAnswerCount = 7,
+    List<Question> saqs = const [],
+    int saqAnswerCount = 10,
+    String? cqNote,
+    String? writtenTime,
+    String? writtenMarks,
+    String? mcqTime,
+    String? mcqMarks,
+    bool mathCqThreePart = false, // গণিত: সৃজনশীল ক(২)+খ(৪)+গ(৪)
+    String? subjectCode, // বিষয় কোড বাক্সে আগে থেকে লেখা (যেমন '১০৯')
+    String? setCode, // সেট কোড বাক্সে (যেমন 'ক')
+  }) async {
+    await _loadFonts();
     final pages = await _renderPages(
       title: title,
       modeLine: modeLine,
@@ -499,8 +555,11 @@ class PaperPdf {
       subjectCode: subjectCode,
       setCode: setCode,
     );
+    return _pagesToA4Pdf(pages);
+  }
 
-    // রাস্টার পেজগুলো PDF এ বসাও
+  /// Wraps rasterized A4 pages into one PDF.
+  static Future<Uint8List> _pagesToA4Pdf(List<Uint8List> pages) async {
     final doc = pw.Document();
     for (final png in pages) {
       final img = pw.MemoryImage(png);
@@ -517,15 +576,28 @@ class PaperPdf {
         ),
       );
     }
-    final bytes = await doc.save();
+    return doc.save();
+  }
+
+  /// Opens the system print dialog; on phones where the print service is
+  /// off or incompatible it falls back to the Share/Save sheet, from where
+  /// saving or printing still works.
+  static Future<void> _printOrSharePdf(Uint8List bytes, String filename) async {
     try {
       await Printing.layoutPdf(onLayout: (format) async => bytes);
     } catch (_) {
       // কিছু ফোনে system print dialog খোলে না (print service off/incompatible)।
       // তখন PDF সরাসরি Share/Save sheet-এ পাঠাই — সেখান থেকে save/print যায়।
-      await Printing.sharePdf(bytes: bytes, filename: 'tutors_desk_paper.pdf');
+      await Printing.sharePdf(bytes: bytes, filename: filename);
     }
   }
+
+  /// Prints PDF bytes built elsewhere (My Papers reprint, OMR results).
+  static Future<void> printBytes(
+    Uint8List bytes, {
+    String filename = 'tutors_desk_paper.pdf',
+  }) =>
+      _printOrSharePdf(bytes, filename);
 
   /// 👁️ স্ক্রিন-প্রিভিউর জন্য: প্রিন্টের ***ঠিক সেই*** রাস্টার পেজগুলো
   /// (PNG bytes) ফেরত দেয় — প্রিভিউ ১০০% মিলে যায় PDF-এর সঙ্গে।
@@ -1561,18 +1633,37 @@ class PaperPdf {
         );
       }
 
-      y = _margin;
-      // Use exactly the title entered in the Paper Title box; do not print a fixed board/SSC/HSC heading.
-      await para(title.trim().isEmpty ? 'Question Paper' : title, 14,
-          isBold: true, align: TextAlign.center);
-      await para(
-          'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
-          8.2,
-          isBold: true,
-          align: TextAlign.center,
-          gapBefore: 3);
-      y += 4 * _k;
-      await rule(gapBefore: 1, gapAfter: 5);
+      // Fixed header offsets: the OMR page's geometry must be deterministic
+      // (independent of the title's length) so the app's OMR scanner can
+      // sample exact bubble positions. The numbers below must stay in sync
+      // with services/omr_layout.dart — the single source of truth.
+      final omrTitle = title.trim().isEmpty ? 'Question Paper' : title.trim();
+      final omrTitlePainter = TextPainter(
+        text: TextSpan(text: omrTitle, style: st(14, true, 1.4)),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        ellipsis: '…',
+      )..layout(maxWidth: contentW);
+      omrTitlePainter.paint(canvas, Offset(_margin, _margin));
+      final omrInstrPainter = TextPainter(
+        text: TextSpan(
+            text:
+                'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
+            style: st(8.2, true, 1.4)),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        ellipsis: '…',
+      )..layout(maxWidth: contentW);
+      omrInstrPainter.paint(canvas, Offset(_margin, _margin + 44 * _k));
+      canvas.drawLine(
+        Offset(_margin, _margin + 72 * _k),
+        Offset(sw - _margin, _margin + 72 * _k),
+        Paint()
+          ..color = const Color(0xFF000000)
+          ..strokeWidth = 1.2 * _k,
+      );
 
       final sheetX = _margin;
       const bubbleR = 4.8;
@@ -1698,7 +1789,8 @@ class PaperPdf {
         }
       }
 
-      final questionsTop = y;
+      // Fixed by omr_layout.dart (_questionsTopPt) — do not derive from y.
+      final questionsTop = _margin + 80 * _k;
       var placed = 0;
       var tallestColumn = 0;
       for (var column = 0; column < questionColumns; column++) {
@@ -1722,6 +1814,9 @@ class PaperPdf {
       const digitRowH = 10.8;
       const digitCount = 10;
 
+      // Fixed caption height — deterministic for the OMR scanner
+      // (services/omr_layout.dart uses the same constant).
+      final labelH = 12.5 * _k;
       void digitPanel(
         String panelTitle,
         int columns,
@@ -1730,14 +1825,14 @@ class PaperPdf {
         double width, {
         String digits = '',
       }) {
-        // Measure the caption first so bubbles always start below it.
+        // Measured only to center the caption; the bubble start uses the
+        // fixed labelH above so the rows never move with the font.
         final label = makePainter(
           panelTitle,
           8.5,
           isBold: true,
           align: TextAlign.center,
         )..layout(maxWidth: width - 6 * _k);
-        final labelH = label.height + 4 * _k;
         final h = labelH + digitCount * digitRowH * _k + 6 * _k;
         canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
         canvas.drawRect(
@@ -1768,9 +1863,8 @@ class PaperPdf {
       }
 
       double digitPanelHeight(String panelTitle, double width) {
-        final label = makePainter(panelTitle, 8.5, isBold: true)
-          ..layout(maxWidth: width - 6 * _k);
-        return label.height + 4 * _k + digitCount * digitRowH * _k + 6 * _k;
+        // Fixed — see labelH above (omr_layout.dart uses the same value).
+        return labelH + digitCount * digitRowH * _k + 6 * _k;
       }
 
       final identityTop = questionsBottom + 10 * _k;
@@ -1821,12 +1915,15 @@ class PaperPdf {
       final setW = 150 * _k;
       final setH = 26 * _k;
       canvas.drawRect(Rect.fromLTWH(sheetX, setTop, setW, setH), borderAccent);
+      // Fixed caption box width — deterministic for the OMR scanner
+      // (services/omr_layout.dart uses the same constant).
+      const setTitleW = 36.0 * _k;
       final setTitle = makePainter('সেট কোড', 8.2, isBold: true)..layout();
       setTitle.paint(
         canvas,
         Offset(sheetX + 5 * _k, setTop + (setH - setTitle.height) / 2),
       );
-      final setBubbleStart = sheetX + 8 * _k + setTitle.width + bubbleD * _k;
+      final setBubbleStart = sheetX + 8 * _k + setTitleW + bubbleD * _k;
       final setBubbleStep =
           (setW - (setBubbleStart - sheetX) - (bubbleR + 5) * _k) / 3;
       for (var i = 0; i < 4; i++) {
@@ -2101,6 +2198,31 @@ class PaperPdf {
     String answerNote =
         'Answer all the questions. Figures in the right margin indicate full marks.',
   }) async {
+    final bytes = await buildEnglishPdf(
+      paperTitle: paperTitle,
+      subTitle: subTitle,
+      sections: sections,
+      setCode: setCode,
+      classLine: classLine,
+      time: time,
+      marks: marks,
+      answerNote: answerNote,
+    );
+    await _printOrSharePdf(bytes, 'english_paper.pdf');
+  }
+
+  /// English paper as PDF bytes without the print dialog (Save / My Papers).
+  static Future<Uint8List> buildEnglishPdf({
+    required String paperTitle,
+    required String subTitle,
+    required List<EnglishSection> sections,
+    String setCode = 'ক',
+    String classLine = 'Class Ten (SSC Exam–2027)',
+    String time = 'Time: 3 hours',
+    String marks = 'Full Marks: 100',
+    String answerNote =
+        'Answer all the questions. Figures in the right margin indicate full marks.',
+  }) async {
     final pages = await renderEnglishPages(
       paperTitle: paperTitle,
       subTitle: subTitle,
@@ -2111,29 +2233,7 @@ class PaperPdf {
       marks: marks,
       answerNote: answerNote,
     );
-    final doc = pw.Document();
-    for (final png in pages) {
-      final img = pw.MemoryImage(png);
-      doc.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.zero,
-          build: (_) => pw.Image(
-            img,
-            width: PdfPageFormat.a4.width,
-            height: PdfPageFormat.a4.height,
-            fit: pw.BoxFit.fill,
-          ),
-        ),
-      );
-    }
-    final bytes = await doc.save();
-    try {
-      await Printing.layoutPdf(onLayout: (format) async => bytes);
-    } catch (_) {
-      // ফোনের system print dialog না খুললে PDF সরাসরি Share/Save sheet-এ।
-      await Printing.sharePdf(bytes: bytes, filename: 'english_paper.pdf');
-    }
+    return _pagesToA4Pdf(pages);
   }
 }
 

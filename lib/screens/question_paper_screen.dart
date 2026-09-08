@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/app_style.dart';
+import '../services/my_paper_store.dart';
+import '../services/paper_key_store.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
@@ -792,7 +794,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     }
   }
 
-  Future<void> _onPrintTap() async {
+  /// [saveOnly] = true হলে print dialog ছাড়াই শুধু My Papers-এ সংরক্ষণ
+  /// + OMR স্ক্যানারের জন্য answer key সেভ — Save বাটন।
+  Future<void> _onPrintTap({bool saveOnly = false}) async {
     if (!_isPro) {
       _showUnlockDialog();
       return;
@@ -800,7 +804,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (!_generated) return;
     // English 2nd Paper: exact board-paper layout (boxes, columns, rows)
     if (_isEnglish2nd(_subject!.id) && _englishSet != null) {
-      await PaperPdf.printEnglishPaper(
+      final bytes = await PaperPdf.buildEnglishPdf(
         paperTitle: _titleText,
         subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
         sections: [
@@ -809,10 +813,16 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ],
         setCode: _setLetter,
       );
+      await _archivePaper(bytes);
+      if (saveOnly) {
+        _saveDoneSnack();
+        return;
+      }
+      await PaperPdf.printBytes(bytes);
       return;
     }
     if (_isEnglish1st(_subject!.id) && _firstSet != null) {
-      await PaperPdf.printEnglishPaper(
+      final bytes = await PaperPdf.buildEnglishPdf(
         paperTitle: _titleText,
         subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
         sections: [
@@ -821,6 +831,12 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ],
         setCode: _setLetter,
       );
+      await _archivePaper(bytes);
+      if (saveOnly) {
+        _saveDoneSnack();
+        return;
+      }
+      await PaperPdf.printBytes(bytes);
       return;
     }
     final isFull = _mode == 'full';
@@ -859,7 +875,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       }
     }
     try {
-      await PaperPdf.printPaper(
+      final bytes = await PaperPdf.buildPaperPdf(
         title: '${_subject!.name} (${_subject!.bengaliName})',
         modeLine: _mode == 'chapter' ? (_chapter ?? '') : 'ফুল মডেল টেস্ট পেপার',
         mcqs: _mcqs,
@@ -881,6 +897,12 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         subjectCode: _subjectCodes[_subject!.id],
         setCode: _setLetter,
       );
+      await _archivePaper(bytes);
+      if (saveOnly) {
+        _saveDoneSnack();
+        return;
+      }
+      await PaperPdf.printBytes(bytes);
     } catch (e) {
       if (!mounted) return;
       showDialog(
@@ -900,6 +922,40 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ),
       );
     }
+  }
+
+  /// Current paper → My Papers + OMR answer key (for the OMR scanner).
+  Future<void> _archivePaper(Uint8List bytes) async {
+    try {
+      final title = '${_subject!.name} (${_subject!.bengaliName})';
+      await MyPaperStore.save(
+        bytes: bytes,
+        title: title,
+        subject: _titleText,
+        mcqs: _mcqs.length,
+        saqs: _saqs.length,
+        cqs: _cqs.length,
+      );
+      if (_mcqs.isNotEmpty) {
+        await PaperKeyStore.save(
+          PaperKey.fromMcqs(
+            title: title,
+            subject: _titleText,
+            mcqs: _mcqs,
+            setLetter: _setLetter,
+          ),
+        );
+      }
+    } catch (_) {
+      // Archiving must never break printing.
+    }
+  }
+
+  void _saveDoneSnack() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            '✓ Saved to My Papers. Answer key is ready for the OMR scanner.')));
   }
 
   // ── UI ────────────────────────────────────────────────────────────
@@ -1568,9 +1624,20 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: AppButton(
+              label: 'Save',
+              icon: Icons.bookmark_add_rounded,
+              outlined: true,
+              onPressed: _isPro
+                  ? () => _onPrintTap(saveOnly: true)
+                  : _showUnlockDialog,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: AppButton(
               label: 'PDF / Print',
               icon: Icons.print_rounded,
-              onPressed: _onPrintTap,
+              onPressed: _isPro ? _onPrintTap : _showUnlockDialog,
             ),
           ),
         ],
@@ -1591,9 +1658,18 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: AppButton(
+            label: 'Save',
+            icon: Icons.bookmark_add_rounded,
+            outlined: true,
+            onPressed: _isPro ? () => _onPrintTap(saveOnly: true) : _showUnlockDialog,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: AppButton(
             label: 'PDF / Print',
             icon: Icons.print_rounded,
-            onPressed: _onPrintTap,
+            onPressed: _isPro ? _onPrintTap : _showUnlockDialog,
           ),
         ),
       ],
@@ -1807,6 +1883,26 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         b.write('${i + 1}. ${opL[_eAiMcqs[i].correctIndex]}    ');
       }
       sec('🤖 AI Extra Practice — MCQ answers', b.toString(), 'AI-generated');
+    }
+
+    if (children.isEmpty) {
+      children.add(Text('এই সেটের উত্তরমালা তৈরি হচ্ছে…', style: _serifSmall));
+    }
+    return _paperSheet(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('উত্তরমালা',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          const Divider(height: 16, color: Colors.black26),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+d');
     }
 
     if (children.isEmpty) {

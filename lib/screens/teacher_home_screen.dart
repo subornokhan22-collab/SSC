@@ -7,6 +7,8 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
 import 'custom_paper_screen.dart';
+import 'my_papers_screen.dart';
+import 'omr_scanner_screen.dart';
 import 'profile_screen.dart';
 import 'question_paper_screen.dart';
 import 'subscription_screen.dart';
@@ -131,6 +133,26 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 subtitle: 'Mix chapters with MCQ, short-answer and CQ counts',
                 accentIndex: 3,
                 onTap: () => _open(const CustomPaperScreen()),
+              ),
+              const SizedBox(height: 20),
+              const SectionTitle(
+                title: 'Examine & archive',
+                subtitle: 'Mark OMR sheets and re-print saved papers.',
+                icon: Icons.qr_code_scanner_rounded,
+              ),
+              _ActionTile(
+                icon: Icons.qr_code_scanner_rounded,
+                title: 'OMR Scanner',
+                subtitle: 'Scan, mark & print results of your OMR sheets',
+                accentIndex: 5,
+                onTap: () => _open(const OmrScannerScreen()),
+              ),
+              _ActionTile(
+                icon: Icons.folder_open_rounded,
+                title: 'My Papers',
+                subtitle: 'Saved papers — print or share them again',
+                accentIndex: 4,
+                onTap: () => _open(const MyPapersScreen()),
               ),
               const SizedBox(height: 20),
               const SectionTitle(

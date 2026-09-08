@@ -14,6 +14,8 @@ import '../services/app_style.dart';
 import '../services/english_paper_adapter.dart';
 import '../services/general_math_board_pattern.dart';
 import '../services/ict_board_pattern.dart';
+import '../services/my_paper_store.dart';
+import '../services/paper_key_store.dart';
 import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
@@ -828,7 +830,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     }
   }
 
-  Future<void> _print() async {
+  /// [saveOnly] = true হলে print dialog ছাড়াই শুধু My Papers-এ সংরক্ষণ
+  /// + OMR স্ক্যানারের জন্য answer key সেভ — Save বাটন।
+  Future<void> _print({bool saveOnly = false}) async {
     if (!_generated) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Generate preview first!')));
@@ -867,7 +871,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final sid = _subject!.id;
     try {
       if (_isEnglish2nd(sid) && _englishSet != null) {
-        await PaperPdf.printEnglishPaper(
+        final bytes = await PaperPdf.buildEnglishPdf(
           paperTitle: _titleText,
           subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
           sections: [
@@ -876,10 +880,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           ],
           setCode: _setLetter,
         );
+        await _archivePaper(bytes);
+        if (saveOnly) {
+          _saveDoneSnack();
+          return;
+        }
+        await PaperPdf.printBytes(bytes);
         return;
       }
       if (_isEnglish1st(sid) && _firstSet != null) {
-        await PaperPdf.printEnglishPaper(
+        final bytes = await PaperPdf.buildEnglishPdf(
           paperTitle: _titleText,
           subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
           sections: [
@@ -888,6 +898,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           ],
           setCode: _setLetter,
         );
+        await _archivePaper(bytes);
+        if (saveOnly) {
+          _saveDoneSnack();
+          return;
+        }
+        await PaperPdf.printBytes(bytes);
         return;
       }
       final boardMath = _isMathBoardMode;
@@ -899,7 +915,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           : _cqs.length * 12 + _saqs.length * 3;
       final mMin = boardMath || boardBangla || boardBangla2 ? 30 : _mcqs.length;
       final isMath = sid == 'general_math' || sid == 'higher_math';
-      await PaperPdf.printPaper(
+      final bytes = await PaperPdf.buildPaperPdf(
         title: _titleText,
         subjectName: _subject!.bengaliName,
         modeLine: boardBangla2
@@ -974,11 +990,50 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         subjectCode: _subjectCodes[sid],
         setCode: _setLetter,
       );
+      await _archivePaper(bytes);
+      if (saveOnly) {
+        _saveDoneSnack();
+        return;
+      }
+      await PaperPdf.printBytes(bytes);
     } catch (e) {
       if (mounted)
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Print error: $e')));
     }
+  }
+
+  /// Current paper → My Papers + OMR answer key (for the OMR scanner).
+  Future<void> _archivePaper(Uint8List bytes) async {
+    try {
+      await MyPaperStore.save(
+        bytes: bytes,
+        title: _titleText,
+        subject: _subject?.bengaliName ?? '',
+        mcqs: _mcqs.length,
+        saqs: _saqs.length,
+        cqs: _cqs.length,
+      );
+      if (_mcqs.isNotEmpty) {
+        await PaperKeyStore.save(
+          PaperKey.fromMcqs(
+            title: _titleText,
+            subject: _subject?.bengaliName ?? '',
+            mcqs: _mcqs,
+            setLetter: _setLetter,
+          ),
+        );
+      }
+    } catch (_) {
+      // Archiving must never break printing.
+    }
+  }
+
+  void _saveDoneSnack() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            '✓ Saved to My Papers. Answer key is ready for the OMR scanner.')));
   }
 
   // AI mix card
@@ -1532,9 +1587,18 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                         child: AppButton(
+                            label: 'Save',
+                            icon: Icons.bookmark_add_rounded,
+                            outlined: true,
+                            onPressed: _busy
+                                ? null
+                                : () => _print(saveOnly: true))),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: AppButton(
                             label: 'PDF / Print',
                             icon: Icons.print_rounded,
-                            onPressed: _print)),
+                            onPressed: _busy ? null : _print)),
                   ]),
                   if (_showAnswerKey) ...[
                     const SizedBox(height: 12),
