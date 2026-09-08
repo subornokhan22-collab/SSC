@@ -15,14 +15,13 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
-subprojects {
-    project.evaluationDependsOn(":app")
-}
 
 // Some plugins (e.g. file_picker 8.x) hardcode an older compileSdk in their
 // own Gradle files, while the lifecycle library they depend on now requires
 // compileSdk 36+ — which fails checkReleaseAarMetadata late in the build.
 // Bump any module that still compiles against an older SDK.
+// (Must be registered BEFORE evaluationDependsOn(":app") below, otherwise
+// Gradle evaluates :app early and afterEvaluate() throws.)
 subprojects {
     afterEvaluate {
         try {
@@ -45,6 +44,9 @@ subprojects {
             println("[tutorsdesk] compileSdk bump skipped for ${project.name}: $t")
         }
     }
+}
+subprojects {
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register<Delete>("clean") {
