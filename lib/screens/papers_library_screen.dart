@@ -201,7 +201,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       if (!mounted) return;
       // printing 5.x-এর প্রিভিউ ডায়ালগই PDF ভিউয়ার হিসেবে কাজ করে —
       // zoom/pan করা যায়, সেখান থেকেই ছাপানোও যায়।
-      await Printing().preview(data: bytes);
+      await Printing.layoutPdf(onLayout: (format) async => bytes);
       return;
     }
     final thumbs = <Uint8List>[];

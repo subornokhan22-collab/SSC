@@ -1,8 +1,5 @@
-import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui' show Offset;
-
-import 'package:image/image.dart' as img;
+import 'dart:ui' as ui;
 
 import 'omr_geometry.dart';
 
@@ -116,39 +113,49 @@ class OMrScanner {
     }
     final geo = OMrGeometry(total);
 
-    img.Image decoded;
+    // Decode with dart:ui (no third-party decoder needed).
+    ui.Image decoded;
     try {
-      final d = img.decodeImage(photoBytes);
-      if (d == null) {
-        return OmScanResult.failed(
-            'Image could not be read. Use a normal photo (JPG).');
-      }
-      decoded = d;
+      final codec = await ui.instantiateImageCodec(photoBytes);
+      decoded = (await codec.getNextFrame()).image;
     } catch (_) {
       return OmScanResult.failed(
           'Image could not be read. Use a normal photo (JPG).');
     }
 
     // Work on roughly the sheet's own resolution so one bubble stays a
-    // sensible number of pixels (≈10–13 px).
+    // sensible number of pixels (≈10–13 px). Rasterise through a canvas,
+    // then read the pixels back as raw RGBA (the default byte format).
     const targetH = 2339;
-    img.Image work;
-    if (decoded.height >= targetH * 0.9) {
-      final scaleH = targetH / decoded.height;
-      work = scaleH < 1
-          ? img.copyResize(decoded,
-              width: (decoded.width * scaleH).round(), height: targetH)
-          : decoded;
-    } else {
-      final scaleH = targetH / decoded.height;
-      work = img.copyResize(decoded,
-          width: (decoded.width * scaleH).round(),
-          height: (decoded.height * scaleH).round());
+    final s = targetH / decoded.height;
+    final w = (decoded.width * s).round();
+    final h = targetH;
+    if (w < 200) {
+      return OmScanResult.failed('Photo is too small to scan.');
+    }
+    final rec = ui.PictureRecorder();
+    final canvas = ui.Canvas(rec);
+    canvas.drawImageRect(
+      decoded,
+      ui.Offset.zero,
+      ui.Size(decoded.width.toDouble(), decoded.height.toDouble()),
+      ui.Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
+      ui.Paint()..filterQuality = ui.FilterQuality.medium,
+    );
+    final workImg = await rec.endRecording().toImage(w, h);
+    final raw = (await workImg.toByteData())?.buffer.asUint8List();
+    if (raw == null) {
+      return OmScanResult.failed(
+          'Image could not be processed. Try a different photo.');
     }
 
-    final gray = img.copyToFormat(work, format: img.FORMAT_L8);
-    final w = work.width, h = work.height;
-    final pixels = gray.getBytes(order: ByteOrder.native);
+    final pixels = Uint8List(w * h);
+    for (var i = 0; i < w * h; i++) {
+      final o = i * 4; // raw RGBA
+      // Luma (BT.601); the weighted sum is always within 0..65280, so the
+      // >> 8 result is a valid 8-bit gray value with no clamping needed.
+      pixels[i] = (raw[o] * 77 + raw[o + 1] * 150 + raw[o + 2] * 29) >> 8;
+    }
 
     final double otsuT = _otsu(pixels);
     final ink = Uint8List(w * h);
@@ -171,7 +178,7 @@ class OMrScanner {
         return OmScanResult.failed(
             'Corner marks not found. Keep the whole OMR sheet in frame, in even light, and take the photo again.');
       }
-      corners.add(fallback);
+      corners.add(DetectedCorner(fallback, false));
     }
 
     // ── 4. homography (try all four sheet rotations) ───────────────
@@ -187,14 +194,16 @@ class OMrScanner {
     final tl = applyHomography(homography, OMrGeometry.markCenter(0));
     final br = applyHomography(homography, OMrGeometry.markCenter(3));
     final scale =
-        math.sqrt(math.pow(br.dx - tl.dx, 2) + math.pow(br.dy - tl.dy, 2)) /
+        ((br.dx - tl.dx) * (br.dx - tl.dx) + (br.dy - tl.dy) * (br.dy - tl.dy))
+                .sqrt /
             OMrGeometry.cornerDiagonal;
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
       return OmScanResult.failed(
           'The sheet is too small in the photo. Move closer and take the photo again.');
     }
-    final sampleR = (bubbleR * 0.55).clamp(3.5, 22.0);
+    final rawR = bubbleR * 0.55;
+    final sampleR = rawR < 3.5 ? 3.5 : (rawR > 22.0 ? 22.0 : rawR);
 
     // ── 5. sample every bubble ─────────────────────────────────────
     final answers = List<int>.filled(total, -1);
@@ -341,7 +350,7 @@ class OMrScanner {
       final v = wB * wF * (mB - mF) * (mB - mF);
       if (v > bestVar) {
         bestVar = v;
-        bestT = t;
+        bestT = t.toDouble();
       }
     }
     return bestT;
@@ -412,8 +421,8 @@ class OMrScanner {
         final bw = maxX - minX + 1;
         final bh = maxY - minY + 1;
         final fill = area / (bw * bh);
-        final blobD = math.hypot(bw.toDouble(), bh.toDouble());
-        final diag = math.hypot(w.toDouble(), h.toDouble());
+        final blobD = (bw * bw + bh * bh).sqrt;
+        final diag = (w * w + h * h).sqrt;
         if (area < 40 || fill < 0.35) continue; // too small / not a solid square
         if (blobD < diag * 0.006 || blobD > diag * 0.14) continue;
         final score = area * fill;
@@ -438,16 +447,16 @@ class OMrScanner {
       default:
         if (bestCx < qcx || bestCy < qcy) return null;
     }
-    return DetectedCorner(Offset(bestCx, bestCy), true);
+    return DetectedCorner(ui.Offset(bestCx, bestCy), true);
   }
 
   /// Fallback registration point: the extreme bright (paper) pixel in the
   /// corner's diagonal band — the page corner itself.
-  static Offset? _paperCornerFallback(
+  static ui.Offset? _paperCornerFallback(
       int corner, Uint8List paper, int w, int h) {
     final band = 0.45;
-    var best = 1e18;
-    Offset bestP = Offset.zero;
+    var best = double.infinity;
+    ui.Offset bestP = ui.Offset.zero;
     var found = false;
     final step = 2; // sampling stride — corners are large targets
     for (var y = 0; y < h; y += step) {
@@ -462,14 +471,14 @@ class OMrScanner {
         };
         if (!inBand) continue;
         final score = switch (corner) {
-          0 => x + y,
-          1 => -x + y,
-          2 => x - y,
-          _ => -(x + y).toDouble(),
+          0 => (x + y).toDouble(),
+          1 => (y - x).toDouble(),
+          2 => (x - y).toDouble(),
+          _ => (-(x + y)).toDouble(),
         };
         if (score < best) {
           best = score;
-          bestP = Offset(x.toDouble(), y.toDouble());
+          bestP = ui.Offset(x.toDouble(), y.toDouble());
           found = true;
         }
       }
@@ -503,7 +512,7 @@ class OMrScanner {
     List<double>? bestH;
     var bestErr = 1e18;
     for (var rot = 0; rot < 4; rot++) {
-      final q = <Offset>[];
+      final q = <ui.Offset>[];
       for (var j = 0; j < 4; j++) {
         q.add(photoCw[(j + rot) % 4].point);
       }
@@ -512,13 +521,13 @@ class OMrScanner {
       if (hHom == null) continue;
       // Project the four page corners, measure width & height.
       final pts = [
-        applyHomography(hHom, const Offset(0, 0)),
-        applyHomography(hHom, const Offset(OMrGeometry.pageW, 0)),
-        applyHomography(hHom, Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
-        applyHomography(hHom, const Offset(0, OMrGeometry.pageH)),
+        applyHomography(hHom, const ui.Offset(0, 0)),
+        applyHomography(hHom, const ui.Offset(OMrGeometry.pageW, 0)),
+        applyHomography(hHom, ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
+        applyHomography(hHom, const ui.Offset(0, OMrGeometry.pageH)),
       ];
-      double len(Offset a, Offset b) =>
-          math.sqrt(math.pow(b.dx - a.dx, 2) + math.pow(b.dy - a.dy, 2));
+      double len(ui.Offset a, ui.Offset b) =>
+          ((b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy)).sqrt;
       final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
       final height = (len(pts[0], pts[3]) + len(pts[1], pts[2])) / 2;
       if (width < 200 || height < 200) continue;
@@ -530,11 +539,13 @@ class OMrScanner {
       // denser in ink than the signature strip (bottom of the sheet).
       if (ink != null && w > 0 && h > 0) {
         final gridH = geo.perColumn * OMrGeometry.rowH;
+        final halfGrid = gridH * 0.5;
+        final probeY = OMrGeometry.questionsTop +
+            (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
         final top = applyHomography(
-            hHom, Offset(OMrGeometry.pageW / 2,
-                OMrGeometry.questionsTop + (gridH * 0.5).clamp(60, 240)));
+            hHom, ui.Offset(OMrGeometry.pageW / 2, probeY));
         final bottom =
-            applyHomography(hHom, const Offset(OMrGeometry.pageW / 2, 2189));
+            applyHomography(hHom, const ui.Offset(OMrGeometry.pageW / 2, 2189));
         final topInk = _inkRatio(ink, w, h, top.dx, top.dy, 24);
         final botInk = _inkRatio(ink, w, h, bottom.dx, bottom.dy, 24);
         if (botInk > topInk) {
@@ -551,7 +562,7 @@ class OMrScanner {
   }
 
   /// True if [pts] (in order) form a simple convex quadrilateral.
-  static bool _isConvexQuadrilateral(List<Offset> pts) {
+  static bool _isConvexQuadrilateral(List<ui.Offset> pts) {
     if (pts.length != 4) return false;
     var sign = 0;
     for (var i = 0; i < 4; i++) {
@@ -572,7 +583,7 @@ class OMrScanner {
 
   /// Solves the 4-point homography (page points [p] → photo points [q]).
   /// Returns the 9 coefficients [h11 h12 h13 h21 h22 h23 h31 h32 1].
-  static List<double>? homographyFrom4(List<Offset> p, List<Offset> q) {
+  static List<double>? homographyFrom4(List<ui.Offset> p, List<ui.Offset> q) {
     final a = List.generate(8, (_) => List<double>.filled(8, 0.0));
     final b = List<double>.filled(8, 0.0);
     for (var i = 0; i < 4; i++) {
@@ -592,9 +603,9 @@ class OMrScanner {
     for (var col = 0; col < n; col++) {
       var pivot = col;
       for (var r = col + 1; r < n; r++) {
-        if (math.abs(m[r][col]) > math.abs(m[pivot][col])) pivot = r;
+        if (m[r][col].abs() > m[pivot][col].abs()) pivot = r;
       }
-      if (math.abs(m[pivot][col]) < 1e-12) return null;
+      if (m[pivot][col].abs() < 1e-12) return null;
       if (pivot != col) {
         final t = m[col];
         m[col] = m[pivot];
@@ -613,9 +624,9 @@ class OMrScanner {
     return [for (var i = 0; i < n; i++) m[i][n] / m[i][i]];
   }
 
-  static Offset applyHomography(List<double> h, Offset p) {
+  static ui.Offset applyHomography(List<double> h, ui.Offset p) {
     final w = h[6] * p.dx + h[7] * p.dy + 1;
-    return Offset(
+    return ui.Offset(
       (h[0] * p.dx + h[1] * p.dy + h[2]) / w,
       (h[3] * p.dx + h[4] * p.dy + h[5]) / w,
     );

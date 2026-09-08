@@ -19,9 +19,9 @@ import 'dart:ui' show Offset;
 class OMrGeometry {
   OMrGeometry(this.total)
       : assert(total >= 1 && total <= 100, 'OMR supports 1–100 questions') {
-    _columns = ((total + maxPerColumn - 1) ~/ maxPerColumn).clamp(1, 4);
+    _columns = ((total + maxPerColumn - 1) ~/ maxPerColumn).clamp(1, 4).toInt();
     perColumn =
-        ((total + _columns - 1) ~/ _columns).clamp(1, maxPerColumn);
+        ((total + _columns - 1) ~/ _columns).clamp(1, maxPerColumn).toInt();
     questionGap = 8.0 * k;
     final rawW = (contentW - (_columns - 1) * questionGap) / _columns;
     questionWidth = rawW > naturalRowW ? naturalRowW : rawW;

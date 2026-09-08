@@ -249,7 +249,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           final pc = OMrScanner.applyHomography(
               res.homography, geo.questionBubble(i + 1, g.key[i]));
           canvas.drawCircle(pc * k, OMrGeometry.bubbleRadiusPx * k + 7,
-              const ui.Paint()
+              ui.Paint()
                 ..style = ui.PaintingStyle.stroke
                 ..strokeWidth = 2
                 ..color = Color(0x9912A150));
@@ -258,8 +258,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
       final picture = rec.endRecording();
       final out = await picture.toImage(w, h);
-      final data =
-          await out.toByteData(format: ui.ImageByteFormat.jpg, quality: 82);
+      final data = await out.toByteData(format: ui.ImageByteFormat.png);
       return data?.buffer.asUint8List();
     } catch (_) {
       return null;

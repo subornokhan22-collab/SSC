@@ -92,7 +92,7 @@ class PaperLibrary {
     await f.writeAsString(json.encode([for (final e in entries) e.toJson()]));
   }
 
-  static Future<File> _dirFor(String id) async {
+  static Future<Directory> _dirFor(String id) async {
     final dir =
         Directory((await root()).path + Platform.pathSeparator + id);
     if (!dir.existsSync()) dir.createSync(recursive: true);
@@ -377,17 +377,17 @@ class PaperLibrary {
       case 2:
         return img.flipHorizontal(im);
       case 3:
-        return img.copyRotate(im, 180);
+        return img.copyRotate(im, angle: 180);
       case 4:
         return img.flipVertical(im);
       case 5:
-        return img.flipHorizontal(img.copyRotate(im, 90));
+        return img.flipHorizontal(img.copyRotate(im, angle: 90));
       case 6:
-        return img.copyRotate(im, 90);
+        return img.copyRotate(im, angle: 90);
       case 7:
-        return img.flipHorizontal(img.copyRotate(im, 270));
+        return img.flipHorizontal(img.copyRotate(im, angle: 270));
       case 8:
-        return img.copyRotate(im, 270);
+        return img.copyRotate(im, angle: 270);
       default:
         return im;
     }
