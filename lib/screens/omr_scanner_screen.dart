@@ -58,7 +58,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   // ── batch (whole-class) scan state ──
   bool _batchMode = false;
-  final List<OmScanRecord> _batch = [];
+  List<OmScanRecord> _batch = [];
   String? _batchProgress;
   List<OmScanRecord>? _batchDone;
 
