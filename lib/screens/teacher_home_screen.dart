@@ -7,6 +7,8 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
 import 'custom_paper_screen.dart';
+import 'my_papers_screen.dart';
+import 'omr_scanner_screen.dart';
 import 'profile_screen.dart';
 import 'question_paper_screen.dart';
 import 'subscription_screen.dart';

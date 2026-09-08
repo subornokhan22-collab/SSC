@@ -149,7 +149,7 @@ class OmrScanner {
     // ── 1) Corner mark detection on a small binarized copy ──────────
     const smallW = 1400;
     final small = W > smallW
-        ? img.copyResize(photo, w: smallW)
+        ? img.copyResize(photo, width: smallW)
         : photo;
     // Photo px per small-image px (1.0 when the photo was not resized).
     final scale = W / small.width;
