@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -135,13 +136,10 @@ class OMrScanner {
     }
     final rec = ui.PictureRecorder();
     final canvas = ui.Canvas(rec);
-    canvas.drawImageRect(
-      decoded,
-      ui.Offset.zero,
-      ui.Size(decoded.width.toDouble(), decoded.height.toDouble()),
-      ui.Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
-      ui.Paint()..filterQuality = ui.FilterQuality.medium,
-    );
+    canvas.scale(s, s);
+    canvas.drawImage(
+        decoded, ui.Offset.zero,
+        ui.Paint()..filterQuality = ui.FilterQuality.medium);
     final workImg = await rec.endRecording().toImage(w, h);
     final raw = (await workImg.toByteData())?.buffer.asUint8List();
     if (raw == null) {
@@ -193,10 +191,10 @@ class OMrScanner {
     // Scale: page diagonal in the working image.
     final tl = applyHomography(homography, OMrGeometry.markCenter(0));
     final br = applyHomography(homography, OMrGeometry.markCenter(3));
-    final scale =
-        ((br.dx - tl.dx) * (br.dx - tl.dx) + (br.dy - tl.dy) * (br.dy - tl.dy))
-                .sqrt /
-            OMrGeometry.cornerDiagonal;
+    final scale = math.sqrt(
+            (br.dx - tl.dx) * (br.dx - tl.dx) +
+            (br.dy - tl.dy) * (br.dy - tl.dy)) /
+        OMrGeometry.cornerDiagonal;
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
       return OmScanResult.failed(
@@ -421,8 +419,8 @@ class OMrScanner {
         final bw = maxX - minX + 1;
         final bh = maxY - minY + 1;
         final fill = area / (bw * bh);
-        final blobD = (bw * bw + bh * bh).sqrt;
-        final diag = (w * w + h * h).sqrt;
+        final blobD = math.sqrt(bw * bw + bh * bh);
+        final diag = math.sqrt(w * w + h * h);
         if (area < 40 || fill < 0.35) continue; // too small / not a solid square
         if (blobD < diag * 0.006 || blobD > diag * 0.14) continue;
         final score = area * fill;
@@ -526,8 +524,8 @@ class OMrScanner {
         applyHomography(hHom, ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
         applyHomography(hHom, const ui.Offset(0, OMrGeometry.pageH)),
       ];
-      double len(ui.Offset a, ui.Offset b) =>
-          ((b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy)).sqrt;
+      double len(ui.Offset a, ui.Offset b) => math.sqrt(
+          (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
       final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
       final height = (len(pts[0], pts[3]) + len(pts[1], pts[2])) / 2;
       if (width < 200 || height < 200) continue;
