@@ -19,6 +19,25 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Some plugins (e.g. file_picker 8.x) hardcode an older compileSdk in their
+// own Gradle files, while the lifecycle library they depend on now requires
+// compileSdk 36+ — which fails checkReleaseAarMetadata late in the build.
+// Bump any module that still compiles against an older SDK.
+subprojects {
+    afterEvaluate {
+        val android = extensions.findByName("android") ?: return@afterEvaluate
+        val cls = android.javaClass
+        val getter =
+            cls.methods.firstOrNull { it.name == "getCompileSdk" && it.parameterTypes.isEmpty() }
+        val setter =
+            cls.methods.firstOrNull { it.name == "setCompileSdk" && it.parameterTypes.size == 1 }
+        val current = getter?.invoke(android) as? Int
+        if (setter != null && (current == null || current < 36)) {
+            setter.invoke(android, 36)
+        }
+    }
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
