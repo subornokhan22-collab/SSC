@@ -15,6 +15,11 @@ dependencies:
   printing: ^5.15.0
   # ইমেইল OTP লগইন + Pro সিংক (Supabase)
   supabase_flutter: ^2.8.0
+  # OMR scanner + question-paper library
+  image_picker: ^1.1.0   # OMR শিট / প্রশ্নপত্রের ফটো (ক্যামেরা + গ্যালারি)
+  image: ^4.2.0          # pure-Dart image processing (OMR bubble reading)
+  file_picker: ^8.1.2    # PDF প্রশ্নপত্র যোগ করা
+  path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
 
 dev_dependencies:
   flutter_test:

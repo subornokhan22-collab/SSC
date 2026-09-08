@@ -1,0 +1,448 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:printing/printing.dart';
+
+import '../models/subject_info.dart';
+import '../services/paper_library.dart';
+import '../theme/app_theme.dart';
+import '../widgets/app_button.dart';
+import '../widgets/glass_card.dart';
+
+/// আমার প্রশ্নপত্র — the tutor's own past/model question papers, added as
+/// photos (one per page) or as PDFs, browsable inside the app and printable.
+class PapersLibraryScreen extends StatefulWidget {
+  const PapersLibraryScreen({super.key});
+
+  @override
+  State<PapersLibraryScreen> createState() => _PapersLibraryScreenState();
+}
+
+class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
+  List<PaperEntry> _entries = const [];
+  bool _loading = true;
+  bool _busyAdd = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+  Future<void> _reload() async {
+    final list = await PaperLibrary.loadEntries();
+    if (mounted) {
+      setState(() {
+        _entries = list;
+        _loading = false;
+      });
+    }
+  }
+
+  void _snack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _addDialog() async {
+    final titleCtrl = TextEditingController();
+    final otherSubjectCtrl = TextEditingController();
+    String subject = allSubjects.first.bengaliName;
+    final yearCtrl = TextEditingController(text: '2026');
+    const other = 'অন্যান্য';
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog(
+      context: context,
+      builder: (c) => StatefulBuilder(
+        builder: (c, setDialog) => AlertDialog(
+          title: const Text('নতুন প্রশ্নপত্র যোগ করো'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                TextFormField(
+                  controller: titleCtrl,
+                  decoration: const InputDecoration(
+                      labelText: 'শিরোনাম (যেমন: মডেল পরীক্ষা ১ — গণিত)'),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'শিরোনাম দাও' : null,
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: subject,
+                  decoration: const InputDecoration(labelText: 'বিষয়'),
+                  items: [...allSubjects.map((s) => s.bengaliName), other]
+                      .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                      .toList(),
+                  onChanged: (v) => setDialog(() => subject = v ?? subject),
+                ),
+                if (subject == other) ...[
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: otherSubjectCtrl,
+                    decoration: const InputDecoration(labelText: 'বিষয়ের নাম'),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: yearCtrl,
+                  decoration: const InputDecoration(labelText: 'বছর'),
+                ),
+              ]),
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(c), child: const Text('বাতিল')),
+            FilledButton.icon(
+              icon: const Icon(Icons.photo_camera_rounded, size: 18),
+              label: const Text('ফটো থেকে'),
+              onPressed: () async {
+                if (!formKey.currentState!.validate()) return;
+                Navigator.pop(c);
+                await _addFromPhotos(
+                  title: titleCtrl.text.trim(),
+                  subject: subject == other
+                      ? (otherSubjectCtrl.text.trim().isEmpty
+                          ? 'অন্যান্য'
+                          : otherSubjectCtrl.text.trim())
+                      : subject,
+                  year: yearCtrl.text.trim(),
+                );
+              },
+            ),
+            FilledButton.icon(
+              icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+              label: const Text('PDF থেকে'),
+              onPressed: () async {
+                if (!formKey.currentState!.validate()) return;
+                Navigator.pop(c);
+                await _addFromPdf(
+                  title: titleCtrl.text.trim(),
+                  subject: subject == other
+                      ? (otherSubjectCtrl.text.trim().isEmpty
+                          ? 'অন্যান্য'
+                          : otherSubjectCtrl.text.trim())
+                      : subject,
+                  year: yearCtrl.text.trim(),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _addFromPhotos({
+    required String title,
+    required String subject,
+    required String year,
+  }) async {
+    try {
+      setState(() => _busyAdd = true);
+      final picked =
+          await ImagePicker().pickMultiImage(imageQuality: 90, maxWidth: 4096);
+      if (picked.isEmpty) return;
+      final bytes = <Uint8List>[];
+      for (final f in picked) {
+        bytes.add(await f.readAsBytes());
+      }
+      await PaperLibrary.addFromImages(
+          title: title, subject: subject, year: year, pages: bytes);
+      _snack('${bytes.length}টি পৃষ্ঠার প্রশ্নপত্র যোগ হয়েছে।');
+      await _reload();
+    } catch (e) {
+      _snack('যোগ করা যায়নি: $e');
+    } finally {
+      if (mounted) setState(() => _busyAdd = false);
+    }
+  }
+
+  Future<void> _addFromPdf({
+    required String title,
+    required String subject,
+    required String year,
+  }) async {
+    try {
+      setState(() => _busyAdd = true);
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+      if (result == null || result.files.isEmpty) return;
+      final path = result.files.single.path;
+      if (path == null) {
+        _snack('PDF-এর পথ পাওয়া যায়নি।');
+        return;
+      }
+      final bytes = await File(path).readAsBytes();
+      await PaperLibrary.addFromPdf(
+          title: title, subject: subject, year: year, bytes: bytes);
+      _snack('PDF প্রশ্নপত্র যোগ হয়েছে।');
+      await _reload();
+    } catch (e) {
+      _snack('যোগ করা যায়নি: $e');
+    } finally {
+      if (mounted) setState(() => _busyAdd = false);
+    }
+  }
+
+  Future<void> _view(PaperEntry e) async {
+    if (e.kind == 'pdf') {
+      final bytes = await PaperLibrary.pdfBytes(e.id);
+      if (bytes == null) {
+        _snack('PDF পাওয়া যায়নি।');
+        return;
+      }
+      if (!mounted) return;
+      // printing 5.x-এর প্রিভিউ ডায়ালগই PDF ভিউয়ার হিসেবে কাজ করে —
+      // zoom/pan করা যায়, সেখান থেকেই ছাপানোও যায়।
+      await Printing().preview(data: bytes);
+      return;
+    }
+    final thumbs = <Uint8List>[];
+    for (var i = 1; i <= e.pages; i++) {
+      final b = await PaperLibrary.pageBytes(e.id, i);
+      if (b != null) thumbs.add(b);
+    }
+    if (thumbs.isEmpty) {
+      _snack('পৃষ্ঠাগুলো পাওয়া যায়নি।');
+      return;
+    }
+    if (!mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => _PaperViewer(title: e.title, pages: thumbs)),
+    );
+  }
+
+  Future<void> _print(PaperEntry e) async {
+    try {
+      await PaperLibrary.printEntry(e);
+    } catch (err) {
+      _snack('ছাপা যায়নি: $err');
+    }
+  }
+
+  Future<void> _share(PaperEntry e) async {
+    try {
+      await PaperLibrary.shareEntry(e);
+    } catch (err) {
+      _snack('শেয়ার করা যায়নি: $err');
+    }
+  }
+
+  Future<void> _delete(PaperEntry e) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('মুছে ফেলা হবে?'),
+        content: Text('"${e.title}" প্রশ্নপত্রটি স্থায়ীভাবে মুছে যাবে।'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('বাতিল')),
+          FilledButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('মুছে ফেলো')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await PaperLibrary.deleteEntry(e.id);
+    _reload();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('আমার প্রশ্নপত্র')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _busyAdd ? null : _addDialog,
+        icon: const Icon(Icons.add_photo_alternate_rounded),
+        label: const Text('যোগ করো'),
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          color: AppTheme.primary,
+          onRefresh: _reload,
+          child: _loading
+              ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+              : _entries.isEmpty
+                  ? _empty()
+                  : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics()),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
+                      itemCount: _entries.length,
+                      itemBuilder: (context, i) => _card(_entries[i]),
+                    ),
+        ),
+      ),
+    );
+  }
+
+  Widget _empty() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.photo_library_rounded,
+              size: 54, color: AppTheme.primary),
+          const SizedBox(height: 14),
+          const Text('এখনো কোনো প্রশ্নপত্র যোগ হয়নি',
+              style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 6),
+          const Text(
+            'নিজের পুরানো বোর্ড/মডেল প্রশ্নপত্র ফটো বা PDF আকারে যোগ করো —\n'
+            'আপ-এর ভেতরে দেখাও, ছাপাও বা শেয়ার করো।',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.5),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Widget _card(PaperEntry e) {
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      child: Row(children: [
+        SizedBox(
+          width: 64,
+          height: 82,
+          child: _thumb(e),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(e.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          Wrap(spacing: 6, runSpacing: 4, children: [
+            _pill(e.subject),
+            if (e.year.isNotEmpty) _pill(e.year),
+            _pill('${e.kindLabel} • ${e.pages} পৃষ্ঠা'),
+          ]),
+          const SizedBox(height: 4),
+          Text(_date(e.createdAt),
+              style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
+        ])),
+        Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _iconBtn(Icons.visibility_rounded, 'দেখো', () => _view(e)),
+              _iconBtn(Icons.print_rounded, 'ছাপাও', () => _print(e)),
+              _iconBtn(Icons.share_rounded, 'শেয়ার', () => _share(e)),
+              _iconBtn(Icons.delete_outline_rounded, 'মুছুন', () => _delete(e),
+                  color: AppTheme.danger),
+            ]),
+      ]),
+    );
+  }
+
+  Widget _thumb(PaperEntry e) {
+    return FutureBuilder<Uint8List?>(
+      future: PaperLibrary.thumbBytes(e.id),
+      builder: (context, snap) {
+        final bytes = snap.data;
+        if (bytes != null) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.memory(bytes, fit: BoxFit.cover),
+          );
+        }
+        return Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceAlt,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: const Icon(Icons.picture_as_pdf_rounded,
+              color: AppTheme.primary, size: 26),
+        );
+      },
+    );
+  }
+
+  Widget _pill(String text) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+        decoration: BoxDecoration(
+          color: AppTheme.primary.withOpacity(.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.primary.withOpacity(.25)),
+        ),
+        child: Text(text,
+            style: const TextStyle(
+                fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.primaryDark)),
+      );
+
+  Widget _iconBtn(IconData icon, String label, VoidCallback onTap,
+          {Color? color}) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Tooltip(
+          message: label,
+          child: IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: Icon(icon, size: 19, color: color ?? AppTheme.primary),
+            onPressed: onTap,
+          ),
+        ),
+      );
+
+  String _date(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+}
+
+/// Full-screen page pager for photo papers.
+class _PaperViewer extends StatefulWidget {
+  final String title;
+  final List<Uint8List> pages;
+  const _PaperViewer({required this.title, required this.pages});
+
+  @override
+  State<_PaperViewer> createState() => _PaperViewerState();
+}
+
+class _PaperViewerState extends State<_PaperViewer> {
+  final PageController _ctrl = PageController();
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title, overflow: TextOverflow.ellipsis),
+        actions: [
+          Text('${_page + 1}/${widget.pages.length}',
+              style: const TextStyle(fontWeight: FontWeight.w800)),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: PageView.builder(
+        controller: _ctrl,
+        itemCount: widget.pages.length,
+        onPageChanged: (i) => setState(() => _page = i),
+        itemBuilder: (context, i) => Padding(
+          padding: const EdgeInsets.all(8),
+          child: Image.memory(widget.pages[i], fit: BoxFit.contain),
+        ),
+      ),
+    );
+  }
+}

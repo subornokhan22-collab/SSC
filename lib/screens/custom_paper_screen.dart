@@ -22,6 +22,7 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
+import 'omr_scanner_screen.dart';
 import 'subscription_screen.dart';
 import '../models/subject_info.dart';
 
@@ -981,6 +982,108 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     }
   }
 
+  /// Prints only the OMR answer sheet — [N] identical copies for a class.
+  Future<void> _printOmr() async {
+    if (_mcqs.isEmpty || _subject == null) return;
+    final pro = await PaperLicense.isPro();
+    if (!pro) {
+      if (!mounted) return;
+      showDialog(
+          context: context,
+          builder: (c) => AlertDialog(
+                  title: const Text('Pro required'),
+                  content: const Text(
+                      'Printing OMR sheets is a Pro feature. Unlock Pro to export and print without a watermark.'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(c),
+                        child: const Text('Not now')),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(c);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SubscriptionScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.workspace_premium_rounded,
+                          size: 18),
+                      label: const Text('See Pro'),
+                    ),
+                  ]));
+      return;
+    }
+    int copies = 10;
+    final chosen = await showDialog<int>(
+        context: context,
+        builder: (c) => StatefulBuilder(
+              builder: (c, setDialog) => AlertDialog(
+                title: const Text('OMR শিট কয় কপি?'),
+                content: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Text('${_bn(_mcqs.length)}টি প্রশ্ন • সেট $_setLetter',
+                      style:
+                          const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                  const SizedBox(height: 10),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    IconButton(
+                        onPressed: copies > 1
+                            ? () => setDialog(() => copies--)
+                            : null,
+                        icon: const Icon(Icons.remove_circle_outline)),
+                    SizedBox(
+                        width: 48,
+                        child: Center(
+                            child: Text('$copies',
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800)))),
+                    IconButton(
+                        onPressed: copies < 100
+                            ? () => setDialog(() => copies++)
+                            : null,
+                        icon: const Icon(Icons.add_circle_outline)),
+                  ]),
+                ]),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(c),
+                      child: const Text('বাতিল')),
+                  FilledButton(
+                      onPressed: () => Navigator.pop(c, copies),
+                      child: const Text('ছাপাও')),
+                ],
+              ),
+            ));
+    if (chosen == null) return;
+    try {
+      await PaperPdf.printOmrSheet(
+        title: _titleText,
+        total: _mcqs.length,
+        subjectCode: _subjectCodes[_subject!.id],
+        setCode: _setLetter,
+        copies: chosen,
+      );
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('OMR print error: $e')));
+    }
+  }
+
+  /// Opens the OMR scanner pre-loaded with this paper's answer key.
+  void _scanAnswers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OMrScannerScreen(
+          initialKey: _mcqs.map((q) => q.correctIndex).toList(),
+          paperTitle: _titleText,
+        ),
+      ),
+    );
+  }
+
   // AI mix card
   Widget _aiMixCard() {
     final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
@@ -1530,12 +1633,31 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                             onPressed: () => setState(
                                 () => _showAnswerKey = !_showAnswerKey))),
                     const SizedBox(width: 10),
+                    if (_mcqs.isNotEmpty)
+                      Expanded(
+                          child: AppButton(
+                              label: 'OMR ছাপাও',
+                              icon: Icons.crop_original_rounded,
+                              outlined: true,
+                              onPressed: _printOmr)),
+                    const SizedBox(width: 10),
                     Expanded(
                         child: AppButton(
                             label: 'PDF / Print',
                             icon: Icons.print_rounded,
                             onPressed: _print)),
                   ]),
+                  if (_mcqs.isNotEmpty && !_isEnglish) ...[
+                    const SizedBox(height: 10),
+                    SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                            onPressed: _busy ? null : _scanAnswers,
+                            icon: const Icon(Icons.qr_code_scanner_rounded,
+                                size: 18),
+                            label: Text(
+                                'এই টেস্টের OMR স্ক্যান করো (key: ${_bn(_mcqs.length)}টি)'))),
+                  ],
                   if (_showAnswerKey) ...[
                     const SizedBox(height: 12),
                     Container(

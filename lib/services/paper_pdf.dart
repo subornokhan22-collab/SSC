@@ -14,6 +14,7 @@ import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/question_figure.dart';
 import '../data/questions_data.dart';
+import 'omr/omr_geometry.dart';
 
 /// একটি স্ট্যাকড ভগ্নাংশ (লব উপরে, দাগ মাঝে, হর নিচে)
 class _Frac {
@@ -1536,348 +1537,18 @@ class PaperPdf {
     await para('- শেষ -', 10, align: TextAlign.center, gapBefore: 4);
     await commit();
 
-    // ══════════════ OMR SHEET — measured layout, guaranteed no overlap ══════════════
+    // ══════════════ OMR SHEET — deterministic geometry, scanner-locked ══════════════
+    // The sheet is drawn from OMrGeometry — the exact same coordinates the
+    // OMR scanner samples — so every printed sheet can be scanned.
     if (mcqs.isNotEmpty) {
-      begin();
-      const ink = Color(0xFF1A1A1A);
-      const accent = Color(0xFF1F5FA8);
-      const accentSoft = Color(0xFFEAF1FB);
-      final borderAccent = Paint()
-        ..color = accent
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.9 * _k;
-
-      // Scanner alignment marks (kept fully inside the printable page).
-      const markSize = 10.0;
-      for (final p in [
-        Offset(_margin, _margin - (markSize + 6) * _k),
-        Offset(sw - _margin - markSize * _k, _margin - (markSize + 6) * _k),
-        Offset(_margin, sh - _margin + 6 * _k),
-        Offset(sw - _margin - markSize * _k, sh - _margin + 6 * _k),
-      ]) {
-        canvas.drawRect(
-          Rect.fromLTWH(p.dx, p.dy, markSize * _k, markSize * _k),
-          Paint()..color = ink,
-        );
-      }
-
-      y = _margin;
-      // Use exactly the title entered in the Paper Title box; do not print a fixed board/SSC/HSC heading.
-      await para(title.trim().isEmpty ? 'Question Paper' : title, 14,
-          isBold: true, align: TextAlign.center);
-      await para(
-          'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
-          8.2,
-          isBold: true,
-          align: TextAlign.center,
-          gapBefore: 3);
-      y += 4 * _k;
-      await rule(gapBefore: 1, gapAfter: 5);
-
-      final sheetX = _margin;
-      const bubbleR = 4.8;
-      const bubbleD = bubbleR * 2;
-
-      void bubble(double x, double yy, String value, {bool selected = false}) {
-        final r = bubbleR * _k;
-        canvas.drawCircle(
-          Offset(x, yy),
-          r,
-          Paint()..color = selected ? accent : Colors.white,
-        );
-        canvas.drawCircle(
-          Offset(x, yy),
-          r,
-          Paint()
-            ..color = accent
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = .8 * _k,
-        );
-        final t = makePainter(
-          value,
-          6.4,
-          isBold: selected,
-          align: TextAlign.center,
-        )..layout();
-        t.paint(
-          canvas,
-          Offset(x - t.width / 2, yy - t.height / 2),
-        );
-      }
-
-      final total = mcqs.length.clamp(0, 100).toInt();
-      // Balance the columns so 30 questions become 15+15 rather than 25+5,
-      // and cap each column at 25 rows so the sheet always fits the page.
-      const maxPerColumn = 25;
-      final questionColumns = ((total + maxPerColumn - 1) ~/ maxPerColumn)
-          .clamp(1, 4)
-          .toInt();
-      final perColumn =
-          ((total + questionColumns - 1) ~/ questionColumns).clamp(1, maxPerColumn).toInt();
-      final questionGap = 8 * _k;
-      final rawQuestionWidth =
-          (contentW - (questionColumns - 1) * questionGap) / questionColumns;
-      final rowH = 11.2 * _k;
-      final numberW = 26 * _k;
-      // Width one question row actually needs: number + four bubbles.
-      // Without a cap, a 10-question sheet stretched a single column across
-      // the whole page and left ~400pt of blank paper to the right of every
-      // row, so the answer boxes floated in the middle of nowhere.
-      const maxBubbleStep = 22.0;
-      final naturalRowW = numberW +
-          bubbleR * _k +
-          2 * _k +
-          6 * _k +
-          maxBubbleStep * 3 * _k +
-          (bubbleR + 6) * _k;
-      final questionWidth = rawQuestionWidth > naturalRowW
-          ? naturalRowW
-          : rawQuestionWidth;
-      final bubbleAreaX = numberW + bubbleR * _k + 2 * _k;
-      final bubbleSpan = questionWidth - bubbleAreaX - (bubbleR + 4) * _k;
-      // Keep ক/খ/গ/ঘ visually grouped rather than spread across the row.
-      final bubbleStep =
-          (bubbleSpan / 3) > maxBubbleStep * _k ? maxBubbleStep * _k : bubbleSpan / 3;
-      // Left-align the group just after the question number.
-      final bubbleLeft = bubbleAreaX + 6 * _k;
-      final headerH = 13 * _k;
-
-      void questionBox(
-        int first,
-        int count,
-        double x,
-        double top,
-        double width,
-      ) {
-        final h = headerH + count * rowH + 4 * _k;
-        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
-        canvas.drawRect(
-          Rect.fromLTWH(x, top, width, headerH),
-          Paint()..color = accentSoft,
-        );
-        final head = makePainter('প্রশ্ন', 7.4, isBold: true)..layout();
-        head.paint(
-          canvas,
-          Offset(x + 4 * _k, top + (headerH - head.height) / 2),
-        );
-        // Label each answer column above its own bubble stack.
-        for (var option = 0; option < 4; option++) {
-          final letter = makePainter(
-            _optionLetters[option],
-            7.0,
-            isBold: true,
-            align: TextAlign.center,
-          )..layout();
-          final cx = x + bubbleLeft + option * bubbleStep;
-          letter.paint(
-            canvas,
-            Offset(cx - letter.width / 2, top + (headerH - letter.height) / 2),
-          );
-        }
-        for (var i = 0; i < count; i++) {
-          final rowTop = top + headerH + i * rowH;
-          final yy = rowTop + rowH / 2;
-          if (i.isOdd) {
-            canvas.drawRect(
-              Rect.fromLTWH(x + .5 * _k, rowTop, width - _k, rowH),
-              Paint()..color = accentSoft.withOpacity(.55),
-            );
-          }
-          final number = makePainter(_bn(first + i), 7.6)..layout();
-          number.paint(
-            canvas,
-            Offset(x + 4 * _k, yy - number.height / 2),
-          );
-          for (var option = 0; option < 4; option++) {
-            bubble(
-              x + bubbleLeft + option * bubbleStep,
-              yy,
-              _optionLetters[option],
-            );
-          }
-        }
-      }
-
-      final questionsTop = y;
-      var placed = 0;
-      var tallestColumn = 0;
-      for (var column = 0; column < questionColumns; column++) {
-        final remaining = total - placed;
-        if (remaining <= 0) break;
-        final count = remaining > perColumn ? perColumn : remaining;
-        questionBox(
-          placed + 1,
-          count,
-          sheetX + column * (questionWidth + questionGap),
-          questionsTop,
-          questionWidth,
-        );
-        placed += count;
-        if (count > tallestColumn) tallestColumn = count;
-      }
-      final questionsBottom =
-          questionsTop + headerH + tallestColumn * rowH + 4 * _k;
-
-      // ── Identity panels ──────────────────────────────────────────
-      const digitRowH = 10.8;
-      const digitCount = 10;
-
-      void digitPanel(
-        String panelTitle,
-        int columns,
-        double x,
-        double top,
-        double width, {
-        String digits = '',
-      }) {
-        // Measure the caption first so bubbles always start below it.
-        final label = makePainter(
-          panelTitle,
-          8.5,
-          isBold: true,
-          align: TextAlign.center,
-        )..layout(maxWidth: width - 6 * _k);
-        final labelH = label.height + 4 * _k;
-        final h = labelH + digitCount * digitRowH * _k + 6 * _k;
-        canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
-        canvas.drawRect(
-          Rect.fromLTWH(x, top, width, labelH),
-          Paint()..color = accentSoft,
-        );
-        label.paint(
-          canvas,
-          Offset(x + (width - label.width) / 2, top + 2 * _k),
-        );
-        // Spread the digit columns evenly inside the panel.
-        final usable = width - 2 * (bubbleR + 4) * _k;
-        final step = columns > 1 ? usable / (columns - 1) : 0.0;
-        final startX =
-            columns > 1 ? x + (bubbleR + 4) * _k : x + width / 2;
-        for (var column = 0; column < columns; column++) {
-          final cx = startX + column * step;
-          final wanted = column < digits.length ? digits[column] : '';
-          for (var digit = 0; digit < digitCount; digit++) {
-            bubble(
-              cx,
-              top + labelH + (digit + .5) * digitRowH * _k,
-              '$digit',
-              selected: wanted == '$digit',
-            );
-          }
-        }
-      }
-
-      double digitPanelHeight(String panelTitle, double width) {
-        final label = makePainter(panelTitle, 8.5, isBold: true)
-          ..layout(maxWidth: width - 6 * _k);
-        return label.height + 4 * _k + digitCount * digitRowH * _k + 6 * _k;
-      }
-
-      final identityTop = questionsBottom + 10 * _k;
-      final identityGap = 8 * _k;
-      final rollW = (contentW - 2 * identityGap) * .30;
-      final registrationW = (contentW - 2 * identityGap) * .46;
-      final subjectW = contentW - rollW - registrationW - 2 * identityGap;
-      digitPanel('রোল নম্বর', 6, sheetX, identityTop, rollW);
-      digitPanel(
-        'রেজিস্ট্রেশন নম্বর',
-        10,
-        sheetX + rollW + identityGap,
-        identityTop,
-        registrationW,
-      );
-      final code = (subjectCode ?? '')
-          .replaceAll('০', '0')
-          .replaceAll('১', '1')
-          .replaceAll('২', '2')
-          .replaceAll('৩', '3')
-          .replaceAll('৪', '4')
-          .replaceAll('৫', '5')
-          .replaceAll('৬', '6')
-          .replaceAll('৭', '7')
-          .replaceAll('৮', '8')
-          .replaceAll('৯', '9')
-          .replaceAll(RegExp(r'[^0-9]'), '');
-      digitPanel(
-        'বিষয় কোড',
-        3,
-        sheetX + rollW + registrationW + 2 * identityGap,
-        identityTop,
-        subjectW,
-        digits: code,
-      );
-
-      final identityBottom = identityTop +
-          mx(
-            mx(
-              digitPanelHeight('রোল নম্বর', rollW),
-              digitPanelHeight('রেজিস্ট্রেশন নম্বর', registrationW),
-            ),
-            digitPanelHeight('বিষয় কোড', subjectW),
-          );
-
-      // ── Set code + instructions ──────────────────────────────────
-      final setTop = identityBottom + 10 * _k;
-      final setW = 150 * _k;
-      final setH = 26 * _k;
-      canvas.drawRect(Rect.fromLTWH(sheetX, setTop, setW, setH), borderAccent);
-      final setTitle = makePainter('সেট কোড', 8.2, isBold: true)..layout();
-      setTitle.paint(
-        canvas,
-        Offset(sheetX + 5 * _k, setTop + (setH - setTitle.height) / 2),
-      );
-      final setBubbleStart = sheetX + 8 * _k + setTitle.width + bubbleD * _k;
-      final setBubbleStep =
-          (setW - (setBubbleStart - sheetX) - (bubbleR + 5) * _k) / 3;
-      for (var i = 0; i < 4; i++) {
-        bubble(
-          setBubbleStart + i * setBubbleStep,
-          setTop + setH / 2,
-          _optionLetters[i],
-          selected: setCode == _optionLetters[i],
-        );
-      }
-
-      final rulesX = sheetX + setW + 12 * _k;
-      final rulesW = contentW - setW - 12 * _k;
-      final rules = [
-        'নিয়মাবলি:',
-        '১। বৃত্তের ভেতরের লেখা দেখা না যায় এমনভাবে ভরাট করো।',
-        '২। কালো কালির বল-পয়েন্ট কলম ব্যবহার করো; পেন্সিল ব্যবহার কোরো না।',
-        '৩। উত্তরপত্র ভাঁজ করা বা অপ্রয়োজনীয় দাগ দেওয়া যাবে না।',
-        '৪। সেট কোড ভুল হলে উত্তরপত্র মূল্যায়ন করা যাবে না।',
-      ];
-      var rulesY = setTop;
-      for (var i = 0; i < rules.length; i++) {
-        final ruleText = makePainter(
-          rules[i],
-          i == 0 ? 9 : 7.5,
-          isBold: i == 0,
-        )..layout(maxWidth: rulesW);
-        ruleText.paint(canvas, Offset(rulesX, rulesY));
-        rulesY += ruleText.height + 2 * _k;
-      }
-
-      // Signature strip anchored to the bottom of the sheet.
-      final signatureY = mx(mx(setTop + setH, rulesY) + 22 * _k, sh - _margin - 30 * _k);
-      final signatureLine = Paint()
-        ..color = ink
-        ..strokeWidth = .8 * _k;
-      final signWidth = contentW * .34;
-      for (final entry in [
-        ('পরীক্ষার্থীর স্বাক্ষর', sheetX),
-        ('পরিদর্শকের স্বাক্ষর', sheetX + contentW - signWidth),
-      ]) {
-        canvas.drawLine(
-          Offset(entry.$2, signatureY),
-          Offset(entry.$2 + signWidth, signatureY),
-          signatureLine,
-        );
-        final caption = makePainter(entry.$1, 7.5)..layout();
-        caption.paint(canvas, Offset(entry.$2, signatureY + 3 * _k));
-      }
-      await commit();
+      pages.addAll(await renderOmrSheetPages(
+        title: title,
+        total: mcqs.length,
+        subjectCode: subjectCode,
+        setCode: setCode,
+      ));
     }
+
 
     return pages;
   }
@@ -2134,6 +1805,571 @@ class PaperPdf {
       // ফোনের system print dialog না খুললে PDF সরাসরি Share/Save sheet-এ।
       await Printing.sharePdf(bytes: bytes, filename: 'english_paper.pdf');
     }
+  }
+
+  // ══════════════ OMR answer sheet — standalone render & print ══════════════
+  /// Renders the OMR answer sheet from [OMrGeometry].
+  ///
+  /// Every bubble and corner mark is placed at the exact coordinates the
+  /// [OMrScanner] samples, so a printed sheet can always be scanned. The
+  /// title auto-shrinks to a single line so the geometry below the fixed
+  /// header band never moves.
+  static Future<List<Uint8List>> renderOmrSheetPages({
+    required String title,
+    required int total,
+    String? subjectCode,
+    String? setCode,
+  }) async {
+    await _loadFonts();
+    final geo = OMrGeometry(total.clamp(1, 100).toInt());
+
+    final pages = <Uint8List>[];
+    const double sw = 1654.0;
+    const double sh = 2339.0;
+
+    late ui.PictureRecorder rec;
+    late Canvas canvas;
+
+    void begin() {
+      rec = ui.PictureRecorder();
+      canvas = Canvas(rec, Rect.fromLTWH(0, 0, sw, sh));
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, sw, sh),
+        Paint()..color = const Color(0xFFFFFFFF),
+      );
+    }
+
+    Future<void> commit() async {
+      final stamp = TextPainter(
+        text: TextSpan(
+            text: 'AL·v25',
+            style: TextStyle(
+                fontFamily: _regular,
+                fontSize: 7 * _k,
+                color: const Color(0xFFAAAAAA))),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      stamp.paint(canvas, Offset(OMrGeometry.margin, sh - 6 * _k));
+      final img = await rec.endRecording().toImage(_W, _H);
+      final bd = await img.toByteData(format: ui.ImageByteFormat.png);
+      pages.add(bd!.buffer.asUint8List());
+    }
+
+    TextStyle st(double size, bool isBold, double lineHeight) => TextStyle(
+          fontFamily: isBold ? (_bold ?? _regular) : _regular,
+          fontFamilyFallback: _fb(isBold),
+          fontWeight:
+              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+          fontSize: size * _k,
+          height: lineHeight,
+          color: const Color(0xFF1A1A1A),
+        );
+
+    TextPainter makePainter(String text, double size,
+            {bool isBold = false, TextAlign align = TextAlign.left}) =>
+        TextPainter(
+          text: TextSpan(text: text, style: st(size, isBold, 1.4)),
+          textDirection: TextDirection.ltr,
+          textAlign: align,
+        );
+
+    const ink = Color(0xFF1A1A1A);
+    const accent = Color(0xFF1F5FA8);
+    const accentSoft = Color(0xFFEAF1FB);
+    final borderAccent = Paint()
+      ..color = accent
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.9 * _k;
+
+    void bubble(double x, double yy, String value, {bool selected = false}) {
+      final r = OMrGeometry.bubbleRadiusPx;
+      canvas.drawCircle(
+        Offset(x, yy),
+        r,
+        Paint()..color = selected ? accent : Colors.white,
+      );
+      canvas.drawCircle(
+        Offset(x, yy),
+        r,
+        Paint()
+          ..color = accent
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = .8 * _k,
+      );
+      final t = makePainter(
+              value, 6.4, isBold: selected, align: TextAlign.center)
+          ..layout();
+      t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
+    }
+
+    begin();
+
+    // Corner alignment marks — the scanner's registration squares.
+    for (var i = 0; i < 4; i++) {
+      final t = OMrGeometry.markTopLeft(i);
+      canvas.drawRect(
+        Rect.fromLTWH(t[0], t[1], OMrGeometry.markSize, OMrGeometry.markSize),
+        Paint()..color = ink,
+      );
+    }
+
+    // Header band — fixed geometry, title shrinks to fit one line.
+    final titleText = title.trim().isEmpty ? 'Question Paper' : title.trim();
+    var titleSize = 14.0;
+    var titlePainter = makePainter(titleText, titleSize, isBold: true)..layout();
+    while (titlePainter.width > OMrGeometry.contentW && titleSize > 9.5) {
+      titleSize -= 0.5;
+      titlePainter =
+          makePainter(titleText, titleSize, isBold: true)..layout();
+    }
+    titlePainter.paint(canvas, Offset(OMrGeometry.margin, OMrGeometry.titleTop));
+    final subtitle = makePainter(
+            'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
+            8.2,
+            isBold: true)
+        ..layout(maxWidth: OMrGeometry.contentW);
+    subtitle.paint(
+        canvas, Offset(OMrGeometry.margin, OMrGeometry.subtitleTop));
+    canvas.drawLine(
+      Offset(OMrGeometry.margin, OMrGeometry.ruleY),
+      Offset(sw - OMrGeometry.margin, OMrGeometry.ruleY),
+      Paint()
+        ..color = ink
+        ..strokeWidth = 1.2 * _k,
+    );
+
+    // ── Question boxes (one per column of OMrGeometry) ─────────────
+    var placed = 0;
+    for (var column = 0; column < geo.questionColumns; column++) {
+      final remaining = total - placed;
+      if (remaining <= 0) break;
+      final count = remaining > geo.perColumn ? geo.perColumn : remaining;
+      final x = geo.columnX(column);
+      final top = OMrGeometry.questionsTop;
+      final width = geo.questionWidth;
+      final h =
+          OMrGeometry.boxHeaderH + count * OMrGeometry.rowH + 4 * _k;
+      canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
+      canvas.drawRect(
+        Rect.fromLTWH(x, top, width, OMrGeometry.boxHeaderH),
+        Paint()..color = accentSoft,
+      );
+      final head = makePainter('প্রশ্ন', 7.4, isBold: true)..layout();
+      head.paint(canvas,
+          Offset(x + 4 * _k, top + (OMrGeometry.boxHeaderH - head.height) / 2));
+      for (var option = 0; option < 4; option++) {
+        final letter = makePainter(_optionLetters[option], 7.0,
+                isBold: true, align: TextAlign.center)
+            ..layout();
+        final cx = x + OMrGeometry.bubbleLeft + option * geo.bubbleStep;
+        letter.paint(canvas,
+            Offset(cx - letter.width / 2,
+                top + (OMrGeometry.boxHeaderH - letter.height) / 2));
+      }
+      for (var i = 0; i < count; i++) {
+        final rowTop = top + OMrGeometry.boxHeaderH + i * OMrGeometry.rowH;
+        final yy = rowTop + OMrGeometry.rowH / 2;
+        if (i.isOdd) {
+          canvas.drawRect(
+            Rect.fromLTWH(x + .5 * _k, rowTop, width - _k, OMrGeometry.rowH),
+            Paint()..color = accentSoft.withOpacity(.55),
+          );
+        }
+        final number = makePainter(_bn(placed + i + 1), 7.6)..layout();
+        number.paint(canvas, Offset(x + 4 * _k, yy - number.height / 2));
+        for (var option = 0; option < 4; option++) {
+          bubble(
+            x + OMrGeometry.bubbleLeft + option * geo.bubbleStep,
+            yy,
+            _optionLetters[option],
+          );
+        }
+      }
+      placed += count;
+    }
+
+    // ── Identity panels (roll / registration / subject code) ───────
+    void digitPanel(int panel, String panelTitle, {String digits = ''}) {
+      double x, w;
+      int cols;
+      switch (panel) {
+        case 1:
+          x = geo.registrationPanelX;
+          w = geo.registrationPanelW;
+          cols = 10;
+          break;
+        case 2:
+          x = geo.subjectPanelX;
+          w = geo.subjectPanelW;
+          cols = 3;
+          break;
+        default:
+          x = geo.rollPanelX;
+          w = geo.rollPanelW;
+          cols = 6;
+      }
+      final top = geo.identityTop;
+      canvas.drawRect(Rect.fromLTWH(x, top, w, OMrGeometry.panelH), borderAccent);
+      canvas.drawRect(
+        Rect.fromLTWH(x, top, w, OMrGeometry.labelBand),
+        Paint()..color = accentSoft,
+      );
+      final label = makePainter(panelTitle, 8.5, isBold: true,
+              align: TextAlign.center)
+          ..layout(maxWidth: w - 6 * _k);
+      label.paint(canvas, Offset(x + (w - label.width) / 2, top + 2 * _k));
+      for (var c = 0; c < cols; c++) {
+        final wanted = c < digits.length ? digits[c] : '';
+        for (var d = 0; d < 10; d++) {
+          final p = geo.digitBubble(panel, c, d);
+          bubble(p.dx, p.dy, '$d', selected: wanted == '$d');
+        }
+      }
+    }
+
+    digitPanel(0, 'রোল নম্বর');
+    digitPanel(1, 'রেজিস্ট্রেশন নম্বর');
+    digitPanel(2, 'বিষয় কোড', digits: _toLatinDigits(subjectCode ?? ''));
+
+    // ── Set code + instructions ────────────────────────────────────
+    final setTop = geo.setTop;
+    canvas.drawRect(
+        Rect.fromLTWH(OMrGeometry.margin, setTop, OMrGeometry.setW, OMrGeometry.setH),
+        borderAccent);
+    final setTitle = makePainter('সেট কোড', 8.2, isBold: true)..layout();
+    setTitle.paint(canvas,
+        Offset(OMrGeometry.margin + 5 * _k,
+            setTop + (OMrGeometry.setH - setTitle.height) / 2));
+    for (var i = 0; i < 4; i++) {
+      final p = geo.setBubble(i);
+      bubble(p.dx, p.dy, _optionLetters[i], selected: setCode == _optionLetters[i]);
+    }
+
+    final rulesX = OMrGeometry.margin + OMrGeometry.setW + 12 * _k;
+    final rulesW = OMrGeometry.contentW - OMrGeometry.setW - 12 * _k;
+    const rules = [
+      'নিয়মাবলি:',
+      '১। বৃত্তের ভেতরের লেখা দেখা না যায় এমনভাবে ভরাট করো।',
+      '২। কালো কালির বল-পয়েন্ট কলম ব্যবহার করো; পেন্সিল ব্যবহার কোরো না।',
+      '৩। উত্তরপত্র ভাঁজ করা বা অপ্রয়োজনীয় দাগ দেওয়া যাবে না।',
+      '৪। সেট কোড ভুল হলে উত্তরপত্র মূল্যায়ন করা যাবে না।',
+    ];
+    var rulesY = setTop;
+    for (var i = 0; i < rules.length; i++) {
+      final ruleText = makePainter(rules[i], i == 0 ? 9 : 7.5, isBold: i == 0)
+        ..layout(maxWidth: rulesW);
+      ruleText.paint(canvas, Offset(rulesX, rulesY));
+      rulesY += ruleText.height + 2 * _k;
+    }
+
+    // Signature strip anchored to the bottom of the sheet.
+    final sigA = setTop + OMrGeometry.setH + 22 * _k;
+    final sigB = sh - OMrGeometry.margin - 30 * _k;
+    final signatureY = sigA > sigB ? sigA : sigB;
+    final signatureLine = Paint()
+      ..color = ink
+      ..strokeWidth = .8 * _k;
+    final signWidth = OMrGeometry.contentW * .34;
+    for (final entry in [
+      ('পরীক্ষার্থীর স্বাক্ষর', OMrGeometry.margin),
+      ('পরিদর্শকের স্বাক্ষর', OMrGeometry.margin + OMrGeometry.contentW - signWidth),
+    ]) {
+      canvas.drawLine(
+        Offset(entry.$2, signatureY),
+        Offset(entry.$2 + signWidth, signatureY),
+        signatureLine,
+      );
+      final caption = makePainter(entry.$1, 7.5)..layout();
+      caption.paint(canvas, Offset(entry.$2, signatureY + 3 * _k));
+    }
+    await commit();
+
+    return pages;
+  }
+
+  /// Bangla digits → Latin, digits only (subject-code prefill + scanner).
+  static String _toLatinDigits(String s) => s
+      .replaceAll('০', '0')
+      .replaceAll('১', '1')
+      .replaceAll('২', '2')
+      .replaceAll('৩', '3')
+      .replaceAll('৪', '4')
+      .replaceAll('৫', '5')
+      .replaceAll('৬', '6')
+      .replaceAll('৭', '7')
+      .replaceAll('৮', '8')
+      .replaceAll('৯', '9')
+      .replaceAll(RegExp(r'[^0-9]'), '');
+
+  /// Prints only the OMR answer sheet — [copies] identical pages, so a whole
+  /// class can get sheets without printing the question paper N times.
+  static Future<void> printOmrSheet({
+    required String title,
+    required int total,
+    String? subjectCode,
+    String? setCode,
+    int copies = 1,
+  }) async {
+    final page = (await renderOmrSheetPages(
+      title: title,
+      total: total,
+      subjectCode: subjectCode,
+      setCode: setCode,
+    )).first;
+    final doc = pw.Document();
+    final n = copies.clamp(1, 200).toInt();
+    for (var i = 0; i < n; i++) {
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.zero,
+          build: (_) => pw.Image(
+            pw.MemoryImage(page),
+            width: PdfPageFormat.a4.width,
+            height: PdfPageFormat.a4.height,
+            fit: pw.BoxFit.fill,
+          ),
+        ),
+      );
+    }
+    final bytes = await doc.save();
+    try {
+      await Printing.layoutPdf(onLayout: (format) async => bytes);
+    } catch (_) {
+      await Printing.sharePdf(bytes: bytes, filename: 'omr_sheet.pdf');
+    }
+  }
+
+  /// Prints a printable scorecard (মার্কশিট) for one scanned OMR sheet.
+  static Future<void> printOmScorecard({
+    required String title,
+    required String subject,
+    required String roll,
+    required String registration,
+    required String subjectCode,
+    required String setCode,
+    required int total,
+    required int score,
+    required int correct,
+    required int wrong,
+    required int blank,
+    required int ambiguous,
+    required List<int> answers,
+    required List<int> key,
+  }) async {
+    await _loadFonts();
+
+    final pages = <Uint8List>[];
+    const double sw = 1654.0;
+    const double sh = 2339.0;
+    final double margin = 40 * _k;
+    final double bottomY = sh - margin;
+    final double contentW = sw - 2 * margin;
+
+    late ui.PictureRecorder rec;
+    late Canvas canvas;
+    double y = margin;
+
+    void begin() {
+      rec = ui.PictureRecorder();
+      canvas = Canvas(rec, Rect.fromLTWH(0, 0, sw, sh));
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, sw, sh),
+        Paint()..color = const Color(0xFFFFFFFF),
+      );
+      y = margin;
+    }
+
+    Future<void> commit() async {
+      final stamp = TextPainter(
+        text: TextSpan(
+            text: 'AL·v25',
+            style: TextStyle(
+                fontFamily: _regular,
+                fontSize: 7 * _k,
+                color: const Color(0xFFAAAAAA))),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      stamp.paint(canvas, Offset(margin, sh - 6 * _k));
+      final img = await rec.endRecording().toImage(_W, _H);
+      final bd = await img.toByteData(format: ui.ImageByteFormat.png);
+      pages.add(bd!.buffer.asUint8List());
+    }
+
+    TextStyle st(double size, bool isBold, double lineHeight) => TextStyle(
+          fontFamily: isBold ? (_bold ?? _regular) : _regular,
+          fontFamilyFallback: _fb(isBold),
+          fontWeight:
+              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+          fontSize: size * _k,
+          height: lineHeight,
+          color: const Color(0xFF16203A),
+        );
+
+    TextPainter makePainter(String text, double size,
+            {bool isBold = false, TextAlign align = TextAlign.left}) =>
+        TextPainter(
+          text: TextSpan(text: text, style: st(size, isBold, 1.4)),
+          textDirection: TextDirection.ltr,
+          textAlign: align,
+        );
+
+    Future<void> para(String text, double size,
+            {bool isBold = false,
+            TextAlign align = TextAlign.center,
+            double gapBefore = 0}) async {
+      final tp =
+          makePainter(text, size, isBold: isBold, align: align)
+            ..layout(maxWidth: contentW);
+      if (y + gapBefore * _k + tp.height > bottomY + 1) {
+        await commit();
+        begin();
+      }
+      y += gapBefore * _k;
+      tp.paint(canvas, Offset(margin + (contentW - tp.width) / 2, y));
+      y += tp.height;
+    }
+
+    void rule({double gapBefore = 0, double thick = 1.2}) {
+      final ry = y + gapBefore * _k + 2 * _k;
+      canvas.drawLine(
+        Offset(margin, ry),
+        Offset(sw - margin, ry),
+        Paint()
+          ..color = const Color(0xFF16203A)
+          ..strokeWidth = thick * _k,
+      );
+      y = ry + 2 * _k;
+    }
+
+    const optionLetters = ['ক', 'খ', 'গ', 'ঘ'];
+    String letterOf(int a) =>
+        a >= 0 && a < 4 ? optionLetters[a] : (a == -2 ? '?' : '—');
+    String glyphOf(int status) =>
+        status == 0 ? '✓' : (status == 1 ? '✗' : (status == 2 ? '–' : '?'));
+
+    final now = DateTime.now();
+    final dateStr =
+        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+    final pct = total == 0 ? 0.0 : score * 100.0 / total;
+
+    begin();
+    await para('OMR স্কোর কার্ড', 16, isBold: true);
+    await para(title, 12.5, isBold: true, gapBefore: 2);
+    await para(
+        'বিষয়ঃ ${subject.isEmpty ? '—' : subject}   •   সেটঃ $setCode   •   তারিখঃ $dateStr',
+        10.5,
+        gapBefore: 2);
+    rule(gapBefore: 5);
+    rule(gapBefore: 2, thick: .8);
+
+    await para(
+        'রোল নংঃ ${roll.isEmpty ? '—' : roll}      রেজিস্ট্রেশন নংঃ ${registration.isEmpty ? '—' : registration}      বিষয় কোডঃ ${subjectCode.isEmpty ? '—' : subjectCode}',
+        10.5,
+        gapBefore: 6);
+
+    // Score strip: six cells.
+    final cells = <(String, String)>[
+      ('প্রাপ্ত নম্বর', '$score / $total'),
+      ('শতকরা', '${pct.toStringAsFixed(1)}%'),
+      ('সঠিক', '$correct'),
+      ('ভুল', '$wrong'),
+      ('খালি', '$blank'),
+      ('দ্বি-দাগ', '$ambiguous'),
+    ];
+    final cellGap = 6.0 * _k;
+    final cellW = (contentW - 5 * cellGap) / 6;
+    final cellH = 34 * _k;
+    final stripY = y + 6 * _k;
+    final cell = Paint()
+      ..color = const Color(0xFF16203A)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.9 * _k;
+    for (var i = 0; i < cells.length; i++) {
+      final cx = margin + i * (cellW + cellGap);
+      canvas.drawRect(Rect.fromLTWH(cx, stripY, cellW, cellH), cell);
+      final cap = makePainter(cells[i].$1, 8.5)..layout(maxWidth: cellW - 6 * _k);
+      cap.paint(canvas, Offset(cx + (cellW - cap.width) / 2, stripY + 4 * _k));
+      final val = makePainter(cells[i].$2, 11.5, isBold: true,
+          align: TextAlign.center)..layout(maxWidth: cellW - 6 * _k);
+      val.paint(
+          canvas, Offset(cx + (cellW - val.width) / 2, stripY + cellH - val.height - 4 * _k));
+    }
+    y = stripY + cellH;
+
+    // Per-question grid, 10 columns.
+    y += 12 * _k;
+    final cols = 10;
+    final rowH = 20.0 * _k;
+    for (var i = 0; i < key.length; i++) {
+      if (i % cols == 0) {
+        if (y + rowH > bottomY + 1) {
+          await commit();
+          begin();
+          y += 4 * _k;
+        }
+      }
+      final col = i % cols;
+      final gx = margin + (contentW / cols) * col;
+      final status =
+          i < key.length ? (answers.isNotEmpty ? _statusOf(i, answers, key) : 2) : 2;
+      final tp = makePainter(
+          '${_bn(i + 1)}.${letterOf(i < answers.length ? answers[i] : -1)}${glyphOf(status)}',
+          10,
+          isBold: i < key.length && status == 0)
+        ..layout(maxWidth: contentW / cols - 3 * _k);
+      tp.paint(canvas, Offset(gx + 2 * _k, y));
+      if (col == cols - 1) y += rowH;
+    }
+
+    y += 14 * _k;
+    final signW = contentW * .34;
+    final signLine = Paint()
+      ..color = const Color(0xFF16203A)
+      ..strokeWidth = .8 * _k;
+    for (final entry in [
+      ('পরীক্ষার্থীর স্বাক্ষর', margin),
+      ('শিক্ষকের স্বাক্ষর', margin + contentW - signW),
+    ]) {
+      canvas.drawLine(
+        Offset(entry.$2, y),
+        Offset(entry.$2 + signW, y),
+        signLine,
+      );
+      final caption = makePainter(entry.$1, 7.5)..layout();
+      caption.paint(canvas, Offset(entry.$2, y + 3 * _k));
+    }
+    await commit();
+
+    final doc = pw.Document();
+    for (final png in pages) {
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.zero,
+          build: (_) => pw.Image(
+            pw.MemoryImage(png),
+            width: PdfPageFormat.a4.width,
+            height: PdfPageFormat.a4.height,
+            fit: pw.BoxFit.fill,
+          ),
+        ),
+      );
+    }
+    final bytes = await doc.save();
+    try {
+      await Printing.layoutPdf(onLayout: (format) async => bytes);
+    } catch (_) {
+      await Printing.sharePdf(bytes: bytes, filename: 'omr_scorecard.pdf');
+    }
+  }
+
+  /// Status of question [i]: 0 correct, 1 wrong, 2 blank, 3 double-marked.
+  static int _statusOf(int i, List<int> answers, List<int> key) {
+    final a = i < answers.length ? answers[i] : -1;
+    if (a == -1) return 2;
+    if (a == -2) return 3;
+    return (a == key[i]) ? 0 : 1;
   }
 }
 
