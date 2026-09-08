@@ -496,7 +496,7 @@ $('signout').onclick = () => {
   location.reload();
 };
 
-const PANEL_BUILD = 'chapters-byname';
+const PANEL_BUILD = 'img-defaults-softdelete';
 
 async function enterApp(){
   $('login').classList.add('hide');
@@ -509,6 +509,7 @@ async function enterApp(){
   syncChapters();
   syncTypes();
   renderOptions();
+  renderImgOptions();
   await loadList();
 }
 
@@ -534,6 +535,23 @@ function renderOptions(n = 4){
       `<input type="radio" name="correct" value="${i}" ${i === 0 ? 'checked' : ''}>`
       + `<span class="tag">${letters[i]}</span>`
       + `<input type="text" class="opt-text" placeholder="Option ${letters[i]}">`;
+    box.appendChild(row);
+  }
+}
+
+/** The Images tab's option rows — the same four options are applied to every
+ *  image in the batch, so this is rendered once, not per picture. */
+function renderImgOptions(){
+  const box = $('imgOptions');
+  box.innerHTML = '';
+  const letters = ['ক','খ','গ','ঘ'];
+  for (let i = 0; i < 4; i++){
+    const row = document.createElement('div');
+    row.className = 'opt';
+    row.innerHTML =
+      `<input type="radio" name="imgCorrect" value="${i}" ${i === 0 ? 'checked' : ''}>`
+      + `<span class="tag">${letters[i]}</span>`
+      + `<input type="text" class="img-opt-text" placeholder="Option ${letters[i]}">`;
     box.appendChild(row);
   }
 }
@@ -586,6 +604,11 @@ function syncFields(){
   $('f-saq').classList.toggle('hide', t !== 'saq');
   $('f-cq').classList.toggle('hide', t !== 'cq');
   $('f-expl').classList.toggle('hide', t === 'cq');
+  // The Images tab carries its own copy of the type-specific fields; the
+  // values there are applied to every picture in the batch.
+  $('img-f-mcq').classList.toggle('hide', t !== 'mcq');
+  $('img-f-saq').classList.toggle('hide', t !== 'saq');
+  $('img-f-cq').classList.toggle('hide', t !== 'cq');
 }
 
 function clearForm(){
@@ -1179,14 +1202,18 @@ function fingerprint(q){
 let SERVER_PRINTS = new Map();
 
 /** Loads fingerprints of everything published for the chosen subject, so a
- *  re-paste can be spotted before it is written. */
+ *  re-paste can be spotted before it is written.
+ *
+ *  Soft-deleted rows are skipped: a deleted question is free to be published
+ *  again, so it must not trip the duplicate check. */
 async function loadServerPrints(){
   SERVER_PRINTS = new Map();
   const subject = $('subject').value;
   if (!subject) return;
   try {
     const rows = await sb('/rest/v1/questions?select=id,payload,type'
-      + '&subject_id=eq.' + encodeURIComponent(subject) + '&limit=5000');
+      + '&subject_id=eq.' + encodeURIComponent(subject)
+      + '&is_active=eq.true&limit=5000');
     for (const r of rows || []){
       const p = r.payload || {};
       const fp = fingerprint({ questionText: p.questionText, stem: p.stem });
@@ -1419,12 +1446,32 @@ $('imgSave').onclick = async () => {
     const v = box.value.trim();
     if (v) perImage[box.dataset.img] = v;
   }
+  // The bare letters are kept only as a fallback for anything left blank.
+  const letters = ['ক','খ','গ','ঘ'];
+  const SAQ_DEFAULT = 'উত্তর ছবিতে দেওয়া আছে।';
+  const cqFields = ['questionK','questionKh','questionG','questionGh'];
   const rows = IMAGES.map((im, i) => {
     const text = perImage[String(i)] || stem;
     const q = { type, figure: { kind: 'image', imagePath: im.imagePath, aspect: im.aspect } };
-    if (type === 'mcq'){ q.questionText = text; q.options = ['ক','খ','গ','ঘ']; q.correctIndex = 0; }
-    else if (type === 'saq'){ q.questionText = text; q.answer = 'উত্তর ছবিতে দেওয়া আছে।'; }
-    else { q.stem = text; q.questionK = 'ক'; q.questionKh = 'খ'; q.questionG = 'গ'; q.questionGh = 'ঘ'; q.marks = [1,2,3,4]; }
+    if (type === 'mcq'){
+      q.questionText = text;
+      const optBoxes = [...document.querySelectorAll('.img-opt-text')];
+      q.options = optBoxes.map((b, n) => b.value.trim() || letters[n]);
+      const picked = document.querySelector('input[name=imgCorrect]:checked');
+      q.correctIndex = picked ? Number(picked.value) : 0;
+    }
+    else if (type === 'saq'){
+      q.questionText = text;
+      q.answer = $('imgAnswer').value.trim() || SAQ_DEFAULT;
+    }
+    else {
+      q.stem = text;
+      for (const k of cqFields){
+        const v = $('img' + k[0].toUpperCase() + k.slice(1)).value.trim();
+        q[k] = v || letters[cqFields.indexOf(k)];
+      }
+      q.marks = $('imgMarks').value.split(/[^0-9]+/).filter(Boolean).map(Number);
+    }
     return buildRow(q, common);
   });
   if (!common.chapter){ showMsg('err', '<b>Chapter is required.</b>'); return; }
@@ -1450,6 +1497,9 @@ async function loadList(){
   p.set('select', 'id,type,subject_id,chapter,payload,updated_at');
   p.set('order', 'updated_at.desc');
   p.set('limit', '50');
+  // Soft-deleted rows stay on the server (as tombstones for the phones), so
+  // the published list has to filter them out itself.
+  p.set('is_active', 'eq.true');
   if ($('f-subject').value) p.set('subject_id', 'eq.' + $('f-subject').value);
   if ($('f-type').value) p.set('type', 'eq.' + $('f-type').value);
   const q = $('f-search').value.trim();
@@ -1479,7 +1529,20 @@ async function loadList(){
       b.onclick = async () => {
         if (!confirm('Delete ' + b.dataset.del + '?')) return;
         try {
-          await sb('/rest/v1/questions?id=eq.' + encodeURIComponent(b.dataset.del), { method: 'DELETE' });
+          // Soft delete, not a hard DELETE. The app syncs by asking the
+          // server for "anything newer than X?", and a deleted row can never
+          // appear in that answer — every phone would keep its cached copy
+          // forever. Flipping is_active off and touching updated_at makes the
+          // tombstone ride the next delta sync, and the app drops the
+          // question without a restart.
+          await sb('/rest/v1/questions?id=eq.' + encodeURIComponent(b.dataset.del), {
+            method: 'PATCH',
+            headers: { Prefer: 'return=representation' },
+            body: JSON.stringify({
+              is_active: false,
+              updated_at: new Date().toISOString(),
+            }),
+          });
           await loadList();
         } catch (e) { showMsg('err', '<b>Delete failed:</b>', [String(e.message || e)]); }
       };

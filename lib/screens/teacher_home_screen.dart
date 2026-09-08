@@ -134,6 +134,26 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               ),
               const SizedBox(height: 20),
               const SectionTitle(
+                title: 'Examine & archive',
+                subtitle: 'Mark OMR sheets and re-print saved papers.',
+                icon: Icons.qr_code_scanner_rounded,
+              ),
+              _ActionTile(
+                icon: Icons.qr_code_scanner_rounded,
+                title: 'OMR Scanner',
+                subtitle: 'Scan, mark & print results of your OMR sheets',
+                accentIndex: 5,
+                onTap: () => _open(const OmrScannerScreen()),
+              ),
+              _ActionTile(
+                icon: Icons.folder_open_rounded,
+                title: 'My Papers',
+                subtitle: 'Saved papers — print or share them again',
+                accentIndex: 4,
+                onTap: () => _open(const MyPapersScreen()),
+              ),
+              const SizedBox(height: 20),
+              const SectionTitle(
                 title: 'Account',
                 icon: Icons.manage_accounts_rounded,
               ),

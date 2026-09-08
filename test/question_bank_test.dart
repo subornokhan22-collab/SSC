@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tutors_desk/data/question_bank.dart';
 import 'package:tutors_desk/data/questions_data.dart';
 
 import 'support/bank_fixture.dart';
@@ -123,6 +124,70 @@ void main() {
       for (final q in allMCQs.take(2000)) {
         expect(q.questionText.contains('\uFFFD'), isFalse, reason: q.id);
       }
+    });
+  });
+
+  group('Soft delete (removeIds)', () {
+    test('drops the tombstoned question and keeps everything else', () {
+      // The whole file shares the fixture bank from setUpAll, so snapshot
+      // it and put it back when this test is done.
+      final mcqs = QuestionBank.mcqs;
+      final saqs = QuestionBank.saqS;
+      final cqs = QuestionBank.cqs;
+      addTearDown(() => QuestionBank.seed(mcqs: mcqs, saqs: saqs, cqs: cqs));
+
+      QuestionBank.seed(
+        mcqs: const [
+          Question(
+              id: 'phy_web01_mcq_a',
+              subjectId: 'physics',
+              chapter: 'অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ',
+              questionText: 'প্রথম প্রশ্ন?',
+              options: ['ক', 'খ'],
+              correctIndex: 0,
+              explanation: ''),
+          Question(
+              id: 'phy_web01_mcq_b',
+              subjectId: 'physics',
+              chapter: 'অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ',
+              questionText: 'দ্বিতীয় প্রশ্ন?',
+              options: ['ক', 'খ'],
+              correctIndex: 1,
+              explanation: ''),
+        ],
+        saqs: const [
+          ShortQuestion(
+              id: 'phy_web01_saq_a',
+              subjectId: 'physics',
+              chapter: 'অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ',
+              questionText: 'সংক্ষিপ্ত প্রশ্ন?',
+              answer: 'উত্তর।'),
+        ],
+        cqs: const [
+          CreativeQuestion(
+              id: 'phy_web01_cq_a',
+              subjectId: 'physics',
+              chapter: 'অধ্যায় ১: ভৌত রাশি এবং তাদের পরিমাপ',
+              stem: 'উদ্দীপক',
+              questionK: 'ক প্রশ্ন',
+              questionKh: 'খ প্রশ্ন',
+              questionG: 'গ প্রশ্ন',
+              questionGh: 'ঘ প্রশ্ন'),
+        ],
+      );
+
+      // One row per type is soft-deleted, plus an id no one has.
+      QuestionBank.removeIds(
+          ['phy_web01_mcq_a', 'phy_web01_saq_a', 'phy_web01_cq_a', 'nope']);
+
+      expect(QuestionBank.mcqs.map((q) => q.id), ['phy_web01_mcq_b']);
+      expect(QuestionBank.saqS, isEmpty);
+      expect(QuestionBank.cqs, isEmpty);
+
+      // A stale tombstone (already gone) is a no-op, like the empty list.
+      QuestionBank.removeIds(['phy_web01_mcq_a']);
+      QuestionBank.removeIds(const []);
+      expect(QuestionBank.mcqs.map((q) => q.id), ['phy_web01_mcq_b']);
     });
   });
 
