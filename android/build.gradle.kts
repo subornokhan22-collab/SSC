@@ -25,15 +25,24 @@ subprojects {
 // Bump any module that still compiles against an older SDK.
 subprojects {
     afterEvaluate {
-        val android = extensions.findByName("android") ?: return@afterEvaluate
-        val cls = android.javaClass
-        val getter =
-            cls.methods.firstOrNull { it.name == "getCompileSdk" && it.parameterTypes.isEmpty() }
-        val setter =
-            cls.methods.firstOrNull { it.name == "setCompileSdk" && it.parameterTypes.size == 1 }
-        val current = getter?.invoke(android) as? Int
-        if (setter != null && (current == null || current < 36)) {
-            setter.invoke(android, 36)
+        try {
+            val android = extensions.findByName("android") ?: return@afterEvaluate
+            val cls = android.javaClass
+            val getter =
+                cls.methods.firstOrNull {
+                    it.name == "getCompileSdk" && it.parameterTypes.isEmpty()
+                }
+            val setter =
+                cls.methods.firstOrNull {
+                    it.name == "setCompileSdk" && it.parameterTypes.size == 1
+                }
+            val current = getter?.invoke(android) as? Int
+            if (setter != null && (current == null || current < 36)) {
+                setter.invoke(android, 36)
+                println("[tutorsdesk] ${project.name}: compileSdk ${current} -> 36")
+            }
+        } catch (t: Throwable) {
+            println("[tutorsdesk] compileSdk bump skipped for ${project.name}: $t")
         }
     }
 }
