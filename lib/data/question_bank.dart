@@ -97,6 +97,24 @@ class QuestionBank {
     _cqs = merge(_cqs, cqs, (q) => q.id);
   }
 
+  /// Drops questions by id, whichever type holds them.
+  ///
+  /// [QuestionSync] calls this for rows the panel soft-deleted. A hard DELETE
+  /// can never reach a phone — the sync asks "anything newer than X?" and a
+  /// deleted row cannot appear in that answer — so the tombstone must remove
+  /// the cached copy actively, and this makes the question disappear without
+  /// a restart. Unknown ids are ignored, so a stale tombstone is harmless.
+  static void removeIds(Iterable<String> ids) {
+    final drop = ids.toSet();
+    if (drop.isEmpty) return;
+    _mcqs =
+        List<Question>.unmodifiable(_mcqs.where((q) => !drop.contains(q.id)));
+    _saqs = List<ShortQuestion>.unmodifiable(
+        _saqs.where((q) => !drop.contains(q.id)));
+    _cqs = List<CreativeQuestion>.unmodifiable(
+        _cqs.where((q) => !drop.contains(q.id)));
+  }
+
   /// Test seam — lets widget tests install a small bank without touching
   /// the asset bundle.
   @visibleForTesting

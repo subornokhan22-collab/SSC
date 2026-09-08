@@ -17,6 +17,10 @@ import 'questions_data.dart';
 /// Design notes:
 /// * Only rows newer than the last sync are fetched, so the usual cost is one
 ///   small request returning nothing.
+/// * The panel soft-deletes (is_active=false + touched updated_at), so a
+///   tombstone arrives in that same delta. It is dropped from the cache and
+///   the bank, which is the only way a removed question can ever reach a
+///   phone — a hard DELETE would not appear in a "newer than X?" answer.
 /// * The result is cached, so the extra questions survive being offline.
 /// * Every failure is silent. A paper must never fail to generate because the
 ///   network is down.
@@ -47,7 +51,8 @@ class QuestionSync {
     }
   }
 
-  /// Asks the server for anything added since the last successful sync.
+  /// Asks the server for anything changed since the last successful sync —
+  /// new questions, edits, and soft-delete tombstones.
   ///
   /// Safe to call in the background — it returns the number of new questions
   /// and swallows every error.
@@ -57,7 +62,9 @@ class QuestionSync {
       final prefs = await SharedPreferences.getInstance();
       final since = prefs.getString(_stampKey);
 
-      var query = _c.from('questions').select().eq('is_active', true);
+      // Deliberately no is_active filter: a soft-deleted row must reach the
+      // phone as a tombstone, or it would keep its cached copy forever.
+      var query = _c.from('questions').select();
       if (since != null && since.isNotEmpty) {
         query = query.gt('updated_at', since);
       }
@@ -76,17 +83,29 @@ class QuestionSync {
         }
       }
       String newest = since ?? '';
+      final tombstoned = <String>[];
       for (final r in rows) {
         final m = Map<String, dynamic>.from(r as Map);
-        byId[m['id'] as String] = m;
+        final id = m['id'] as String;
         final u = (m['updated_at'] ?? '').toString();
         if (u.compareTo(newest) > 0) newest = u;
+        if (m['is_active'] == false) {
+          // The panel soft-deleted this one: drop it from the cache so the
+          // tombstone survives the next restart too.
+          byId.remove(id);
+          tombstoned.add(id);
+          continue;
+        }
+        byId[id] = m;
       }
 
       final merged = byId.values.toList();
       await prefs.setString(_cacheKey, json.encode(merged));
       if (newest.isNotEmpty) await prefs.setString(_stampKey, newest);
 
+      // And drop it from the live bank, so the question is gone now instead
+      // of coming back on the next launch.
+      if (tombstoned.isNotEmpty) QuestionBank.removeIds(tombstoned);
       _merge(merged);
       return rows.length;
     } catch (e) {
@@ -112,6 +131,9 @@ class QuestionSync {
     for (final row in rows) {
       try {
         final m = Map<String, dynamic>.from(row as Map);
+        // A soft-deleted row must never be resurrected, even by a stale
+        // cache from before the tombstone was processed.
+        if (m['is_active'] == false) continue;
         // The server stores the type-specific fields in `payload`, matching
         // the exported JSON, so the existing decoders can be reused as-is.
         final flat = <String, dynamic>{
