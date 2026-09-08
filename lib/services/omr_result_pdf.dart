@@ -23,12 +23,20 @@ class OmrResultPdf {
     final regular = await _font('assets/fonts/NotoSerifBengali-Regular.ttf');
     final bold = await _font('assets/fonts/NotoSerifBengali-Bold.ttf');
 
-    TextStyle ts(double size, {bool boldText = false, Color color = const Color(0xFF16203A)}) =>
+    TextStyle ts(double size,
+            {bool boldText = false,
+            PdfColor color = const PdfColor.fromInt(0xFF16203A)}) =>
         pw.TextStyle(
           fontSize: size,
           color: color,
-          fontFamily: 'Bengali',
+          // pdf 3.x has no fontFamily lookup — attach the custom fonts
+          // directly (regular + bold variants).
           font: boldText ? bold : regular,
+          fontNormal: regular,
+          fontBold: bold,
+          fontItalic: regular,
+          fontBoldItalic: bold,
+          fontWeight: boldText ? pw.FontWeight.bold : pw.FontWeight.normal,
         );
 
     pw.Widget cell(String text, {bool boldText = false, bool center = false}) =>
@@ -60,17 +68,17 @@ class OmrResultPdf {
           pw.Text('OMR ফলাফল — ${title.isEmpty ? 'Question Paper' : title}',
               style: ts(15, boldText: true)),
           if (subject.isNotEmpty)
-            pw.Text(subject, style: ts(11, color: const Color(0xFF55607A))),
+            pw.Text(subject, style: ts(11, color: const PdfColor.fromInt(0xFF55607A))),
           pw.Text(
             'তারিখ: $date • শীট: ${sheets.length} • মোট প্রশ্ন: ${sheets.isEmpty ? 0 : sheets.first.total} • গড় স্কোর: $avg',
-            style: ts(10, color: const Color(0xFF55607A)),
+            style: ts(10, color: const PdfColor.fromInt(0xFF55607A)),
           ),
           const pw.SizedBox(height: 10),
           pw.Table(
-            border: pw.TableBorder.all(color: const Color(0xFF9AA4BC), width: 0.6),
+            border: pw.TableBorder.all(color: const PdfColor.fromInt(0xFF9AA4BC), width: 0.6),
             headerAlignment: pw.Alignment.center,
             children: [
-              pwTableRow(children: [
+              pw.TableRow(children: [
                 cell('রোল নম্বর', boldText: true, center: true),
                 cell('রেজিস্ট্রেশন নম্বর', boldText: true, center: true),
                 cell('সেট', boldText: true, center: true),
@@ -80,7 +88,7 @@ class OmrResultPdf {
                 cell('স্কোর', boldText: true, center: true),
               ]),
               for (final s in ordered)
-                pwTableRow(children: [
+                pw.TableRow(children: [
                   cell(s.roll),
                   cell(s.registration),
                   cell(set(s.setCode), center: true),
@@ -115,7 +123,7 @@ class OmrResultPdf {
           st == 2
               ? '  প্রশ্ন ${i + 1}: খালি (সঠিক: $correct)'
               : '  প্রশ্ন ${i + 1}: ছাত্রের উত্তর $mine → সঠিক $correct',
-          style: ts(9, color: st == 2 ? const Color(0xFFB36A00) : const Color(0xFFC0392B)),
+          style: ts(9, color: st == 2 ? const PdfColor.fromInt(0xFFB36A00) : const PdfColor.fromInt(0xFFC0392B)),
         ));
       }
     }
@@ -158,10 +166,8 @@ class OmrResultPdf {
   static int math_min(int a, int b) => a < b ? a : b;
 
   static Future<pw.Font> _font(String asset) async {
-    final bytes = await rootBundle.load(asset);
-    return pw.Font.ttf(
-      bytes.buffer.asUint8List() as Uint8List,
-      descriptor: pw.FontDescriptor(family: 'Bengali'),
-    );
+    // pdf 3.x: Font.ttf takes the raw ByteData from the asset bundle.
+    final data = await rootBundle.load(asset);
+    return pw.Font.ttf(data);
   }
 }

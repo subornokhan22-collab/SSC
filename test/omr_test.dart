@@ -142,9 +142,9 @@ void main() {
       final w = (OmrSheetLayout.pageW * scale).round();
       final h = (OmrSheetLayout.pageH * scale).round();
       final canvas = img.Image(width: w, height: h);
-      img.fill(canvas, img.ColorInt8(250, 250, 250));
-      final ring = img.ColorInt8(31, 95, 168); // accent blue, like the printer
-      final ink = img.ColorInt8(20, 20, 20);
+      img.fill(canvas, color: img.ColorInt8.rgb(250, 250, 250));
+      final ring = img.ColorInt8.rgb(31, 95, 168); // accent blue, like the printer
+      final ink = img.ColorInt8.rgb(20, 20, 20);
 
       void circle(OmrPoint c, double r, img.ColorInt8 color, {bool fill = false}) {
         for (var yy = (c.y - r).floor(); yy <= (c.y + r).ceil(); yy++) {

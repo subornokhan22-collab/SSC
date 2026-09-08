@@ -162,7 +162,8 @@ class OmrScanner {
     for (var yy = 0; yy < sh; yy++) {
       for (var xx = 0; xx < sw; xx++) {
         final p = small.getPixel(xx, yy);
-        final l = (p.r * 299 + p.g * 587 + p.b * 114) >> 10;
+        // image 4.x: p.r/p.g/p.b are num — convert before the bit shift.
+        final l = (p.r * 299 + p.g * 587 + p.b * 114).toInt() >> 10;
         lumaSmall[yy * sw + xx] = l;
         lumaHist[l]++;
       }
@@ -209,13 +210,13 @@ class OmrScanner {
     // ── 3) Sample ink at every bubble ───────────────────────────────
     // Sample on a <=1800px-wide copy: plenty of resolution, much faster.
     final sampleW = math.min(W, 1800);
-    final sImg = sampleW < W ? img.copyResize(photo, w: sampleW) : photo;
+    final sImg = sampleW < W ? img.copyResize(photo, width: sampleW) : photo;
     final f = sampleW / W;
     double lumaAt(double px, double py) {
       final x = px.round(), y = py.round();
       if (x < 0 || y < 0 || x >= sImg.width || y >= sImg.height) return 255;
       final p = sImg.getPixel(x, y);
-      return (p.r * 299 + p.g * 587 + p.b * 114) >> 10;
+      return (p.r * 299 + p.g * 587 + p.b * 114).toInt() >> 10;
     }
 
     double inkOf(OmrBubble bubble) {
