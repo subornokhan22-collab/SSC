@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/omr/omr_geometry.dart';
 import '../services/omr/omr_scanner.dart';
 import '../services/omr/omr_store.dart';
+import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
@@ -23,10 +24,14 @@ class OMrScannerScreen extends StatefulWidget {
   /// Paper title used on the scorecard (and for the key draft).
   final String paperTitle;
 
+  /// Subject name, pre-filled when the scanner is opened from a saved paper.
+  final String initialSubject;
+
   const OMrScannerScreen({
     super.key,
     this.initialKey,
     this.paperTitle = '',
+    this.initialSubject = '',
   });
 
   @override
@@ -51,6 +56,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   List<OmScanRecord> _history = const [];
 
+  // ── batch (whole-class) scan state ──
+  bool _batchMode = false;
+  final List<OmScanRecord> _batch = [];
+  String? _batchProgress;
+  List<OmScanRecord>? _batchDone;
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +73,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _key = List<int>.filled(30, -1);
     }
     _titleCtrl = TextEditingController(text: widget.paperTitle);
-    _subjectCtrl = TextEditingController();
+    _subjectCtrl = TextEditingController(text: widget.initialSubject);
     _loadHistory();
   }
 
@@ -150,7 +161,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       }
       final graded = OMrScanner.grade(res, _key);
       final overlay = await _buildOverlay(res, graded);
-      await OmrStore.addRecord(_recordOf(res, graded));
+      final rec = _recordOf(res, graded);
+      await OmrStore.addRecord(rec);
+      if (_batchMode) _batch.add(rec);
       if (!mounted) return;
       setState(() {
         _result = res;
@@ -379,6 +392,15 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       label: const Text('Change / remove photo'),
                     ),
                   ],
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _busy ? null : _batchDialog,
+                      icon: const Icon(Icons.groups_rounded, size: 18),
+                      label: const Text('Batch scan (whole class)'),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -415,6 +437,15 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                             decoration:
                                 const InputDecoration(labelText: 'Subject (optional)'))),
                   ]),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _busy ? null : _pickSavedPaper,
+                      icon: const Icon(Icons.bookmarks_rounded, size: 18),
+                      label: const Text('Use saved paper (key auto-loads)'),
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   Row(children: [
                     const Text('মোট প্রশ্ন',
@@ -448,14 +479,61 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 ],
               ),
             ),
+            if (_photoBytes != null) ...[
+              const SizedBox(height: 12),
+              AppButton(
+                label: 'Scan & grade this sheet',
+                icon: Icons.qr_code_scanner_rounded,
+                onPressed: _busy ? null : _scan,
+              ),
+            ],
+            if (_batchMode) ...[
+              const SizedBox(height: 12),
+              GlassCard(
+                padding: const EdgeInsets.all(14),
+                highlighted: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const Icon(Icons.groups_rounded,
+                          color: AppTheme.primary, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Batch scan on — ${_batch.length} sheet(s) graded. Scan the next student, then finish.',
+                          style: const TextStyle(
+                              fontSize: 12.5, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ]),
+                    const SizedBox(height: 10),
+                    Row(children: [
+                      Expanded(
+                          child: AppButton(
+                              label: 'Cancel batch',
+                              icon: Icons.close_rounded,
+                              outlined: true,
+                              onPressed: _cancelBatch)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: AppButton(
+                              label: 'Finish batch',
+                              icon: Icons.flag_rounded,
+                              onPressed: _batch.isEmpty ? null : _finishBatch)),
+                    ]),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 14),
             if (_busy)
-              const Padding(
-                padding: EdgeInsets.all(24),
+              Padding(
+                padding: const EdgeInsets.all(24),
                 child: Row(children: [
-                  CircularProgressIndicator(color: AppTheme.primary),
-                  SizedBox(width: 14),
-                  Text('শিট পড়া হচ্ছে...'),
+                  const CircularProgressIndicator(color: AppTheme.primary),
+                  const SizedBox(width: 14),
+                  Text(_batchProgress ?? 'শিট পড়া হচ্ছে...'),
                 ]),
               ),
             if (result != null && graded != null) ...[
@@ -525,6 +603,40 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                             icon: const Icon(Icons.person_rounded, size: 18),
                             label: const Text(
                                 "Scan next student's OMR sheet"))),
+                  ],
+                ),
+              ),
+            ],
+            // ── batch results ──
+            if (_batchDone != null && _batchDone!.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              GlassCard(
+                padding: const EdgeInsets.all(16),
+                highlighted: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const Expanded(
+                          child: Text(
+                        'Batch results',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w900),
+                      )),
+                      TextButton(
+                          onPressed: _closeBatchResults,
+                          child: const Text('Close')),
+                    ]),
+                    const SizedBox(height: 8),
+                    _batchSummary(),
+                    const SizedBox(height: 10),
+                    for (var i = 0; i < _batchDone!.length; i++)
+                      _batchRow(i, _batchDone![i]),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Every result is also saved in the scan history below.',
+                      style: TextStyle(fontSize: 11, color: AppTheme.muted),
+                    ),
                   ],
                 ),
               ),
@@ -621,6 +733,92 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 fontSize: 11, fontWeight: FontWeight.w700, color: color)),
       );
 
+  // ── batch results helpers ──
+
+  double _pct(OmScanRecord r) => r.score * 100.0 / math.max(1, r.total);
+
+  Widget _batchSummary() {
+    final items = _batchDone!;
+    final n = items.length;
+    final avg = items.fold<double>(0, (s, r) => s + _pct(r)) / n;
+    var best = items.first;
+    var low = items.first;
+    for (final r in items) {
+      if (_pct(r) > _pct(best)) best = r;
+      if (_pct(r) < _pct(low)) low = r;
+    }
+    return Wrap(spacing: 8, runSpacing: 8, children: [
+      _chip('Sheets $n', AppTheme.primaryDark),
+      _chip('Avg ${avg.toStringAsFixed(1)}%', AppTheme.primary),
+      _chip('Best ${best.score}/${best.total}', AppTheme.success),
+      _chip('Lowest ${low.score}/${low.total}', AppTheme.warning),
+    ]);
+  }
+
+  Widget _batchRow(int i, OmScanRecord r) {
+    final pass = _pct(r) >= 50;
+    return InkWell(
+      onTap: () => _showRecord(r),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.border),
+        ),
+        child: Row(children: [
+          SizedBox(
+              width: 20,
+              child: Text('${i + 1}',
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: AppTheme.muted))),
+          const SizedBox(width: 8),
+          Expanded(
+              child: Text(r.roll.isEmpty ? 'Roll —' : 'Roll ${r.roll}',
+                  style: const TextStyle(
+                      fontSize: 12.5, fontWeight: FontWeight.w700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis)),
+          const SizedBox(width: 8),
+          Text('${r.correct}✓',
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.success)),
+          const SizedBox(width: 8),
+          Text('${r.wrong}✗',
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.danger)),
+          const SizedBox(width: 8),
+          Text('${r.blank}·',
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.muted)),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            decoration: BoxDecoration(
+              color:
+                  (pass ? AppTheme.success : AppTheme.warning).withOpacity(.14),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                  color: pass ? AppTheme.success : AppTheme.warning),
+            ),
+            child: Text('${r.score}/${r.total}',
+                style: const TextStyle(
+                    fontSize: 12.5, fontWeight: FontWeight.w800)),
+          ),
+        ]),
+      ),
+    );
+  }
+
   Widget _keyGrid() {
     return GridView.builder(
       shrinkWrap: true,
@@ -684,6 +882,161 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   void _clearKey() {
     setState(() => _key = List<int>.filled(_total, -1));
+  }
+
+  // ── saved-paper link (no manual key entry) ──────────────────────
+
+  /// Opens the list of papers saved from the in-app builder and loads the
+  /// chosen one's title, subject, total and full answer key.
+  Future<void> _pickSavedPaper() async {
+    final papers = await PaperLibrary.loadSavedPapers();
+    if (papers.isEmpty) {
+      _snack('No saved papers yet. Generate a paper and tap "Save paper".');
+      return;
+    }
+    if (!mounted) return;
+    final p = await showDialog<SavedPaper>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Use a saved paper'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                for (final sp in papers)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(sp.title,
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    subtitle: Text(
+                        '${sp.subject} • ${sp.total} questions'
+                        '${sp.setCode != '—' ? ' • set ${sp.setCode}' : ''}'),
+                    onTap: () => Navigator.pop(c, sp),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+        ],
+      ),
+    );
+    if (p == null) return;
+    setState(() {
+      _total = p.total;
+      _key = List<int>.of(p.key);
+      _titleCtrl.text = p.title;
+      _subjectCtrl.text = p.subject;
+      _result = null;
+      _graded = null;
+      _overlayJpg = null;
+    });
+    _snack('Answer key loaded — ${p.total} questions, ready to scan.');
+  }
+
+  // ── batch (whole-class) scan ────────────────────────────────────
+
+  /// Entry point for batch scanning: pick the source for the whole class.
+  Future<void> _batchDialog() async {
+    if (_key.any((k) => k < 0)) {
+      _snack('Complete the answer key first — or tap "Use saved paper".');
+      return;
+    }
+    final mode = await showDialog<String>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Batch scan'),
+        content: const Text(
+            'Every sheet is graded with the current answer key and saved to the scan history.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+          FilledButton.icon(
+            icon: const Icon(Icons.photo_library_rounded, size: 18),
+            label: const Text('Gallery (pick many)'),
+            onPressed: () => Navigator.pop(c, 'gallery'),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.photo_camera_rounded, size: 18),
+            label: const Text('Camera (one by one)'),
+            onPressed: () => Navigator.pop(c, 'camera'),
+          ),
+        ],
+      ),
+    );
+    if (mode == 'gallery') {
+      await _runBatchGallery();
+    } else if (mode == 'camera' && mounted) {
+      setState(() {
+        _batchMode = true;
+        _batch = [];
+        _batchDone = null;
+      });
+      _snack('Batch mode on — scan each student, then tap Finish batch.');
+    }
+  }
+
+  /// Gallery batch: pick many photos at once, scan + grade each in order.
+  Future<void> _runBatchGallery() async {
+    final picked =
+        await ImagePicker().pickMultiImage(imageQuality: 90, maxWidth: 4096);
+    if (picked.isEmpty || !mounted) return;
+    final items = <OmScanRecord>[];
+    setState(() {
+      _busy = true;
+      _batchProgress = 'Scanning 0/${picked.length}…';
+    });
+    var idx = 0;
+    for (final f in picked) {
+      idx++;
+      if (!mounted) return;
+      setState(() => _batchProgress = 'Scanning $idx/${picked.length}…');
+      try {
+        final bytes = await f.readAsBytes();
+        final res = await OMrScanner.scan(bytes, total: _total);
+        if (!res.ok) continue; // unreadable sheet — skip, keep going
+        final g = OMrScanner.grade(res, _key);
+        final rec = _recordOf(res, g);
+        items.add(rec);
+        await OmrStore.addRecord(rec);
+      } catch (_) {
+        // Skip this sheet and continue the batch.
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _batchProgress = null;
+      _batchDone = items;
+      _batchMode = false;
+    });
+    _loadHistory();
+    if (items.isEmpty) {
+      _snack('No sheet could be read. Check the photos and try again.');
+    }
+  }
+
+  void _finishBatch() {
+    setState(() {
+      _batchDone = _batch;
+      _batchMode = false;
+      _batch = [];
+    });
+  }
+
+  void _cancelBatch() {
+    setState(() {
+      _batchMode = false;
+      _batch = [];
+    });
+  }
+
+  void _closeBatchResults() {
+    setState(() => _batchDone = null);
   }
 
   Widget _verdictGrid(OmGraded g) {

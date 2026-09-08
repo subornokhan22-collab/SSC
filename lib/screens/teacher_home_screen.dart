@@ -150,9 +150,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               ),
               _ActionTile(
                 icon: Icons.photo_library_rounded,
-                title: 'আমার প্রশ্নপত্র (Question Papers)',
+                title: 'Question Papers',
                 subtitle:
-                    'Add your own papers as photos or PDFs — view, print, share',
+                    'Saved papers with answer keys + your uploaded photos/PDFs',
                 accentIndex: 2,
                 onTap: () => _open(const PapersLibraryScreen()),
               ),

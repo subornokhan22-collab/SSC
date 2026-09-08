@@ -15,6 +15,7 @@ import '../services/english_paper_adapter.dart';
 import '../services/general_math_board_pattern.dart';
 import '../services/ict_board_pattern.dart';
 import '../services/paper_license.dart';
+import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
 import '../services/chapter_source_service.dart';
@@ -1071,6 +1072,48 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     }
   }
 
+  /// Saves the generated test (title, subject, set + every MCQ with its
+  /// correct option) to the Question Papers library → Saved tab, so the OMR
+  /// scanner can grade sheets against it without retyping the key.
+  Future<void> _savePaper() async {
+    if (_mcqs.isEmpty || _subject == null) return;
+    try {
+      final sp = SavedPaper(
+        id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
+        title: _titleText,
+        subject: _subject!.bengaliName,
+        subjectId: _subject!.id,
+        subjectCode: _subjectCodes[_subject!.id] ?? '',
+        setCode: _setLetter,
+        total: _mcqs.length,
+        key: _mcqs.map((q) => q.correctIndex).toList(),
+        questions: [
+          for (final q in _mcqs)
+            SavedQuestion(
+              text: q.questionText,
+              options: q.options,
+              answer: q.correctIndex,
+            ),
+        ],
+        createdAt: DateTime.now(),
+      );
+      await PaperLibrary.addSavedPaper(sp);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Paper saved. Open Question Papers → Saved, or pick it in the OMR Scanner.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Save failed: $e')));
+      }
+    }
+  }
+
   /// Opens the OMR scanner pre-loaded with this paper's answer key.
   void _scanAnswers() {
     Navigator.push(
@@ -1648,6 +1691,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                             onPressed: _print)),
                   ]),
                   if (_mcqs.isNotEmpty && !_isEnglish) ...[
+                    const SizedBox(height: 10),
+                    AppButton(
+                        label: 'Save paper (with answer key)',
+                        icon: Icons.save_rounded,
+                        outlined: true,
+                        onPressed: _savePaper),
                     const SizedBox(height: 10),
                     SizedBox(
                         width: double.infinity,

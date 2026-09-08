@@ -32,7 +32,8 @@ class PaperEntry {
     required this.createdAt,
   });
 
-  String get kindLabel => kind == 'pdf' ? 'PDF' : 'ছবি';
+  String get kindLabel =>
+      kind == 'pdf' ? 'PDF' : (kind == 'saved' ? 'Saved' : 'ছবি');
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -51,6 +52,93 @@ class PaperEntry {
         year: m['year'] as String? ?? '',
         kind: m['kind'] as String? ?? 'images',
         pages: m['pages'] as int? ?? 1,
+        createdAt:
+            DateTime.tryParse(m['createdAt'] as String? ?? '') ??
+                DateTime.now(),
+      );
+}
+
+/// One MCQ of a saved paper (kept so the key can be verified on screen).
+class SavedQuestion {
+  final String text;
+  final List<String> options;
+  final int answer; // 0–3
+
+  const SavedQuestion({
+    required this.text,
+    required this.options,
+    required this.answer,
+  });
+
+  Map<String, dynamic> toJson() =>
+      {'text': text, 'options': options, 'answer': answer};
+
+  static SavedQuestion fromJson(Map<String, dynamic> m) => SavedQuestion(
+        text: m['text'] as String? ?? '',
+        options: (m['options'] as List? ?? const [])
+            .map((e) => e.toString())
+            .toList(),
+        answer: (m['answer'] as num? ?? 0).toInt(),
+      );
+}
+
+/// A question paper saved from the in-app builder (Question Paper / Custom
+/// Paper screen). Unlike the photo/PDF uploads, a saved paper carries its
+/// MCQ list and answer key, so the OMR scanner can grade sheets against it
+/// without the teacher retyping the key.
+class SavedPaper {
+  final String id;
+  final String title;
+  final String subject; // display name
+  final String subjectId;
+  final String subjectCode; // e.g. ১০৯
+  final String setCode; // ক/খ/গ/ঘ or '—'
+  final int total;
+  final List<int> key; // option index (0–3) per MCQ
+  final List<SavedQuestion> questions;
+  final DateTime createdAt;
+
+  const SavedPaper({
+    required this.id,
+    required this.title,
+    required this.subject,
+    required this.subjectId,
+    required this.subjectCode,
+    required this.setCode,
+    required this.total,
+    required this.key,
+    required this.questions,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'subject': subject,
+        'subjectId': subjectId,
+        'subjectCode': subjectCode,
+        'setCode': setCode,
+        'total': total,
+        'key': key,
+        'questions': [for (final q in questions) q.toJson()],
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  static SavedPaper fromJson(Map<String, dynamic> m) => SavedPaper(
+        id: m['id'] as String? ?? '',
+        title: m['title'] as String? ?? '',
+        subject: m['subject'] as String? ?? '',
+        subjectId: m['subjectId'] as String? ?? '',
+        subjectCode: m['subjectCode'] as String? ?? '',
+        setCode: m['setCode'] as String? ?? '—',
+        total: m['total'] as int? ?? 0,
+        key: (m['key'] as List? ?? const [])
+            .map((e) => (e as num).toInt())
+            .toList(),
+        questions: (m['questions'] as List? ?? const [])
+            .map((e) =>
+                SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
+            .toList(),
         createdAt:
             DateTime.tryParse(m['createdAt'] as String? ?? '') ??
                 DateTime.now(),
@@ -173,6 +261,52 @@ class PaperLibrary {
     if (dir.existsSync()) dir.deleteSync(recursive: true);
     final all = (await loadEntries())..removeWhere((e) => e.id == id);
     await _saveEntries(all);
+  }
+
+  /// Stores a paper saved from the in-app builder (MCQ list + answer key).
+  static Future<void> addSavedPaper(SavedPaper paper) async {
+    final dir = await _dirFor(paper.id);
+    await File('${dir.path}${Platform.pathSeparator}paper.json')
+        .writeAsString(json.encode(paper.toJson()));
+    final entry = PaperEntry(
+      id: paper.id,
+      title: paper.title,
+      subject: paper.subject,
+      year: '',
+      kind: 'saved',
+      pages: 0,
+      createdAt: paper.createdAt,
+    );
+    final all = await loadEntries();
+    await _saveEntries([entry, ...all]);
+  }
+
+  /// The saved paper (with its answer key) stored under entry [id], if any.
+  static Future<SavedPaper?> savedPaper(String id) async {
+    final f =
+        File((await _dirFor(id)).path + Platform.pathSeparator + 'paper.json');
+    if (!f.existsSync()) return null;
+    try {
+      return SavedPaper.fromJson(
+          (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>());
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// All papers saved from the in-app builder (newest first) — the source
+  /// list for the OMR scanner's answer-key picker. Photo/PDF uploads are
+  /// intentionally excluded.
+  static Future<List<SavedPaper>> loadSavedPapers() async {
+    final entries =
+        (await loadEntries()).where((e) => e.kind == 'saved').toList();
+    final out = <SavedPaper>[];
+    for (final e in entries) {
+      final p = await savedPaper(e.id);
+      if (p != null) out.add(p);
+    }
+    out.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return out;
   }
 
   static Future<Uint8List?> pageBytes(String id, int page) async {

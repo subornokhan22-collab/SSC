@@ -9,11 +9,14 @@ import 'package:printing/printing.dart';
 import '../models/subject_info.dart';
 import '../services/paper_library.dart';
 import '../theme/app_theme.dart';
-import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
+import 'omr_scanner_screen.dart';
 
-/// আমার প্রশ্নপত্র — the tutor's own past/model question papers, added as
-/// photos (one per page) or as PDFs, browsable inside the app and printable.
+/// Question Papers — two lists:
+///  • Saved: papers saved from the in-app builder (with their answer keys) —
+///    these feed the OMR scanner directly.
+///  • Added: the tutor's own past/model papers uploaded as photos or PDFs
+///    (view, print, share).
 class PapersLibraryScreen extends StatefulWidget {
   const PapersLibraryScreen({super.key});
 
@@ -21,22 +24,36 @@ class PapersLibraryScreen extends StatefulWidget {
   State<PapersLibraryScreen> createState() => _PapersLibraryScreenState();
 }
 
-class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
+class _PapersLibraryScreenState extends State<PapersLibraryScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabs;
   List<PaperEntry> _entries = const [];
+  List<SavedPaper> _saved = const [];
   bool _loading = true;
   bool _busyAdd = false;
 
   @override
   void initState() {
     super.initState();
+    _tabs = TabController(length: 2, vsync: this);
     _reload();
   }
 
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
+  }
+
   Future<void> _reload() async {
-    final list = await PaperLibrary.loadEntries();
+    final all = await PaperLibrary.loadEntries();
+    final saved = await PaperLibrary.loadSavedPapers();
     if (mounted) {
       setState(() {
-        _entries = list;
+        // The Added tab lists photo/PDF uploads only; saved papers live in
+        // their own tab (with answer keys) and feed the OMR scanner.
+        _entries = all.where((e) => e.kind != 'saved').toList();
+        _saved = saved;
         _loading = false;
       });
     }
@@ -45,6 +62,178 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
+
+  // ── Saved tab ───────────────────────────────────────────────────
+
+  /// Opens the OMR scanner with this paper's answer key pre-loaded — the
+  /// teacher does not have to fill the key manually.
+  Future<void> _scanWith(SavedPaper p) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OMrScannerScreen(
+          initialKey: p.key,
+          paperTitle: p.title,
+          initialSubject: p.subject,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showKey(SavedPaper p) async {
+    const letters = ['ক', 'খ', 'গ', 'ঘ'];
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text('Answer key — ${p.title}',
+            overflow: TextOverflow.ellipsis),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(spacing: 12, runSpacing: 6, children: [
+                  for (var i = 0; i < p.key.length; i++)
+                    Text('${i + 1}. ${letters[p.key[i] % 4]}',
+                        style: const TextStyle(
+                            fontSize: 13.5, fontWeight: FontWeight.w700)),
+                ]),
+                if (p.questions.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Divider(height: 16),
+                  for (var i = 0;
+                      i < p.questions.length && i < p.key.length;
+                      i++)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Text('${i + 1}. ${p.questions[i].text}',
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteSaved(SavedPaper p) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Delete this paper?'),
+        content: Text('"${p.title}" and its answer key will be removed.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Cancel')),
+          FilledButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Delete')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await PaperLibrary.deleteEntry(p.id);
+    _reload();
+  }
+
+  Widget _savedCard(SavedPaper p) {
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      child: Row(children: [
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: AppTheme.primary.withOpacity(.10),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppTheme.primary.withOpacity(.35)),
+          ),
+          child: const Icon(Icons.key_rounded,
+              color: AppTheme.primary, size: 22),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(p.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          Wrap(spacing: 6, runSpacing: 4, children: [
+            _pill(p.subject),
+            _pill('${p.total} questions'),
+            if (p.setCode.isNotEmpty && p.setCode != '—')
+              _pill('Set ${p.setCode}'),
+            if (p.subjectCode.isNotEmpty) _pill(p.subjectCode),
+          ]),
+          const SizedBox(height: 4),
+          Text(_date(p.createdAt),
+              style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
+        ])),
+        Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _iconBtn(Icons.qr_code_scanner_rounded, 'Scan OMR',
+                  () => _scanWith(p)),
+              _iconBtn(Icons.key_rounded, 'View answers', () => _showKey(p)),
+              _iconBtn(Icons.delete_outline_rounded, 'Delete',
+                  () => _deleteSaved(p), color: AppTheme.danger),
+            ]),
+      ]),
+    );
+  }
+
+  Widget _savedTab() {
+    if (_loading) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.primary));
+    }
+    if (_saved.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.bookmarks_rounded,
+                size: 54, color: AppTheme.primary),
+            const SizedBox(height: 14),
+            const Text('No saved papers yet',
+                style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 6),
+            const Text(
+              'Generate a paper (Chapter-wise / Full Model Test / Custom)\n'
+              'and tap "Save paper" — its answer key is kept here so the\n'
+              'OMR Scanner grades sheets without retyping the key.',
+              textAlign: TextAlign.center,
+              style:
+                  TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.5),
+            ),
+          ]),
+        ),
+      );
+    }
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics()),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
+      itemCount: _saved.length,
+      itemBuilder: (context, i) => _savedCard(_saved[i]),
+    );
+  }
+
+  // ── Added tab (photos / PDFs — unchanged behaviour) ─────────────
 
   Future<void> _addDialog() async {
     final titleCtrl = TextEditingController();
@@ -154,6 +343,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       await PaperLibrary.addFromImages(
           title: title, subject: subject, year: year, pages: bytes);
       _snack('${bytes.length}-page paper added.');
+      _tabs.animateTo(1);
       await _reload();
     } catch (e) {
       _snack('Could not add: $e');
@@ -183,6 +373,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
       await PaperLibrary.addFromPdf(
           title: title, subject: subject, year: year, bytes: bytes);
       _snack('PDF paper added.');
+      _tabs.animateTo(1);
       await _reload();
     } catch (e) {
       _snack('Could not add: $e');
@@ -216,7 +407,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
     if (!mounted) return;
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => _PaperViewer(title: e.title, pages: thumbs)),
+      MaterialPageRoute(
+          builder: (_) => _PaperViewer(title: e.title, pages: thumbs)),
     );
   }
 
@@ -257,31 +449,53 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
     _reload();
   }
 
+  // ── UI ──────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('আমার প্রশ্নপত্র')),
+      appBar: AppBar(title: const Text('Question Papers')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
         icon: const Icon(Icons.add_photo_alternate_rounded),
         label: const Text('Add'),
       ),
       body: SafeArea(
-        child: RefreshIndicator(
-          color: AppTheme.primary,
-          onRefresh: _reload,
-          child: _loading
-              ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
-              : _entries.isEmpty
-                  ? _empty()
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics()),
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
-                      itemCount: _entries.length,
-                      itemBuilder: (context, i) => _card(_entries[i]),
-                    ),
-        ),
+        child: Column(children: [
+          TabBar(
+            controller: _tabs,
+            tabs: const [
+              Tab(text: 'Saved'),
+              Tab(text: 'Added'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabs,
+              children: [
+                _savedTab(),
+                RefreshIndicator(
+                  color: AppTheme.primary,
+                  onRefresh: _reload,
+                  child: _loading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              color: AppTheme.primary))
+                      : _entries.isEmpty
+                          ? _empty()
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                  parent: BouncingScrollPhysics()),
+                              padding:
+                                  const EdgeInsets.fromLTRB(16, 10, 16, 90),
+                              itemCount: _entries.length,
+                              itemBuilder: (context, i) => _card(_entries[i]),
+                            ),
+                ),
+              ],
+            ),
+          ),
+        ]),
       ),
     );
   }
@@ -301,7 +515,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
             'Add your own board/model papers as photos or PDF —\n'
             'view, print or share them inside the app.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.5),
+            style:
+                TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.5),
           ),
         ]),
       ),
@@ -320,7 +535,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
         ),
         const SizedBox(width: 12),
         Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(e.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -382,7 +598,9 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen> {
         ),
         child: Text(text,
             style: const TextStyle(
-                fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.primaryDark)),
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.primaryDark)),
       );
 
   Widget _iconBtn(IconData icon, String label, VoidCallback onTap,

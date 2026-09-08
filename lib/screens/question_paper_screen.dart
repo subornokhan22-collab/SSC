@@ -6,6 +6,7 @@ import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/app_style.dart';
 import '../services/paper_license.dart';
+import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
 import 'subscription_screen.dart';
@@ -1576,28 +1577,84 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ],
       );
     }
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: AppButton(
-            label: 'উত্তরমালা',
-            icon: Icons.key_rounded,
+        Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                label: 'উত্তরমালা',
+                icon: Icons.key_rounded,
+                outlined: true,
+                onPressed: _isPro
+                    ? () => setState(() => _showAnswerKey = !_showAnswerKey)
+                    : _showUnlockDialog,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: AppButton(
+                label: 'PDF / Print',
+                icon: Icons.print_rounded,
+                onPressed: _onPrintTap,
+              ),
+            ),
+          ],
+        ),
+        // Save keeps the paper + its answer key so the OMR scanner can
+        // grade sheets against it without retyping the key.
+        if (_generated && _mcqs.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          AppButton(
+            label: 'Save paper (with answer key)',
+            icon: Icons.save_rounded,
             outlined: true,
-            onPressed: _isPro
-                ? () => setState(() => _showAnswerKey = !_showAnswerKey)
-                : _showUnlockDialog,
+            onPressed: _savePaper,
           ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: AppButton(
-            label: 'PDF / Print',
-            icon: Icons.print_rounded,
-            onPressed: _onPrintTap,
-          ),
-        ),
+        ],
       ],
     );
+  }
+
+  /// Saves the generated paper (title, subject, set + every MCQ with its
+  /// correct option) to the Question Papers library → Saved tab.
+  Future<void> _savePaper() async {
+    if (_mcqs.isEmpty || _subject == null) return;
+    try {
+      final sp = SavedPaper(
+        id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
+        title: _titleText,
+        subject: _subject!.bengaliName,
+        subjectId: _subject!.id,
+        subjectCode: _subjectCodes[_subject!.id] ?? '',
+        setCode: _setLetter,
+        total: _mcqs.length,
+        key: _mcqs.map((q) => q.correctIndex).toList(),
+        questions: [
+          for (final q in _mcqs)
+            SavedQuestion(
+              text: q.questionText,
+              options: q.options,
+              answer: q.correctIndex,
+            ),
+        ],
+        createdAt: DateTime.now(),
+      );
+      await PaperLibrary.addSavedPaper(sp);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Paper saved. Open Question Papers → Saved, or pick it in the OMR Scanner.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Save failed: $e')));
+      }
+    }
   }
 
   /// Answer keys keep the printed-sheet look (white paper, dark ink) so they
