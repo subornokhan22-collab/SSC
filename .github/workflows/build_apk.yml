@@ -32,7 +32,13 @@ jobs:
         run: dart run flutter_launcher_icons
 
       - name: Build APK
-        run: flutter build apk --release --split-per-abi
+        run: |
+          set -o pipefail
+          flutter build apk --release --split-per-abi 2>&1 | tee build.log || {
+            echo "::error title=APK build failed (last lines)::$(tail -n 60 build.log | tr '\n' ' ' | head -c 4000)"
+            tail -n 60 build.log
+            exit 1
+          }
 
       - name: Upload APK to Releases (no storage quota!)
         env:
