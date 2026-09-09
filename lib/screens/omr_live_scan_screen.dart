@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' show FillType;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';

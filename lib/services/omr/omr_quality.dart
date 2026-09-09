@@ -169,7 +169,8 @@ class OmQuality {
 
     // Extreme points of the largest component = the sheet corners.
     var s0 = 1e18, s1 = 1e18, s2 = 1e18, s3 = 1e18;
-    var x0 = 0, y0 = 0, x1 = 0, y1 = 0, x2 = 0, y2 = 0, x3 = 0, y3 = 0;
+    var x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
+    var x3 = 0.0, y3 = 0.0;
     var minX = w, maxX = 0, minY = h, maxY = 0;
     for (var y = 0; y < h; y++) {
       final row = y * w;
