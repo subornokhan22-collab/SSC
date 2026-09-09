@@ -31,8 +31,17 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   int _streak = 0;
   DateTime _lastAnalyzed = DateTime.fromMillisecondsSinceEpoch(0);
 
+  /// Stream health: some phones deliver no image-stream frames at all
+  /// (preview works, analysis doesn't). A watchdog flips [_streamDead] so
+  /// the guide stops pretending to be live and tells the user to frame
+  /// manually and use the shutter.
+  int _framesSeen = 0;
+  bool _streamDead = false;
+  Timer? _streamWatchdog;
+
   static const _readyStreak = 15; // ~1 s of good frames at the throttle rate
   static const _minFrameGap = Duration(milliseconds: 66);
+  static const _streamDeadline = Duration(milliseconds: 2500);
 
   @override
   void initState() {
@@ -45,7 +54,10 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     setState(() {
       _starting = true;
       _error = null;
+      _framesSeen = 0;
+      _streamDead = false;
     });
+    _streamWatchdog?.cancel();
     try {
       final cameras = await availableCameras();
       final back = cameras.firstWhere(
@@ -72,6 +84,14 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
         } catch (_) {
           // Preview keeps working; auto-capture just won't kick in.
         }
+        // If no frame has arrived within a couple of seconds, this phone
+        // isn't streaming — say so instead of showing a frozen guide.
+        _streamWatchdog = Timer(_streamDeadline, () {
+          if (!mounted || _framesSeen > 0) return;
+          setState(() => _streamDead = true);
+        });
+      } else {
+        _streamDead = true;
       }
       setState(() => _starting = false);
     } catch (e) {
@@ -100,7 +120,17 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     final now = DateTime.now();
     if (now.difference(_lastAnalyzed) < _minFrameGap) return;
     _lastAnalyzed = now;
-    final q = OmQuality.analyze(frame);
+    OmFrameQuality q;
+    try {
+      q = OmQuality.analyze(frame);
+    } catch (_) {
+      return; // skip a malformed frame; keep the last guidance
+    }
+    if (_framesSeen == 0) {
+      _streamWatchdog?.cancel();
+      if (mounted && _streamDead) setState(() => _streamDead = false);
+    }
+    _framesSeen++;
     final prev = _quality;
     _quality = q;
     _streak = q.ready ? _streak + 1 : 0;
@@ -172,6 +202,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _streamWatchdog?.cancel();
     final controller = _controller;
     _controller = null;
     if (controller != null) unawaited(_teardown(controller));
@@ -210,8 +241,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
             CameraPreview(controller),
             Positioned.fill(
                 child: CustomPaint(
-                    painter: _GuidePainter(quality: _quality, streak: _streak,
-                        readyStreak: _readyStreak),
+                    painter: _GuidePainter(
+                        quality: _quality,
+                        streak: _streak,
+                        readyStreak: _readyStreak,
+                        streamDead: _streamDead),
                     child: const SizedBox.expand())),
           ],
           // Top bar.
@@ -310,9 +344,13 @@ class _GuidePainter extends CustomPainter {
   final OmFrameQuality? quality;
   final int streak;
   final int readyStreak;
+  final bool streamDead;
 
   _GuidePainter(
-      {required this.quality, required this.streak, required this.readyStreak});
+      {required this.quality,
+      required this.streak,
+      required this.readyStreak,
+      required this.streamDead});
 
   static const double _aspect = 1654 / 2339; // A4 (page width / height)
 
@@ -447,5 +485,6 @@ class _GuidePainter extends CustomPainter {
       old.quality?.paperFrac != quality?.paperFrac ||
       old.quality?.marks != quality?.marks ||
       old.quality?.ready != quality?.ready ||
-      old.streak != streak;
+      old.streak != streak ||
+      old.streamDead != streamDead;
 }
