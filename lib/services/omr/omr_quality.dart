@@ -1,4 +1,6 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
+import 'dart:ui' show Offset;
 
 import 'package:camera/camera.dart';
 
@@ -6,29 +8,41 @@ import 'package:camera/camera.dart';
 ///
 /// Runs on a downscaled copy of the camera's Y (luma) plane, so each frame
 /// costs a few milliseconds of Dart CPU. A frame is "ready" when the sheet
-/// is visible, reasonably sharp, and all four corner marks are found.
+/// is visible (its outline is found), reasonably sharp, and large enough.
 class OmFrameQuality {
   /// Laplacian variance of the downscaled luma (higher = sharper).
   final double sharpness;
 
-  /// Fraction of the frame that is bright "paper" (0..1).
+  /// Fraction of the frame covered by the largest paper region (0..1).
   final double paperFrac;
 
-  /// Number of corner marks found (0..4).
+  /// Number of corner marks found (0..4, estimated included).
   final int marks;
 
-  const OmFrameQuality({
+  /// The detected sheet outline — TL, TR, BR, BL in *native frame pixels* —
+  /// or null when no plausible sheet region exists.
+  final List<Offset>? quad;
+
+  /// Native resolution of the analysed frame (for the overlay transform).
+  final int frameW;
+  final int frameH;
+
+  OmFrameQuality({
     required this.sharpness,
     required this.paperFrac,
     required this.marks,
+    this.quad,
+    this.frameW = 0,
+    this.frameH = 0,
   });
 
-  bool get ready => paperFrac >= 0.30 && marks >= 4 && sharpness >= 40;
+  bool get ready =>
+      quad != null && paperFrac >= 0.25 && sharpness >= 40;
 
   /// Human-readable hint for the overlay (null when [ready]).
   String? get reason {
-    if (paperFrac < 0.30) return 'Center the sheet inside the frame';
-    if (marks < 4) return 'Keep all four corner squares visible';
+    if (quad == null) return 'Center the sheet inside the frame';
+    if (paperFrac < 0.25) return 'Bring the sheet closer';
     if (sharpness < 40) return 'Hold steady until it is sharp';
     return null;
   }
@@ -43,7 +57,7 @@ class OmQuality {
   /// supported; anything else reports not-ready.
   static OmFrameQuality analyze(CameraImage frame) {
     if (frame.format.group != ImageFormatGroup.yuv420) {
-      return const OmFrameQuality(sharpness: 0, paperFrac: 0, marks: 0);
+      return OmFrameQuality(sharpness: 0, paperFrac: 0, marks: 0);
     }
     final y = frame.planes.first;
     final fw = frame.width;
@@ -67,12 +81,8 @@ class OmQuality {
 
     final sharp = _laplacianVariance(g, _outW, outH);
     final otsuT = _otsu(g);
-    var paper = 0;
-    for (final v in g) {
-      if (v >= otsuT) paper++;
-    }
-    final paperFrac = paper / g.length;
     final dark = (otsuT * 0.55).round();
+    final (sheetFrac, quad) = _sheetQuad(g, _outW, outH, fw, fh, otsuT);
 
     final found = <List<int>?>[
       for (var c = 0; c < 4; c++) _findMarkCenter(g, _outW, outH, c, dark),
@@ -94,7 +104,134 @@ class OmQuality {
     }
     final marks = found.where((f) => f != null).length;
     return OmFrameQuality(
-        sharpness: sharp, paperFrac: paperFrac, marks: marks);
+        sharpness: sharp,
+        paperFrac: sheetFrac,
+        marks: marks,
+        quad: quad,
+        frameW: fw,
+        frameH: fh);
+  }
+
+  /// The four extreme corners (TL, TR, BR, BL) of the largest paper
+  /// component — the live bounding box for the sheet outline.
+  ///
+  /// Returns (fraction of the frame it covers, corners in native frame
+  /// pixels) and null corners when no plausible sheet region exists: the
+  /// region must be large, sheet-shaped (not an L-shaped blob), and its
+  /// four corners must be well spread out.
+  static (double, List<Offset>?) _sheetQuad(
+      Uint8List g, int w, int h, int nativeW, int nativeH, int otsuT) {
+    final total = w * h;
+    final label = Int32List(total); // 0 = not part of any paper component
+    final sizes = <int>[0];
+    final stack = <int>[];
+    var nextId = 1;
+    var bestSize = 0;
+    var bestLabel = 0;
+    for (var i = 0; i < total; i++) {
+      if (label[i] != 0 || g[i] < otsuT) continue;
+      final id = nextId++;
+      sizes.add(0);
+      stack.length = 0;
+      stack.add(i);
+      label[i] = id;
+      var size = 0;
+      while (stack.isNotEmpty) {
+        final p = stack.removeLast();
+        size++;
+        final x = p % w;
+        final y = p ~/ w;
+        if (x > 0 && label[p - 1] == 0 && g[p - 1] >= otsuT) {
+          label[p - 1] = id;
+          stack.add(p - 1);
+        }
+        if (x < w - 1 && label[p + 1] == 0 && g[p + 1] >= otsuT) {
+          label[p + 1] = id;
+          stack.add(p + 1);
+        }
+        if (y > 0 && label[p - w] == 0 && g[p - w] >= otsuT) {
+          label[p - w] = id;
+          stack.add(p - w);
+        }
+        if (y < h - 1 && label[p + w] == 0 && g[p + w] >= otsuT) {
+          label[p + w] = id;
+          stack.add(p + w);
+        }
+      }
+      sizes[id] = size;
+      if (size > bestSize) {
+        bestSize = size;
+        bestLabel = id;
+      }
+    }
+    final frac = bestSize / total.toDouble();
+    if (bestSize < total * 0.12) return (frac, null);
+
+    // Extreme points of the largest component = the sheet corners.
+    var s0 = 1e18, s1 = 1e18, s2 = 1e18, s3 = 1e18;
+    var x0 = 0, y0 = 0, x1 = 0, y1 = 0, x2 = 0, y2 = 0, x3 = 0, y3 = 0;
+    var minX = w, maxX = 0, minY = h, maxY = 0;
+    for (var y = 0; y < h; y++) {
+      final row = y * w;
+      for (var x = 0; x < w; x++) {
+        if (label[row + x] != bestLabel) continue;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+        final a = (x + y).toDouble();
+        if (a < s0) {
+          s0 = a;
+          x0 = x;
+          y0 = y;
+        }
+        final b = (-x + y).toDouble();
+        if (b < s1) {
+          s1 = b;
+          x1 = x;
+          y1 = y;
+        }
+        final c = (-x - y).toDouble();
+        if (c < s2) {
+          s2 = c;
+          x2 = x;
+          y2 = y;
+        }
+        final d = (x - y).toDouble();
+        if (d < s3) {
+          s3 = d;
+          x3 = x;
+          y3 = y;
+        }
+      }
+    }
+    final pts = [
+      Offset(x0, y0),
+      Offset(x1, y1),
+      Offset(x2, y2),
+      Offset(x3, y3),
+    ];
+    // Shoelace area — a real sheet is convex-ish (>= 55% of its bbox).
+    var area2 = 0.0;
+    for (var i = 0; i < 4; i++) {
+      final a = pts[i];
+      final b = pts[(i + 1) % 4];
+      area2 += a.dx * b.dy - b.dx * a.dy;
+    }
+    final quadArea = area2.abs() / 2;
+    final bboxArea = (maxX - minX + 1) * (maxY - minY + 1);
+    if (quadArea < bboxArea * 0.55) return (frac, null);
+    final spread = math.min(
+        math.max(x0, x1, x2, x3) - math.min(x0, x1, x2, x3),
+        math.max(y0, y1, y2, y3) - math.min(y0, y1, y2, y3));
+    if (spread < w * 0.4) return (frac, null);
+    if (quadArea < total * 0.12) return (frac, null);
+
+    final sx = nativeW / w.toDouble();
+    final sy = nativeH / h.toDouble();
+    return (frac, [
+      for (final p in pts) Offset(p.dx * sx, p.dy * sy),
+    ]);
   }
 
   static List<int>? _parallelogram(int missing, List<List<int>?> f) {

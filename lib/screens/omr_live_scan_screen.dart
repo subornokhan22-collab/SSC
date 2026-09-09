@@ -145,7 +145,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     final changed = prev == null ||
         prev.ready != q.ready ||
         prev.marks != q.marks ||
-        (prev.paperFrac >= 0.30) != (q.paperFrac >= 0.30) ||
+        (prev.quad == null) != (q.quad == null) ||
         (prev.sharpness >= 40) != (q.sharpness >= 40) ||
         now.difference(_lastUi) > const Duration(milliseconds: 400);
     if (changed && mounted) {
@@ -359,6 +359,49 @@ class _GuidePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
+    final q = quality;
+    final quad = q?.quad;
+
+    // ── Detected sheet: draw the live bounding box on its edges ──
+    if (quad != null && (q?.frameW ?? 0) > 0 && (q?.frameH ?? 0) > 0) {
+      final s = math.max(w / q!.frameW, h / q!.frameH);
+      final offX = (w - q.frameW * s) / 2;
+      final offY = (h - q.frameH * s) / 2;
+      final pts = <Offset>[
+        for (final p in quad) Offset(offX + p.dx * s, offY + p.dy * s),
+      ];
+      // Dim everything outside the detected sheet.
+      final path = Path()
+        ..addRect(Rect.fromLTWH(0, 0, w, h))
+        ..addPolygon(pts, true);
+      path.fillType = FillType.evenOdd;
+      canvas.drawPath(path, Paint()..color = const Color(0x73000000));
+      final ready = q.ready;
+      final color = ready ? const Color(0xFF57D9A3) : Colors.white;
+      final edge = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..strokeJoin = StrokeJoin.round
+        ..color = color;
+      for (var i = 0; i < 4; i++) {
+        canvas.drawLine(pts[i], pts[(i + 1) % 4], edge);
+      }
+      final dot = Paint()..color = color;
+      for (final p in pts) {
+        canvas.drawCircle(p, 7, dot);
+      }
+      // Status above the sheet (its bottom edge is usually near the
+      // screen bottom).
+      final topY = math.min(math.min(pts[0].dy, pts[1].dy),
+          math.min(pts[2].dy, pts[3].dy));
+      final textY = topY - 46;
+      if (textY > 70) {
+        _statusRow(canvas, w, q, textY);
+      }
+      return;
+    }
+
+    // ── No sheet yet: static A4 guide for framing ──
     // Largest A4-portrait guide that fits inside 82% of the *constraining*
     // side (on a portrait phone that's the width, on a short landscape
     // screen it's the height) — so the frame always fits on screen.
@@ -404,90 +447,105 @@ class _GuidePainter extends CustomPainter {
     canvas.drawLine(br + Offset(0, L), br, bracket);
 
     // Status row under the guide.
-    final q = quality;
     final textY = gy + gh + 26;
     if (textY < h - 120) {
-      final sheetOk = (q?.paperFrac ?? 0) >= 0.30;
-      final marks = q?.marks ?? 0;
-      final sharpOk = (q?.sharpness ?? 0) >= 40;
-      var x = gx + gw / 2 - 150;
-      final ty = TextPainter(
-        text: TextSpan(children: [
-          TextSpan(
-            text: '${sheetOk ? '✓' : '•'} Sheet',
-            style: TextStyle(
-                color: sheetOk ? const Color(0xFF57D9A3) : Colors.white70,
-                fontSize: 13,
-                fontWeight: FontWeight.w700),
-          ),
-          TextSpan(
-            text: '      ${marks >= 4 ? '✓' : '•'} Marks $marks/4',
-            style: TextStyle(
-                color: marks >= 4
-                    ? const Color(0xFF57D9A3)
-                    : Colors.white70,
-                fontSize: 13,
-                fontWeight: FontWeight.w700),
-          ),
-          TextSpan(
-            text: '      ${sharpOk ? '✓' : '•'} Sharp',
-            style: TextStyle(
-                color: sharpOk
-                    ? const Color(0xFF57D9A3)
-                    : Colors.white70,
-                fontSize: 13,
-                fontWeight: FontWeight.w700),
-          ),
-        ]),
-        textDirection: TextDirection.ltr,
-      )..layout(maxWidth: 320);
-      ty.paint(canvas, Offset(x, textY));
-
-      // Reason / progress line.
-      final reason = q?.reason;
-      final progress = (streak / readyStreak).clamp(0.0, 1.0);
-      if (reason != null) {
-        final tp = TextPainter(
-          text: TextSpan(text: reason,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 13, height: 1.3)),
-          textDirection: TextDirection.ltr,
-        )..layout(maxWidth: gw);
-        tp.paint(canvas, Offset(gx + (gw - tp.width) / 2, textY + 26));
-      } else {
-        // Ready: show the capture-progress bar.
-        final barW = gw * 0.5;
-        final barX = gx + (gw - barW) / 2;
-        final barY = textY + 30.0;
-        final bg = Paint()..color = Colors.white24;
-        canvas.drawRRect(
-            RRect.fromRectAndRadius(
-                Rect.fromLTWH(barX, barY, barW, 6),
-                const Radius.circular(3)),
-            bg);
-        final fg = Paint()..color = const Color(0xFF57D9A3);
-        canvas.drawRRect(
-            RRect.fromRectAndRadius(
-                Rect.fromLTWH(barX, barY, barW * progress, 6),
-                const Radius.circular(3)),
-            fg);
+      if (streamDead) {
+        // The phone isn't delivering analysis frames — be honest about
+        // it and fall back to manual framing with the static guide.
         final tp = TextPainter(
           text: const TextSpan(
-              text: 'Capturing when ready…',
+              text: 'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
               style: TextStyle(
-                  color: Colors.white, fontSize: 12, height: 1.3)),
+                  color: Colors.white, fontSize: 12.5, height: 1.35)),
           textDirection: TextDirection.ltr,
-        )..layout(maxWidth: gw);
-        tp.paint(canvas, Offset(gx + (gw - tp.width) / 2, barY + 12));
+        )..layout(maxWidth: w - 24);
+        tp.paint(canvas, Offset((w - tp.width) / 2, textY));
+        return;
       }
+      _statusRow(canvas, w, q, textY);
+    }
+  }
+
+  /// Shared status row: Sheet / Marks / Sharp indicators plus either the
+  /// fix-hint line or the auto-capture progress bar, centred on screen.
+  void _statusRow(Canvas canvas, double w, OmFrameQuality? q, double textY) {
+    final sheetOk = q?.quad != null;
+    final marks = q?.marks ?? 0;
+    final sharpOk = (q?.sharpness ?? 0) >= 40;
+    final ty = TextPainter(
+      text: TextSpan(children: [
+        TextSpan(
+          text: '${sheetOk ? '✓' : '•'} Sheet',
+          style: TextStyle(
+              color: sheetOk ? const Color(0xFF57D9A3) : Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w700),
+        ),
+        TextSpan(
+          text: '      ${marks >= 3 ? '✓' : '•'} Marks $marks/4',
+          style: TextStyle(
+              color: marks >= 3
+                  ? const Color(0xFF57D9A3)
+                  : Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w700),
+        ),
+        TextSpan(
+          text: '      ${sharpOk ? '✓' : '•'} Sharp',
+          style: TextStyle(
+              color: sharpOk
+                  ? const Color(0xFF57D9A3)
+                  : Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w700),
+        ),
+      ]),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: w - 16);
+    ty.paint(canvas, Offset((w - ty.width) / 2, textY));
+
+    // Reason / progress line.
+    final reason = q?.reason;
+    final progress = (streak / readyStreak).clamp(0.0, 1.0);
+    if (reason != null) {
+      final tp = TextPainter(
+        text: TextSpan(text: reason,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 13, height: 1.3)),
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: w - 32);
+      tp.paint(canvas, Offset((w - tp.width) / 2, textY + 26));
+    } else {
+      // Ready: show the capture-progress bar.
+      final barW = (w - 32) * 0.5;
+      final barX = (w - barW) / 2;
+      final barY = textY + 30.0;
+      final bg = Paint()..color = Colors.white24;
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(
+              Rect.fromLTWH(barX, barY, barW, 6),
+              const Radius.circular(3)),
+          bg);
+      final fg = Paint()..color = const Color(0xFF57D9A3);
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(
+              Rect.fromLTWH(barX, barY, barW * progress, 6),
+              const Radius.circular(3)),
+          fg);
+      final tp = TextPainter(
+        text: const TextSpan(
+            text: 'Capturing when ready…',
+            style: TextStyle(
+                color: Colors.white, fontSize: 12, height: 1.3)),
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: w - 32);
+      tp.paint(canvas, Offset((w - tp.width) / 2, barY + 12));
     }
   }
 
   @override
   bool shouldRepaint(_GuidePainter old) =>
-      old.quality?.paperFrac != quality?.paperFrac ||
-      old.quality?.marks != quality?.marks ||
-      old.quality?.ready != quality?.ready ||
+      old.quality != quality ||
       old.streak != streak ||
       old.streamDead != streamDead;
 }
