@@ -28,50 +28,11 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
-      - name: Bump version code (new builds install over the old app, data stays)
-        run: 'sed -i "s|^version:.*$|version: 1.0.0+${{ github.run_number }}|" pubspec.yaml'
-
       - name: Generate launcher icons (fixes missing app icon)
         run: dart run flutter_launcher_icons
 
       - name: Build APK
-        run: |
-          flutter build apk --release --split-per-abi 2>&1 | tee build.log
-          exit ${PIPESTATUS[0]}
-
-      - name: Report failure tail (diagnostic)
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          tail -c 24000 build.log > ci_failure_tail.log 2>/dev/null || true
-          python3 - <<'EOF'
-          import base64, json, os, urllib.request
-          try:
-              data = open('ci_failure_tail.log', 'rb').read()
-          except Exception:
-              data = b'(no build.log found)'
-          payload = {
-              'message': 'CI failure tail (auto)',
-              'content': base64.b64encode(data).decode(),
-              'branch': os.environ.get('BRANCH') or 'main'
-          }
-          req = urllib.request.Request(
-            f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/contents/ci_failure_tail.log",
-            data=json.dumps(payload).encode(),
-            headers={
-              'Authorization': f"token {os.environ['GH_TOKEN']}",
-              'Accept': 'application/vnd.github+json',
-              'Content-Type': 'application/json'
-            },
-            method='PUT')
-          try:
-              urllib.request.urlopen(req)
-              print('failure tail committed to ci_failure_tail.log')
-          except Exception as e:
-              print('upload failed:', e)
-          EOF
+        run: flutter build apk --release --split-per-abi
 
       - name: Upload APK to Releases (no storage quota!)
         env:

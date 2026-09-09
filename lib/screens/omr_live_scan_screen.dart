@@ -35,6 +35,10 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   int _streak = 0;
   DateTime _lastAnalyzed = DateTime.fromMillisecondsSinceEpoch(0);
 
+  /// Auto-capture on/off. When off, the box still shows readiness (green =
+  /// locked) but the user presses the shutter to capture.
+  bool _autoCapture = true;
+
   /// Stream health: some phones deliver no image-stream frames at all
   /// (preview works, analysis doesn't). A watchdog flips [_streamDead] so
   /// the guide stops pretending to be live and tells the user to frame
@@ -138,7 +142,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     final prev = _quality;
     _quality = q;
     _streak = q.ready ? _streak + 1 : 0;
-    if (q.ready && _streak >= _readyStreak && !_capturing) {
+    if (_autoCapture && q.ready && _streak >= _readyStreak && !_capturing) {
       _streak = 0;
       _capture();
       return;
@@ -313,7 +317,29 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                     ),
                   ),
                   const SizedBox(width: 18),
-                  const SizedBox(width: 96),
+                  GestureDetector(
+                    onTap: () =>
+                        setState(() => _autoCapture = !_autoCapture),
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+                      decoration: BoxDecoration(
+                        color: _autoCapture
+                            ? AppTheme.primary
+                            : Colors.black54,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: _autoCapture
+                                ? AppTheme.primary
+                                : Colors.white54),
+                      ),
+                      child: Text(_autoCapture ? 'Auto: ON' : 'Auto: OFF',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                  ),
                 ],
               ),
             ),

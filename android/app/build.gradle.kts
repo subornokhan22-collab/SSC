@@ -25,23 +25,11 @@ android {
         versionName = flutter.versionName
     }
 
-    // Declared BEFORE buildTypes: Kotlin DSL evaluates blocks in source
-    // order, so the release config must exist before buildTypes references it.
-    signingConfigs {
-        create("release") {
-            storeFile = file("../../keystore/tutorsdesk-release.keystore")
-            storePassword = "TUTORSDESK2027"
-            keyAlias = "tutorsdesk"
-            keyPassword = "TUTORSDESK2027"
-        }
-    }
-
     buildTypes {
         release {
-            // Stable release keystore (keystore/tutorsdesk-release.keystore in
-            // the repo) so every build has the SAME signature — new versions
-            // install over the old one without uninstalling (data survives).
-            signingConfig = signingConfigs.getByName("release")
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.getByName("debug")
 
             // Strip unused Java/Kotlin classes and shrink bundled resources.
             // Flutter ships default ProGuard rules for its own engine bindings.
