@@ -202,7 +202,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                       style: const TextStyle(
                           fontSize: 14,
                           height: 1.4,
-                          color: Colors.white87)),
+                          color: Colors.white70)),
                 ]),
               ),
             )
