@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -358,8 +359,10 @@ class _GuidePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    // Guide centred, 82% of the short side.
-    final gw = (h * _aspect) * 0.82;
+    // Largest A4-portrait guide that fits inside 82% of the *constraining*
+    // side (on a portrait phone that's the width, on a short landscape
+    // screen it's the height) — so the frame always fits on screen.
+    final gw = math.min(w, h * _aspect) * 0.82;
     final gh = gw / _aspect;
     final gx = (w - gw) / 2;
     final gy = (h - gh) / 2;

@@ -172,14 +172,44 @@ class OMrScanner {
     }
 
     // ── 3. corner marks ────────────────────────────────────────────
+    // Detect all four marks first so a missing corner can be *estimated*
+    // from the other three (parallelogram rule) instead of hunting for
+    // the brightest pixel in the corner band — with another sheet lying
+    // next to or under the OMR sheet, that bright pixel often belongs to
+    // the neighbour, which wrecks the homography fit.
+    final marks = <DetectedCorner?>[
+      for (var c = 0; c < 4; c++) _detectCornerMark(c, dark, w, h),
+    ];
+    final markCount = marks.where((m) => m != null).length;
+    double cx = w / 2, cy = h / 2;
+    if (markCount > 0) {
+      var sx = 0.0, sy = 0.0;
+      for (final m in marks) {
+        sx += m!.point.dx;
+        sy += m!.point.dy;
+      }
+      cx = sx / markCount;
+      cy = sy / markCount;
+    }
+    final seed = ui.Offset(cx, cy);
+
     final corners = <DetectedCorner>[];
     for (var c = 0; c < 4; c++) {
-      final mark = _detectCornerMark(c, dark, w, h);
+      final mark = marks[c];
       if (mark != null) {
         corners.add(mark);
         continue;
       }
-      final fallback = _paperCornerFallback(c, paper, w, h);
+      if (markCount >= 3) {
+        final est = _parallelogramCorner(c, marks, w, h);
+        if (est != null) {
+          // Estimated, not measured: keep it out of the mark-consistency
+          // check and let the fit treat it as a soft (paper) anchor.
+          corners.add(DetectedCorner(est, false));
+          continue;
+        }
+      }
+      final fallback = _paperCornerFallback(c, paper, w, h, seed);
       if (fallback == null) {
         return OmScanResult.failed(
             'Corner marks not found. Keep the whole OMR sheet in frame, in even light, and take the photo again.');
@@ -192,7 +222,7 @@ class OMrScanner {
     // paper-corner fallback so the homography stage can still anchor well.
     final outlier = _outlierMarkIndex(corners, w, h);
     if (outlier >= 0) {
-      final fb = _paperCornerFallback(outlier, paper, w, h);
+      final fb = _paperCornerFallback(outlier, paper, w, h, seed);
       if (fb != null) corners[outlier] = fb;
     }
 
@@ -201,12 +231,12 @@ class OMrScanner {
         _bestRotationHomography(geo, corners, ink, pixels, w, h);
     if (solved == null) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
     }
     final homography = solved;
     if (homography.any((v) => !v.isFinite)) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
     }
 
     // Scale: page diagonal in the working image.
@@ -218,13 +248,13 @@ class OMrScanner {
         OMrGeometry.cornerDiagonal;
     if (!scale.isFinite || scale <= 0) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
     }
     // A physical A4 sheet photographed for OMR sits well within this range;
     // anything else means the "alignment" is a distorted projective fit.
     if (scale < 0.3 || scale > 3.0) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
     }
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
@@ -552,9 +582,91 @@ class OMrScanner {
   /// A point that lands *on the frame border* is flagged [DetectedCorner.
   /// edgeSuspect]: it is usually the photo's own corner, captured because
   /// a bright desk/bedsheet merged with the sheet in the paper mask.
+  /// Estimates a missing corner from the other three detected marks. The
+  /// four physical marks form a rectangle, and under the mild perspective
+  /// of a handheld photo the parallelogram rule (complete the opposite
+  /// side's vector) is a close anchor — far closer than a bright pixel
+  /// that may belong to a neighbouring sheet.
+  static ui.Offset? _parallelogramCorner(
+      int missing, List<DetectedCorner?> marks, int w, int h) {
+    final tl = marks[0]?.point;
+    final tr = marks[1]?.point;
+    final bl = marks[2]?.point;
+    final br = marks[3]?.point;
+    ui.Offset? est;
+    switch (missing) {
+      case 0: // TL = TR + (BL − BR)
+        if (tr != null && bl != null && br != null) {
+          est = ui.Offset(tr.dx + bl.dx - br.dx, tr.dy + bl.dy - br.dy);
+        }
+        break;
+      case 1: // TR = TL + (BR − BL)
+        if (tl != null && bl != null && br != null) {
+          est = ui.Offset(tl.dx + br.dx - bl.dx, tl.dy + br.dy - bl.dy);
+        }
+        break;
+      case 2: // BL = TL + (BR − TR)
+        if (tl != null && tr != null && br != null) {
+          est = ui.Offset(tl.dx + br.dx - tr.dx, tl.dy + br.dy - tr.dy);
+        }
+        break;
+      default: // BR = TR + (BL − TL)
+        if (tl != null && tr != null && bl != null) {
+          est = ui.Offset(tr.dx + bl.dx - tl.dx, tr.dy + bl.dy - tl.dy);
+        }
+    }
+    if (est == null) return null;
+    // A wild estimate means the marks are inconsistent (one is a false
+    // positive) — refuse it and let the caller use the paper fallback.
+    if (est.dx < -w * 0.05 || est.dx > w * 1.05 ||
+        est.dy < -h * 0.05 || est.dy > h * 1.05) {
+      return null;
+    }
+    return est;
+  }
+
+  /// The paper-mask connected component containing (sx, sy), or null when
+  /// the seed isn't on paper.
+  static Uint8List? _paperComponent(
+      Uint8List paper, int w, int h, int sx, int sy) {
+    if (sx < 0 || sy < 0 || sx >= w || sy >= h) return null;
+    if (paper[sy * w + sx] == 0) return null;
+    final comp = Uint8List(w * h);
+    final stack = <int>[sy * w + sx];
+    comp[sy * w + sx] = 1;
+    var top = 0;
+    while (top < stack.length) {
+      final idx = stack[top++];
+      final x = idx % w;
+      final y = idx ~/ w;
+      if (x > 0 && comp[idx - 1] == 0 && paper[idx - 1] == 1) {
+        comp[idx - 1] = 1;
+        stack.add(idx - 1);
+      }
+      if (x < w - 1 && comp[idx + 1] == 0 && paper[idx + 1] == 1) {
+        comp[idx + 1] = 1;
+        stack.add(idx + 1);
+      }
+      if (y > 0 && comp[idx - w] == 0 && paper[idx - w] == 1) {
+        comp[idx - w] = 1;
+        stack.add(idx - w);
+      }
+      if (y < h - 1 && comp[idx + w] == 0 && paper[idx + w] == 1) {
+        comp[idx + w] = 1;
+        stack.add(idx + w);
+      }
+    }
+    return comp;
+  }
+
   static DetectedCorner? _paperCornerFallback(
-      int corner, Uint8List paper, int w, int h) {
+      int corner, Uint8List paper, int w, int h, ui.Offset seed) {
     final band = 0.45;
+    // Restrict the search to the paper region connected to [seed] (the
+    // sheet itself). A neighbouring white sheet in the corner band then
+    // can't win the "extreme bright pixel" search. When the seed isn't on
+    // paper (no marks found, centre off the sheet) search the whole frame.
+    final comp = _paperComponent(paper, w, h, seed.dx.round(), seed.dy.round());
     var best = double.infinity;
     ui.Offset bestP = ui.Offset.zero;
     var found = false;
@@ -563,6 +675,7 @@ class OMrScanner {
       final row = y * w;
       for (var x = 0; x < w; x += step) {
         if (paper[row + x] == 0) continue;
+        if (comp != null && comp[row + x] == 0) continue;
         final inBand = switch (corner) {
           0 => x < w * band && y < h * band,
           1 => x > w * (1 - band) && y < h * band,

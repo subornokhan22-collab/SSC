@@ -74,18 +74,61 @@ class OmQuality {
     final paperFrac = paper / g.length;
     final dark = (otsuT * 0.55).round();
 
-    var marks = 0;
+    final found = <List<int>?>[
+      for (var c = 0; c < 4; c++) _findMarkCenter(g, _outW, outH, c, dark),
+    ];
+    // Estimate a missing corner from the other three (parallelogram) —
+    // the same trick the scanner uses, so the indicator reflects what
+    // the scanner can actually register even with a neighbouring sheet.
     for (var c = 0; c < 4; c++) {
-      if (_hasMark(g, _outW, outH, c, dark)) marks++;
+      if (found[c] != null) continue;
+      if (found.where((f) => f != null).length < 3) break;
+      final e = _parallelogram(c, found);
+      if (e != null &&
+          e[0] >= 0 &&
+          e[0] < _outW &&
+          e[1] >= 0 &&
+          e[1] < outH) {
+        found[c] = e;
+      }
     }
+    final marks = found.where((f) => f != null).length;
     return OmFrameQuality(
         sharpness: sharp, paperFrac: paperFrac, marks: marks);
   }
 
-  /// True when the corner quadrant holds one compact dark blob — the
-  /// corner registration square (same idea as the scanner's dark-mask
-  /// detector, on the small preview).
-  static bool _hasMark(Uint8List g, int w, int h, int corner, int darkT) {
+  static List<int>? _parallelogram(int missing, List<List<int>?> f) {
+    final tl = f[0], tr = f[1], bl = f[2], br = f[3];
+    List<int>? est;
+    switch (missing) {
+      case 0:
+        if (tr != null && bl != null && br != null) {
+          est = [tr[0] + bl[0] - br[0], tr[1] + bl[1] - br[1]];
+        }
+        break;
+      case 1:
+        if (tl != null && bl != null && br != null) {
+          est = [tl[0] + br[0] - bl[0], tl[1] + br[1] - bl[1]];
+        }
+        break;
+      case 2:
+        if (tl != null && tr != null && br != null) {
+          est = [tl[0] + br[0] - tr[0], tl[1] + br[1] - tr[1]];
+        }
+        break;
+      default:
+        if (tl != null && tr != null && bl != null) {
+          est = [tr[0] + bl[0] - tl[0], tr[1] + bl[1] - tl[1]];
+        }
+    }
+    return est;
+  }
+
+  /// Centre of the corner quadrant's compact dark blob — the corner
+  /// registration square (same idea as the scanner's dark-mask detector,
+  /// on the small preview); null when no blob passes the gates.
+  static List<int>? _findMarkCenter(
+      Uint8List g, int w, int h, int corner, int darkT) {
     const s = 0.45;
     final x0 = [0, (w * (1 - s)).round(), 0, (w * (1 - s)).round()][corner];
     final x1 = [(w * s).round(), w, (w * s).round(), w][corner];
@@ -93,15 +136,16 @@ class OmQuality {
     final y1 = [(h * s).round(), (h * s).round(), h, h][corner];
     final rw = x1 - x0;
     final rh = y1 - y0;
-    if (rw < 4 || rh < 4) return false;
+    if (rw < 4 || rh < 4) return null;
 
     final visited = Uint8List(rw * rh);
     // The mark is the one *compact* dark blob in its quadrant: both
     // dimensions >= 2 (a 1px-wide line/edge never qualifies), area within
     // a small share of the quadrant (desk/shadow regions are huge).
-    var has = false;
-    for (var ly = 0; ly < rh && !has; ly++) {
-      for (var lx = 0; lx < rw && !has; lx++) {
+    var bestArea = 0;
+    var bestCx = 0, bestCy = 0;
+    for (var ly = 0; ly < rh; ly++) {
+      for (var lx = 0; lx < rw; lx++) {
         final idx0 = ly * rw + lx;
         if (visited[idx0] == 1 || g[(y0 + ly) * w + (x0 + lx)] >= darkT) continue;
         // BFS.
@@ -111,11 +155,14 @@ class OmQuality {
         final stackY = <int>[ly];
         var area = 0;
         var mnx = lx, mxx = lx, mny = ly, mxy = ly;
+        var sumX = 0, sumY = 0;
         while (top < stackX.length) {
           final cx = stackX[top];
           final cy = stackY[top];
           top++;
           area++;
+          sumX += cx;
+          sumY += cy;
           if (cx < mnx) mnx = cx;
           if (cx > mxx) mxx = cx;
           if (cy < mny) mny = cy;
@@ -143,12 +190,16 @@ class OmQuality {
             bh >= 2 &&
             area < quad * 0.10 &&
             bw < rw * 0.5 &&
-            bh < rh * 0.5) {
-          has = true;
+            bh < rh * 0.5 &&
+            area > bestArea) {
+          bestArea = area;
+          bestCx = x0 + sumX ~/ area;
+          bestCy = y0 + sumY ~/ area;
         }
       }
     }
-    return has;
+    if (bestArea <= 0) return null;
+    return [bestCx, bestCy];
   }
 
   /// Variance of the 3x3 Laplacian — a standard focus metric.
