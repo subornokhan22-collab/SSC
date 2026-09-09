@@ -10,10 +10,12 @@ import '../theme/app_theme.dart';
 
 /// Full-screen guided OMR capture.
 ///
-/// Shows the live camera with a centred A4 guide, live "sheet / marks /
-/// sharp" indicators, and auto-captures when the frame stays good for a
-/// short streak. Pops with the captured photo path, 'system' (fall back to
-/// the system camera) or null (cancelled).
+/// Shows the live camera with an auto-bounding box that tracks the sheet's
+/// detected edges (four corner handles; green when ready), live
+/// "sheet / marks / sharp" indicators, and auto-captures when the frame
+/// stays good for a short streak. Before the sheet is detected it shows a
+/// static A4 guide for framing. Pops with the captured photo path,
+/// 'system' (fall back to the system camera) or null (cancelled).
 class OmLiveScanScreen extends StatefulWidget {
   const OmLiveScanScreen({super.key});
 
@@ -365,8 +367,8 @@ class _GuidePainter extends CustomPainter {
     // ── Detected sheet: draw the live bounding box on its edges ──
     if (quad != null && (q?.frameW ?? 0) > 0 && (q?.frameH ?? 0) > 0) {
       final s = math.max(w / q!.frameW, h / q!.frameH);
-      final offX = (w - q.frameW * s) / 2;
-      final offY = (h - q.frameH * s) / 2;
+      final offX = (w - q!.frameW * s) / 2;
+      final offY = (h - q!.frameH * s) / 2;
       final pts = <Offset>[
         for (final p in quad) Offset(offX + p.dx * s, offY + p.dy * s),
       ];
@@ -376,7 +378,7 @@ class _GuidePainter extends CustomPainter {
         ..addPolygon(pts, true);
       path.fillType = FillType.evenOdd;
       canvas.drawPath(path, Paint()..color = const Color(0x73000000));
-      final ready = q.ready;
+      final ready = q!.ready;
       final color = ready ? const Color(0xFF57D9A3) : Colors.white;
       final edge = Paint()
         ..style = PaintingStyle.stroke
