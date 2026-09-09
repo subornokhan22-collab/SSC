@@ -39,7 +39,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     WidgetsBinding.instance.addObserver(this);
     _tabs = TabController(length: 2, vsync: this);
     _reload();
-    _refreshAutoSaveStatus();
     _maybeNudgeAutoSave();
   }
 
@@ -53,17 +52,16 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state != AppLifecycleState.resumed) return;
-    // Coming back (possibly from the permission settings page)? Refresh the
-    // banner and, if we just enabled it, confirm with a snackbar.
-    final wasAwaiting = _awaitingPermission;
-    _awaitingPermission = false;
-    _refreshAutoSaveStatus().then((_) {
-      if (wasAwaiting && _autoSaveOn && mounted) {
-        _snack('Auto-save is on. Your papers are kept in '
-            'Download/TutorsDesk and come back after reinstalling.');
-      }
-    });
+    // Coming back from the one-time permission settings page?
+    if (state == AppLifecycleState.resumed && _awaitingPermission) {
+      _awaitingPermission = false;
+      PaperBackup.permissionGranted().then((granted) {
+        if (granted && mounted) {
+          _snack('Auto-save is on. Your papers are kept in '
+              'Download/TutorsDesk and come back after reinstalling.');
+        }
+      });
+    }
   }
 
   Future<void> _reload() async {
@@ -90,69 +88,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   // shared Download folder and restored on the next start — nothing manual.
 
   bool _awaitingPermission = false;
-  bool _autoSaveOn = false;
-
-  Future<void> _refreshAutoSaveStatus() async {
-    final granted = await PaperBackup.permissionGranted();
-    if (mounted && granted != _autoSaveOn) {
-      setState(() => _autoSaveOn = granted);
-    }
-  }
-
-  Future<void> _enableAutoSave() async {
-    _awaitingPermission = true;
-    await PaperBackup.requestPermission();
-  }
-
-  Widget _autoSaveBanner() {
-    if (_autoSaveOn) {
-      return Container(
-        width: double.infinity,
-        color: AppTheme.primary.withOpacity(.07),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        child: Row(children: [
-          const Icon(Icons.cloud_done_outlined,
-              size: 15, color: AppTheme.primary),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-                'Auto-backup on — your papers survive uninstall (Download/TutorsDesk)',
-                style: TextStyle(
-                    fontSize: 11.5,
-                    color: AppTheme.primary,
-                    fontWeight: FontWeight.w600)),
-          ),
-        ]),
-      );
-    }
-    return GestureDetector(
-      onTap: _enableAutoSave,
-      child: Container(
-        width: double.infinity,
-        color: const Color(0xFFFFE9C7),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        child: Row(children: [
-          const Icon(Icons.cloud_off_outlined,
-              size: 15, color: Color(0xFF9A6B00)),
-          const SizedBox(width: 6),
-          const Expanded(
-            child: Text(
-                'Auto-backup off — after reinstalling, saved papers are lost. Tap to enable.',
-                style: TextStyle(
-                    fontSize: 11.5,
-                    color: Color(0xFF9A6B00),
-                    fontWeight: FontWeight.w600)),
-          ),
-          const Text('Enable',
-              style: TextStyle(
-                  fontSize: 11.5,
-                  color: Color(0xFF7A5300),
-                  fontWeight: FontWeight.w800,
-                  decoration: TextDecoration.underline)),
-        ]),
-      ),
-    );
-  }
 
   Future<void> _maybeNudgeAutoSave() async {
     try {
@@ -591,7 +526,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       ),
       body: SafeArea(
         child: Column(children: [
-          _autoSaveBanner(),
           TabBar(
             controller: _tabs,
             tabs: const [
