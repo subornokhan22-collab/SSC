@@ -29,7 +29,7 @@ jobs:
         run: flutter pub get
 
       - name: Bump version code (new builds install over the old app, data stays)
-        run: sed -i "s|^version:.*$|version: 1.0.0+${{ github.run_number }}|" pubspec.yaml
+        run: 'sed -i "s|^version:.*$|version: 1.0.0+${{ github.run_number }}|" pubspec.yaml'
 
       - name: Generate launcher icons (fixes missing app icon)
         run: dart run flutter_launcher_icons
