@@ -6,8 +6,8 @@ import 'package:camera/camera.dart';
 
 /// Live-frame quality analysis for guided auto-capture.
 ///
-/// Runs on a downscaled copy of the camera's Y (luma) plane, so each frame
-/// costs a few milliseconds of Dart CPU. A frame is "ready" when the sheet
+/// Runs on a downscaled copy of the camera's Y (luma) plane, so each
+/// frame costs a few milliseconds of Dart CPU. A frame is "ready" when the sheet
 /// is visible (its outline is found), reasonably sharp, and large enough.
 class OmFrameQuality {
   /// Laplacian variance of the downscaled luma (higher = sharper).
