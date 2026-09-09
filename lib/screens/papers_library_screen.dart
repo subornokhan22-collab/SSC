@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:printing/printing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/subject_info.dart';
 import '../services/paper_library.dart';
@@ -25,7 +26,7 @@ class PapersLibraryScreen extends StatefulWidget {
 }
 
 class _PapersLibraryScreenState extends State<PapersLibraryScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final TabController _tabs;
   List<PaperEntry> _entries = const [];
   List<SavedPaper> _saved = const [];
@@ -35,14 +36,32 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tabs = TabController(length: 2, vsync: this);
     _reload();
+    _maybeNudgeAutoSave();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabs.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Coming back from the one-time permission settings page?
+    if (state == AppLifecycleState.resumed && _awaitingPermission) {
+      _awaitingPermission = false;
+      PaperBackup.permissionGranted().then((granted) {
+        if (granted && mounted) {
+          _snack('Auto-save is on. Your papers are kept in '
+              'Download/TutorsDesk and come back after reinstalling.');
+        }
+      });
+    }
   }
 
   Future<void> _reload() async {
@@ -63,57 +82,48 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  // ── Backup / Restore ────────────────────────────────────────────
-  // Android deletes the app's private folder on uninstall, so the tutor can
-  // keep the whole library as one file (Drive / WhatsApp) and restore it.
+  // ── Auto-save (one-time nudge) ──────────────────────────────────
+  // Android deletes the app's private folder on uninstall. With the one-time
+  // "All files access" permission the library is kept automatically in the
+  // shared Download folder and restored on the next start — nothing manual.
 
-  Future<void> _backup() async {
-    String? err;
-    String? path;
+  bool _awaitingPermission = false;
+
+  Future<void> _maybeNudgeAutoSave() async {
     try {
-      path = await PaperBackup.export();
-    } catch (e) {
-      err = e.toString();
-    }
-    if (!mounted) return;
-    if (err != null) {
-      _snack('Backup failed: $err');
-      return;
-    }
-    showDialog(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: const Text('Backup saved'),
-        content: SingleChildScrollView(
-          child: Text(
-            'Keep this file somewhere safe (Google Drive, WhatsApp, etc.). '
-            'After reinstalling the app, tap Restore and choose this file.\n\n'
-            '$path',
-            style: const TextStyle(fontSize: 13, height: 1.45),
+      if (await PaperBackup.permissionGranted()) return;
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool('autosave_nudged') ?? false) return;
+      await prefs.setBool('autosave_nudged', true);
+      if (!mounted) return;
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: const Text('Keep your papers safe?'),
+          content: const Text(
+            'When the app is uninstalled, Android deletes your saved papers. '
+            'Allow the app to keep an automatic copy in the Download folder? '
+            'One-time permission — nothing to do afterwards.',
+            style: TextStyle(fontSize: 13, height: 1.5),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Allow'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(c),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _restore() async {
-    final picked = await FilePicker.platform.pickFiles(type: FileType.any);
-    final p = picked?.files.single.path;
-    if (p == null || !mounted) return;
-    try {
-      final added = await PaperBackup.restore(File(p));
-      await _reload();
-      _snack(added > 0
-          ? 'Restored $added paper(s).'
-          : 'That backup had no new papers.');
-    } catch (e) {
-      _snack('Restore failed: $e');
+      );
+      if (ok == true) {
+        _awaitingPermission = true;
+        await PaperBackup.requestPermission();
+      }
+    } catch (_) {
+      // Never let the nudge break the screen.
     }
   }
 
@@ -508,21 +518,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Question Papers'),
-        actions: [
-          IconButton(
-            tooltip: 'Backup',
-            icon: const Icon(Icons.upload_file_outlined),
-            onPressed: _backup,
-          ),
-          IconButton(
-            tooltip: 'Restore',
-            icon: const Icon(Icons.file_download_outlined),
-            onPressed: _restore,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Question Papers')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
         icon: const Icon(Icons.add_photo_alternate_rounded),

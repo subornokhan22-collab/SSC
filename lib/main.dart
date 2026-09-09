@@ -7,6 +7,7 @@ import 'data/question_bank.dart';
 import 'data/question_sync.dart';
 import 'services/app_style.dart';
 import 'services/auth_service.dart';
+import 'services/paper_library.dart';
 import 'theme/app_theme.dart';
 import 'screens/root_gate.dart';
 import 'widgets/animated_background.dart';
@@ -34,6 +35,10 @@ Future<void> main() async {
   await QuestionSync.loadCache();
   await AppStyle.load();
   await AuthService.init();
+
+  // Fresh install (empty library)? Put the tutor's papers back from the
+  // automatic backup in the shared Download folder. Silent no-op otherwise.
+  unawaited(PaperBackup.tryAutoRestore());
 
   // Fire-and-forget: errors are swallowed inside refresh().
   unawaited(QuestionSync.refresh());

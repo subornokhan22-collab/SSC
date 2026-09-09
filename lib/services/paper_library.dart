@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -224,6 +226,7 @@ class PaperLibrary {
     );
     final all = await loadEntries();
     await _saveEntries([entry, ...all]);
+    unawaited(PaperBackup.autoSave());
     return entry;
   }
 
@@ -253,6 +256,7 @@ class PaperLibrary {
     );
     final all = await loadEntries();
     await _saveEntries([entry, ...all]);
+    unawaited(PaperBackup.autoSave());
     return entry;
   }
 
@@ -261,6 +265,7 @@ class PaperLibrary {
     if (dir.existsSync()) dir.deleteSync(recursive: true);
     final all = (await loadEntries())..removeWhere((e) => e.id == id);
     await _saveEntries(all);
+    unawaited(PaperBackup.autoSave());
   }
 
   /// Stores a paper saved from the in-app builder (MCQ list + answer key).
@@ -279,6 +284,7 @@ class PaperLibrary {
     );
     final all = await loadEntries();
     await _saveEntries([entry, ...all]);
+    unawaited(PaperBackup.autoSave());
   }
 
   /// The saved paper (with its answer key) stored under entry [id], if any.
@@ -528,21 +534,56 @@ class PaperLibrary {
   }
 }
 
-/// Backup / restore for the whole paper library.
+/// Automatic backup / restore for the whole paper library.
 ///
 /// Android deletes the app's private folder when the app is uninstalled, so
-/// everything (saved MCQ papers with keys, photo pages, PDFs) is kept in
-/// one JSON file the tutor can store in Drive/WhatsApp. After reinstalling,
-/// Restore puts it all back. Files are base64 inside; one backup file.
+/// this keeps an automatic copy of the whole library (saved MCQ papers with
+/// keys, photo pages, PDFs) in the shared Download folder:
+/// `Download/TutorsDesk/tutors_desk_backup.json`. That needs the one-time
+/// "All files access" permission; after that it is fully automatic:
+/// every change is re-saved, and on startup an empty library (fresh
+/// install) is restored on its own.
 class PaperBackup {
   PaperBackup._();
 
-  static const _fileTag = 'tutors_desk_backup';
+  static const _channel = MethodChannel('com.tutorsdesk.app/storage');
+  static const _dirName = 'TutorsDesk';
+  static const _fileName = 'tutors_desk_backup.json';
 
-  /// Packs the whole library into one JSON file in the app's shared
-  /// external folder (visible in the phone's file manager, no permission
-  /// needed). Returns the file path.
-  static Future<String> export() async {
+  /// Whether the app may write into the shared Download folder.
+  static Future<bool> permissionGranted() async {
+    try {
+      return (await _channel.invokeMethod<bool>('canManageAllFiles')) ??
+          true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// Opens the one-time system settings page for the permission.
+  static Future<void> requestPermission() async {
+    try {
+      await _channel.invokeMethod<bool>('requestManageAllFiles');
+    } catch (_) {
+      // Platform side unavailable — nothing to do.
+    }
+  }
+
+  /// Path of the auto-backup file, or null when it cannot be written.
+  static Future<String?> _backupPath() async {
+    try {
+      final base = await _channel.invokeMethod<String>('externalStorageDir');
+      if (base == null) return null;
+      final dir = Directory('$base/Download/$_dirName');
+      if (!dir.existsSync()) dir.createSync(recursive: true);
+      return '${dir.path}/$_fileName';
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The whole library packed into one JSON document.
+  static Future<Map<String, dynamic>> _payload() async {
     final rootDir = await PaperLibrary.root();
     final entries = await PaperLibrary.loadEntries();
     final files = <String, String>{};
@@ -557,36 +598,50 @@ class PaperBackup {
         }
       }
     }
-    final d = DateTime.now();
-    final ts = '${d.year}'
-        '${d.month.toString().padLeft(2, '0')}'
-        '${d.day.toString().padLeft(2, '0')}'
-        '_${d.hour.toString().padLeft(2, '0')}'
-        '${d.minute.toString().padLeft(2, '0')}';
-    var outDir = await getExternalStorageDirectory();
-    if (outDir == null) {
-      throw Exception('External storage is not available on this device.');
-    }
-    if (!outDir.existsSync()) outDir.createSync(recursive: true);
-    final payload = <String, dynamic>{
+    return {
       'app': 'tutors_desk',
       'version': 1,
-      'exportedAt': d.toIso8601String(),
+      'exportedAt': DateTime.now().toIso8601String(),
       'entries': [for (final e in entries) e.toJson()],
       'files': files,
     };
-    var n = 0;
-    String path;
-    do {
-      path =
-          '${outDir.path}${Platform.pathSeparator}${_fileTag}_$ts${n > 0 ? '_$n' : ''}.json';
-      n++;
-    } while (File(path).existsSync());
-    await File(path).writeAsString(json.encode(payload));
-    return path;
   }
 
-  /// Restores a file produced by [export] into the current library.
+  /// Takes one snapshot of the whole library into the shared Download
+  /// folder. Silent no-op when the permission or storage is unavailable —
+  /// auto-save must never disturb the user.
+  static Future<void> autoSave() async {
+    try {
+      if (!await permissionGranted()) return;
+      final path = await _backupPath();
+      if (path == null) return;
+      final payload = await _payload();
+      final tmp = '$path.tmp';
+      await File(tmp).writeAsString(json.encode(payload), flush: true);
+      File(tmp).renameSync(path); // atomic: readers never see a half file
+    } catch (_) {
+      // Swallow — see above.
+    }
+  }
+
+  /// Startup hook: if the local library is empty (fresh install / wiped)
+  /// and a backup exists, restore it automatically. Returns the number of
+  /// papers restored (0 = nothing to do).
+  static Future<int> tryAutoRestore() async {
+    try {
+      final current = await PaperLibrary.loadEntries();
+      if (current.isNotEmpty) return 0;
+      final path = await _backupPath();
+      if (path == null) return 0;
+      final f = File(path);
+      if (!f.existsSync()) return 0;
+      return await restore(f);
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// Restores a file produced by [autoSave] into the current library.
   /// Merges: papers already present keep their current entry, missing ones
   /// are added; stored files are (re)written from the backup. Returns the
   /// number of papers added.
