@@ -324,7 +324,12 @@ class OMrScanner {
     );
   }
 
-  /// Compare [result] with [key] (option index per question).
+  /// Grades [result] against [key] (option index per question).
+  ///
+  /// Scoring rule (standard exam convention): a double-marked question is
+  /// *invalid* — it is counted as wrong (no credit) and additionally kept
+  /// in [OmGraded.ambiguous] so the UI, history and scorecard can flag it
+  /// separately.
   static OmGraded grade(OmScanResult result, List<int> key) {
     final status = List<int>.filled(key.length, 0);
     var correct = 0, wrong = 0, blank = 0, ambiguous = 0;
@@ -335,6 +340,7 @@ class OMrScanner {
         blank++;
       } else if (a == -2) {
         status[i] = 3;
+        wrong++;
         ambiguous++;
       } else if (a == key[i]) {
         status[i] = 0;

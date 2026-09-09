@@ -21,6 +21,9 @@ class OmScanRecord {
   final List<int> answers;
   final List<int> key;
 
+  /// Scan + grade duration in milliseconds (0 for older records).
+  final int durationMs;
+
   const OmScanRecord({
     required this.id,
     required this.date,
@@ -38,6 +41,7 @@ class OmScanRecord {
     required this.ambiguous,
     required this.answers,
     required this.key,
+    this.durationMs = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +61,7 @@ class OmScanRecord {
         'ambiguous': ambiguous,
         'answers': answers,
         'key': key,
+        'durationMs': durationMs,
       };
 
   static OmScanRecord fromJson(Map<String, dynamic> m) => OmScanRecord(
@@ -81,6 +86,7 @@ class OmScanRecord {
         key: (m['key'] as List? ?? const [])
             .map((e) => (e as num).toInt())
             .toList(),
+        durationMs: (m['durationMs'] as num? ?? 0).toInt(),
       );
 }
 

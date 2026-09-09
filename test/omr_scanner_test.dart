@@ -288,7 +288,7 @@ void main() {
       expect(graded.correct, total - 3); // 2 blank + 1 double-marked
       expect(graded.blank, 2);
       expect(graded.ambiguous, 1);
-      expect(graded.wrong, 0);
+      expect(graded.wrong, 1); // double-marked counts as wrong (invalid)
       expect(graded.score, total - 3);
     });
 

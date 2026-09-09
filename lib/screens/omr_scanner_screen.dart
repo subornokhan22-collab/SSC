@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -8,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import '../services/omr/omr_geometry.dart';
 import '../services/omr/omr_scanner.dart';
 import '../services/omr/omr_store.dart';
+import 'omr_analytics_screen.dart';
+import 'omr_live_scan_screen.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
@@ -53,6 +56,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   OmScanResult? _result;
   OmGraded? _graded;
   Uint8List? _overlayJpg;
+  int? _scanMs;
 
   List<OmScanRecord> _history = const [];
 
@@ -118,6 +122,43 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
+  /// Guided live-camera capture: the in-app preview shows an A4 guide,
+  /// sheet/marks/sharp indicators and auto-captures a steady frame.
+  Future<void> _openLiveScan() async {
+    if (_key.any((k) => k < 0)) {
+      _snack('Complete the answer key first — or tap "Use saved paper".');
+      return;
+    }
+    final result = await Navigator.of(context).push<String>(
+        MaterialPageRoute(
+            builder: (_) => const OmLiveScanScreen()));
+    if (result == null) return;
+    if (result == 'system') {
+      _pickPhoto(ImageSource.camera);
+      return;
+    }
+    await _loadAndScan(result);
+  }
+
+  Future<void> _loadAndScan(String path) async {
+    try {
+      final bytes = await File(path).readAsBytes();
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      if (!mounted) return;
+      setState(() {
+        _photoBytes = bytes;
+        _photoImage = frame.image;
+        _result = null;
+        _graded = null;
+        _overlayJpg = null;
+      });
+      _scan();
+    } catch (e) {
+      _snack('Could not load the photo: $e');
+    }
+  }
+
   // ── key editor ────────────────────────────────────────────────────
 
   void _setTotal(int total) {
@@ -153,6 +194,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _graded = null;
     });
     try {
+      final sw = Stopwatch()..start();
       final res = await OMrScanner.scan(photo, total: _total);
       if (!res.ok) {
         _snack(res.error ?? 'Scan failed');
@@ -160,6 +202,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         return;
       }
       final graded = OMrScanner.grade(res, _key);
+      _scanMs = sw.elapsedMilliseconds;
       final overlay = await _buildOverlay(res, graded);
       final rec = _recordOf(res, graded);
       await OmrStore.addRecord(rec);
@@ -195,6 +238,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         ambiguous: g.ambiguous,
         answers: res.answers,
         key: _key,
+        durationMs: _scanMs ?? 0,
       );
 
   /// Draws the verdict on top of the photo (green = correct, red = wrong,
@@ -335,6 +379,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         title: const Text('OMR Scanner'),
         actions: [
           IconButton(
+            tooltip: 'Analytics & leaderboard',
+            onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (_) => const OMrAnalyticsScreen())),
+            icon: const Icon(Icons.bar_chart_rounded),
+          ),
+          IconButton(
             tooltip: 'Key draft restore',
             onPressed: _restoreKeyDraft,
             icon: const Icon(Icons.history_rounded),
@@ -365,9 +416,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       Expanded(
                           child: AppButton(
                               label: 'Camera',
-                              icon: Icons.photo_camera_rounded,
-                              onPressed:
-                                  () => _pickPhoto(ImageSource.camera))),
+                              icon: Icons.view_in_ar_rounded,
+                              onPressed: _busy ? null : _openLiveScan)),
                       const SizedBox(width: 10),
                       Expanded(
                           child: AppButton(
@@ -549,6 +599,24 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
                             color: AppTheme.primary)),
+                    if ((_scanMs ?? 0) > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text('Scanned in ${(_scanMs! / 1000).toStringAsFixed(1)}s',
+                            style: const TextStyle(
+                                fontSize: 11.5, color: AppTheme.muted)),
+                      ),
+                    if (graded.ambiguous > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          'Double-marked questions are invalid and count as wrong.',
+                          style: TextStyle(
+                              fontSize: 11.5,
+                              color: AppTheme.warning,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     const SizedBox(height: 8),
                     Wrap(spacing: 8, runSpacing: 8, children: [
                       _chip('সঠিক ${graded.correct}', AppTheme.success),
