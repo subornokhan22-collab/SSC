@@ -221,9 +221,11 @@ class OmQuality {
     final quadArea = area2.abs() / 2;
     final bboxArea = (maxX - minX + 1) * (maxY - minY + 1);
     if (quadArea < bboxArea * 0.55) return (frac, null);
-    final spread = math.min(
-        math.max(x0, x1, x2, x3) - math.min(x0, x1, x2, x3),
-        math.max(y0, y1, y2, y3) - math.min(y0, y1, y2, y3));
+    final maxXs = math.max(math.max(x0, x1), math.max(x2, x3));
+    final minXs = math.min(math.min(x0, x1), math.min(x2, x3));
+    final maxYs = math.max(math.max(y0, y1), math.max(y2, y3));
+    final minYs = math.min(math.min(y0, y1), math.min(y2, y3));
+    final spread = math.min(maxXs - minXs, maxYs - minYs);
     if (spread < w * 0.4) return (frac, null);
     if (quadArea < total * 0.12) return (frac, null);
 
