@@ -25,6 +25,17 @@ android {
         versionName = flutter.versionName
     }
 
+    // Declared BEFORE buildTypes: Kotlin DSL evaluates blocks in source
+    // order, so the release config must exist before buildTypes references it.
+    signingConfigs {
+        create("release") {
+            storeFile = file("../../keystore/tutorsdesk-release.keystore")
+            storePassword = "TUTORSDESK2027"
+            keyAlias = "tutorsdesk"
+            keyPassword = "TUTORSDESK2027"
+        }
+    }
+
     buildTypes {
         release {
             // Stable release keystore (keystore/tutorsdesk-release.keystore in
@@ -40,15 +51,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-        }
-    }
-
-    signingConfigs {
-        create("release") {
-            storeFile = file("../../keystore/tutorsdesk-release.keystore")
-            storePassword = "TUTORSDESK2027"
-            keyAlias = "tutorsdesk"
-            keyPassword = "TUTORSDESK2027"
         }
     }
 

@@ -43,6 +43,7 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
         run: |
           tail -c 24000 build.log > ci_failure_tail.log 2>/dev/null || true
           python3 - <<'EOF'
@@ -51,12 +52,14 @@ jobs:
               data = open('ci_failure_tail.log', 'rb').read()
           except Exception:
               data = b'(no build.log found)'
+          payload = {
+              'message': 'CI failure tail (auto)',
+              'content': base64.b64encode(data).decode(),
+              'branch': os.environ.get('BRANCH') or 'main'
+          }
           req = urllib.request.Request(
             f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/contents/ci_failure_tail.log",
-            data=json.dumps({
-              'message': 'CI failure tail (auto)',
-              'content': base64.b64encode(data).decode()
-            }).encode(),
+            data=json.dumps(payload).encode(),
             headers={
               'Authorization': f"token {os.environ['GH_TOKEN']}",
               'Accept': 'application/vnd.github+json',
