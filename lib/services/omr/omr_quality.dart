@@ -183,26 +183,26 @@ class OmQuality {
         final a = (x + y).toDouble();
         if (a < s0) {
           s0 = a;
-          x0 = x;
-          y0 = y;
+          x0 = x.toDouble();
+          y0 = y.toDouble();
         }
         final b = (-x + y).toDouble();
         if (b < s1) {
           s1 = b;
-          x1 = x;
-          y1 = y;
+          x1 = x.toDouble();
+          y1 = y.toDouble();
         }
         final c = (-x - y).toDouble();
         if (c < s2) {
           s2 = c;
-          x2 = x;
-          y2 = y;
+          x2 = x.toDouble();
+          y2 = y.toDouble();
         }
         final d = (x - y).toDouble();
         if (d < s3) {
           s3 = d;
-          x3 = x;
-          y3 = y;
+          x3 = x.toDouble();
+          y3 = y.toDouble();
         }
       }
     }
