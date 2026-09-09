@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui' show FillType;
+import 'dart:ui' show PathFillType;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -377,7 +377,7 @@ class _GuidePainter extends CustomPainter {
       final path = Path()
         ..addRect(Rect.fromLTWH(0, 0, w, h))
         ..addPolygon(pts, true);
-      path.fillType = FillType.evenOdd;
+      path.fillType = PathFillType.evenOdd;
       canvas.drawPath(path, Paint()..color = const Color(0x73000000));
       final ready = q!.ready;
       final color = ready ? const Color(0xFF57D9A3) : Colors.white;
