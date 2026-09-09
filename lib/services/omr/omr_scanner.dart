@@ -204,6 +204,10 @@ class OMrScanner {
           'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
     }
     final homography = solved;
+    if (homography.any((v) => !v.isFinite)) {
+      return OmScanResult.failed(
+          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+    }
 
     // Scale: page diagonal in the working image.
     final tl = applyHomography(homography, OMrGeometry.markCenter(0));
@@ -212,6 +216,16 @@ class OMrScanner {
             (br.dx - tl.dx) * (br.dx - tl.dx) +
             (br.dy - tl.dy) * (br.dy - tl.dy)) /
         OMrGeometry.cornerDiagonal;
+    if (!scale.isFinite || scale <= 0) {
+      return OmScanResult.failed(
+          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+    }
+    // A physical A4 sheet photographed for OMR sits well within this range;
+    // anything else means the "alignment" is a distorted projective fit.
+    if (scale < 0.3 || scale > 3.0) {
+      return OmScanResult.failed(
+          'Could not align the sheet. Keep the sheet centered with a small margin around it, and take the photo again.');
+    }
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
       return OmScanResult.failed(
@@ -394,8 +408,12 @@ class OMrScanner {
     final x1 = [(w * s).round(), w, (w * s).round(), w][corner];
     final y0 = [0, 0, (h * (1 - s)).round(), (h * (1 - s)).round()][corner];
     final y1 = [(h * s).round(), (h * s).round(), h, h][corner];
-    final insetX = ((x1 - x0) * 0.01).round();
-    final insetY = ((y1 - y0) * 0.01).round();
+    // No inset: a mark can sit right against the 0.45 quadrant boundary
+    // (small sheet, off-centre) and must not be clipped away by the search
+    // boundary; truly clipped desk/grid regions still touch it and are
+    // rejected by the boundary check below.
+    final insetX = 0;
+    final insetY = 0;
     final rw = x1 - insetX - (x0 + insetX);
     final rh = y1 - insetY - (y0 + insetY);
     if (rw < 8 || rh < 8) return null;
@@ -661,6 +679,18 @@ class OMrScanner {
           applyHomography(hHom, ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
           applyHomography(hHom, const ui.Offset(0, OMrGeometry.pageH)),
         ];
+        // A nearly-collinear anchor set can produce a homography that maps
+        // part of the page to infinity (or to absurdly far away); NaN
+        // comparisons would silently pass every gate below, so reject such
+        // fits here. A real sheet can never project beyond ~10 frames.
+        final frameDiag = math.sqrt(w * w + h * h) * 10;
+        if (pts.any((pt) =>
+            !pt.dx.isFinite ||
+            !pt.dy.isFinite ||
+            pt.dx.abs() > frameDiag ||
+            pt.dy.abs() > frameDiag)) {
+          continue;
+        }
         double len(ui.Offset a, ui.Offset b) => math.sqrt(
             (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
         final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
@@ -799,7 +829,13 @@ class OMrScanner {
         }
       }
     }
-    return [for (var i = 0; i < n; i++) m[i][n] / m[i][i]];
+    final solution = [for (var i = 0; i < n; i++) m[i][n] / m[i][i]];
+    // Near-degenerate systems can survive the pivot check and still
+    // produce Inf/NaN coefficients — never let those out.
+    for (final v in solution) {
+      if (!v.isFinite) return null;
+    }
+    return solution;
   }
 
   static ui.Offset applyHomography(List<double> h, ui.Offset p) {
@@ -813,6 +849,10 @@ class OMrScanner {
   /// Fraction of dark pixels inside a disc (0 outside the frame).
   static double _inkRatio(
       Uint8List ink, int w, int h, double cx, double cy, double r) {
+    // Check in the double domain: rounding a non-finite or huge value
+    // throws. Nothing beyond the frame (by a wide margin) is meaningful.
+    if (!cx.isFinite || !cy.isFinite) return 0;
+    if (cx < -1e4 || cx > 1e4 || cy < -1e4 || cy > 1e4) return 0;
     final cxI = cx.round(), cyI = cy.round();
     final ri = r.ceil();
     if (cxI - ri < 0 || cyI - ri < 0 || cxI + ri >= w || cyI + ri >= h) {
@@ -837,6 +877,8 @@ class OMrScanner {
   /// smoothly shaded area.
   static double _diskVariance(
       Uint8List luma, int w, int h, double cx, double cy, double r) {
+    if (!cx.isFinite || !cy.isFinite) return 0;
+    if (cx < -1e4 || cx > 1e4 || cy < -1e4 || cy > 1e4) return 0;
     final cxI = cx.round(), cyI = cy.round();
     final ri = r.ceil();
     if (cxI - ri < 0 || cyI - ri < 0 || cxI + ri >= w || cyI + ri >= h) {
