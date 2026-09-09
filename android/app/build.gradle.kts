@@ -27,9 +27,10 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Stable release keystore (keystore/tutorsdesk-release.keystore in
+            // the repo) so every build has the SAME signature — new versions
+            // install over the old one without uninstalling (data survives).
+            signingConfig = signingConfigs.getByName("release")
 
             // Strip unused Java/Kotlin classes and shrink bundled resources.
             // Flutter ships default ProGuard rules for its own engine bindings.
@@ -39,6 +40,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../../keystore/tutorsdesk-release.keystore")
+            storePassword = "TUTORSDESK2027"
+            keyAlias = "tutorsdesk"
+            keyPassword = "TUTORSDESK2027"
         }
     }
 
