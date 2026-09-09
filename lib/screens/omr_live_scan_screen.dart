@@ -275,10 +275,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                     ),
                   ),
                   const SizedBox(width: 18),
-                  const SizedBox(
-                    width: 96,
-                    child: SizedBox.shrink(),
-                  ),
+                  const SizedBox(width: 96),
                 ],
               ),
             ),
