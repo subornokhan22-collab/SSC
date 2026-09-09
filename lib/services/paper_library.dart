@@ -527,3 +527,108 @@ class PaperLibrary {
     }
   }
 }
+
+/// Backup / restore for the whole paper library.
+///
+/// Android deletes the app's private folder when the app is uninstalled, so
+/// everything (saved MCQ papers with keys, photo pages, PDFs) is kept in
+/// one JSON file the tutor can store in Drive/WhatsApp. After reinstalling,
+/// Restore puts it all back. Files are base64 inside; one backup file.
+class PaperBackup {
+  PaperBackup._();
+
+  static const _fileTag = 'tutors_desk_backup';
+
+  /// Packs the whole library into one JSON file in the app's shared
+  /// external folder (visible in the phone's file manager, no permission
+  /// needed). Returns the file path.
+  static Future<String> export() async {
+    final rootDir = await PaperLibrary.root();
+    final entries = await PaperLibrary.loadEntries();
+    final files = <String, String>{};
+    for (final e in entries) {
+      final dir =
+          Directory('${rootDir.path}${Platform.pathSeparator}${e.id}');
+      if (!dir.existsSync()) continue;
+      for (final f in dir.listSync()) {
+        if (f is File) {
+          final name = f.path.split(Platform.pathSeparator).last;
+          files['${e.id}/$name'] = base64Encode(await f.readAsBytes());
+        }
+      }
+    }
+    final d = DateTime.now();
+    final ts = '${d.year}'
+        '${d.month.toString().padLeft(2, '0')}'
+        '${d.day.toString().padLeft(2, '0')}'
+        '_${d.hour.toString().padLeft(2, '0')}'
+        '${d.minute.toString().padLeft(2, '0')}';
+    var outDir = await getExternalStorageDirectory();
+    if (outDir == null) {
+      throw Exception('External storage is not available on this device.');
+    }
+    if (!outDir.existsSync()) outDir.createSync(recursive: true);
+    final payload = <String, dynamic>{
+      'app': 'tutors_desk',
+      'version': 1,
+      'exportedAt': d.toIso8601String(),
+      'entries': [for (final e in entries) e.toJson()],
+      'files': files,
+    };
+    var n = 0;
+    String path;
+    do {
+      path =
+          '${outDir.path}${Platform.pathSeparator}${_fileTag}_$ts${n > 0 ? '_$n' : ''}.json';
+      n++;
+    } while (File(path).existsSync());
+    await File(path).writeAsString(json.encode(payload));
+    return path;
+  }
+
+  /// Restores a file produced by [export] into the current library.
+  /// Merges: papers already present keep their current entry, missing ones
+  /// are added; stored files are (re)written from the backup. Returns the
+  /// number of papers added.
+  static Future<int> restore(File f) async {
+    final m =
+        (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>();
+    if (m['app'] != 'tutors_desk' ||
+        m['entries'] is! List ||
+        m['files'] is! Map) {
+      throw Exception("That is not a Tutor's Desk backup file.");
+    }
+    final rootDir = await PaperLibrary.root();
+    final files = (m['files'] as Map).cast<String, dynamic>();
+    files.forEach((key, value) {
+      final parts = key.split('/');
+      if (parts.length != 2) return;
+      final id = parts[0];
+      final name = parts[1];
+      if (id.isEmpty ||
+          name.isEmpty ||
+          id.startsWith('.') ||
+          name.startsWith('.') ||
+          id.contains(Platform.pathSeparator) ||
+          name.contains(Platform.pathSeparator)) {
+        return;
+      }
+      final dir = Directory('${rootDir.path}${Platform.pathSeparator}$id');
+      if (!dir.existsSync()) dir.createSync(recursive: true);
+      File('${dir.path}${Platform.pathSeparator}$name')
+          .writeAsBytesSync(base64Decode(value as String));
+    });
+    final current = await PaperLibrary.loadEntries();
+    final known = current.map((e) => e.id).toSet();
+    var added = 0;
+    for (final raw in m['entries'] as List) {
+      final e = PaperEntry.fromJson((raw as Map).cast<String, dynamic>());
+      if (known.contains(e.id)) continue;
+      current.add(e);
+      known.add(e.id);
+      added++;
+    }
+    if (added > 0) await PaperLibrary._saveEntries(current);
+    return added;
+  }
+}

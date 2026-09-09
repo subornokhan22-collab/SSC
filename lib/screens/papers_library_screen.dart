@@ -63,6 +63,60 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
+  // ── Backup / Restore ────────────────────────────────────────────
+  // Android deletes the app's private folder on uninstall, so the tutor can
+  // keep the whole library as one file (Drive / WhatsApp) and restore it.
+
+  Future<void> _backup() async {
+    String? err;
+    String? path;
+    try {
+      path = await PaperBackup.export();
+    } catch (e) {
+      err = e.toString();
+    }
+    if (!mounted) return;
+    if (err != null) {
+      _snack('Backup failed: $err');
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Backup saved'),
+        content: SingleChildScrollView(
+          child: Text(
+            'Keep this file somewhere safe (Google Drive, WhatsApp, etc.). '
+            'After reinstalling the app, tap Restore and choose this file.\n\n'
+            '$path',
+            style: const TextStyle(fontSize: 13, height: 1.45),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _restore() async {
+    final picked = await FilePicker.platform.pickFiles(type: FileType.any);
+    final p = picked?.files.single.path;
+    if (p == null || !mounted) return;
+    try {
+      final added = await PaperBackup.restore(File(p));
+      await _reload();
+      _snack(added > 0
+          ? 'Restored $added paper(s).'
+          : 'That backup had no new papers.');
+    } catch (e) {
+      _snack('Restore failed: $e');
+    }
+  }
+
   // ── Saved tab ───────────────────────────────────────────────────
 
   /// Opens the OMR scanner with this paper's answer key pre-loaded — the
@@ -454,7 +508,21 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Question Papers')),
+      appBar: AppBar(
+        title: const Text('Question Papers'),
+        actions: [
+          IconButton(
+            tooltip: 'Backup',
+            icon: const Icon(Icons.upload_file_outlined),
+            onPressed: _backup,
+          ),
+          IconButton(
+            tooltip: 'Restore',
+            icon: const Icon(Icons.file_download_outlined),
+            onPressed: _restore,
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
         icon: const Icon(Icons.add_photo_alternate_rounded),
