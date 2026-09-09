@@ -35,7 +35,40 @@ jobs:
         run: dart run flutter_launcher_icons
 
       - name: Build APK
-        run: flutter build apk --release --split-per-abi
+        run: |
+          flutter build apk --release --split-per-abi 2>&1 | tee build.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Report failure tail (diagnostic)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tail -c 24000 build.log > ci_failure_tail.log 2>/dev/null || true
+          python3 - <<'EOF'
+          import base64, json, os, urllib.request
+          try:
+              data = open('ci_failure_tail.log', 'rb').read()
+          except Exception:
+              data = b'(no build.log found)'
+          req = urllib.request.Request(
+            f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/contents/ci_failure_tail.log",
+            data=json.dumps({
+              'message': 'CI failure tail (auto)',
+              'content': base64.b64encode(data).decode()
+            }).encode(),
+            headers={
+              'Authorization': f"token {os.environ['GH_TOKEN']}",
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json'
+            },
+            method='PUT')
+          try:
+              urllib.request.urlopen(req)
+              print('failure tail committed to ci_failure_tail.log')
+          except Exception as e:
+              print('upload failed:', e)
+          EOF
 
       - name: Upload APK to Releases (no storage quota!)
         env:
