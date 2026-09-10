@@ -32,7 +32,21 @@ jobs:
         run: dart run flutter_launcher_icons
 
       - name: Build APK
-        run: flutter build apk --release --split-per-abi
+        run: |
+          set -o pipefail
+          flutter build apk --release --split-per-abi 2>&1 | tee flutter-build.log
+
+      - name: Post build log (TEMP diagnostic)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tail -c 60000 flutter-build.log > /tmp/log-tail.txt
+          gh release create "ci-diag-${{ github.run_id }}" \
+            --repo "${{ github.repository }}" \
+            --title "CI diagnostic log (temporary)" \
+            --notes-file /tmp/log-tail.txt \
+            --latest=false
 
       - name: Upload APK to Releases (no storage quota!)
         env:
