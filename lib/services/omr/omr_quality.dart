@@ -86,7 +86,18 @@ class OmQuality {
 
     final sharp = _laplacianVariance(g, _outW, outH);
     final otsuT = _otsu(g);
-    final (sheetFrac, quad) = _sheetQuad(g, _outW, outH, fw, fh, otsuT);
+    // A patterned dark background (woven carpet, busy tablecloth) puts
+    // bright threads above a whole-frame Otsu threshold, and they merge
+    // with the sheet in the paper mask. The sheet is the brightest
+    // region in the frame, so also demand a threshold tied to the
+    // brightest pixel seen; in a clean scene Otsu is already higher and
+    // this never binds.
+    var maxLuma = 0;
+    for (final v in g) {
+      if (v > maxLuma) maxLuma = v;
+    }
+    final paperT = math.max(otsuT, (maxLuma * 0.62).round());
+    final (sheetFrac, quad) = _sheetQuad(g, _outW, outH, fw, fh, paperT);
 
     // Marks are only meaningful on top of a plausible sheet — without one,
     // skip the four flood-fill searches entirely (the common case while

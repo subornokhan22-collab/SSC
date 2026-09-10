@@ -155,11 +155,30 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       } finally {
         await scanner.close();
       }
-    } catch (_) {
-      // The scanner isn't available on this phone (no Google Play
-      // services support) — keep the old flow working underneath.
+    } catch (e) {
+      // The scanner isn't available on this phone (usually Google Play
+      // services missing or out of date) — say why, then keep the old
+      // flow working underneath.
       if (mounted) {
-        _snack('Google scanner unavailable — using the in-app camera.');
+        final why = e.toString().replaceFirst('PlatformException(', '');
+        await showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            title: const Text('Google scanner unavailable'),
+            content: Text(
+                'It could not start on this phone. Updating Google Play '
+                'services usually fixes this.\n\n'
+                'Error: $why\n\n'
+                'You can continue with the in-app camera.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Use in-app camera'),
+              ),
+            ],
+          ),
+        );
         await _openLiveScan();
       }
     }
