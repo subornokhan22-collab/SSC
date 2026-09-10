@@ -4,6 +4,22 @@ import 'dart:ui' as ui;
 
 import 'omr_geometry.dart';
 
+/// Argument bundle for running [OMrScanner.scan] via [compute] —
+/// `compute` sends a single message across the isolate boundary.
+class OmScanRequest {
+  final Uint8List photoBytes;
+  final int total;
+
+  const OmScanRequest(this.photoBytes, this.total);
+}
+
+/// Top-level entry point for [compute] (only top-level/static functions
+/// may cross the isolate boundary). Running the whole scan off the UI
+/// isolate keeps the interface responsive while a photo — or a gallery
+/// batch — is being read.
+Future<OmScanResult> omrScanIsolateEntry(OmScanRequest req) =>
+    OMrScanner.scan(req.photoBytes, total: req.total);
+
 /// Result of reading one photographed OMR sheet.
 class OmScanResult {
   final int total;
@@ -125,34 +141,56 @@ class OMrScanner {
     }
 
     // Work on roughly the sheet's own resolution so one bubble stays a
-    // sensible number of pixels (≈10–13 px). Rasterise through a canvas,
-    // then read the pixels back as raw RGBA (the default byte format).
+    // sensible number of pixels (≈10–13 px). Downsample by hand — box
+    // average straight to luma from the decoded image's own pixel data —
+    // instead of drawing through a Canvas/PictureRecorder: Canvas.toImage
+    // needs the engine's raster thread and throws the moment this
+    // pipeline runs inside compute() (see omrScanIsolateEntry), which is
+    // exactly where a scan this size belongs so the UI never freezes.
     const targetH = 2339;
-    final s = targetH / decoded.height;
-    final w = (decoded.width * s).round();
+    final srcW = decoded.width;
+    final srcH = decoded.height;
+    final srcBytes =
+        (await decoded.toByteData(format: ui.ImageByteFormat.rawRgba))
+            ?.buffer
+            .asUint8List();
+    if (srcBytes == null) {
+      return OmScanResult.failed(
+          'Image could not be processed. Try a different photo.');
+    }
+    final s = targetH / srcH;
+    final w = (srcW * s).round();
     final h = targetH;
     if (w < 200) {
       return OmScanResult.failed('Photo is too small to scan.');
     }
-    final rec = ui.PictureRecorder();
-    final canvas = ui.Canvas(rec);
-    canvas.scale(s, s);
-    canvas.drawImage(
-        decoded, ui.Offset.zero,
-        ui.Paint()..filterQuality = ui.FilterQuality.medium);
-    final workImg = await rec.endRecording().toImage(w, h);
-    final raw = (await workImg.toByteData())?.buffer.asUint8List();
-    if (raw == null) {
-      return OmScanResult.failed(
-          'Image could not be processed. Try a different photo.');
-    }
 
     final pixels = Uint8List(w * h);
-    for (var i = 0; i < w * h; i++) {
-      final o = i * 4; // raw RGBA
-      // Luma (BT.601); the weighted sum is always within 0..65280, so the
-      // >> 8 result is a valid 8-bit gray value with no clamping needed.
-      pixels[i] = (raw[o] * 77 + raw[o + 1] * 150 + raw[o + 2] * 29) >> 8;
+    for (var dy = 0; dy < h; dy++) {
+      final sy0 = (dy * srcH / h).floor();
+      final sy1 =
+          math.max(sy0 + 1, ((dy + 1) * srcH / h).ceil()).clamp(0, srcH);
+      final orow = dy * w;
+      for (var dx = 0; dx < w; dx++) {
+        final sx0 = (dx * srcW / w).floor();
+        final sx1 =
+            math.max(sx0 + 1, ((dx + 1) * srcW / w).ceil()).clamp(0, srcW);
+        var sum = 0, n = 0;
+        for (var sy = sy0; sy < sy1; sy++) {
+          final srow = sy * srcW;
+          for (var sx = sx0; sx < sx1; sx++) {
+            final o = (srow + sx) * 4;
+            // Luma (BT.601); the weighted sum is always within 0..65280,
+            // so the >> 8 result is a valid 8-bit gray value.
+            sum += (srcBytes[o] * 77 +
+                    srcBytes[o + 1] * 150 +
+                    srcBytes[o + 2] * 29) >>
+                8;
+            n++;
+          }
+        }
+        pixels[orow + dx] = n == 0 ? 0 : (sum ~/ n);
+      }
     }
 
     final double otsuT = _otsu(pixels);
@@ -193,6 +231,21 @@ class OMrScanner {
     }
     final seed = ui.Offset(cx, cy);
 
+    // The paper-fallback path can be needed for up to all four corners
+    // plus once more for the outlier swap — every call used to redo the
+    // same seeded flood-fill over the *entire* photo (≈4M pixels each).
+    // Compute it once, lazily, and hand the same component to every call.
+    Uint8List? sharedComp;
+    var sharedCompReady = false;
+    Uint8List? paperComp() {
+      if (!sharedCompReady) {
+        sharedComp =
+            _paperComponent(paper, w, h, seed.dx.round(), seed.dy.round());
+        sharedCompReady = true;
+      }
+      return sharedComp;
+    }
+
     final corners = <DetectedCorner>[];
     for (var c = 0; c < 4; c++) {
       final mark = marks[c];
@@ -209,7 +262,7 @@ class OMrScanner {
           continue;
         }
       }
-      final fallback = _paperCornerFallback(c, paper, w, h, seed);
+      final fallback = _paperCornerFallback(c, paper, w, h, paperComp());
       if (fallback == null) {
         return OmScanResult.failed(
             'Corner marks not found. Keep the whole OMR sheet in frame, in even light, and take the photo again.');
@@ -222,7 +275,7 @@ class OMrScanner {
     // paper-corner fallback so the homography stage can still anchor well.
     final outlier = _outlierMarkIndex(corners, w, h);
     if (outlier >= 0) {
-      final fb = _paperCornerFallback(outlier, paper, w, h, seed);
+      final fb = _paperCornerFallback(outlier, paper, w, h, paperComp());
       if (fb != null) corners[outlier] = fb;
     }
 
@@ -660,13 +713,15 @@ class OMrScanner {
   }
 
   static DetectedCorner? _paperCornerFallback(
-      int corner, Uint8List paper, int w, int h, ui.Offset seed) {
+      int corner, Uint8List paper, int w, int h, Uint8List? comp) {
     final band = 0.45;
-    // Restrict the search to the paper region connected to [seed] (the
-    // sheet itself). A neighbouring white sheet in the corner band then
-    // can't win the "extreme bright pixel" search. When the seed isn't on
-    // paper (no marks found, centre off the sheet) search the whole frame.
-    final comp = _paperComponent(paper, w, h, seed.dx.round(), seed.dy.round());
+    // [comp] restricts the search to the paper region connected to the
+    // scan's seed point (the sheet itself) — computed once by the caller
+    // and shared across every corner + the outlier check, since it's a
+    // full flood-fill over the whole photo. A neighbouring white sheet in
+    // the corner band then can't win the "extreme bright pixel" search.
+    // When the seed isn't on paper [comp] is null and the whole frame is
+    // searched.
     var best = double.infinity;
     ui.Offset bestP = ui.Offset.zero;
     var found = false;

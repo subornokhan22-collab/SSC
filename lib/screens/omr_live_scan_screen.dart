@@ -32,7 +32,12 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   bool _capturing = false;
 
   OmFrameQuality? _quality;
-  int _streak = 0;
+  /// Leaky-bucket confidence toward auto-capture: +1 on a ready frame,
+  /// -[_confidenceLoss] on a not-ready one (clamped to 0). A single
+  /// tremor/blur frame no longer wipes all progress; a genuinely shaky
+  /// or blurry hold still can't reach the target (it leaks faster than
+  /// it fills).
+  int _confidence = 0;
   DateTime _lastAnalyzed = DateTime.fromMillisecondsSinceEpoch(0);
 
   /// Auto-capture on/off. When off, the box still shows readiness (green =
@@ -47,7 +52,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   bool _streamDead = false;
   Timer? _streamWatchdog;
 
-  static const _readyStreak = 15; // ~1 s of good frames at the throttle rate
+  // At the ~15 fps analysis rate an uninterrupted run to target takes
+  // ~0.55 s; the leak lets a real capture land in roughly 0.6-1.2 s of
+  // "mostly good" framing instead of demanding 15 perfect frames.
+  static const _confidenceTarget = 8;
+  static const _confidenceLoss = 3;
   static const _minFrameGap = Duration(milliseconds: 66);
   static const _minFrameGapHunt = Duration(milliseconds: 90);
   static const _streamDeadline = Duration(milliseconds: 2500);
@@ -149,9 +158,15 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     _framesSeen++;
     final prev = _quality;
     _quality = q;
-    _streak = q.ready ? _streak + 1 : 0;
-    if (_autoCapture && q.ready && _streak >= _readyStreak && !_capturing) {
-      _streak = 0;
+    _confidence = q.ready
+        ? (_confidence + 1 > _confidenceTarget
+            ? _confidenceTarget
+            : _confidence + 1)
+        : (_confidence - _confidenceLoss < 0
+            ? 0
+            : _confidence - _confidenceLoss);
+    if (_autoCapture && _confidence >= _confidenceTarget && !_capturing) {
+      _confidence = 0;
       _capture();
       return;
     }
@@ -259,8 +274,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                 child: CustomPaint(
                     painter: _GuidePainter(
                         quality: _quality,
-                        streak: _streak,
-                        readyStreak: _readyStreak,
+                        streak: _confidence,
+                        readyStreak: _confidenceTarget,
                         streamDead: _streamDead,
                         autoCapture: _autoCapture),
                     child: const SizedBox.expand())),

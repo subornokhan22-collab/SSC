@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -195,7 +196,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     });
     try {
       final sw = Stopwatch()..start();
-      final res = await OMrScanner.scan(photo, total: _total);
+      final res =
+          await compute(omrScanIsolateEntry, OmScanRequest(photo, _total));
       if (!res.ok) {
         _snack(res.error ?? 'Scan failed');
         setState(() => _busy = false);
@@ -1065,7 +1067,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       setState(() => _batchProgress = 'Scanning $idx/${picked.length}…');
       try {
         final bytes = await f.readAsBytes();
-        final res = await OMrScanner.scan(bytes, total: _total);
+        final res =
+            await compute(omrScanIsolateEntry, OmScanRequest(bytes, _total));
         if (!res.ok) continue; // unreadable sheet — skip, keep going
         final g = OMrScanner.grade(res, _key);
         final rec = _recordOf(res, g);
