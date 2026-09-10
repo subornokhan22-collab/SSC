@@ -984,7 +984,7 @@ class OMrScanner {
       const ui.Offset(0, 0),
       ui.Offset(w.toDouble(), 0),
       ui.Offset(w.toDouble(), h.toDouble()),
-      const ui.Offset(0, h.toDouble()),
+      ui.Offset(0, h.toDouble()),
     ];
     // Loose crop: the paper stops before the frame — anchor to the
     // paper's own extreme corners instead.
