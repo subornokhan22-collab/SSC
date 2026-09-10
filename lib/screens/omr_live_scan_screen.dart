@@ -49,6 +49,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
 
   static const _readyStreak = 15; // ~1 s of good frames at the throttle rate
   static const _minFrameGap = Duration(milliseconds: 66);
+  static const _minFrameGapHunt = Duration(milliseconds: 90);
   static const _streamDeadline = Duration(milliseconds: 2500);
 
   @override
@@ -125,8 +126,15 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   DateTime _lastUi = DateTime.fromMillisecondsSinceEpoch(0);
 
   void _onFrame(CameraImage frame) {
+    // While a capture is being processed the guidance can't change the
+    // outcome — skip the analysis instead of burning CPU on every frame.
+    if (_capturing) return;
     final now = DateTime.now();
-    if (now.difference(_lastAnalyzed) < _minFrameGap) return;
+    // Analyse every 66 ms while the sheet is locked (the capture streak
+    // needs the cadence) and every ~90 ms while hunting (the box is a
+    // static guide then, so coarser updates are invisible).
+    final gap = _quality?.ready == true ? _minFrameGap : _minFrameGapHunt;
+    if (now.difference(_lastAnalyzed) < gap) return;
     _lastAnalyzed = now;
     OmFrameQuality q;
     try {
@@ -253,7 +261,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                         quality: _quality,
                         streak: _streak,
                         readyStreak: _readyStreak,
-                        streamDead: _streamDead),
+                        streamDead: _streamDead,
+                        autoCapture: _autoCapture),
                     child: const SizedBox.expand())),
           ],
           // Top bar.
@@ -375,12 +384,14 @@ class _GuidePainter extends CustomPainter {
   final int streak;
   final int readyStreak;
   final bool streamDead;
+  final bool autoCapture;
 
   _GuidePainter(
       {required this.quality,
       required this.streak,
       required this.readyStreak,
-      required this.streamDead});
+      required this.streamDead,
+      this.autoCapture = true});
 
   static const double _aspect = 1654 / 2339; // A4 (page width / height)
 
@@ -405,8 +416,10 @@ class _GuidePainter extends CustomPainter {
         ..addPolygon(pts, true);
       path.fillType = PathFillType.evenOdd;
       canvas.drawPath(path, Paint()..color = const Color(0x73000000));
-      final ready = q!.ready;
-      final color = ready ? const Color(0xFF57D9A3) : Colors.white;
+      // Green = a real OMR sheet is detected, red = it isn't. That's the
+      // whole rule.
+      final color =
+          q!.ready ? const Color(0xFF57D9A3) : const Color(0xFFFF5252);
       final edge = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
@@ -448,11 +461,11 @@ class _GuidePainter extends CustomPainter {
     canvas.drawRect(Rect.fromLTWH(gx + gw, gy, w - gx - gw, gh), dim);
     canvas.drawRect(Rect.fromLTWH(0, gy + gh, w, h - gy - gh), dim);
 
-    // Guide border.
+    // Guide border — red: no OMR sheet detected yet.
     final border = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = Colors.white.withOpacity(.85);
+      ..color = const Color(0xD9FF5252);
     canvas.drawRRect(RRect.fromRectAndRadius(guide, Radius.circular(r)), border);
 
     // Corner brackets.
@@ -460,7 +473,7 @@ class _GuidePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
-    bracket.color = Colors.white;
+    bracket.color = const Color(0xFFFF5252);
     final L = gw * 0.10;
     final tl = Offset(gx, gy);
     final tr = Offset(gx + gw, gy);
@@ -562,10 +575,10 @@ class _GuidePainter extends CustomPainter {
               const Radius.circular(3)),
           fg);
       final tp = TextPainter(
-        text: const TextSpan(
-            text: 'Capturing when ready…',
-            style: TextStyle(
-                color: Colors.white, fontSize: 12, height: 1.3)),
+        text: TextSpan(
+            text: autoCapture ? 'Capturing when ready…' : 'Sheet locked',
+            style:
+                const TextStyle(color: Colors.white, fontSize: 12, height: 1.3)),
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: w - 32);
       tp.paint(canvas, Offset((w - tp.width) / 2, barY + 12));
@@ -576,5 +589,6 @@ class _GuidePainter extends CustomPainter {
   bool shouldRepaint(_GuidePainter old) =>
       old.quality != quality ||
       old.streak != streak ||
-      old.streamDead != streamDead;
+      old.streamDead != streamDead ||
+      old.autoCapture != autoCapture;
 }

@@ -86,28 +86,34 @@ class OmQuality {
 
     final sharp = _laplacianVariance(g, _outW, outH);
     final otsuT = _otsu(g);
-    final dark = (otsuT * 0.55).round();
     final (sheetFrac, quad) = _sheetQuad(g, _outW, outH, fw, fh, otsuT);
 
-    final found = <List<int>?>[
-      for (var c = 0; c < 4; c++) _findMarkCenter(g, _outW, outH, c, dark),
-    ];
-    // Estimate a missing corner from the other three (parallelogram) —
-    // the same trick the scanner uses, so the indicator reflects what
-    // the scanner can actually register even with a neighbouring sheet.
-    for (var c = 0; c < 4; c++) {
-      if (found[c] != null) continue;
-      if (found.where((f) => f != null).length < 3) break;
-      final e = _parallelogram(c, found);
-      if (e != null &&
-          e[0] >= 0 &&
-          e[0] < _outW &&
-          e[1] >= 0 &&
-          e[1] < outH) {
-        found[c] = e;
+    // Marks are only meaningful on top of a plausible sheet — without one,
+    // skip the four flood-fill searches entirely (the common case while
+    // the camera points at a wall, a floor, or a dark scene).
+    var marks = 0;
+    if (quad != null && sheetFrac >= 0.10) {
+      final dark = (otsuT * 0.55).round();
+      final found = <List<int>?>[
+        for (var c = 0; c < 4; c++) _findMarkCenter(g, _outW, outH, c, dark),
+      ];
+      // Estimate a missing corner from the other three (parallelogram) —
+      // the same trick the scanner uses, so the indicator reflects what
+      // the scanner can actually register even with a neighbouring sheet.
+      for (var c = 0; c < 4; c++) {
+        if (found[c] != null) continue;
+        if (found.where((f) => f != null).length < 3) break;
+        final e = _parallelogram(c, found);
+        if (e != null &&
+            e[0] >= 0 &&
+            e[0] < _outW &&
+            e[1] >= 0 &&
+            e[1] < outH) {
+          found[c] = e;
+        }
       }
+      marks = found.where((f) => f != null).length;
     }
-    final marks = found.where((f) => f != null).length;
     return OmFrameQuality(
         sharpness: sharp,
         paperFrac: sheetFrac,
