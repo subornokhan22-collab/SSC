@@ -42,10 +42,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tail -c 60000 flutter-build.log > /tmp/log-tail.txt
-          gh issue create \
-            --title "CI: Build APK log (auto-diagnostic, temporary)" \
-            --body-file /tmp/log-tail.txt \
-            --repo "${{ github.repository }}"
+          gh release create "ci-diag-${{ github.run_id }}" \
+            --repo "${{ github.repository }}" \
+            --title "CI diagnostic log (temporary)" \
+            --notes-file /tmp/log-tail.txt \
+            --latest=false
 
       - name: Upload build log artifact (TEMP diagnostic)
         if: failure()
