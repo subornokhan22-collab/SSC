@@ -231,12 +231,12 @@ class OMrScanner {
         _bestRotationHomography(geo, corners, ink, pixels, w, h);
     if (solved == null) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
+          'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.');
     }
     final homography = solved;
     if (homography.any((v) => !v.isFinite)) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
+          'Could not align the sheet (distorted fit, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.');
     }
 
     // Scale: page diagonal in the working image.
@@ -248,13 +248,13 @@ class OMrScanner {
         OMrGeometry.cornerDiagonal;
     if (!scale.isFinite || scale <= 0) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
+          'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.');
     }
     // A physical A4 sheet photographed for OMR sits well within this range;
     // anything else means the "alignment" is a distorted projective fit.
     if (scale < 0.3 || scale > 3.0) {
       return OmScanResult.failed(
-          'Could not align the sheet. Keep it centered with a small margin, away from any other paper, and take the photo again.');
+          'Could not align the sheet (scale ${scale.toStringAsFixed(2)} — the whole sheet must fit in frame with a small margin).');
     }
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
