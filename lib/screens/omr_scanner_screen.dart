@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
+import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../services/omr/omr_geometry.dart';
@@ -121,6 +122,39 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  /// Primary capture path: Google's ML Kit document scanner — live corner
+  /// tracking, auto-capture and a crop step, all inside Google's own
+  /// scanner UI. It hands back an already-rectified page, so the OMR read
+  /// only has to find the four corner marks on a straight sheet. Phones
+  /// without the required Play services support fall back to the in-app
+  /// guided live scan below.
+  Future<void> _openCamera() async {
+    if (_key.any((k) => k < 0)) {
+      _snack('Complete the answer key first — or tap "Use saved paper".');
+      return;
+    }
+    try {
+      final scanner = DocumentScanner(
+        options: DocumentScannerOptions(
+          documentFormats: {DocumentFormat.jpeg},
+          mode: ScannerMode.full,
+          pageLimit: 1,
+          isGalleryImport: false,
+        ),
+      );
+      try {
+        final result = await scanner.scanDocument();
+        final images = result.images;
+        if (images == null || images.isEmpty) return; // cancelled
+        await _loadAndScan(images.first);
+      } finally {
+        await scanner.close();
+      }
+    } catch (_) {
+      if (mounted) await _openLiveScan();
+    }
   }
 
   /// Guided live-camera capture: the in-app preview shows an A4 guide,
@@ -419,7 +453,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           child: AppButton(
                               label: 'Camera',
                               icon: Icons.view_in_ar_rounded,
-                              onPressed: _busy ? null : _openLiveScan)),
+                              onPressed: _busy ? null : _openCamera)),
                       const SizedBox(width: 10),
                       Expanded(
                           child: AppButton(
