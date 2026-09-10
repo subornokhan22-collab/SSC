@@ -290,20 +290,24 @@ class OMrScanner {
     // ── 4. homography (try all four sheet rotations) ───────────────
     final List<double>? solved =
         _bestRotationHomography(geo, corners, ink, pixels, w, h);
-    List<double>? homography =
+    List<double>? candidate =
         (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
     // A page returned by the document scanner is already straight and
     // cropped to the sheet's edges, so its image corners are its page
     // corners — a second alignment that needs no registration marks at
     // all. A sheet without four printed corner marks can only be read
     // through this path.
-    if (homography == null && rectified) {
-      homography = _pageBoundsHomography(geo, ink, pixels, paper, w, h);
+    if (candidate == null && rectified) {
+      candidate = _pageBoundsHomography(geo, ink, pixels, paper, w, h);
     }
-    if (homography == null) {
+    if (candidate == null) {
       return OmScanResult.failed(
           'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.');
     }
+    // Bound to a final: the read below captures [homography] in a
+    // closure, and only a final local keeps its promoted (non-null) type
+    // inside that closure.
+    final homography = candidate;
 
     // Scale: page diagonal in the working image.
     final tl = applyHomography(homography, OMrGeometry.markCenter(0));
