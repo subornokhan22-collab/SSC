@@ -511,9 +511,9 @@ class _GuidePainter extends CustomPainter {
               fontWeight: FontWeight.w700),
         ),
         TextSpan(
-          text: '      ${marks >= 3 ? '✓' : '•'} Marks $marks/4',
+          text: '      ${marks >= 2 ? '✓' : '•'} Marks $marks/4',
           style: TextStyle(
-              color: marks >= 3
+              color: marks >= 2
                   ? const Color(0xFF57D9A3)
                   : Colors.white70,
               fontSize: 13,

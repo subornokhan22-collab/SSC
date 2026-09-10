@@ -36,14 +36,19 @@ class OmFrameQuality {
     this.frameH = 0,
   });
 
+  /// True only for a real OMR sheet: a sheet-shaped region, big enough,
+  /// sharp — AND at least two printed corner marks visible. The marks are
+  /// the decisive gate: a plain wall/desk also looks like a big sharp
+  /// white region, but never carries corner marks.
   bool get ready =>
-      quad != null && paperFrac >= 0.25 && sharpness >= 40;
+      quad != null && paperFrac >= 0.25 && sharpness >= 40 && marks >= 2;
 
   /// Human-readable hint for the overlay (null when [ready]).
   String? get reason {
     if (quad == null) return 'Center the sheet inside the frame';
     if (paperFrac < 0.25) return 'Bring the sheet closer';
     if (sharpness < 40) return 'Hold steady until it is sharp';
+    if (marks < 2) return 'Corner marks not visible — show the printed sheet';
     return null;
   }
 }
