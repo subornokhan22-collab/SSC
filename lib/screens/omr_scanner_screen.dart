@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -127,12 +128,23 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// Primary capture path: Google's ML Kit document scanner — live corner
   /// tracking, auto-capture and a crop step, all inside Google's own
   /// scanner UI. It hands back an already-rectified page, so the OMR read
-  /// only has to find the four corner marks on a straight sheet. Phones
-  /// without the required Play services support fall back to the in-app
-  /// guided live scan below.
+  /// only has to find the four corner marks on a straight sheet (or none
+  /// at all — a markless page aligns on its own edges).
+  ///
+  /// The scanner runs inside Google Play services; phones without it
+  /// (or with it too old) make the native side throw instead of opening
+  /// the scanner, so the pre-flight check below catches that first.
   Future<void> _openCamera() async {
     if (_key.any((k) => k < 0)) {
       _snack('Complete the answer key first — or tap "Use saved paper".');
+      return;
+    }
+    final gms = await _playServicesVersion();
+    if (gms <= 0) {
+      await _googleScannerUnavailable(
+          'Google Play services is missing on this phone, so the Google '
+          'scanner cannot start. Installing or updating it in the Play '
+          'Store usually fixes this.');
       return;
     }
     try {
@@ -156,33 +168,68 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         await scanner.close();
       }
     } catch (e) {
-      // The scanner isn't available on this phone (usually Google Play
-      // services missing or out of date) — say why, then keep the old
-      // flow working underneath.
-      if (mounted) {
-        final why = e.toString().replaceFirst('PlatformException(', '');
-        await showDialog<void>(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => AlertDialog(
-            title: const Text('Google scanner unavailable'),
-            content: Text(
-                'It could not start on this phone. Updating Google Play '
-                'services usually fixes this.\n\n'
-                'Error: $why\n\n'
-                'You can continue with the in-app camera.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Use in-app camera'),
-              ),
-            ],
-          ),
-        );
-        await _openLiveScan();
-      }
+      if (!mounted) return;
+      final why = e.toString().replaceFirst('PlatformException(', '');
+      await _googleScannerUnavailable(
+          'It could not start on this phone. Updating Google Play '
+          'services usually fixes this.',
+          detail: why);
     }
   }
+
+  /// Version of Google Play services on this phone (0 = missing/unknown).
+  Future<int> _playServicesVersion() async {
+    try {
+      final v = await _appChannel.invokeMethod<int>('playServicesVersion');
+      return v ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// Shown when the Google scanner cannot start: offers the Play Store
+  /// fix, then continues with the in-app camera underneath.
+  Future<void> _googleScannerUnavailable(String reason,
+      {String? detail}) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Google scanner unavailable'),
+        content: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(reason),
+            if (detail != null) ...[
+              const SizedBox(height: 10),
+              Text('Error: $detail',
+                  style: const TextStyle(
+                      fontSize: 10.5, height: 1.35, color: AppTheme.muted)),
+            ],
+          ]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              try {
+                await _appChannel.invokeMethod('openPlayServices');
+              } catch (_) {}
+            },
+            child: const Text('Open Play Store'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Use in-app camera'),
+          ),
+        ],
+      ),
+    );
+    await _openLiveScan();
+  }
+
+  static const MethodChannel _appChannel =
+      MethodChannel('com.tutorsdesk.app/storage');
 
   /// Guided live-camera capture: the in-app preview shows an A4 guide,
   /// sheet/marks/sharp indicators and auto-captures a steady frame.

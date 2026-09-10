@@ -27,6 +27,16 @@
 -keep class androidx.startup.** { *; }
 -dontwarn androidx.**
 
+# Google ML Kit document scanner (Camera button): the plugin talks to
+# Google Play services' scanner API; keep both sides intact or the
+# native side NPEs at runtime.
+-keep class com.google_mlkit_document_scanner.** { *; }
+-keep class com.google.mlkit.vision.documentscanner.** { *; }
+-keep class com.google.android.gms.vision.documentscanner.** { *; }
+-keep class com.google.android.gms.common.GoogleApiAvailability { *; }
+-keep class com.google.android.gms.common.internal.** { *; }
+-dontwarn com.google.android.gms.**
+
 # Keep annotations and generic signatures so reflective lookups still resolve.
 -keepattributes *Annotation*, Signature, InnerClasses, EnclosingMethod
 

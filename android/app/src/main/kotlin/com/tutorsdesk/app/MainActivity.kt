@@ -52,6 +52,44 @@ class MainActivity : FlutterActivity() {
                     "externalStorageDir" -> {
                         result.success(Environment.getExternalStorageDirectory().absolutePath)
                     }
+                    "playServicesVersion" -> {
+                        // 0 = Google Play services missing (the ML Kit
+                        // scanner runs inside it and NPEs without it).
+                        try {
+                            val gms = com.google.android.gms.common.GoogleApiAvailability.getInstance()
+                            val status = gms.isGooglePlayServicesAvailable(this)
+                            result.success(
+                                if (status == com.google.android.gms.common.GoogleApiAvailability.API_SUCCESS)
+                                    gms.getApiClientVersion()
+                                else 0
+                            )
+                        } catch (e: Exception) {
+                            result.success(0)
+                        }
+                    }
+                    "openPlayServices" -> {
+                        // Deep-link to the Play services entry in the
+                        // Play Store (browser fallback if no store app).
+                        try {
+                            startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=com.google.android.gms")
+                                )
+                            )
+                        } catch (e: Exception) {
+                            try {
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms")
+                                    )
+                                )
+                            } catch (e2: Exception) {
+                            }
+                        }
+                        result.success(true)
+                    }
                     else -> result.notImplemented()
                 }
             }
