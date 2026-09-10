@@ -93,10 +93,34 @@ class OmQuality {
     // the camera points at a wall, a floor, or a dark scene).
     var marks = 0;
     if (quad != null && sheetFrac >= 0.10) {
+      // The sheet's corners in preview pixels, and its shorter side —
+      // a real registration mark sits within a quarter of it from the
+      // sheet corner.
+      final qx = [for (final p in quad) p.dx * _outW / fw];
+      final qy = [for (final p in quad) p.dy * outH / fh];
+      var minDim = 1e18;
+      for (var c = 0; c < 4; c++) {
+        for (var d = 0; d < 4; d++) {
+          if (d == c) continue;
+          final dx = (qx[c] - qx[d]).abs();
+          final dy = (qy[c] - qy[d]).abs();
+          final dd = math.sqrt(dx * dx + dy * dy);
+          if (dd < minDim) minDim = dd;
+        }
+      }
       final dark = (otsuT * 0.55).round();
       final found = <List<int>?>[
         for (var c = 0; c < 4; c++) _findMarkCenter(g, _outW, outH, c, dark),
       ];
+      // Keep only blobs that are actually at the sheet's corner. Dark
+      // wheels, shadows or seams elsewhere in the quadrant are not marks.
+      for (var c = 0; c < 4; c++) {
+        final f = found[c];
+        if (f == null) continue;
+        final dx = f[0] - qx[c];
+        final dy = f[1] - qy[c];
+        if (math.sqrt(dx * dx + dy * dy) > minDim * 0.35) found[c] = null;
+      }
       // Estimate a missing corner from the other three (parallelogram) —
       // the same trick the scanner uses, so the indicator reflects what
       // the scanner can actually register even with a neighbouring sheet.
@@ -240,6 +264,13 @@ class OmQuality {
     final spread = math.min(maxXs - minXs, maxYs - minYs);
     if (spread < w * 0.4) return (frac, null);
     if (quadArea < total * 0.12) return (frac, null);
+    // A real sheet never covers the whole frame (a wall + floor background
+    // blob would), and its outline keeps a paper-like aspect — a thin
+    // wall strip or full-frame background fails here.
+    if (quadArea > total * 0.92) return (frac, null);
+    final boxW = maxXs - minXs;
+    final boxH = maxYs - minYs;
+    if (boxH > boxW * 2.3 || boxW > boxH * 2.3) return (frac, null);
 
     final sx = nativeW / w.toDouble();
     final sy = nativeH / h.toDouble();
