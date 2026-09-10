@@ -53,16 +53,16 @@ class MainActivity : FlutterActivity() {
                         result.success(Environment.getExternalStorageDirectory().absolutePath)
                     }
                     "playServicesVersion" -> {
-                        // 0 = Google Play services missing (the ML Kit
-                        // scanner runs inside it and NPEs without it).
+                        // 1 = Google Play services present, 0 = missing or
+                        // out of date (the ML Kit scanner runs inside it
+                        // and NPEs without it). The status code 0 is the
+                        // stable "available" value in Google's contract;
+                        // the named constants were removed from newer
+                        // play-services-base releases, so compare with 0.
                         try {
                             val gms = com.google.android.gms.common.GoogleApiAvailability.getInstance()
                             val status = gms.isGooglePlayServicesAvailable(this)
-                            result.success(
-                                if (status == com.google.android.gms.common.GoogleApiAvailability.API_SUCCESS)
-                                    gms.getApiClientVersion()
-                                else 0
-                            )
+                            result.success(if (status == 0) 1 else 0)
                         } catch (e: Exception) {
                             result.success(0)
                         }

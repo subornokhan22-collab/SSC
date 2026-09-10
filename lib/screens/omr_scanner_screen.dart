@@ -142,9 +142,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     final gms = await _playServicesVersion();
     if (gms <= 0) {
       await _googleScannerUnavailable(
-          'Google Play services is missing on this phone, so the Google '
-          'scanner cannot start. Installing or updating it in the Play '
-          'Store usually fixes this.');
+          'Google Play services isn\'t available on this phone (missing '
+          'or out of date), so the Google scanner cannot start. Updating '
+          'it in the Play Store usually fixes this.');
       return;
     }
     try {
@@ -177,7 +177,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     }
   }
 
-  /// Version of Google Play services on this phone (0 = missing/unknown).
+  /// Google Play services status on this phone (1 = available, 0 =
+  /// missing/out of date/unknown).
   Future<int> _playServicesVersion() async {
     try {
       final v = await _appChannel.invokeMethod<int>('playServicesVersion');
