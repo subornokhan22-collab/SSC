@@ -148,7 +148,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         final result = await scanner.scanDocument();
         final images = result.images;
         if (images == null || images.isEmpty) return; // cancelled
-        await _loadAndScan(images.first);
+        // The page comes back straight and cropped to the sheet's
+        // edges — the scan may anchor on the page boundary when the
+        // sheet has no (or too few) printed corner marks.
+        await _loadAndScan(images.first, rectified: true);
       } finally {
         await scanner.close();
       }
@@ -175,7 +178,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     await _loadAndScan(result);
   }
 
-  Future<void> _loadAndScan(String path) async {
+  Future<void> _loadAndScan(String path, {bool rectified = false}) async {
     try {
       final bytes = await File(path).readAsBytes();
       final codec = await ui.instantiateImageCodec(bytes);
@@ -188,7 +191,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _graded = null;
         _overlayJpg = null;
       });
-      _scan();
+      _scan(rectified: rectified);
     } catch (e) {
       _snack('Could not load the photo: $e');
     }
@@ -213,7 +216,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   // ── scan ──────────────────────────────────────────────────────────
 
-  Future<void> _scan() async {
+  Future<void> _scan({bool rectified = false}) async {
     final photo = _photoBytes;
     if (photo == null) {
       _snack('Take a clear photo of the OMR sheet first.');
@@ -230,8 +233,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     });
     try {
       final sw = Stopwatch()..start();
-      final res =
-          await compute(omrScanIsolateEntry, OmScanRequest(photo, _total));
+      final res = await compute(
+          omrScanIsolateEntry, OmScanRequest(photo, _total, rectified));
       if (!res.ok) {
         _snack(res.error ?? 'Scan failed');
         setState(() => _busy = false);

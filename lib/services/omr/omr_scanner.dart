@@ -10,7 +10,13 @@ class OmScanRequest {
   final Uint8List photoBytes;
   final int total;
 
-  const OmScanRequest(this.photoBytes, this.total);
+  /// True when the image is a page a document scanner returned — already
+  /// straight and cropped to the sheet's edges, so the read may fall back
+  /// to the page boundary when the sheet carries no (or too few)
+  /// registration marks.
+  final bool rectified;
+
+  const OmScanRequest(this.photoBytes, this.total, [this.rectified = false]);
 }
 
 /// Top-level entry point for [compute] (only top-level/static functions
@@ -18,7 +24,8 @@ class OmScanRequest {
 /// isolate keeps the interface responsive while a photo — or a gallery
 /// batch — is being read.
 Future<OmScanResult> omrScanIsolateEntry(OmScanRequest req) =>
-    OMrScanner.scan(req.photoBytes, total: req.total);
+    OMrScanner.scan(
+        req.photoBytes, total: req.total, rectified: req.rectified);
 
 /// Result of reading one photographed OMR sheet.
 class OmScanResult {
@@ -124,6 +131,7 @@ class OMrScanner {
   static Future<OmScanResult> scan(
     Uint8List photoBytes, {
     required int total,
+    bool rectified = false,
   }) async {
     if (total < 1 || total > 100) {
       return OmScanResult.failed('Question count must be 1–100.');
@@ -282,14 +290,19 @@ class OMrScanner {
     // ── 4. homography (try all four sheet rotations) ───────────────
     final List<double>? solved =
         _bestRotationHomography(geo, corners, ink, pixels, w, h);
-    if (solved == null) {
+    List<double>? homography =
+        (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
+    // A page returned by the document scanner is already straight and
+    // cropped to the sheet's edges, so its image corners are its page
+    // corners — a second alignment that needs no registration marks at
+    // all. A sheet without four printed corner marks can only be read
+    // through this path.
+    if (homography == null && rectified) {
+      homography = _pageBoundsHomography(geo, ink, pixels, paper, w, h);
+    }
+    if (homography == null) {
       return OmScanResult.failed(
           'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.');
-    }
-    final homography = solved;
-    if (homography.any((v) => !v.isFinite)) {
-      return OmScanResult.failed(
-          'Could not align the sheet (distorted fit, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.');
     }
 
     // Scale: page diagonal in the working image.
@@ -941,6 +954,130 @@ class OMrScanner {
       }
     }
     return bestH;
+  }
+
+  /// Alignment for a page a document scanner returned: the image is
+  /// already straight and cropped to the sheet's edges, so the image
+  /// corners are the page corners — no registration marks required.
+  ///
+  ///  - the frame must keep A4 proportions (a 90°-turned page is
+  ///    landscape and fails the gate; only upright vs. upside-down stays
+  ///    ambiguous),
+  ///  - when the paper mask shows the sheet ending before the frame edge
+  ///    (a loose crop), the paper's own extreme corners anchor the sheet
+  ///    instead of the frame's,
+  ///  - the same orientation probe as [_bestRotationHomography] keeps
+  ///    the side carrying the question grid at the top.
+  static List<double>? _pageBoundsHomography(
+      OMrGeometry geo,
+      Uint8List? ink,
+      Uint8List? luma,
+      Uint8List paper,
+      int w,
+      int h) {
+    final a4 = OMrGeometry.pageW / OMrGeometry.pageH;
+    final actual = w / h;
+    if (actual / a4 < 0.94 || actual / a4 > 1.06) return null;
+
+    // Frame corners, clockwise: TL, TR, BR, BL.
+    var photoPts = <ui.Offset>[
+      const ui.Offset(0, 0),
+      ui.Offset(w.toDouble(), 0),
+      ui.Offset(w.toDouble(), h.toDouble()),
+      const ui.Offset(0, h.toDouble()),
+    ];
+    // Loose crop: the paper stops before the frame — anchor to the
+    // paper's own extreme corners instead.
+    final comp = _paperComponent(paper, w, h, (w / 2).round(), (h / 2).round());
+    if (comp != null) {
+      var count = 0;
+      var s0 = 1e18, s1 = 1e18, s2 = 1e18, s3 = 1e18;
+      var x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0;
+      var x2 = 0.0, y2 = 0.0, x3 = 0.0, y3 = 0.0;
+      for (var y = 0; y < h; y++) {
+        final row = y * w;
+        for (var x = 0; x < w; x++) {
+          if (comp[row + x] == 0) continue;
+          count++;
+          final a = (x + y).toDouble();
+          if (a < s0) {
+            s0 = a;
+            x0 = x.toDouble();
+            y0 = y.toDouble();
+          }
+          final b = (y - x).toDouble();
+          if (b < s1) {
+            s1 = b;
+            x1 = x.toDouble();
+            y1 = y.toDouble();
+          }
+          final c = (-(x + y)).toDouble();
+          if (c < s2) {
+            s2 = c;
+            x2 = x.toDouble();
+            y2 = y.toDouble();
+          }
+          final d = (x - y).toDouble();
+          if (d < s3) {
+            s3 = d;
+            x3 = x.toDouble();
+            y3 = y.toDouble();
+          }
+        }
+      }
+      if (count > w * h * 0.20 && count < w * h * 0.97) {
+        photoPts = <ui.Offset>[
+          ui.Offset(x0, y0),
+          ui.Offset(x1, y1),
+          ui.Offset(x2, y2),
+          ui.Offset(x3, y3),
+        ];
+      }
+    }
+
+    final pagePts = <ui.Offset>[
+      const ui.Offset(0, 0),
+      ui.Offset(OMrGeometry.pageW, 0),
+      ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH),
+      const ui.Offset(0, OMrGeometry.pageH),
+    ];
+
+    List<double>? best;
+    var bestErr = 1e18;
+    for (final rot in const [0, 2]) {
+      final qq = [for (var j = 0; j < 4; j++) photoPts[(j + rot) % 4]];
+      if (!_isConvexQuadrilateral(qq)) continue;
+      final hHom = homographyFrom4(pagePts, qq);
+      if (hHom == null) continue;
+      var err = 0.0;
+      if (luma != null && ink != null) {
+        final gridH = geo.perColumn * OMrGeometry.rowH;
+        final halfGrid = gridH * 0.5;
+        final probeY = OMrGeometry.questionsTop +
+            (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
+        final top =
+            applyHomography(hHom, ui.Offset(OMrGeometry.pageW / 2, probeY));
+        final bottom =
+            applyHomography(hHom, const ui.Offset(OMrGeometry.pageW / 2, 2189));
+        final topVar = _diskVariance(luma, w, h, top.dx, top.dy, 24);
+        final botVar = _diskVariance(luma, w, h, bottom.dx, bottom.dy, 24);
+        if (topVar < 100) err += 0.35;
+        if (botVar > topVar * 0.5) err += 0.6;
+        double topInk = 0;
+        for (final qx in const [400.0, OMrGeometry.pageW / 2, 1254.0]) {
+          final pp = applyHomography(hHom, ui.Offset(qx, probeY));
+          final v = _inkRatio(ink, w, h, pp.dx, pp.dy, 24);
+          if (v > topInk) topInk = v;
+          if (topInk > 0.4) break;
+        }
+        if (topInk < 0.15) err += 0.15 - topInk;
+      }
+      if (err < bestErr) {
+        bestErr = err;
+        best = hHom;
+      }
+    }
+    return best;
   }
 
   /// True if [pts] (in order) form a simple convex quadrilateral.
