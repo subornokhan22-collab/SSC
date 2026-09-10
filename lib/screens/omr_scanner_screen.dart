@@ -156,7 +156,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         await scanner.close();
       }
     } catch (_) {
-      if (mounted) await _openLiveScan();
+      // The scanner isn't available on this phone (no Google Play
+      // services support) — keep the old flow working underneath.
+      if (mounted) {
+        _snack('Google scanner unavailable — using the in-app camera.');
+        await _openLiveScan();
+      }
     }
   }
 
