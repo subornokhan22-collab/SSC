@@ -335,13 +335,26 @@ class OMrScanner {
     // inside that closure.
     final homography = candidate;
 
-    // Scale: page diagonal in the working image.
-    final tl = applyHomography(homography, OMrGeometry.markCenter(0));
-    final br = applyHomography(homography, OMrGeometry.markCenter(3));
+    // Scale: page diagonal in the working image. Deliberately the actual
+    // page corners (0,0) -> (pageW, pageH), not the fiducial mark centers:
+    // _bestRotationHomography proves the winning candidate projects the
+    // page corners to finite, sanely-proportioned locations (its anchors
+    // are sometimes page corners, sometimes mark centers — but the
+    // validation always checks the page corners). The mark centers sit
+    // inset from the page corners and were never part of that guarantee,
+    // so measuring scale there can diverge for a homography that is
+    // otherwise perfectly good — a validated-vs-evaluated mismatch, not a
+    // bad photo.
+    final tl = applyHomography(homography, const ui.Offset(0, 0));
+    final br = applyHomography(
+        homography, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
+    final pageDiagonal = math.sqrt(
+        OMrGeometry.pageW * OMrGeometry.pageW +
+            OMrGeometry.pageH * OMrGeometry.pageH);
     final scale = math.sqrt(
             (br.dx - tl.dx) * (br.dx - tl.dx) +
             (br.dy - tl.dy) * (br.dy - tl.dy)) /
-        OMrGeometry.cornerDiagonal;
+        pageDiagonal;
     if (!scale.isFinite || scale <= 0) {
       return OmScanResult.failed(
           'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.');

@@ -180,9 +180,6 @@ class OMrGeometry {
 
   /// Diagonal between the two TL/BR corner-mark centres — used to
   /// normalise scale when a sheet is photographed.
-  static double get cornerDiagonal =>
-      math.sqrt(math.pow(markCenter(0).dx - markCenter(3).dx, 2) +
-          math.pow(markCenter(0).dy - markCenter(3).dy, 2));
 }
 
 /// A registration corner found in a photo, with flags describing how it
