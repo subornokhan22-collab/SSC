@@ -270,6 +270,36 @@ class OMrScanner {
       return sharedComp;
     }
 
+    // A raw photo must contain the WHOLE sheet: if the paper connected to
+    // the seed reaches the photo's border, part of the sheet (its edge, or
+    // the corner marks on it) lies outside the frame. The corner anchors
+    // would then be taken from the photo edge instead of the sheet edge,
+    // the homography distorts, and the read "succeeds" with the bubbles
+    // sampling the wrong places — garbage with a green light. Fail with a
+    // clear instruction instead. (Scanner pages are excluded: their paper
+    // is cropped to the frame by design.)
+    if (!rectified) {
+      final comp = paperComp();
+      if (comp != null) {
+        final edges = <String>[];
+        for (var x = 0; x < w; x += 2) {
+          if (comp[x] == 1) edges.add('top');
+          if (comp[(h - 1) * w + x] == 1) edges.add('bottom');
+        }
+        for (var y = 0; y < h; y += 2) {
+          if (comp[y * w] == 1) edges.add('left');
+          if (comp[y * w + w - 1] == 1) edges.add('right');
+        }
+        if (edges.isNotEmpty) {
+          final where = edges.toSet().join(' / ');
+          return OmScanResult.failed(
+              'The sheet is cut off at the $where of the photo. Step back '
+              'until the whole sheet — including all four corners — is '
+              'inside the frame, then take the photo again.');
+        }
+      }
+    }
+
     final corners = <DetectedCorner>[];
     for (var c = 0; c < 4; c++) {
       final mark = marks[c];
