@@ -277,6 +277,19 @@ class OMrScanner {
         corners.add(mark);
         continue;
       }
+      // Prefer the paper's own visible edge for a missing corner: it
+      // reflects this photo's actual perspective. The parallelogram
+      // estimate below assumes the sheet projects as a true parallelogram,
+      // which a handheld photo is only approximately — perspective
+      // keystones it into an uneven quadrilateral, so the estimate can
+      // land measurably off from the true corner and feed a bad point
+      // into the homography (→ "no valid scale"). The estimate is the
+      // last resort, for when the paper edge genuinely can't be found.
+      final fallback = _paperCornerFallback(c, paper, w, h, paperComp());
+      if (fallback != null) {
+        corners.add(fallback);
+        continue;
+      }
       if (markCount >= 3) {
         final est = _parallelogramCorner(c, marks, w, h);
         if (est != null) {
@@ -286,12 +299,9 @@ class OMrScanner {
           continue;
         }
       }
-      final fallback = _paperCornerFallback(c, paper, w, h, paperComp());
-      if (fallback == null) {
-        return OmScanResult.failed(
-            'Corner marks not found. Keep the whole OMR sheet in frame, in even light, and take the photo again.');
-      }
-      corners.add(fallback);
+      return OmScanResult.failed(
+          'Corner marks not found. Keep the whole OMR sheet in frame, in '
+          'even light, and take the photo again.');
     }
 
     // If the four "marks" do not outline a consistent A4 sheet, one of
