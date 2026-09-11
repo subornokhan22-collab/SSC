@@ -1208,25 +1208,36 @@ class OMrScanner {
       if (row[i] > rowHi) rowHi = row[i];
     }
     final minStep = math.max(10.0, (colHi - colLo + rowHi - rowLo) * 0.08);
-    var d = (math.min(w, h) * 0.02).round();
+    // Small step window: the profile averages over the whole edge, so
+    // it is clean even with a short window, and a short window keeps
+    // the detected plateau narrow (see _strongestStep).
+    var d = (math.min(w, h) * 0.005).round();
     if (d < 3) d = 3;
-    if (d > 40) d = 40;
+    if (d > 12) d = 12;
 
     // Each edge = strongest step in its outer band; "not found" means
-    // the sheet touches that side of the frame (a tight crop) and the
-    // side snaps to the frame edge.
-    final x0 = _strongestStep(col, w, d, minStep, 0.02, 0.40, true) ?? 0.0;
-    final x1 =
-        _strongestStep(col, w, d, minStep, 0.60, 0.98, false) ?? (w - 1.0);
-    final y0 = _strongestStep(row, h, d, minStep, 0.02, 0.40, true) ?? 0.0;
-    final y1 =
-        _strongestStep(row, h, d, minStep, 0.60, 0.98, false) ?? (h - 1.0);
+    // the sheet touches that side of the frame (a tight crop, or the
+    // crop cuts the sheet there) and the side snaps to the frame edge.
+    // flags bit 1/2/4/8 = left/top/right/bottom edge detected.
+    var flags = 0.0;
+    final lDet = _strongestStep(col, w, d, minStep, 0.005, 0.40, true);
+    final rDet = _strongestStep(col, w, d, minStep, 0.60, 0.995, false);
+    final tDet = _strongestStep(row, h, d, minStep, 0.005, 0.40, true);
+    final bDet = _strongestStep(row, h, d, minStep, 0.60, 0.995, false);
+    final x0 = lDet ?? 0.0;
+    if (lDet != null) flags |= 1;
+    final y0 = tDet ?? 0.0;
+    if (tDet != null) flags |= 2;
+    final x1 = rDet ?? (w - 1.0);
+    if (rDet != null) flags |= 4;
+    final y1 = bDet ?? (h - 1.0);
+    if (bDet != null) flags |= 8;
 
     final rw = x1 - x0, rh = y1 - y0;
     if (rw < w * 0.55 || rh < h * 0.55) return null;
     final ar = rw / rh;
     if (ar < 0.55 || ar > 0.95) return null;
-    return [x0, y0, x1, y1];
+    return [x0, y0, x1, y1, flags];
   }
 
   /// Strongest upward (or downward) step of a smoothed profile inside
@@ -1249,7 +1260,26 @@ class OMrScanner {
       }
     }
     if (bx < 0 || best < minStep) return null;
-    return bx.toDouble();
+    // The step forms a plateau ~2d wide around the true edge; the
+    // argmax wanders inside it, so refine to the plateau midpoint.
+    var lo = bx, hi = bx;
+    while (lo > loI) {
+      final st = (p[lo - 1 + d] - p[lo - 1 - d]) * (wantUp ? 1.0 : -1.0);
+      if (st >= best * 0.6) {
+        lo--;
+      } else {
+        break;
+      }
+    }
+    while (hi < hiI) {
+      final st = (p[hi + 1 + d] - p[hi + 1 - d]) * (wantUp ? 1.0 : -1.0);
+      if (st >= best * 0.6) {
+        hi++;
+      } else {
+        break;
+      }
+    }
+    return (lo + hi) / 2;
   }
 
   /// Column- or row-average luma profile, 5-point box-smoothed.
@@ -1307,22 +1337,60 @@ class OMrScanner {
     // into the background and its extreme points sit well outside the
     // sheet's true corners — shifting every sampled bubble by a
     // fraction of a bubble.
-    var anchored = false;
     if (luma != null) {
       final e = _sheetEdgesByProjection(luma, w, h);
       if (e != null && _marksInsideRect(marks, e)) {
-        photoPts = <ui.Offset>[
-          ui.Offset(e[0], e[1]),
-          ui.Offset(e[2], e[1]),
-          ui.Offset(e[2], e[3]),
-          ui.Offset(e[0], e[3]),
-        ];
-        anchored = true;
+        final x0 = e[0], y0 = e[1];
+        final sX = (e[2] - x0) / OMrGeometry.pageW;
+        final sY = (e[3] - y0) / OMrGeometry.pageH;
+        // A side that was NOT detected ends at the frame: if the crop
+        // cuts the sheet there, that side is shorter than the true
+        // sheet side, so its ratio understates the scale. When both
+        // top and bottom are detected the height is complete and is
+        // the most accurate ruler; otherwise use the width (a crop
+        // that cuts the bottom usually still shows the full width).
+        final s = (e[4] & 8) != 0 && (e[4] & 2) != 0 ? sY : sX;
+        // Cross-check against any detected mark: it must project (nearly)
+        // onto its printed position, or the edges latched wrong.
+        var ok = true;
+        final markTol = math.max(18.0, s * 20.0);
+        for (var k = 0; k < 4; k++) {
+          final mk = marks[k];
+          if (mk == null) continue;
+          final pc = OMrGeometry.markCenter(k);
+          final px = x0 + s * pc.dx;
+          final py = y0 + s * pc.dy;
+          if ((px - mk.point.dx).abs() > markTol ||
+              (py - mk.point.dy).abs() > markTol) {
+            ok = false;
+            break;
+          }
+        }
+        // The fitted sheet must carry printed content at the top of the
+        // question grid — a background "sheet" does not.
+        if (ok && ink != null) {
+          final probeY = OMrGeometry.questionsTop + 120;
+          var varT = 0.0, inkT = 0.0;
+          for (final qx in const [400.0, OMrGeometry.pageW / 2, 1254.0]) {
+            final px = x0 + s * qx;
+            final py = y0 + s * probeY;
+            final v = _diskVariance(luma, w, h, px, py, 24);
+            if (v > varT) varT = v;
+            final u = _inkRatio(ink, w, h, px, py, 24);
+            if (u > inkT) inkT = u;
+          }
+          if (varT < 60 && inkT < 0.10) ok = false;
+        }
+        if (ok) {
+          // A rectified page is straight and axis-aligned: an
+          // axis-aligned similarity homography (uniform scale s).
+          return <double>[s, 0, x0, 0, s, y0, 0, 0, 1];
+        }
       }
     }
     // Loose-crop fallback: the paper component's extreme corners.
     final comp = _paperComponent(paper, w, h, (w / 2).round(), (h / 2).round());
-    if (comp != null && !anchored) {
+    if (comp != null) {
       var count = 0;
       var s0 = 1e18, s1 = 1e18, s2 = 1e18, s3 = 1e18;
       var x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0;
