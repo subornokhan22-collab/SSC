@@ -31,10 +31,15 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
 
-            // Strip unused Java/Kotlin classes and shrink bundled resources.
-            // Flutter ships default ProGuard rules for its own engine bindings.
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // TEMP diagnostic: minification OFF. The Google scanner
+            // NPEs inside GmsDocumentScanning.getClient on a phone with
+            // up-to-date Play services, which points at R8 renaming a
+            // class the scanner AAR resolves at runtime. With minify off
+            // the build either works (proving the cause — a targeted
+            // keep rule restores it) or the error dialog shows the real
+            // class names (direct diagnosis). APK is bigger meanwhile.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
