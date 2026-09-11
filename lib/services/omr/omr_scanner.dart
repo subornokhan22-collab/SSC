@@ -1239,7 +1239,7 @@ class OMrScanner {
     if (loI < d) loI = d;
     if (loI > n - d) loI = n - d;
     if (hiI < d) hiI = d;
-    if (hiI > n - d) hiI = n - d;
+    if (hiI > n - 1 - d) hiI = n - 1 - d;
     var best = 0.0, bx = -1;
     for (var i = loI; i <= hiI; i++) {
       final step = (p[i + d] - p[i - d]) * (wantUp ? 1.0 : -1.0);
