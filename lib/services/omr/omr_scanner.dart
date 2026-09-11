@@ -1219,7 +1219,7 @@ class OMrScanner {
     // the sheet touches that side of the frame (a tight crop, or the
     // crop cuts the sheet there) and the side snaps to the frame edge.
     // flags bit 1/2/4/8 = left/top/right/bottom edge detected.
-    var flags = 0.0;
+    var flags = 0;
     final lDet = _strongestStep(col, w, d, minStep, 0.005, 0.40, true);
     final rDet = _strongestStep(col, w, d, minStep, 0.60, 0.995, false);
     final tDet = _strongestStep(row, h, d, minStep, 0.005, 0.40, true);
@@ -1237,7 +1237,7 @@ class OMrScanner {
     if (rw < w * 0.55 || rh < h * 0.55) return null;
     final ar = rw / rh;
     if (ar < 0.55 || ar > 0.95) return null;
-    return [x0, y0, x1, y1, flags];
+    return [x0, y0, x1, y1, flags.toDouble()];
   }
 
   /// Strongest upward (or downward) step of a smoothed profile inside
@@ -1262,24 +1262,24 @@ class OMrScanner {
     if (bx < 0 || best < minStep) return null;
     // The step forms a plateau ~2d wide around the true edge; the
     // argmax wanders inside it, so refine to the plateau midpoint.
-    var lo = bx, hi = bx;
-    while (lo > loI) {
-      final st = (p[lo - 1 + d] - p[lo - 1 - d]) * (wantUp ? 1.0 : -1.0);
+    var pLo = bx, pHi = bx;
+    while (pLo > loI) {
+      final st = (p[pLo - 1 + d] - p[pLo - 1 - d]) * (wantUp ? 1.0 : -1.0);
       if (st >= best * 0.6) {
-        lo--;
+        pLo--;
       } else {
         break;
       }
     }
-    while (hi < hiI) {
-      final st = (p[hi + 1 + d] - p[hi + 1 - d]) * (wantUp ? 1.0 : -1.0);
+    while (pHi < hiI) {
+      final st = (p[pHi + 1 + d] - p[pHi + 1 - d]) * (wantUp ? 1.0 : -1.0);
       if (st >= best * 0.6) {
-        hi++;
+        pHi++;
       } else {
         break;
       }
     }
-    return (lo + hi) / 2;
+    return (pLo + pHi) / 2;
   }
 
   /// Column- or row-average luma profile, 5-point box-smoothed.
@@ -1349,7 +1349,8 @@ class OMrScanner {
         // top and bottom are detected the height is complete and is
         // the most accurate ruler; otherwise use the width (a crop
         // that cuts the bottom usually still shows the full width).
-        final s = (e[4] & 8) != 0 && (e[4] & 2) != 0 ? sY : sX;
+        final flagsI = e[4].round();
+        final s = (flagsI & 8) != 0 && (flagsI & 2) != 0 ? sY : sX;
         // Cross-check against any detected mark: it must project (nearly)
         // onto its printed position, or the edges latched wrong.
         var ok = true;
