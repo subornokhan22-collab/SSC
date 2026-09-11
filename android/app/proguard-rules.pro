@@ -35,6 +35,7 @@
 -keep class com.google.android.gms.vision.documentscanner.** { *; }
 -keep class com.google.android.gms.common.GoogleApiAvailability { *; }
 -keep class com.google.android.gms.common.internal.** { *; }
+-keep class com.google.android.gms.common.moduleinstall.** { *; }
 -dontwarn com.google.android.gms.**
 
 # Keep annotations and generic signatures so reflective lookups still resolve.

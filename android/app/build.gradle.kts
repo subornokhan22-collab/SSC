@@ -65,10 +65,11 @@ kotlin {
 
 dependencies {
     // The app module needs the Google Play services API at compile time
-    // (MainActivity's pre-flight check for the document scanner). The
-    // full scanner artifact is already bundled at runtime by the ML Kit
-    // plugin; this only exposes the classes to the app's Kotlin.
+    // (MainActivity's scanner pre-flight check + module download). Both
+    // artifacts are already bundled at runtime by the ML Kit plugin;
+    // these only expose the classes to the app's Kotlin.
     implementation("com.google.android.gms:play-services-base:18.1.0")
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
 }
 
 flutter {

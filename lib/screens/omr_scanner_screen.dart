@@ -131,9 +131,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// only has to find the four corner marks on a straight sheet (or none
   /// at all — a markless page aligns on its own edges).
   ///
-  /// The scanner runs inside Google Play services; phones without it
-  /// (or with it too old) make the native side throw instead of opening
-  /// the scanner, so the pre-flight check below catches that first.
+  /// The scanner UI and models live in an installable Google Play
+  /// services "module", so the phone is asked about it before launch and
+  /// every failure mode is explained instead of crashing the native side:
+  ///   ready            → launch the scanner
+  ///   downloadable     → offer the one-time download
+  ///   no scanner API   → Play services update dialog
   ///
   /// filter mode (not full): full mode additionally downloads Google's
   /// stain/finger-cleaning ML models from Play services — an extra
@@ -143,13 +146,23 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _snack('Complete the answer key first — or tap "Use saved paper".');
       return;
     }
-    final gms = await _playServicesVersion();
-    if (gms <= 0) {
+    final status = await _scannerModuleStatus();
+    if (status == -2) {
+      // Play services is installed but too old to contain the document
+      // scanner API — say so, with the installed version for the record.
+      final v = await _gmsVersion();
+      final version = v > 0 ? ' (version ${_fmtGmsVersion(v)})' : '';
       await _googleScannerUnavailable(
-          'Google Play services isn\'t available on this phone (missing '
-          'or out of date), so the Google scanner cannot start. Updating '
-          'it in the Play Store usually fixes this.');
+          'The Google Play services on this phone$version is too old to '
+          'run the Google scanner. Updating it in the Play Store usually '
+          'fixes this.');
       return;
+    }
+    if (status == 0) {
+      // The scanner module is not on this phone yet — offer the
+      // one-time download before launching.
+      final download = await _offerScannerModuleDownload();
+      if (download != true) return; // in-app camera chosen / cancelled
     }
     try {
       final scanner = DocumentScanner(
@@ -181,15 +194,110 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     }
   }
 
-  /// Google Play services status on this phone (1 = available, 0 =
-  /// missing/out of date/unknown).
-  Future<int> _playServicesVersion() async {
+  /// Google scanner module status on this phone: 1 = ready, 0 =
+  /// downloadable from Play services, -1 = unknown (query failed — try
+  /// the launch anyway and let the real error surface), -2 = Play
+  /// services lacks the scanner API entirely.
+  Future<int> _scannerModuleStatus() async {
     try {
-      final v = await _appChannel.invokeMethod<int>('playServicesVersion');
+      final s = await _appChannel.invokeMethod<int>('scannerModuleStatus');
+      return s ?? -1;
+    } catch (_) {
+      return -1;
+    }
+  }
+
+  /// Installed Play services version code (0 = none installed).
+  Future<int> _gmsVersion() async {
+    try {
+      final v = await _appChannel.invokeMethod<int>('gmsVersion');
       return v ?? 0;
     } catch (_) {
       return 0;
     }
+  }
+
+  /// Best-effort human form of a Play services version code
+  /// (e.g. 233119325 → "23.31.19 (build 325)").
+  static String _fmtGmsVersion(int v) {
+    final s = v.toString();
+    if (s.length == 9) {
+      return '${s.substring(0, 2)}.${s.substring(2, 4)}.${s.substring(4, 6)}'
+          ' (build ${s.substring(6)})';
+    }
+    if (s.length == 8) {
+      return '${s.substring(0, 2)}.${s.substring(2, 4)}.${s.substring(4, 8)}';
+    }
+    return s;
+  }
+
+  /// Asks to download the scanner module from Play services; returns
+  /// true only when the module is ready afterwards (downloaded, or
+  /// already there). Anything else means "do not launch the scanner".
+  Future<bool?> _offerScannerModuleDownload() async {
+    if (!mounted) return null;
+    final proceed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Download scanner module'),
+        content: const Text(
+            'The Google scanner keeps its scanning module inside Google '
+            'Play services, and this phone does not have it yet. '
+            'Downloading it is a one-time step of a few megabytes.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Use in-app camera'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Download'),
+          ),
+        ],
+      ),
+    );
+    if (proceed != true) return proceed;
+    if (!mounted) return null;
+    // Busy dialog for the download; PopScope keeps the back button from
+    // dismissing it mid-download.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: const AlertDialog(
+          title: Text('Downloading scanner…'),
+          content: Row(children: [
+            SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2)),
+            SizedBox(width: 12),
+            Expanded(
+                child:
+                    Text('This can take a moment on slow connections.')),
+          ]),
+        ),
+      ),
+    );
+    bool ok;
+    String? failedWhy;
+    try {
+      final r = await _appChannel.invokeMethod<int>('installScannerModule');
+      ok = r == 0 || r == 1; // already installed, or downloaded
+    } catch (e) {
+      ok = false;
+      failedWhy = e.toString().replaceFirst('PlatformException(', '');
+    }
+    if (mounted) Navigator.of(context).pop(); // busy dialog
+    if (!ok) {
+      await _googleScannerUnavailable(
+          'The scanner module could not be downloaded from Play services.',
+          detail: failedWhy);
+      return null;
+    }
+    return true;
   }
 
   /// Shown when the Google scanner cannot start: offers the Play Store

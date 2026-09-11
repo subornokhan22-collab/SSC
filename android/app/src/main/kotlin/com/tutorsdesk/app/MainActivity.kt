@@ -52,21 +52,59 @@ class MainActivity : FlutterActivity() {
                     "externalStorageDir" -> {
                         result.success(Environment.getExternalStorageDirectory().absolutePath)
                     }
-                    "playServicesVersion" -> {
-                        // 1 = Google Play services present, 0 = missing or
-                        // out of date (the ML Kit scanner runs inside it
-                        // and NPEs without it). The status code 0 is the
-                        // stable "available" value in Google's contract;
-                        // the named constants were removed from newer
-                        // play-services-base releases, so compare with 0.
+                    "scannerModuleStatus" -> {
+                        // The Google scanner's UI + models live in an
+                        // installable Play services "module". 1 = ready,
+                        // 0 = downloadable, -1 = query failed, -2 = the
+                        // Play services on this phone lacks the scanner
+                        // API entirely (client construction crashes).
+                        // Errors included: a missing class throws
+                        // NoClassDefFoundError (an Error, not Exception).
                         try {
-                            val gms = com.google.android.gms.common.GoogleApiAvailability.getInstance()
-                            val status = gms.isGooglePlayServicesAvailable(this)
-                            result.success(if (status == 0) 1 else 0)
-                        } catch (e: Throwable) {
-                            // Errors included: if the class is missing
-                            // entirely, NoClassDefFoundError escapes a
-                            // plain Exception catch and would crash here.
+                            val scanner = com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+                                .getClient(com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.Builder().build())
+                            com.google.android.gms.common.moduleinstall.ModuleInstall.getClient(this)
+                                .areModulesAvailable(scanner)
+                                .addOnSuccessListener { response ->
+                                    result.success(if (response.areModulesAvailable()) 1 else 0)
+                                }
+                                .addOnFailureListener { e -> result.success(-1) }
+                        } catch (t: Throwable) {
+                            result.success(-2)
+                        }
+                    }
+                    "installScannerModule" -> {
+                        // One-time download of the scanner module from
+                        // Play services. 1 = downloaded, 0 = already
+                        // installed; error if the download fails.
+                        try {
+                            val scanner = com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+                                .getClient(com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.Builder().build())
+                            val request = com.google.android.gms.common.moduleinstall.ModuleInstallRequest.newBuilder()
+                                .addApi(scanner)
+                                .build()
+                            com.google.android.gms.common.moduleinstall.ModuleInstall.getClient(this)
+                                .installModules(request)
+                                .addOnSuccessListener { response ->
+                                    result.success(if (response.areModulesAlreadyInstalled()) 0 else 1)
+                                }
+                                .addOnFailureListener { e ->
+                                    result.error("ScannerModuleInstall", e.message ?: "download failed", null)
+                                }
+                        } catch (t: Throwable) {
+                            result.error("ScannerModuleInstall", t.toString(), null)
+                        }
+                    }
+                    "gmsVersion" -> {
+                        // Installed Play services version code (0 = no
+                        // Play services package at all), for the
+                        // diagnostics dialog.
+                        try {
+                            val info = packageManager.getPackageInfo("com.google.android.gms", 0)
+                            // versionCode (not longVersionCode): works on
+                            // every API level this app supports.
+                            result.success(info.versionCode)
+                        } catch (t: Throwable) {
                             result.success(0)
                         }
                     }
