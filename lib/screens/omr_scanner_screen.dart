@@ -421,8 +421,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     });
     try {
       final sw = Stopwatch()..start();
-      final res = await compute(
-          omrScanIsolateEntry, OmScanRequest(photo, _total, rectified));
+      final res = await _runOmScan(photo, rectified: rectified);
       if (!res.ok) {
         _snack(res.error ?? 'Scan failed');
         setState(() => _busy = false);
@@ -442,9 +441,27 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _busy = false;
       });
       _loadHistory();
+    } on OmDecodeException catch (e) {
+      _snack('Image could not be read: ${e.detail}');
+      setState(() => _busy = false);
     } catch (e) {
       _snack('Scan error: $e');
       setState(() => _busy = false);
+    }
+  }
+
+  /// Runs the scan in a background isolate, and — if that isolate cannot
+  /// decode the image (a quirk of some Android builds; the UI isolate has
+  /// already decoded these exact bytes for the preview, so it can) —
+  /// retries the same scan on the UI isolate. A second or two of jank
+  /// in exchange for a correct result.
+  Future<OmScanResult> _runOmScan(Uint8List photo,
+      {required bool rectified}) async {
+    try {
+      return await compute(
+          omrScanIsolateEntry, OmScanRequest(photo, _total, rectified));
+    } on OmDecodeException {
+      return OMrScanner.scan(photo, total: _total, rectified: rectified);
     }
   }
 
@@ -1292,8 +1309,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       setState(() => _batchProgress = 'Scanning $idx/${picked.length}…');
       try {
         final bytes = await f.readAsBytes();
-        final res =
-            await compute(omrScanIsolateEntry, OmScanRequest(bytes, _total));
+        OmScanResult res;
+        try {
+          res = await compute(
+              omrScanIsolateEntry, OmScanRequest(bytes, _total));
+        } on OmDecodeException {
+          // Background isolate can't decode it — retry on the UI isolate.
+          res = await OMrScanner.scan(bytes, total: _total);
+        }
         if (!res.ok) continue; // unreadable sheet — skip, keep going
         final g = OMrScanner.grade(res, _key);
         final rec = _recordOf(res, g);

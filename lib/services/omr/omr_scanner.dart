@@ -6,6 +6,17 @@ import 'omr_geometry.dart';
 
 /// Argument bundle for running [OMrScanner.scan] via [compute] —
 /// `compute` sends a single message across the isolate boundary.
+/// Decode failure raised from inside the scan isolate. Thrown (rather
+/// than returned as a failure result) so the caller can retry the whole
+/// scan on the UI isolate: on some Android builds a background isolate
+/// cannot decode an image the UI isolate decodes without any trouble.
+class OmDecodeException implements Exception {
+  final String detail;
+  const OmDecodeException(this.detail);
+  @override
+  String toString() => 'OmDecodeException: $detail';
+}
+
 class OmScanRequest {
   final Uint8List photoBytes;
   final int total;
@@ -143,9 +154,11 @@ class OMrScanner {
     try {
       final codec = await ui.instantiateImageCodec(photoBytes);
       decoded = (await codec.getNextFrame()).image;
-    } catch (_) {
-      return OmScanResult.failed(
-          'Image could not be read. Use a normal photo (JPG).');
+    } catch (e) {
+      // Let the caller decide: if we run in a background isolate it
+      // retries on the UI isolate (which already decoded these exact
+      // bytes for the preview), otherwise it reports this detail.
+      throw OmDecodeException('$e');
     }
 
     // Work on roughly the sheet's own resolution so one bubble stays a

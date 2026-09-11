@@ -32,10 +32,12 @@
 # native side NPEs at runtime.
 -keep class com.google_mlkit_document_scanner.** { *; }
 -keep class com.google.mlkit.vision.documentscanner.** { *; }
--keep class com.google.android.gms.vision.documentscanner.** { *; }
--keep class com.google.android.gms.common.GoogleApiAvailability { *; }
--keep class com.google.android.gms.common.internal.** { *; }
--keep class com.google.android.gms.common.moduleinstall.** { *; }
+# The Play services client libraries resolve their APIs at runtime with
+# name-based lookups — R8 renaming any of them makes
+# GmsDocumentScanning.getClient NPE (proven: the same build works with
+# minify off and crashes with minify on). Keep the whole GMS client
+# surface.
+-keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
 
 # Keep annotations and generic signatures so reflective lookups still resolve.
