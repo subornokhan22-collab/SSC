@@ -375,7 +375,8 @@ class OMrScanner {
           _marksSimilarityHomography(geo, marks, ink, pixels, w, h);
     }
     if (candidate == null && rectified) {
-      candidate = _pageBoundsHomography(geo, ink, pixels, paper, w, h);
+      candidate =
+          _pageBoundsHomography(geo, ink, pixels, paper, w, h, marks);
     }
     if (candidate == null) {
       return OmScanResult.failed(
@@ -1173,13 +1174,122 @@ class OMrScanner {
     return hom;
   }
 
+  /// A detected mark must sit inside the candidate sheet rectangle:
+  /// the marks are printed inset from the sheet corners, so a mark
+  /// falling outside (by more than a few percent) means the rectangle
+  /// latched onto the wrong edges.
+  static bool _marksInsideRect(List<DetectedCorner?> marks, List<double> e) {
+    for (final m in marks) {
+      if (m == null) continue;
+      final p = m.point;
+      final wTol = (e[2] - e[0]) * 0.04;
+      final hTol = (e[3] - e[1]) * 0.04;
+      if (p.dx < e[0] - wTol || p.dx > e[2] + wTol ||
+          p.dy < e[1] - hTol || p.dy > e[3] + hTol) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Sheet edges in a rectified page, from luma-projection profiles.
+  /// Returns [xLeft, yTop, xRight, yBottom] in photo coordinates, or
+  /// null when the image does not contain a sheet-like rectangle.
+  static List<double>? _sheetEdgesByProjection(Uint8List luma, int w, int h) {
+    final col = _avgProfile(luma, w, h, true);
+    final row = _avgProfile(luma, w, h, false);
+    var colLo = 255.0, colHi = 0.0, rowLo = 255.0, rowHi = 0.0;
+    for (var i = 0; i < w; i++) {
+      if (col[i] < colLo) colLo = col[i];
+      if (col[i] > colHi) colHi = col[i];
+    }
+    for (var i = 0; i < h; i++) {
+      if (row[i] < rowLo) rowLo = row[i];
+      if (row[i] > rowHi) rowHi = row[i];
+    }
+    final minStep = math.max(10.0, (colHi - colLo + rowHi - rowLo) * 0.08);
+    var d = (math.min(w, h) * 0.02).round();
+    if (d < 3) d = 3;
+    if (d > 40) d = 40;
+
+    // Each edge = strongest step in its outer band; "not found" means
+    // the sheet touches that side of the frame (a tight crop) and the
+    // side snaps to the frame edge.
+    final x0 = _strongestStep(col, w, d, minStep, 0.02, 0.40, true) ?? 0.0;
+    final x1 =
+        _strongestStep(col, w, d, minStep, 0.60, 0.98, false) ?? (w - 1.0);
+    final y0 = _strongestStep(row, h, d, minStep, 0.02, 0.40, true) ?? 0.0;
+    final y1 =
+        _strongestStep(row, h, d, minStep, 0.60, 0.98, false) ?? (h - 1.0);
+
+    final rw = x1 - x0, rh = y1 - y0;
+    if (rw < w * 0.55 || rh < h * 0.55) return null;
+    final ar = rw / rh;
+    if (ar < 0.55 || ar > 0.95) return null;
+    return [x0, y0, x1, y1];
+  }
+
+  /// Strongest upward (or downward) step of a smoothed profile inside
+  /// [lo, hi] (fractions of the length), or null when no step reaches
+  /// [minStep].
+  static double? _strongestStep(Float64List p, int n, int d, double minStep,
+      double lo, double hi, bool wantUp) {
+    var loI = (n * lo).round();
+    var hiI = (n * hi).round();
+    if (loI < d) loI = d;
+    if (loI > n - d) loI = n - d;
+    if (hiI < d) hiI = d;
+    if (hiI > n - d) hiI = n - d;
+    var best = 0.0, bx = -1;
+    for (var i = loI; i <= hiI; i++) {
+      final step = (p[i + d] - p[i - d]) * (wantUp ? 1.0 : -1.0);
+      if (step > best) {
+        best = step;
+        bx = i;
+      }
+    }
+    if (bx < 0 || best < minStep) return null;
+    return bx.toDouble();
+  }
+
+  /// Column- or row-average luma profile, 5-point box-smoothed.
+  static Float64List _avgProfile(Uint8List luma, int w, int h, bool columns) {
+    final n = columns ? w : h;
+    final m = columns ? h : w;
+    final p = Float64List(n);
+    for (var i = 0; i < n; i++) {
+      var sum = 0;
+      if (columns) {
+        for (var j = 0; j < m; j++) sum += luma[j * w + i];
+      } else {
+        final r = i * w;
+        for (var j = 0; j < m; j++) sum += luma[r + j];
+      }
+      p[i] = sum / m;
+    }
+    final q = Float64List(n);
+    for (var i = 0; i < n; i++) {
+      var sm = 0.0, c = 0;
+      for (var k = -2; k <= 2; k++) {
+        final j = i + k;
+        if (j >= 0 && j < n) {
+          sm += p[j];
+          c++;
+        }
+      }
+      q[i] = sm / c;
+    }
+    return q;
+  }
+
   static List<double>? _pageBoundsHomography(
       OMrGeometry geo,
       Uint8List? ink,
       Uint8List? luma,
       Uint8List paper,
       int w,
-      int h) {
+      int h,
+      List<DetectedCorner?> marks) {
     final a4 = OMrGeometry.pageW / OMrGeometry.pageH;
     final actual = w / h;
     if (actual / a4 < 0.94 || actual / a4 > 1.06) return null;
@@ -1191,10 +1301,28 @@ class OMrScanner {
       ui.Offset(w.toDouble(), h.toDouble()),
       ui.Offset(0, h.toDouble()),
     ];
-    // Loose crop: the paper stops before the frame — anchor to the
-    // paper's own extreme corners instead.
+    // Prefer the projection edges: the sheet's border is the strongest
+    // AVERAGE contrast step across the whole edge, so it survives dim,
+    // low-contrast scans in which the Otsu paper mask (below) bleeds
+    // into the background and its extreme points sit well outside the
+    // sheet's true corners — shifting every sampled bubble by a
+    // fraction of a bubble.
+    var anchored = false;
+    if (luma != null) {
+      final e = _sheetEdgesByProjection(luma, w, h);
+      if (e != null && _marksInsideRect(marks, e)) {
+        photoPts = <ui.Offset>[
+          ui.Offset(e[0], e[1]),
+          ui.Offset(e[2], e[1]),
+          ui.Offset(e[2], e[3]),
+          ui.Offset(e[0], e[3]),
+        ];
+        anchored = true;
+      }
+    }
+    // Loose-crop fallback: the paper component's extreme corners.
     final comp = _paperComponent(paper, w, h, (w / 2).round(), (h / 2).round());
-    if (comp != null) {
+    if (comp != null && !anchored) {
       var count = 0;
       var s0 = 1e18, s1 = 1e18, s2 = 1e18, s3 = 1e18;
       var x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0;
