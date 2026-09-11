@@ -732,7 +732,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     ),
                     TextButton.icon(
                       onPressed: _busy ? null : _saveDebugImages,
-                      icon: const Icon(Icons.debug_mode_rounded, size: 16),
+                      icon: const Icon(Icons.bug_report_rounded, size: 16),
                       label: const Text('Save debug images'),
                     ),
                   ],
