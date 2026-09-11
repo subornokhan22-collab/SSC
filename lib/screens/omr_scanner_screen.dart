@@ -134,6 +134,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// The scanner runs inside Google Play services; phones without it
   /// (or with it too old) make the native side throw instead of opening
   /// the scanner, so the pre-flight check below catches that first.
+  ///
+  /// filter mode (not full): full mode additionally downloads Google's
+  /// stain/finger-cleaning ML models from Play services — an extra
+  /// failure point for clean printed OMR sheets that never use it.
   Future<void> _openCamera() async {
     if (_key.any((k) => k < 0)) {
       _snack('Complete the answer key first — or tap "Use saved paper".');
@@ -151,7 +155,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final scanner = DocumentScanner(
         options: DocumentScannerOptions(
           documentFormats: {DocumentFormat.jpeg},
-          mode: ScannerMode.full,
+          mode: ScannerMode.filter,
           pageLimit: 1,
           isGalleryImport: false,
         ),
@@ -189,11 +193,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   }
 
   /// Shown when the Google scanner cannot start: offers the Play Store
-  /// fix, then continues with the in-app camera underneath.
+  /// fix, or the in-app camera. The fallback only happens when the user
+  /// actually chose it — after "Open Play Store" the phone must be fixed,
+  /// and the next Camera tap gets to try the Google scanner for real.
   Future<void> _googleScannerUnavailable(String reason,
       {String? detail}) async {
     if (!mounted) return;
-    await showDialog<void>(
+    final useInApp = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
@@ -212,21 +218,23 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              Navigator.of(context).pop();
               try {
                 await _appChannel.invokeMethod('openPlayServices');
               } catch (_) {}
+              if (context.mounted) Navigator.of(context).pop(false);
             },
             child: const Text('Open Play Store'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Use in-app camera'),
           ),
         ],
       ),
     );
-    await _openLiveScan();
+    if (useInApp == true) {
+      await _openLiveScan();
+    }
   }
 
   static const MethodChannel _appChannel =

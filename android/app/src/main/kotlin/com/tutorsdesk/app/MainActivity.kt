@@ -63,7 +63,10 @@ class MainActivity : FlutterActivity() {
                             val gms = com.google.android.gms.common.GoogleApiAvailability.getInstance()
                             val status = gms.isGooglePlayServicesAvailable(this)
                             result.success(if (status == 0) 1 else 0)
-                        } catch (e: Exception) {
+                        } catch (e: Throwable) {
+                            // Errors included: if the class is missing
+                            // entirely, NoClassDefFoundError escapes a
+                            // plain Exception catch and would crash here.
                             result.success(0)
                         }
                     }
@@ -77,7 +80,7 @@ class MainActivity : FlutterActivity() {
                                     Uri.parse("market://details?id=com.google.android.gms")
                                 )
                             )
-                        } catch (e: Exception) {
+                        } catch (e: Throwable) {
                             try {
                                 startActivity(
                                     Intent(
@@ -85,7 +88,7 @@ class MainActivity : FlutterActivity() {
                                         Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms")
                                     )
                                 )
-                            } catch (e2: Exception) {
+                            } catch (e2: Throwable) {
                             }
                         }
                         result.success(true)
