@@ -371,6 +371,10 @@ class OMrScanner {
     // all. A sheet without four printed corner marks can only be read
     // through this path.
     if (candidate == null && rectified) {
+      candidate =
+          _marksSimilarityHomography(geo, marks, ink, pixels, w, h);
+    }
+    if (candidate == null && rectified) {
       candidate = _pageBoundsHomography(geo, ink, pixels, paper, w, h);
     }
     if (candidate == null) {
@@ -1058,6 +1062,117 @@ class OMrScanner {
   ///    instead of the frame's,
   ///  - the same orientation probe as [_bestRotationHomography] keeps
   ///    the side carrying the question grid at the top.
+  /// A rectified page is a straight, uniform-scale crop of the sheet, so
+  /// two or more detected corner marks pin the alignment exactly through
+  /// a similarity transform (rotation + uniform scale + translation).
+  ///
+  /// This is tried before _pageBoundsHomography, whose anchors are the
+  /// Otsu paper component's extreme points. In a dim, low-contrast scan
+  /// that mask bleeds into the surrounding background, so the "corners"
+  /// can sit well outside the sheet's true corners — the page then
+  /// stretches over an inflated rectangle and every sampled bubble
+  /// lands a fraction of a bubble off its true circle. On an empty
+  /// sheet that reads 1-2 false marks and garbles the metadata boxes;
+  /// two real marks are far harder to fool than a luma threshold.
+  static List<double>? _marksSimilarityHomography(
+      OMrGeometry geo,
+      List<DetectedCorner?> marks,
+      Uint8List? ink,
+      Uint8List? luma,
+      int w,
+      int h) {
+    // Longest detected pair = most accurate anchor (diagonal > side).
+    var bi = -1, bj = -1, bestDist = 0.0;
+    for (var i = 0; i < 4; i++) {
+      if (marks[i] == null) continue;
+      for (var j = i + 1; j < 4; j++) {
+        if (marks[j] == null) continue;
+        final pi = OMrGeometry.markCenter(i);
+        final pj = OMrGeometry.markCenter(j);
+        final d = math.sqrt((pi.dx - pj.dx) * (pi.dx - pj.dx) +
+            (pi.dy - pj.dy) * (pi.dy - pj.dy));
+        if (d > bestDist) {
+          bestDist = d;
+          bi = i;
+          bj = j;
+        }
+      }
+    }
+    if (bi < 0) return null;
+
+    final pi = OMrGeometry.markCenter(bi);
+    final pj = OMrGeometry.markCenter(bj);
+    final qi = marks[bi]!.point;
+    final qj = marks[bj]!.point;
+    // Fit photo = s·R(θ)·page + t from the two correspondences.
+    final ccx = pj.dx - pi.dx, ccy = pj.dy - pi.dy; // page vector
+    final ddx = qj.dx - qi.dx, ddy = qj.dy - qi.dy; // photo vector
+    final clen = math.sqrt(ccx * ccx + ccy * ccy);
+    final dlen = math.sqrt(ddx * ddx + ddy * ddy);
+    if (clen < 1e-6 || dlen < 1e-6) return null;
+    final s = dlen / clen;
+    final cosT = (ddx * ccx + ddy * ccy) / (dlen * clen);
+    final sinT = (ccx * ddy - ccy * ddx) / (dlen * clen);
+    final tx = qi.dx - s * (cosT * pi.dx - sinT * pi.dy);
+    final ty = qi.dy - s * (sinT * pi.dx + cosT * pi.dy);
+    final hom = <double>[
+      s * cosT, -s * sinT, tx,
+      s * sinT, s * cosT, ty,
+      0, 0, 1,
+    ];
+
+    // Any other detected mark that is not on the fitted sheet is a
+    // false positive (a dark stain near a corner): reject the fit.
+    final tol = math.max(6.0, s * 10.0);
+    for (var k = 0; k < 4; k++) {
+      final mk = marks[k];
+      if (mk == null || k == bi || k == bj) continue;
+      final p = applyHomography(hom, OMrGeometry.markCenter(k));
+      if (math.sqrt((p.dx - mk.point.dx) * (p.dx - mk.point.dx) +
+              (p.dy - mk.point.dy) * (p.dy - mk.point.dy)) >
+          tol) {
+        return null;
+      }
+    }
+
+    // The crop must show the sheet's top edge; the bottom edge may sit
+    // below the frame (a crop that trims the sheet's bottom corners is
+    // legal — the marks carry the alignment).
+    final tL = applyHomography(hom, const ui.Offset(0, 0));
+    final tR = applyHomography(hom, const ui.Offset(OMrGeometry.pageW, 0));
+    final bL =
+        applyHomography(hom, const ui.Offset(0, OMrGeometry.pageH));
+    final bR =
+        applyHomography(hom, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
+    for (final p in [tL, tR]) {
+      if (p.dy < -0.20 * h || p.dy > 0.35 * h) return null;
+      if (p.dx < -0.30 * w || p.dx > 1.30 * w) return null;
+    }
+    for (final p in [bL, bR]) {
+      if (p.dy < 0.50 * h || p.dy > 1.45 * h) return null;
+      if (p.dx < -0.30 * w || p.dx > 1.30 * w) return null;
+    }
+
+    // The fitted sheet must carry printed content near the top of the
+    // question grid (header text / row numbers) — a dark stain pair that
+    // happens to sit at the right distance does not.
+    if (luma != null && ink != null) {
+      final probeY = OMrGeometry.questionsTop + 120;
+      var varT = 0.0, inkT = 0.0;
+      for (final qx in const [400.0, OMrGeometry.pageW / 2, 1254.0]) {
+        final pp = applyHomography(hom, ui.Offset(qx, probeY));
+        if (luma != null) {
+          final v = _diskVariance(luma, w, h, pp.dx, pp.dy, 24);
+          if (v > varT) varT = v;
+        }
+        final v = _inkRatio(ink, w, h, pp.dx, pp.dy, 24);
+        if (v > inkT) inkT = v;
+      }
+      if (varT < 60 && inkT < 0.10) return null;
+    }
+    return hom;
+  }
+
   static List<double>? _pageBoundsHomography(
       OMrGeometry geo,
       Uint8List? ink,
