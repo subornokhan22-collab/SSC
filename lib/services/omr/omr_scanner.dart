@@ -244,8 +244,11 @@ class OMrScanner {
     if (markCount > 0) {
       var sx = 0.0, sy = 0.0;
       for (final m in marks) {
-        sx += m!.point.dx;
-        sy += m!.point.dy;
+        // A scanner-cropped page can clip a corner mark, so with 1–3
+        // detections some entries are null — seed from the ones found.
+        if (m == null) continue;
+        sx += m.point.dx;
+        sy += m.point.dy;
       }
       cx = sx / markCount;
       cy = sy / markCount;
