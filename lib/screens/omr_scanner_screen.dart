@@ -390,6 +390,46 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     }
   }
 
+  /// Writes the received page, the result overlay and the geometry the
+  /// reader used to <external storage>/tutors_desk_debug/ — so a bad
+  /// read can be analyzed against the exact pixels the app saw.
+  Future<void> _saveDebugImages() async {
+    final bytes = _photoBytes;
+    if (bytes == null) return;
+    try {
+      final dir = await _appChannel.invokeMethod<String>('externalStorageDir');
+      final out = Directory('$dir/tutors_desk_debug')..createSync(recursive: true);
+      final ts = DateTime.now().toIso8601String().replaceAll(':', '-');
+      File('${out.path}/page_$ts.jpg').writeAsBytesSync(bytes);
+      final overlay = _overlayJpg;
+      if (overlay != null) {
+        File('${out.path}/overlay_$ts.jpg').writeAsBytesSync(overlay);
+      }
+      final res = _result;
+      final meta = StringBuffer()
+        ..writeln('saved: $ts')
+        ..writeln('page bytes: ${bytes.length}');
+      if (res != null) {
+        meta
+          ..writeln('work: ${res.workWidth}x${res.workHeight}')
+          ..writeln('scale: ${res.scale.toStringAsFixed(4)}')
+          ..writeln('homography: ${res.homography.map((v) => v.toStringAsFixed(5)).join(', ')}')
+          ..writeln('photo corners (TL,TR,BL,BR):');
+        for (final c in res.photoCorners) {
+          meta.writeln(
+              '  (${c.point.dx.toStringAsFixed(1)}, ${c.point.dy.toStringAsFixed(1)}) mark=${c.fromMark}');
+        }
+        meta
+          ..writeln('answers: ${res.answers}')
+          ..writeln('set code: ${res.setCode} subject: ${res.subjectCode}');
+      }
+      File('${out.path}/meta_$ts.txt').writeAsStringSync(meta.toString());
+      _snack('Debug images saved to ${out.path} — send those files over.');
+    } catch (e) {
+      _snack('Could not save debug images: $e');
+    }
+  }
+
   // ── key editor ────────────────────────────────────────────────────
 
   void _setTotal(int total) {
@@ -689,6 +729,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       onPressed: () => _scanNext(),
                       icon: const Icon(Icons.close_rounded, size: 16),
                       label: const Text('Change / remove photo'),
+                    ),
+                    TextButton.icon(
+                      onPressed: _busy ? null : _saveDebugImages,
+                      icon: const Icon(Icons.debug_mode_rounded, size: 16),
+                      label: const Text('Save debug images'),
                     ),
                   ],
                   const SizedBox(height: 8),

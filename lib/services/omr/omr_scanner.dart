@@ -186,6 +186,23 @@ class OMrScanner {
       return OmScanResult.failed('Photo is too small to scan.');
     }
 
+    // A rectified page is the scanner's crop of the sheet. With the whole
+    // sheet framed, that crop is (close to) the full A4 page; a flatter
+    // ratio means the "Crop and rotate" rectangle covered only part of
+    // the sheet. Such a page must be rejected BEFORE alignment: its
+    // missing bottom edge would anchor to the crop border and the read
+    // would "succeed" with every bubble sampling the wrong place.
+    if (rectified) {
+      final ar = w / h; // = source aspect ratio (h is fixed at 2339)
+      if (ar < 0.60 || ar > 0.82) {
+        return OmScanResult.failed(
+            'The scanner crop only covers part of the sheet. In the '
+            'scanner, open "Crop and rotate" and extend the crop until '
+            'ALL FOUR corners of the sheet are inside it, then scan '
+            'again.');
+      }
+    }
+
     final pixels = Uint8List(w * h);
     for (var dy = 0; dy < h; dy++) {
       final sy0 = (dy * srcH / h).floor();
