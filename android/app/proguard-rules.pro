@@ -31,7 +31,7 @@
 # Google Play services' scanner API; keep both sides intact or the
 # native side NPEs at runtime.
 -keep class com.google_mlkit_document_scanner.** { *; }
--keep class com.google.mlkit.vision.documentscanner.** { *; }
+-keep class com.google.mlkit.** { *; }
 # The Play services client libraries resolve their APIs at runtime with
 # name-based lookups — R8 renaming any of them makes
 # GmsDocumentScanning.getClient NPE (proven: the same build works with

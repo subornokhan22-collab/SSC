@@ -54,10 +54,12 @@ class MainActivity : FlutterActivity() {
                     }
                     "scannerModuleStatus" -> {
                         // The Google scanner's UI + models live in an
-                        // installable Play services "module". 1 = ready,
-                        // 0 = downloadable, -1 = query failed, -2 = the
-                        // Play services on this phone lacks the scanner
-                        // API entirely (client construction crashes).
+                        // installable Play services "module".
+                        // Returns {status, error}: 1 = ready, 0 =
+                        // downloadable, -1 = query failed, -2 = the
+                        // scanner client could not even be constructed.
+                        // error carries the underlying exception so the
+                        // app can show exactly what failed.
                         // Errors included: a missing class throws
                         // NoClassDefFoundError (an Error, not Exception).
                         try {
@@ -66,11 +68,18 @@ class MainActivity : FlutterActivity() {
                             com.google.android.gms.common.moduleinstall.ModuleInstall.getClient(this)
                                 .areModulesAvailable(scanner)
                                 .addOnSuccessListener { response ->
-                                    result.success(if (response.areModulesAvailable()) 1 else 0)
+                                    result.success(
+                                        mapOf(
+                                            "status" to (if (response.areModulesAvailable()) 1 else 0),
+                                            "error" to null
+                                        )
+                                    )
                                 }
-                                .addOnFailureListener { e -> result.success(-1) }
+                                .addOnFailureListener { e ->
+                                    result.success(mapOf("status" to -1, "error" to e.toString()))
+                                }
                         } catch (t: Throwable) {
-                            result.success(-2)
+                            result.success(mapOf("status" to -2, "error" to t.toString()))
                         }
                     }
                     "installScannerModule" -> {

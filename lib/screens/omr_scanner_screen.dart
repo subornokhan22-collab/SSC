@@ -146,16 +146,17 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _snack('Complete the answer key first — or tap "Use saved paper".');
       return;
     }
-    final status = await _scannerModuleStatus();
+    final (status, statusError) = await _scannerModuleStatus();
     if (status == -2) {
-      // Play services is installed but too old to contain the document
-      // scanner API — say so, with the installed version for the record.
+      // The scanner client could not even be constructed on this phone.
+      // Show the installed Play services version and the exact error so
+      // the cause is visible, not guessed.
       final v = await _gmsVersion();
       final version = v > 0 ? ' (version ${_fmtGmsVersion(v)})' : '';
       await _googleScannerUnavailable(
-          'The Google Play services on this phone$version is too old to '
-          'run the Google scanner. Updating it in the Play Store usually '
-          'fixes this.');
+          'The Google scanner could not be initialized on this phone'
+          '$version.',
+          detail: statusError ?? 'The scanner client failed to construct.');
       return;
     }
     if (status == 0) {
@@ -196,14 +197,18 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   /// Google scanner module status on this phone: 1 = ready, 0 =
   /// downloadable from Play services, -1 = unknown (query failed — try
-  /// the launch anyway and let the real error surface), -2 = Play
-  /// services lacks the scanner API entirely.
-  Future<int> _scannerModuleStatus() async {
+  /// the launch anyway and let the real error surface), -2 = the scanner
+  /// client could not be constructed. The second value carries the
+  /// underlying error text when there is one.
+  Future<(int, String?)> _scannerModuleStatus() async {
     try {
-      final s = await _appChannel.invokeMethod<int>('scannerModuleStatus');
-      return s ?? -1;
+      final m = await _appChannel.invokeMethod<dynamic>('scannerModuleStatus');
+      if (m is Map) {
+        return ((m['status'] as int?) ?? -1, m['error'] as String?);
+      }
+      return (-1, null);
     } catch (_) {
-      return -1;
+      return (-1, null);
     }
   }
 

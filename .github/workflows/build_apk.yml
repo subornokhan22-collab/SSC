@@ -52,8 +52,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # mapping.txt (R8 symbol map) rides along as an asset so any
+          # minified-crash stack can be decoded against this exact build.
           gh release create "apk-${{ github.run_id }}" \
             build/app/outputs/flutter-apk/app-*-release.apk \
+            build/app/outputs/mapping/release/mapping.txt \
             --repo "${{ github.repository }}" \
             --title "Tutor's Desk (build ${{ github.run_number }})" \
             --notes "Tutor's Desk. Most phones need app-arm64-v8a-release.apk." \
