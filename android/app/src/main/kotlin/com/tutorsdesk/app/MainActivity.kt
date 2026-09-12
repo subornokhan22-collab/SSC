@@ -52,6 +52,47 @@ class MainActivity : FlutterActivity() {
                     "externalStorageDir" -> {
                         result.success(Environment.getExternalStorageDirectory().absolutePath)
                     }
+                    "copyToDownloads" -> {
+                        // Copy one file into the shared Download folder via
+                        // MediaStore — the scoped-storage-sanctioned route
+                        // that needs no permission on Android 10+, and the
+                        // one place every file manager shows. The
+                        // app-specific Android/data folder (where the debug
+                        // images are always written) is hidden in most
+                        // file managers, so the Downloads copy is what the
+                        // user actually sends over. Returns the display
+                        // path, or null when unavailable/failed.
+                        var path: String? = null
+                        try {
+                            val source = call.argument<String>("source")
+                            val name = call.argument<String>("name")
+                            val mime = call.argument<String>("mime")
+                            if (Build.VERSION.SDK_INT >= 29 &&
+                                source != null && name != null && mime != null
+                            ) {
+                                val values = android.content.ContentValues().apply {
+                                    put(android.provider.MediaStore.Downloads.DISPLAY_NAME, name)
+                                    put(android.provider.MediaStore.Downloads.MIME_TYPE, mime)
+                                    put(android.provider.MediaStore.Downloads.RELATIVE_PATH, "Download/TutorsDeskDebug")
+                                    put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
+                                }
+                                val uri = contentResolver.insert(
+                                    android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                                if (uri != null) {
+                                    contentResolver.openOutputStream(uri)?.use { out ->
+                                        java.io.File(source).copyTo(out)
+                                    }
+                                    values.clear()
+                                    values.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
+                                    contentResolver.update(uri, values, null, null)
+                                    path = "Downloads/TutorsDeskDebug/$name"
+                                }
+                            }
+                        } catch (e: Exception) {
+                            path = null
+                        }
+                        result.success(path)
+                    }
                     "scannerModuleStatus" -> {
                         // The Google scanner's UI + models live in an
                         // installable Play services "module".

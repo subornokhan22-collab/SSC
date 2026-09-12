@@ -423,10 +423,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final out =
           Directory('${base.path}/tutors_desk_debug')..createSync(recursive: true);
       final ts = DateTime.now().toIso8601String().replaceAll(':', '-');
-      File('${out.path}/page_$ts.jpg').writeAsBytesSync(bytes);
+      final written = <File>[
+        File('${out.path}/page_$ts.jpg')..writeAsBytesSync(bytes),
+      ];
       final overlay = _overlayJpg;
       if (overlay != null) {
-        File('${out.path}/overlay_$ts.jpg').writeAsBytesSync(overlay);
+        written.add(File('${out.path}/overlay_$ts.jpg')..writeAsBytesSync(overlay));
       }
       // A failed scan is the interesting case: it carries the detected
       // corners, per-set scales and mark-reprojection residuals.
@@ -458,8 +460,25 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             ..writeln('set code: ${res.setCode} subject: ${res.subjectCode}');
         }
       }
-      File('${out.path}/meta_$ts.txt').writeAsStringSync(meta.toString());
-      _snack('Debug images saved to ${out.path} — send those files over.');
+      written.add(
+          File('${out.path}/meta_$ts.txt')..writeAsStringSync(meta.toString()));
+      // The Android/data folder is hidden in most file managers, so also
+      // copy the files into the shared Downloads folder (MediaStore —
+      // visible in every file manager, no permission needed).
+      var copiedAny = false;
+      for (final f in written) {
+        final mime =
+            f.path.endsWith('.jpg') ? 'image/jpeg' : 'text/plain';
+        try {
+          final copied = await _appChannel.invokeMethod<String>(
+              'copyToDownloads',
+              {'source': f.path, 'name': f.path.split('/').last, 'mime': mime});
+          copiedAny = copiedAny || copied != null;
+        } catch (_) {}
+      }
+      _snack(copiedAny
+          ? 'Debug images saved to Downloads/TutorsDeskDebug — send those files over.'
+          : 'Debug images saved to ${out.path} — send those files over.');
     } catch (e) {
       _snack('Could not save debug images: $e');
     }
