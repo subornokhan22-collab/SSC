@@ -1477,12 +1477,10 @@ class OMrScanner {
           // means the origin is unknown by an unknowable amount):
           // the full sheet width must be detected, or refuse.
           final noMarks = marks.every((m) => m == null);
-          if (noMarks && !sHExact) {
-            s = null;
-          }
-          // With an exact scale and no detected left edge, a
-          // left-side mark pins the horizontal origin exactly.
-          if (s != null && !leftDet && (sVExact || sHExact)) {
+          if (!(noMarks && !sHExact)) {
+            // With an exact scale and no detected left edge, a
+            // left-side mark pins the horizontal origin exactly.
+            if (!leftDet && (sVExact || sHExact)) {
             for (final k in const [0, 2]) {
               final mk = marks[k];
               if (mk == null) continue;
@@ -1551,6 +1549,7 @@ class OMrScanner {
             // axis-aligned similarity homography (uniform scale s).
             return <double>[s, 0, x0c, 0, s, y0c, 0, 0, 1];
           }
+            }
         }
       }
     }
