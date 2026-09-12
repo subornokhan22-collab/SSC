@@ -361,10 +361,82 @@ class OMrScanner {
     }
 
     // ── 4. homography (try all four sheet rotations) ───────────────
-    final List<double>? solved =
-        _bestRotationHomography(geo, corners, ink, pixels, w, h);
-    List<double>? candidate =
-        (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
+    // Candidate anchor sets: the built set (marks + paper-edge
+    // fallbacks) first; when a corner came from a paper-edge fallback,
+    // also the parallelogram of the real marks — in dim or wrinkled
+    // light the paper edge can sit far from the true corner while the
+    // parallelogram of three good marks is usually within a few
+    // pixels. The precision gate below (mark reprojection) decides.
+    final cornerSets = <List<DetectedCorner>>[corners];
+    if (markCount >= 3) {
+      final alt = List<DetectedCorner>.from(corners);
+      var altChanged = false;
+      for (var c = 0; c < 4; c++) {
+        if (alt[c].fromMark) continue;
+        final est = _parallelogramCorner(c, marks, w, h);
+        if (est != null) {
+          alt[c] = DetectedCorner(est, false);
+          altChanged = true;
+        }
+      }
+      if (altChanged) cornerSets.add(alt);
+    }
+
+    List<double>? candidate;
+    var failReason =
+        'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.';
+    for (final cs in cornerSets) {
+      final solved = _bestRotationHomography(geo, cs, ink, pixels, w, h);
+      final cand =
+          (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
+      if (cand == null) continue;
+      final tl0 = applyHomography(cand, const ui.Offset(0, 0));
+      final br0 = applyHomography(
+          cand, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
+      final pageDiag0 = math.sqrt(
+          OMrGeometry.pageW * OMrGeometry.pageW +
+              OMrGeometry.pageH * OMrGeometry.pageH);
+      final sc = math.sqrt((br0.dx - tl0.dx) * (br0.dx - tl0.dx) +
+              (br0.dy - tl0.dy) * (br0.dy - tl0.dy)) /
+          pageDiag0;
+      if (!sc.isFinite || sc <= 0) {
+        failReason =
+            'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.';
+        continue;
+      }
+      if (sc < 0.3 || sc > 3.0) {
+        failReason =
+            'Could not align the sheet (scale ${sc.toStringAsFixed(2)} — the whole sheet must fit in frame with a small margin).';
+        continue;
+      }
+      if (OMrGeometry.bubbleRadiusPx * sc < 4) {
+        failReason =
+            'The sheet is too small in the photo. Move closer and take the photo again.';
+        continue;
+      }
+      // Precision gate: every detected mark must reproject onto its own
+      // detected position. A set with one bad paper-edge anchor shifts
+      // the whole grid by tens of pixels while passing every shape
+      // check above.
+      var precise = true;
+      for (var k = 0; k < 4; k++) {
+        if (!cs[k].fromMark) continue;
+        final e = applyHomography(cand, OMrGeometry.markCenter(k));
+        final dxx = e.dx - cs[k].point.dx;
+        final dyy = e.dy - cs[k].point.dy;
+        final res = math.sqrt(dxx * dxx + dyy * dyy);
+        final tol = math.max(cs[k].blobDiag * 3, sc * 15);
+        if (!res.isFinite || res > tol) {
+          precise = false;
+          failReason =
+              'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.';
+          break;
+        }
+      }
+      if (!precise) continue;
+      candidate = cand;
+      break;
+    }
     // A page returned by the document scanner is already straight and
     // cropped to the sheet's edges, so its image corners are its page
     // corners — a second alignment that needs no registration marks at
@@ -379,8 +451,7 @@ class OMrScanner {
           _pageBoundsHomography(geo, ink, pixels, paper, w, h, marks);
     }
     if (candidate == null) {
-      return OmScanResult.failed(
-          'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.');
+      return OmScanResult.failed(failReason);
     }
     // Bound to a final: the read below captures [homography] in a
     // closure, and only a final local keeps its promoted (non-null) type
