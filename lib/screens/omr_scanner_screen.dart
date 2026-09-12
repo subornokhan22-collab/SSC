@@ -20,6 +20,12 @@ import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
 
+/// CI release number baked in at build time (--dart-define). OMR
+/// failures show it so a screenshot of a reported scan identifies the
+/// build that produced it.
+const String kOmrBuildNumber =
+    String.fromEnvironment('BUILD_NUMBER', defaultValue: 'dev');
+
 /// OMR স্ক্যানার — ফটো থেকে ভরাট করা OMR শিট পড়ে, answer key-এর
 /// সাথে মিলিয়ে মার্ক করে এবং ছাপার-যোগ্য স্কোর কার্ড দেয়।
 class OMrScannerScreen extends StatefulWidget {
@@ -408,6 +414,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final res = _result;
       final meta = StringBuffer()
         ..writeln('saved: $ts')
+        ..writeln('build: $kOmrBuildNumber')
         ..writeln('page bytes: ${bytes.length}');
       if (res != null) {
         meta
@@ -468,7 +475,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final sw = Stopwatch()..start();
       final res = await _runOmScan(photo, rectified: rectified);
       if (!res.ok) {
-        _snack(res.error ?? 'Scan failed');
+        _snack('${res.error ?? 'Scan failed'} (build $kOmrBuildNumber)');
         setState(() => _busy = false);
         return;
       }
@@ -490,7 +497,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _snack('Image could not be read: ${e.detail}');
       setState(() => _busy = false);
     } catch (e) {
-      _snack('Scan error: $e');
+      _snack('Scan error: $e (build $kOmrBuildNumber)');
       setState(() => _busy = false);
     }
   }
