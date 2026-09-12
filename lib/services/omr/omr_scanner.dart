@@ -1075,6 +1075,29 @@ class OMrScanner {
         // even under strong perspective.
         final aspect = width < height ? width / height : height / width;
         if (aspect < 0.45) continue;
+        // Mark-reprojection gate: a mask that anchors a mark at the
+        // page corner (or a wrong rotation) is a perfectly exact
+        // projective fit through the detected points — yet it shifts
+        // the whole bubble grid by the mark inset (~150 page px) and
+        // can win the probe-score race below. Such a candidate must
+        // never be allowed to compete: every detected mark must
+        // reproject onto its own detected position. A mark-true fit has
+        // ~0 residual here.
+        var maxRes = 0.0;
+        for (var k = 0; k < 4; k++) {
+          if (!hasMark[k]) continue;
+          final mp = applyHomography(hHom, markAnchor[k]);
+          final dxx = mp.dx - photoPoint[k].dx;
+          final dyy = mp.dy - photoPoint[k].dy;
+          final res = math.sqrt(dxx * dxx + dyy * dyy);
+          if (res > maxRes) maxRes = res;
+        }
+        if (maxRes > 0) {
+          final scaleEst = len(pts[0], pts[2]) /
+              math.sqrt(OMrGeometry.pageW * OMrGeometry.pageW +
+                  OMrGeometry.pageH * OMrGeometry.pageH);
+          if (maxRes > math.max(30.0, 0.012 * scaleEst * 2863)) continue;
+        }
         var err = 0.0;
 
         // Affine-ness: the projected page centre should sit near the
