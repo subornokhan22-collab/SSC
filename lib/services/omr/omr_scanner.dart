@@ -1454,13 +1454,15 @@ class OMrScanner {
         // the scale, so the width carries the vertical axis whenever
         // the bottom is not detected. An exactly-measured ruler beats
         // a frame assumption; two exact rulers must agree.
+        // sVExact/sHExact are set only where the corresponding value
+        // is assigned, so the bangs below are safe.
         double? s;
         if (sVExact) {
           if (sHExact) {
-            if ((sV - sH).abs() / ((sV + sH) / 2) > 0.08) {
+            if ((sV! - sH!).abs() / ((sV! + sH!) / 2) > 0.08) {
               s = null; // inconsistent: a wrong edge — fall through
             } else {
-              s = (sV + sH) / 2;
+              s = (sV! + sH!) / 2;
             }
           } else {
             s = sV;
