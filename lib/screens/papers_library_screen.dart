@@ -57,8 +57,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       _awaitingPermission = false;
       PaperBackup.permissionGranted().then((granted) {
         if (granted && mounted) {
-          _snack('Auto-save is on. Your papers are kept in '
-              'Download/TutorsDesk and come back after reinstalling.');
+          _snack('Done — an extra copy now also lives in '
+              'Download/TutorsDesk and survives uninstalling the app.');
         }
       });
     }

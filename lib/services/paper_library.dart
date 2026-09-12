@@ -570,13 +570,34 @@ class PaperBackup {
   }
 
   /// Path of the auto-backup file, or null when it cannot be written.
+  ///
+  /// Lives in the app's own external folder, which is always writable
+  /// under scoped storage. The shared Download folder (the old location)
+  /// needs the "all files access" permission, which users often never
+  /// grant — so auto-save was a silent no-op on many phones.
   static Future<String?> _backupPath() async {
+    try {
+      Directory? base;
+      try {
+        base = await getExternalStorageDirectory();
+      } catch (_) {}
+      base ??= await getApplicationDocumentsDirectory();
+      final dir = Directory('${base.path}/$_dirName');
+      if (!dir.existsSync()) dir.createSync(recursive: true);
+      return '${dir.path}/$_fileName';
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Legacy backup location (shared Download folder) — still readable on
+  /// installs that had the special permission granted.
+  static Future<File?> _legacyBackupFile() async {
     try {
       final base = await _channel.invokeMethod<String>('externalStorageDir');
       if (base == null) return null;
-      final dir = Directory('$base/Download/$_dirName');
-      if (!dir.existsSync()) dir.createSync(recursive: true);
-      return '${dir.path}/$_fileName';
+      final f = File('$base/Download/$_dirName/$_fileName');
+      return f.existsSync() ? f : null;
     } catch (_) {
       return null;
     }
@@ -612,7 +633,7 @@ class PaperBackup {
   /// auto-save must never disturb the user.
   static Future<void> autoSave() async {
     try {
-      if (!await permissionGranted()) return;
+      // The app-scoped folder needs no permission, so no gate here.
       final path = await _backupPath();
       if (path == null) return;
       final payload = await _payload();
@@ -632,10 +653,14 @@ class PaperBackup {
       final current = await PaperLibrary.loadEntries();
       if (current.isNotEmpty) return 0;
       final path = await _backupPath();
-      if (path == null) return 0;
-      final f = File(path);
-      if (!f.existsSync()) return 0;
-      return await restore(f);
+      if (path != null) {
+        final f = File(path);
+        if (f.existsSync()) return await restore(f);
+      }
+      // Fresh installs may still have a legacy-location backup.
+      final legacy = await _legacyBackupFile();
+      if (legacy != null) return await restore(legacy);
+      return 0;
     } catch (_) {
       return 0;
     }

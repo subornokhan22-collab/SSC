@@ -58,6 +58,11 @@ class OmScanResult {
   final int workHeight;
   final String? error;
 
+  /// Alignment diagnostics captured at the moment of failure — the debug
+  /// export writes them out so an unreadable photo can be analyzed against
+  /// the exact corners and homography the app saw, without the phone.
+  final Map<String, dynamic>? debug;
+
   OmScanResult._({
     required this.total,
     required this.answers,
@@ -72,9 +77,12 @@ class OmScanResult {
     required this.workWidth,
     required this.workHeight,
     this.error,
+    this.debug,
   });
 
-  factory OmScanResult.failed(String message) => OmScanResult._(
+  factory OmScanResult.failed(String message,
+      {Map<String, dynamic>? debug}) =>
+      OmScanResult._(
         total: 0,
         answers: const [],
         inks: const [],
@@ -88,6 +96,7 @@ class OmScanResult {
         workWidth: 0,
         workHeight: 0,
         error: message,
+        debug: debug,
       );
 
   bool get ok => error == null;
@@ -257,6 +266,10 @@ class OMrScanner {
       for (var c = 0; c < 4; c++) _detectCornerMark(c, dark, w, h),
     ];
     final markCount = marks.where((m) => m != null).length;
+    // Alignment diagnostics carried by every failure that follows (see
+    // OmScanResult.debug) — the debug export writes them to the meta file
+    // so a "corner mismatch" can be verified against the real photo.
+    final dbg = <String, dynamic>{'markCount': markCount};
     double cx = w / 2, cy = h / 2;
     if (markCount > 0) {
       var sx = 0.0, sy = 0.0;
@@ -312,7 +325,8 @@ class OMrScanner {
           return OmScanResult.failed(
               'The sheet is cut off at the $where of the photo. Step back '
               'until the whole sheet — including all four corners — is '
-              'inside the frame, then take the photo again.');
+              'inside the frame, then take the photo again.',
+              debug: dbg);
         }
       }
     }
@@ -348,8 +362,19 @@ class OMrScanner {
       }
       return OmScanResult.failed(
           'Corner marks not found. Keep the whole OMR sheet in frame, in '
-          'even light, and take the photo again.');
+          'even light, and take the photo again.',
+          debug: dbg);
     }
+
+    const _cornerNames = ['TL', 'TR', 'BL', 'BR'];
+    dbg['corners'] = [
+      for (var k = 0; k < 4; k++)
+        '${_cornerNames[k]}: ${corners[k].point.dx.toStringAsFixed(1)},'
+        '${corners[k].point.dy.toStringAsFixed(1)} '
+        'mark=${corners[k].fromMark} '
+        'edgeSuspect=${corners[k].edgeSuspect} '
+        'blobDiag=${corners[k].blobDiag.toStringAsFixed(1)}',
+    ];
 
     // If the four "marks" do not outline a consistent A4 sheet, one of
     // them is a false positive (tape, a dark stain, …) — swap it for the
@@ -357,7 +382,10 @@ class OMrScanner {
     final outlier = _outlierMarkIndex(corners, w, h);
     if (outlier >= 0) {
       final fb = _paperCornerFallback(outlier, paper, w, h, paperComp());
-      if (fb != null) corners[outlier] = fb;
+      if (fb != null) {
+        corners[outlier] = fb;
+        dbg['outlierSwap'] = outlier;
+      }
     }
 
     // ── 4. homography (try all four sheet rotations) ───────────────
@@ -385,11 +413,15 @@ class OMrScanner {
     List<double>? candidate;
     var failReason =
         'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.';
-    for (final cs in cornerSets) {
+    for (var si = 0; si < cornerSets.length; si++) {
+      final cs = cornerSets[si];
       final solved = _bestRotationHomography(geo, cs, ink, pixels, w, h);
       final cand =
           (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
-      if (cand == null) continue;
+      if (cand == null) {
+        dbg['set${si}'] = 'no surviving candidate';
+        continue;
+      }
       final tl0 = applyHomography(cand, const ui.Offset(0, 0));
       final br0 = applyHomography(
           cand, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
@@ -418,6 +450,8 @@ class OMrScanner {
       // detected position. A set with one bad paper-edge anchor shifts
       // the whole grid by tens of pixels while passing every shape
       // check above.
+      dbg['set${si}_scale'] = sc.toStringAsFixed(4);
+      final setRes = <String>[];
       var precise = true;
       for (var k = 0; k < 4; k++) {
         if (!cs[k].fromMark) continue;
@@ -426,6 +460,8 @@ class OMrScanner {
         final dyy = e.dy - cs[k].point.dy;
         final res = math.sqrt(dxx * dxx + dyy * dyy);
         final tol = math.max(cs[k].blobDiag * 3, sc * 15);
+        setRes.add(
+            '${_cornerNames[k]} ${res.isFinite ? res.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tol.toStringAsFixed(1)})');
         if (!res.isFinite || res > tol) {
           precise = false;
           failReason =
@@ -433,6 +469,7 @@ class OMrScanner {
           break;
         }
       }
+      dbg['set${si}_markResiduals'] = setRes.join(' | ');
       if (!precise) continue;
       candidate = cand;
       break;
@@ -451,12 +488,14 @@ class OMrScanner {
           _pageBoundsHomography(geo, ink, pixels, paper, w, h, marks);
     }
     if (candidate == null) {
-      return OmScanResult.failed(failReason);
+      return OmScanResult.failed(failReason, debug: dbg);
     }
     // Bound to a final: the read below captures [homography] in a
     // closure, and only a final local keeps its promoted (non-null) type
     // inside that closure.
     final homography = candidate;
+    dbg['homography'] =
+        homography.map((v) => v.toStringAsFixed(5)).join(', ');
 
     // Scale: page diagonal in the working image. Deliberately the actual
     // page corners (0,0) -> (pageW, pageH), not the fiducial mark centers:
@@ -478,21 +517,42 @@ class OMrScanner {
             (br.dx - tl.dx) * (br.dx - tl.dx) +
             (br.dy - tl.dy) * (br.dy - tl.dy)) /
         pageDiagonal;
+    dbg['scale'] = scale.toStringAsFixed(4);
     if (!scale.isFinite || scale <= 0) {
       return OmScanResult.failed(
-          'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.');
+          'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.',
+          debug: dbg);
     }
     // A physical A4 sheet photographed for OMR sits well within this range;
     // anything else means the "alignment" is a distorted projective fit.
     if (scale < 0.3 || scale > 3.0) {
       return OmScanResult.failed(
-          'Could not align the sheet (scale ${scale.toStringAsFixed(2)} — the whole sheet must fit in frame with a small margin).');
+          'Could not align the sheet (scale ${scale.toStringAsFixed(2)} — the whole sheet must fit in frame with a small margin).',
+          debug: dbg);
     }
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
       return OmScanResult.failed(
-          'The sheet is too small in the photo. Move closer and take the photo again.');
+          'The sheet is too small in the photo. Move closer and take the photo again.',
+          debug: dbg);
     }
+
+    // Diagnostics (debug export): the same reprojection the verification
+    // below performs, recorded so a failure can be checked against the
+    // photo without the device. Kept separate so the block that follows
+    // stays exactly as specified.
+    final dbgFinal = <String>[];
+    for (var k = 0; k < 4; k++) {
+      if (!corners[k].fromMark) continue;
+      final expect = applyHomography(homography, OMrGeometry.markCenter(k));
+      final dx = expect.dx - corners[k].point.dx;
+      final dy = expect.dy - corners[k].point.dy;
+      final residual = math.sqrt(dx * dx + dy * dy);
+      final tolerance = math.max(corners[k].blobDiag * 3, scale * 15);
+      dbgFinal.add(
+          '${_cornerNames[k]} ${residual.isFinite ? residual.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tolerance.toStringAsFixed(1)})');
+    }
+    dbg['finalMarkResiduals'] = dbgFinal.join(' | ');
 
     // Reprojection check: a precise fit must map each real mark's known
     // geometric position back to very close to where that mark was
@@ -511,7 +571,8 @@ class OMrScanner {
       final tolerance = math.max(corners[k].blobDiag * 3, scale * 15);
       if (!residual.isFinite || residual > tolerance) {
         return OmScanResult.failed(
-            'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.');
+            'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.',
+            debug: dbg);
       }
     }
 
@@ -1084,14 +1145,24 @@ class OMrScanner {
         // reproject onto its own detected position. A mark-true fit has
         // ~0 residual here.
         var maxRes = 0.0;
+        var markResFinite = true;
         for (var k = 0; k < 4; k++) {
           if (!hasMark[k]) continue;
           final mp = applyHomography(hHom, markAnchor[k]);
           final dxx = mp.dx - photoPoint[k].dx;
           final dyy = mp.dy - photoPoint[k].dy;
           final res = math.sqrt(dxx * dxx + dyy * dyy);
+          if (!res.isFinite) {
+            // This transform's line at infinity passes through a detected
+            // mark, so the grid's projection is undefined there. NaN would
+            // slip past `res > maxRes` (and the `maxRes > 0` guard), so
+            // reject such a candidate explicitly — it is unusable.
+            markResFinite = false;
+            break;
+          }
           if (res > maxRes) maxRes = res;
         }
+        if (!markResFinite) continue;
         if (maxRes > 0) {
           final scaleEst = len(pts[0], pts[2]) /
               math.sqrt(OMrGeometry.pageW * OMrGeometry.pageW +
