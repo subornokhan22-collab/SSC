@@ -422,6 +422,28 @@ class OMrScanner {
       return OmScanResult.failed(
           'The sheet is too small in the photo. Move closer and take the photo again.');
     }
+
+    // Reprojection check: a precise fit must map each real mark's known
+    // geometric position back to very close to where that mark was
+    // actually found in the photo. The page-corner scale check above only
+    // proves the fit is roughly the right size and shape overall — a
+    // homography can pass that while still being subtly wrong in a way
+    // that misaligns the bubble grid. This is the check that actually
+    // guarantees the grid-sampling precision the rest of the pipeline
+    // depends on, and a genuinely good fit satisfies it trivially.
+    for (var k = 0; k < 4; k++) {
+      if (!corners[k].fromMark) continue;
+      final expect = applyHomography(homography, OMrGeometry.markCenter(k));
+      final dx = expect.dx - corners[k].point.dx;
+      final dy = expect.dy - corners[k].point.dy;
+      final residual = math.sqrt(dx * dx + dy * dy);
+      final tolerance = math.max(corners[k].blobDiag * 3, scale * 15);
+      if (!residual.isFinite || residual > tolerance) {
+        return OmScanResult.failed(
+            'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.');
+      }
+    }
+
     final rawR = bubbleR * 0.55;
     final sampleR = rawR < 3.5 ? 3.5 : (rawR > 22.0 ? 22.0 : rawR);
 
@@ -1312,6 +1334,43 @@ class OMrScanner {
     return q;
   }
 
+  /// Scale + page-zero origin along one axis, from a detected sheet
+  /// edge at photo position [edgePhoto] (page position [edgePage]) and
+  /// the best available corner mark on the opposite side of the sheet —
+  /// the longest mark-to-edge lever arm wins. Returns [scale, origin]
+  /// or null when no mark is available or every mark sits too close to
+  /// this edge to measure a scale from.
+  static List<double>? _edgeMarkAxis(
+      List<DetectedCorner?> marks,
+      List<int> ks,
+      double edgePhoto,
+      double edgePage,
+      bool horizontal) {
+    double? bestS;
+    var bestO = 0.0;
+    var bestLever = 0.0;
+    for (final k in ks) {
+      final mk = marks[k];
+      if (mk == null) continue;
+      final pc = OMrGeometry.markCenter(k);
+      final mPhoto = horizontal ? mk.point.dx : mk.point.dy;
+      final mPage = horizontal ? pc.dx : pc.dy;
+      // Opposite-side marks give a 1500+ px lever arm; adjacent-side
+      // marks (125/80 px) turn a few px of detection noise into a
+      // multi-percent scale error — unusable.
+      final lever = (edgePage - mPage).abs();
+      if (lever < 1000) continue;
+      final sC = (edgePhoto - mPhoto) / (edgePage - mPage);
+      if (sC <= 0 || !sC.isFinite) continue;
+      if (lever > bestLever) {
+        bestLever = lever;
+        bestS = sC;
+        bestO = edgePhoto - sC * edgePage;
+      }
+    }
+    return bestS == null ? null : <double>[bestS, bestO];
+  }
+
   static List<double>? _pageBoundsHomography(
       OMrGeometry geo,
       Uint8List? ink,
@@ -1340,52 +1399,158 @@ class OMrScanner {
     if (luma != null) {
       final e = _sheetEdgesByProjection(luma, w, h);
       if (e != null && _marksInsideRect(marks, e)) {
-        final x0 = e[0], y0 = e[1];
-        final sX = (e[2] - x0) / OMrGeometry.pageW;
-        final sY = (e[3] - y0) / OMrGeometry.pageH;
-        // A side that was NOT detected ends at the frame: if the crop
-        // cuts the sheet there, that side is shorter than the true
-        // sheet side, so its ratio understates the scale. When both
-        // top and bottom are detected the height is complete and is
-        // the most accurate ruler; otherwise use the width (a crop
-        // that cuts the bottom usually still shows the full width).
+        final x0 = e[0], y0 = e[1], x1 = e[2], y1 = e[3];
         final flagsI = e[4].round();
-        final s = (flagsI & 8) != 0 && (flagsI & 2) != 0 ? sY : sX;
-        // Cross-check against any detected mark: it must project (nearly)
-        // onto its printed position, or the edges latched wrong.
-        var ok = true;
-        final markTol = math.max(18.0, s * 20.0);
-        for (var k = 0; k < 4; k++) {
-          final mk = marks[k];
-          if (mk == null) continue;
-          final pc = OMrGeometry.markCenter(k);
-          final px = x0 + s * pc.dx;
-          final py = y0 + s * pc.dy;
-          if ((px - mk.point.dx).abs() > markTol ||
-              (py - mk.point.dy).abs() > markTol) {
+        final leftDet = (flagsI & 1) != 0;
+        final topDet = (flagsI & 2) != 0;
+        final rightDet = (flagsI & 4) != 0;
+        final botDet = (flagsI & 8) != 0;
+
+        // Scale + origin per axis. A detected edge on one side plus a
+        // detected mark on the opposite side measures the scale on a
+        // long lever arm (~1500+ page px) that dim light cannot spoil;
+        // two detected edges measure it on the full sheet side; an
+        // undetected side is assumed to sit at the frame edge (the
+        // scanner crop follows the sheet) — the mark cross-check below
+        // rejects the assumption when it is wrong.
+        double? sH;
+        var x0c = x0;
+        var sHExact = false;
+        if (leftDet && rightDet) {
+          sH = (x1 - x0) / OMrGeometry.pageW;
+          sHExact = true;
+        } else if (rightDet) {
+          final r = _edgeMarkAxis(marks, const [0, 1], x1,
+              OMrGeometry.pageW, true);
+          if (r != null) {
+            sH = r[0];
+            x0c = r[1];
+            sHExact = true;
+          }
+        }
+        if (sH == null) {
+          // Left edge only (or none): the frame's right side is the
+          // assumed sheet edge.
+          sH = (w - 1.0 - x0) / OMrGeometry.pageW;
+        }
+        double? sV;
+        var y0c = y0;
+        var sVExact = false;
+        if (topDet && botDet) {
+          sV = (y1 - y0) / OMrGeometry.pageH;
+          sVExact = true;
+        } else if (botDet) {
+          final r = _edgeMarkAxis(marks, const [0, 2], y1,
+              OMrGeometry.pageH, false);
+          if (r != null) {
+            sV = r[0];
+            y0c = r[1];
+            sVExact = true;
+          }
+        }
+        // Combine: a rectified scan is uniform-scale, so one axis
+        // carries the other. A crop that trims the sheet's bottom
+        // shortens the visible height — a height ratio would understate
+        // the scale, so the width carries the vertical axis whenever
+        // the bottom is not detected. An exactly-measured ruler beats
+        // a frame assumption; two exact rulers must agree.
+        double? s;
+        if (sVExact) {
+          if (sHExact) {
+            if ((sV - sH).abs() / ((sV + sH) / 2) > 0.08) {
+              s = null; // inconsistent: a wrong edge — fall through
+            } else {
+              s = (sV + sH) / 2;
+            }
+          } else {
+            s = sV;
+          }
+        } else {
+          s = sH;
+          y0c = y0; // vertical origin = detected top edge (or frame)
+        }
+        if (s == null || s <= 0 || !s.isFinite) {
+          // fall through to the paper-mask path below
+        } else {
+          // With no marks at all there is no fiducial to bound a
+          // horizontal frame assumption (an undetected vertical edge
+          // means the origin is unknown by an unknowable amount):
+          // the full sheet width must be detected, or refuse.
+          final noMarks = marks.every((m) => m == null);
+          if (noMarks && !sHExact) {
+            s = null;
+          }
+          // With an exact scale and no detected left edge, a
+          // left-side mark pins the horizontal origin exactly.
+          if (s != null && !leftDet && (sVExact || sHExact)) {
+            for (final k in const [0, 2]) {
+              final mk = marks[k];
+              if (mk == null) continue;
+              final pc = OMrGeometry.markCenter(k);
+              final cand = mk.point.dx - s * pc.dx;
+              if (cand >= -0.05 * w &&
+                  cand + OMrGeometry.pageW * s <= w * 1.05) {
+                x0c = cand;
+              }
+              break;
+            }
+          }
+          var ok = true;
+          // Every detected mark must re-project onto its printed
+          // position — this is what rejects a wrong frame assumption
+          // and an edge that latched onto the wrong line.
+          final markTol = math.max(18.0, s * 20.0);
+          for (var k = 0; k < 4; k++) {
+            final mk = marks[k];
+            if (mk == null) continue;
+            final pc = OMrGeometry.markCenter(k);
+            final px = x0c + s * pc.dx;
+            final py = y0c + s * pc.dy;
+            if ((px - mk.point.dx).abs() > markTol ||
+                (py - mk.point.dy).abs() > markTol) {
+              ok = false;
+              break;
+            }
+          }
+          // Detected edges must agree with the fitted sheet boundary.
+          if (ok) {
+            final etolX = 0.02 * OMrGeometry.pageW * s;
+            final etolY = 0.02 * OMrGeometry.pageH * s;
+            if (leftDet && (x0c - x0).abs() > etolX) ok = false;
+            if (rightDet &&
+                (x0c + OMrGeometry.pageW * s - x1).abs() > etolX) {
+              ok = false;
+            }
+            if (topDet && (y0c - y0).abs() > etolY) ok = false;
+            if (botDet && (y0c + OMrGeometry.pageH * s - y1).abs() > etolY) {
+              ok = false;
+            }
+          }
+          // The fitted sheet must sit inside the photo.
+          if (ok && (x0c < -0.05 * w || x0c > 0.15 * w ||
+              y0c < -0.05 * h || y0c > 0.15 * h)) {
             ok = false;
-            break;
           }
-        }
-        // The fitted sheet must carry printed content at the top of the
-        // question grid — a background "sheet" does not.
-        if (ok && ink != null) {
-          final probeY = OMrGeometry.questionsTop + 120;
-          var varT = 0.0, inkT = 0.0;
-          for (final qx in const [400.0, OMrGeometry.pageW / 2, 1254.0]) {
-            final px = x0 + s * qx;
-            final py = y0 + s * probeY;
-            final v = _diskVariance(luma, w, h, px, py, 24);
-            if (v > varT) varT = v;
-            final u = _inkRatio(ink, w, h, px, py, 24);
-            if (u > inkT) inkT = u;
+          // The fitted sheet must carry printed content at the top of
+          // the question grid — a background "sheet" does not.
+          if (ok && ink != null) {
+            final probeY = OMrGeometry.questionsTop + 120;
+            var varT = 0.0, inkT = 0.0;
+            for (final qx in const [400.0, OMrGeometry.pageW / 2, 1254.0]) {
+              final px = x0c + s * qx;
+              final py = y0c + s * probeY;
+              final v = _diskVariance(luma, w, h, px, py, 24);
+              if (v > varT) varT = v;
+              final u = _inkRatio(ink, w, h, px, py, 24);
+              if (u > inkT) inkT = u;
+            }
+            if (varT < 60 && inkT < 0.10) ok = false;
           }
-          if (varT < 60 && inkT < 0.10) ok = false;
-        }
-        if (ok) {
-          // A rectified page is straight and axis-aligned: an
-          // axis-aligned similarity homography (uniform scale s).
-          return <double>[s, 0, x0, 0, s, y0, 0, 0, 1];
+          if (ok) {
+            // A rectified page is straight and axis-aligned: an
+            // axis-aligned similarity homography (uniform scale s).
+            return <double>[s, 0, x0c, 0, s, y0c, 0, 0, 1];
+          }
         }
       }
     }
