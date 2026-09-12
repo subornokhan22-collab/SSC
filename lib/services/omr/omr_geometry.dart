@@ -52,12 +52,18 @@ class OMrGeometry {
   static final double _markTLY = margin - (10 + 6) * k;
 
   /// Top-left corner of mark [i]: 0 = TL, 1 = TR, 2 = BL, 3 = BR.
+  ///
+  /// (case 3 used to be missing — BR fell through to the TL position, so
+  /// the scanner looked for the bottom-right mark in the top-left corner
+  /// and the print drew a second square at TL instead of one at BR.)
   static List<double> markTopLeft(int i) {
     switch (i) {
       case 1:
         return [pageW - margin - markSize, _markTLY];
       case 2:
         return [margin, pageH - margin + 6 * k];
+      case 3:
+        return [pageW - margin - markSize, pageH - margin + 6 * k];
       default:
         return [_markTLx, _markTLY];
     }
