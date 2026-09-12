@@ -458,6 +458,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           meta
             ..writeln('answers: ${res.answers}')
             ..writeln('set code: ${res.setCode} subject: ${res.subjectCode}');
+          final diag = res.inkDiag;
+          if (diag != null && diag.isNotEmpty) {
+            meta.writeln('ink diag (opt=ink seen, panels: digit@best/second):');
+            for (final line in diag) {
+              meta.writeln('  $line');
+            }
+          }
         }
       }
       written.add(

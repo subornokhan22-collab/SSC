@@ -63,6 +63,11 @@ class OmScanResult {
   /// the exact corners and homography the app saw, without the phone.
   final Map<String, dynamic>? debug;
 
+  /// Ink ratios the sampler actually saw at a *successful* read, one line
+  /// per notable bubble — so an answer that came back blank can be judged
+  /// against how much ink was really there (faint pen vs. wrong position).
+  final List<String>? inkDiag;
+
   OmScanResult._({
     required this.total,
     required this.answers,
@@ -78,6 +83,7 @@ class OmScanResult {
     required this.workHeight,
     this.error,
     this.debug,
+    this.inkDiag,
   });
 
   factory OmScanResult.failed(String message,
@@ -249,11 +255,24 @@ class OMrScanner {
     // the paper around them (which would otherwise merge mark + shadow
     // band into one giant component in the Otsu mask).
     final darkT = otsuT * 0.55;
+    // Fallback tiers for faint marks: on bright scanner pages the light
+    // ink of the *printed* corner squares can sit below 0.55·Otsu and go
+    // undetected (a pen-drawn mark stays dark and is found at tier 0 —
+    // leaving 1 mark + 3 frame-edge anchors, a fit that bends to the
+    // pen stroke). Each looser tier is searched only inside the tight
+    // corner strip (see nearCorner), where title text, grid bubbles and
+    // digit boxes never intrude.
+    final darkT1 = otsuT * 0.80;
+    final darkT2 = otsuT * 0.95;
     final dark = Uint8List(w * h);
+    final dark1 = Uint8List(w * h);
+    final dark2 = Uint8List(w * h);
     for (var i = 0; i < w * h; i++) {
       ink[i] = pixels[i] < otsuT ? 1 : 0;
       paper[i] = 1 - ink[i];
       dark[i] = pixels[i] < darkT ? 1 : 0;
+      dark1[i] = pixels[i] < darkT1 ? 1 : 0;
+      dark2[i] = pixels[i] < darkT2 ? 1 : 0;
     }
 
     // ── 3. corner marks ────────────────────────────────────────────
@@ -263,7 +282,10 @@ class OMrScanner {
     // next to or under the OMR sheet, that bright pixel often belongs to
     // the neighbour, which wrecks the homography fit.
     final marks = <DetectedCorner?>[
-      for (var c = 0; c < 4; c++) _detectCornerMark(c, dark, w, h),
+      for (var c = 0; c < 4; c++)
+        _detectCornerMark(c, dark, w, h) ??
+            _detectCornerMark(c, dark1, w, h, nearCorner: true) ??
+            _detectCornerMark(c, dark2, w, h, nearCorner: true),
     ];
     final markCount = marks.where((m) => m != null).length;
     // Alignment diagnostics carried by every failure that follows (see
@@ -602,8 +624,25 @@ class OMrScanner {
     }
 
     // ── 6. identity panels + set code ──────────────────────────────
+    // Ink diagnostics for the debug export: per-bubble ink the sampler
+    // actually saw, so a "blank" can be judged — faint pen (low ink) vs.
+    // misalignment (a neighbouring bubble holds the ink).
+    final diagLines = <String>[];
+    for (var no = 1; no <= total; no++) {
+      final parts = <String>[];
+      for (var o = 0; o < 4; o++) {
+        final v = inks[no - 1][o];
+        if (v >= 0.08) parts.add('${'কখগঘ'[o]}=${v.toStringAsFixed(2)}');
+      }
+      if (parts.isNotEmpty) {
+        diagLines.add('q$no [${answers[no - 1]}]: ${parts.join(' ')}');
+      }
+    }
+
+    final digitDiag = <String>[];
     String readDigits(int panel, int cols) {
       final sb = StringBuffer();
+      final colDiag = <String>[];
       for (var c = 0; c < cols; c++) {
         var bestDigit = -1;
         var best = 0.0;
@@ -620,6 +659,8 @@ class OMrScanner {
             second = r;
           }
         }
+        colDiag.add(
+            '${bestDigit < 0 ? '-' : bestDigit}@${best.toStringAsFixed(2)}/${second.toStringAsFixed(2)}');
         if (best >= fillThreshold && best > second + 0.12) {
           sb.write('$bestDigit');
         } else if (best >= weakThreshold) {
@@ -628,6 +669,7 @@ class OMrScanner {
           sb.write('0'); // unfilled leading columns read as zero
         }
       }
+      digitDiag.add('panel$panel: ${colDiag.join(' ')}');
       return sb.toString();
     }
 
@@ -636,12 +678,14 @@ class OMrScanner {
     final subjectCode = readDigits(2, 3);
 
     var setCode = -1;
+    final setDiag = <String>[];
     {
       var best = -1, second = -1;
       var bestR = 0.0;
       for (var o = 0; o < 4; o++) {
         final p = applyHomography(homography, geo.setBubble(o));
         final r = _inkRatio(ink, w, h, p.dx, p.dy, sampleR);
+        setDiag.add('${'কখগঘ'[o]}=${r.toStringAsFixed(2)}');
         if (r > bestR) {
           second = best;
           bestR = r;
@@ -652,6 +696,8 @@ class OMrScanner {
       }
       if (bestR >= fillThreshold) setCode = best;
     }
+    diagLines.add('set [$setCode]: ${setDiag.join(' ')}');
+    diagLines.addAll(digitDiag);
 
     return OmScanResult._(
       total: total,
@@ -666,6 +712,7 @@ class OMrScanner {
       scale: scale,
       workWidth: w,
       workHeight: h,
+      inkDiag: diagLines,
     );
   }
 
@@ -750,7 +797,12 @@ class OMrScanner {
   /// mark size, and it must not be clipped by the search region (clipped
   /// blobs are regions — desk/shadow — not the mark).
   static DetectedCorner? _detectCornerMark(
-      int corner, Uint8List dark, int w, int h) {
+    int corner,
+    Uint8List dark,
+    int w,
+    int h, {
+    bool nearCorner = false,
+  }) {
     // Wide enough for a sheet that lies sideways in the frame (a phone
     // photo with a 90° EXIF orientation puts the marks far from the photo
     // corners); the shape gate below keeps the intruding grid out.
@@ -824,6 +876,53 @@ class OMrScanner {
         // not the mark (the mark always sits well inside the sheet).
         if (minX == 0 || minY == 0 || maxX == rw - 1 || maxY == rh - 1) {
           continue;
+        }
+        if (nearCorner) {
+          // Faint-mark fallback only. The mark is printed a fixed inset
+          // from the sheet's edges (≈30 px page-px), and on a scanner
+          // page / a well-framed photo the sheet edges coincide with the
+          // frame edges — so the mark must sit in the inner corner strip
+          // of the frame. Everything else dark enough for a looser tier
+          // (title text, numbers, bubbles, filled digit boxes) lies
+          // further out and is excluded by this band.
+          final portrait = h >= w;
+          final bandEdge = (portrait ? h : w) * 0.05;
+          final bandSide = (portrait ? w : h) * 0.18;
+          final mx = x0 + insetX + sumX / area;
+          final my = y0 + insetY + sumY / area;
+          final bool inBand;
+          if (portrait) {
+            switch (corner) {
+              case 0:
+                inBand = mx < bandSide && my < bandEdge;
+                break;
+              case 1:
+                inBand = mx > w - bandSide && my < bandEdge;
+                break;
+              case 2:
+                inBand = mx < bandSide && my > h - bandEdge;
+                break;
+              default:
+                inBand = mx > w - bandSide && my > h - bandEdge;
+                break;
+            }
+          } else {
+            switch (corner) {
+              case 0:
+                inBand = mx < bandEdge && my < bandSide;
+                break;
+              case 1:
+                inBand = mx > w - bandEdge && my < bandSide;
+                break;
+              case 2:
+                inBand = mx < bandEdge && my > h - bandSide;
+                break;
+              default:
+                inBand = mx > w - bandEdge && my > h - bandSide;
+                break;
+            }
+          }
+          if (!inBand) continue;
         }
         final score = area * fill;
         if (score > bestScore) {
