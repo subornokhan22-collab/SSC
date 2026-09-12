@@ -79,13 +79,16 @@ class MainActivity : FlutterActivity() {
                                 val uri = contentResolver.insert(
                                     android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
                                 if (uri != null) {
+                                    var written = false
+                                    val bytes = java.io.File(source).readBytes()
                                     contentResolver.openOutputStream(uri)?.use { out ->
-                                        java.io.File(source).copyTo(out)
+                                        out.write(bytes)
+                                        written = true
                                     }
                                     values.clear()
                                     values.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
                                     contentResolver.update(uri, values, null, null)
-                                    path = "Downloads/TutorsDeskDebug/$name"
+                                    if (written) path = "Downloads/TutorsDeskDebug/$name"
                                 }
                             }
                         } catch (e: Exception) {
