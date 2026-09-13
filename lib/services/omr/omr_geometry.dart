@@ -130,7 +130,11 @@ class OMrGeometry {
       questionsTop + boxHeaderH + perColumn * rowH + 4 * k;
 
   // ── Identity panels (roll / registration / subject code) ───────────
-  static const double digitRowH = 10.8 * k;
+  // Digit rows must out-grow the (now 6 pt) bubbles — at 10.8 pt rows the
+  // 13.3 px bubble diameter exceeded the 10 pt pitch and the digit
+  // circles in roll/registration/subject overlapped. 15 pt rows leave an
+  // 8.3 px (≈1.1 mm) edge gap, matching the generous spacing of the grid.
+  static const double digitRowH = 15.0 * k;
   static const double labelBand = 14 * k;
   static final double panelBottomPad = 6 * k;
   static final double panelH = labelBand + 10 * digitRowH + panelBottomPad;
