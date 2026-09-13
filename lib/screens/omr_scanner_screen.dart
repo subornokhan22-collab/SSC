@@ -594,8 +594,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         durationMs: _scanMs ?? 0,
       );
 
-  /// Draws the verdict on top of the photo (green = correct, red = wrong,
-  /// grey = blank, orange = double-marked; the correct bubble gets a ring).
+  /// Draws the verdict on top of the photo: each marked bubble gets a
+  /// filled circle in the verdict colour (green = correct, red = wrong,
+  /// orange = double-marked, grey = blank row), exactly the size of the
+  /// sheet's own printed bubble; a wrong/blank question also gets a
+  /// green ring around the correct option.
   Future<Uint8List?> _buildOverlay(OmScanResult res, OmGraded g) async {
     final photo = _photoBytes;
     final img = _photoImage;
@@ -618,14 +621,17 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       canvas.drawImage(img, Offset.zero,
           Paint()..filterQuality = FilterQuality.medium);
 
+      final br = OMrGeometry.bubbleRadiusPx * k; // bubble radius, display px
       final ringPaint = ui.Paint()
         ..style = ui.PaintingStyle.stroke
         ..strokeWidth = 3.0;
 
-      // Registration corners.
+      // Registration corners — the circle is sized to the corner mark
+      // itself, so it sits concentric on the printed square.
       ringPaint.color = const Color(0xB33D5AFE);
       for (final c in res.photoCorners) {
-        canvas.drawCircle(c.point * k, 9, ringPaint);
+        canvas.drawCircle(
+            c.point * k, OMrGeometry.markSize / 2 * k + 2, ringPaint);
       }
 
       for (var i = 0; i < _total; i++) {
@@ -646,7 +652,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         if (a >= 0) {
           final p = OMrScanner.applyHomography(
               res.homography, geo.questionBubble(i + 1, a));
-          canvas.drawCircle(p * k, OMrGeometry.bubbleRadiusPx * k + 4, ringPaint);
+          // Filled disc at exactly the printed bubble's radius — an
+          // oversized ring reads as sitting "off" the bubble, while a
+          // concentric, same-size fill makes any misalignment visible
+          // (and makes the verdict legible).
+          final c2 = p * k;
+          canvas.drawCircle(c2, br,
+              ui.Paint()..color = verdict.withOpacity(.35));
+          canvas.drawCircle(c2, br, ringPaint);
         } else {
           // blank / unread: draw a dim line across the row
           final p0 = OMrScanner.applyHomography(
@@ -659,15 +672,17 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             ..color = verdict.withOpacity(.65);
           canvas.drawLine(p0 * k, p3 * k, dim);
         }
-        // Ring the correct option for wrong answers.
+        // Ring the correct option for wrong/blank answers — a slim halo
+        // just outside the printed bubble (the verdict circle above is
+        // filled and exactly bubble-sized, so the halo stays distinct).
         if (status == 1 || (status == 2 && g.key[i] >= 0)) {
           final pc = OMrScanner.applyHomography(
               res.homography, geo.questionBubble(i + 1, g.key[i]));
-          canvas.drawCircle(pc * k, OMrGeometry.bubbleRadiusPx * k + 7,
+          canvas.drawCircle(pc * k, br + 5,
               ui.Paint()
                 ..style = ui.PaintingStyle.stroke
                 ..strokeWidth = 2
-                ..color = Color(0x9912A150));
+                ..color = const Color(0x9912A150));
         }
       }
 
