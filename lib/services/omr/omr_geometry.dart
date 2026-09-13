@@ -89,11 +89,12 @@ class OMrGeometry {
   late final double bubbleSpan;
   late final double bubbleStep;
 
-  // Bubbles are deliberately generous (6 pt radius, 13 pt rows): a sample
+  // Bubbles are deliberately generous (6 pt radius, 17 pt rows): a sample
   // point a few pixels off still lands well inside the bubble instead of
-  // grazing its rim, which is the whole class of "close-call" misreads.
+  // grazing its rim, and the ~14 px gap between bubble edges keeps a
+  // student's pen fill from bleeding into the row above/below.
   static const double bubbleR = 6.0; // bubble radius, pt
-  static const double rowH = 13.0 * k;
+  static const double rowH = 17.0 * k;
   static const double numberW = 26 * k;
   static const double maxBubbleStep = 25.0;
   static final double naturalRowW = 26 * k +
