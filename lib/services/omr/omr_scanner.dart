@@ -372,6 +372,11 @@ class OMrScanner {
     // sampling the wrong places — garbage with a green light. Fail with a
     // clear instruction instead. (Scanner pages are excluded: their paper
     // is cropped to the frame by design.)
+    //
+    // Exception: when ALL FOUR corner marks were found, the fit is anchored
+    // entirely to the marks and the frame edge is never consulted — a
+    // sheet that legitimately fills the frame (a gallery import of the
+    // sheet itself, a screenshot, a tight photo) scans fine.
     if (!rectified) {
       final comp = paperComp();
       if (comp != null) {
@@ -384,7 +389,7 @@ class OMrScanner {
           if (comp[y * w] == 1) edges.add('left');
           if (comp[y * w + w - 1] == 1) edges.add('right');
         }
-        if (edges.isNotEmpty) {
+        if (edges.isNotEmpty && markCount < 4) {
           final where = edges.toSet().join(' / ');
           return OmScanResult.failed(
               'The sheet is cut off at the $where of the photo. Step back '
