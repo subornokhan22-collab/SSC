@@ -1808,6 +1808,27 @@ class PaperPdf {
   }
 
   // ══════════════ OMR answer sheet — standalone render & print ══════════════
+  /// Drop-out template ink. The OMR sheet's printed *template* (bubble
+  /// circles, grid/box borders, question numbers, option letters, labels,
+  /// corner marks, rules) is drawn in this maroon so the scanner can tell
+  /// it apart from the student's black/blue pen by hue: a pixel is treated
+  /// as student ink only when it is dark AND neutral (see the drop-out
+  /// test in `OMrScanner`). A uniformly dark template (the old near-black)
+  /// raised every blank bubble's ink ratio and let noise cross the fill
+  /// threshold on genuinely blank rows.
+  ///
+  /// Keep the channel signature in sync with the scanner's drop-out test:
+  /// `r > g + 25 && r > b + 10`.
+  static const Color omrTemplateInk = Color(0xFFB03060);
+  /// Light maroon tint for the template's soft bands (header/zebra) — a
+  /// background, not ink, so it never enters the scanner's ink mask.
+  static const Color omrTemplateSoft = Color(0xFFF7E9EF);
+  /// Pre-filled code discs (subject code / set code) are printed "answers"
+  /// the scanner must *read*, so they stay a neutral dark ink — NOT the
+  /// drop-out maroon — otherwise the subject/set codes would be excluded
+  /// as template and come back blank.
+  static const Color omrCodeInk = Color(0xFF1A1A1A);
+
   /// Renders the OMR answer sheet from [OMrGeometry].
   ///
   /// Every bubble and corner mark is placed at the exact coordinates the
@@ -1855,27 +1876,31 @@ class PaperPdf {
       pages.add(bd!.buffer.asUint8List());
     }
 
-    TextStyle st(double size, bool isBold, double lineHeight) => TextStyle(
+    TextStyle st(double size, bool isBold, double lineHeight,
+            {Color? color}) =>
+        TextStyle(
           fontFamily: isBold ? (_bold ?? _regular) : _regular,
           fontFamilyFallback: _fb(isBold),
           fontWeight:
               (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
           fontSize: size * _k,
           height: lineHeight,
-          color: const Color(0xFF1A1A1A),
+          color: color ?? omrTemplateInk,
         );
 
     TextPainter makePainter(String text, double size,
-            {bool isBold = false, TextAlign align = TextAlign.left}) =>
+            {bool isBold = false,
+            TextAlign align = TextAlign.left,
+            Color? color}) =>
         TextPainter(
-          text: TextSpan(text: text, style: st(size, isBold, 1.4)),
+          text: TextSpan(text: text, style: st(size, isBold, 1.4, color: color)),
           textDirection: TextDirection.ltr,
           textAlign: align,
         );
 
-    const ink = Color(0xFF1A1A1A);
-    const accent = Color(0xFF1F5FA8);
-    const accentSoft = Color(0xFFEAF1FB);
+    final ink = omrTemplateInk;
+    final accent = omrTemplateInk;
+    final accentSoft = omrTemplateSoft;
     final borderAccent = Paint()
       ..color = accent
       ..style = PaintingStyle.stroke
@@ -1883,10 +1908,13 @@ class PaperPdf {
 
     void bubble(double x, double yy, String value, {bool selected = false}) {
       final r = OMrGeometry.bubbleRadiusPx;
+      // A pre-filled code disc is a printed "answer": neutral dark ink the
+      // scanner reads like a pen mark (the drop-out maroon would be
+      // excluded as template). The rest of the template is maroon.
       canvas.drawCircle(
         Offset(x, yy),
         r,
-        Paint()..color = selected ? accent : Colors.white,
+        Paint()..color = selected ? omrCodeInk : Colors.white,
       );
       canvas.drawCircle(
         Offset(x, yy),
@@ -1896,8 +1924,10 @@ class PaperPdf {
           ..style = PaintingStyle.stroke
           ..strokeWidth = .8 * _k,
       );
-      final t = makePainter(
-              value, 6.4, isBold: selected, align: TextAlign.center)
+      final t = makePainter(value, 6.4,
+              isBold: selected,
+              align: TextAlign.center,
+              color: selected ? Colors.white : null)
           ..layout();
       t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
     }

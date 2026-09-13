@@ -226,7 +226,11 @@ class OMrScanner {
       }
     }
 
+    // Box-average the photo straight to the working grid. Both luma AND
+    // the colour channels are kept: the channels let the ink mask below
+    // reject the sheet's maroon drop-out template by hue (see `dropout`).
     final pixels = Uint8List(w * h);
+    final dropout = Uint8List(w * h);
     for (var dy = 0; dy < h; dy++) {
       final sy0 = (dy * srcH / h).floor();
       final sy1 =
@@ -237,6 +241,7 @@ class OMrScanner {
         final sx1 =
             math.max(sx0 + 1, ((dx + 1) * srcW / w).ceil()).clamp(0, srcW);
         var sum = 0, n = 0;
+        var sumR = 0, sumG = 0, sumB = 0;
         for (var sy = sy0; sy < sy1; sy++) {
           final srow = sy * srcW;
           for (var sx = sx0; sx < sx1; sx++) {
@@ -247,15 +252,39 @@ class OMrScanner {
                     srcBytes[o + 1] * 150 +
                     srcBytes[o + 2] * 29) >>
                 8;
+            sumR += srcBytes[o];
+            sumG += srcBytes[o + 1];
+            sumB += srcBytes[o + 2];
             n++;
           }
         }
-        pixels[orow + dx] = n == 0 ? 0 : (sum ~/ n);
+        final p = orow + dx;
+        if (n == 0) {
+          pixels[p] = 0;
+          continue;
+        }
+        pixels[p] = sum ~/ n;
+        // Drop-out signature of the printed template
+        // (PaperPdf.omrTemplateInk, maroon 0xFFB03060): strongly
+        // red-dominant — r far above g AND above b. No black/blue pen ink
+        // carries it (pen ink is neutral or blue-dominant). A pixel is
+        // *student ink* only when it is dark and not drop-out. Keep the
+        // two in sync; tune against real photographed samples, since
+        // lighting shifts channel readings.
+        final ar = sumR ~/ n, ag = sumG ~/ n, ab = sumB ~/ n;
+        dropout[p] = ar > ag + 25 && ar > ab + 10 ? 1 : 0;
       }
     }
 
     final double otsuT = _otsu(pixels);
+    // `ink` = student ink only (drop-out template excluded) — what the
+    // bubble / identity / set sampling sees.
     final ink = Uint8List(w * h);
+    // `struct` = luma ink INCLUDING the template — what the alignment
+    // content probes use. Orientation must be decided from the printed
+    // grid structure, which a drop-out sheet shows even when completely
+    // blank (a student-ink-only mask would see nothing to orient on).
+    final struct = Uint8List(w * h);
     final paper = Uint8List(w * h);
     // A stricter mask for the corner-mark search: the printed corner
     // squares are the darkest things on the sheet, so thresholding at
@@ -276,8 +305,13 @@ class OMrScanner {
     final dark1 = Uint8List(w * h);
     final dark2 = Uint8List(w * h);
     for (var i = 0; i < w * h; i++) {
-      ink[i] = pixels[i] < otsuT ? 1 : 0;
-      paper[i] = 1 - ink[i];
+      final darkPx = pixels[i] < otsuT;
+      ink[i] = darkPx && dropout[i] == 0 ? 1 : 0;
+      // Paper = "not student ink": on a drop-out sheet the maroon template
+      // behaves as paper, so the paper component stays the whole sheet.
+      paper[i] = ink[i] == 0 ? 1 : 0;
+      // Corner-mark masks stay luma-based on purpose: a mark must be found
+      // regardless of its ink colour (printed maroon OR pen-drawn black).
       dark[i] = pixels[i] < darkT ? 1 : 0;
       dark1[i] = pixels[i] < darkT1 ? 1 : 0;
       dark2[i] = pixels[i] < darkT2 ? 1 : 0;
@@ -445,7 +479,10 @@ class OMrScanner {
         'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.';
     for (var si = 0; si < cornerSets.length; si++) {
       final cs = cornerSets[si];
-      final solved = _bestRotationHomography(geo, cs, ink, pixels, w, h);
+      // `struct` (luma ink incl. the template) — the content probes inside
+      // decide orientation from the printed grid, which a drop-out sheet
+      // shows even when completely blank.
+      final solved = _bestRotationHomography(geo, cs, struct, pixels, w, h);
       final cand =
           (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
       if (cand == null) {
@@ -511,11 +548,11 @@ class OMrScanner {
     // through this path.
     if (candidate == null && rectified) {
       candidate =
-          _marksSimilarityHomography(geo, marks, ink, pixels, w, h);
+          _marksSimilarityHomography(geo, marks, struct, pixels, w, h);
     }
     if (candidate == null && rectified) {
       candidate =
-          _pageBoundsHomography(geo, ink, pixels, paper, w, h, marks);
+          _pageBoundsHomography(geo, struct, pixels, paper, w, h, marks);
     }
     if (candidate == null) {
       return OmScanResult.failed(failReason, debug: dbg);

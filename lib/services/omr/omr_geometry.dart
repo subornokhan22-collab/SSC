@@ -46,10 +46,14 @@ class OMrGeometry {
   static const double ruleY = margin + 31 * k;
   static const double questionsTop = margin + 38 * k;
 
-  // ── Corner alignment marks (filled squares, 10 pt) ─────────────────
-  static const double markSize = 10 * k;
+  // ── Corner alignment marks (filled squares, 13 pt) ─────────────────
+  static const double markSize = 13 * k;
   static final double _markTLx = margin;
-  static final double _markTLY = margin - (10 + 6) * k;
+  /// Distance from the page edge to a corner mark's OUTER edge. All four
+  /// marks sit this far in from the page border, so growing the mark
+  /// (10 → 13 pt) enlarges the scanner's target without moving where the
+  /// mark sits on the sheet's silhouette.
+  static const double _markInset = 24 * k;
 
   /// Top-left corner of mark [i]: 0 = TL, 1 = TR, 2 = BL, 3 = BR.
   ///
@@ -59,13 +63,13 @@ class OMrGeometry {
   static List<double> markTopLeft(int i) {
     switch (i) {
       case 1:
-        return [pageW - margin - markSize, _markTLY];
+        return [pageW - margin - markSize, _markInset];
       case 2:
-        return [margin, pageH - margin + 6 * k];
+        return [margin, pageH - _markInset - markSize];
       case 3:
-        return [pageW - margin - markSize, pageH - margin + 6 * k];
+        return [pageW - margin - markSize, pageH - _markInset - markSize];
       default:
-        return [_markTLx, _markTLY];
+        return [_markTLx, _markInset];
     }
   }
 
@@ -85,12 +89,19 @@ class OMrGeometry {
   late final double bubbleSpan;
   late final double bubbleStep;
 
-  static const double bubbleR = 4.8; // bubble radius, pt
-  static const double rowH = 11.2 * k;
+  // Bubbles are deliberately generous (6 pt radius, 13 pt rows): a sample
+  // point a few pixels off still lands well inside the bubble instead of
+  // grazing its rim, which is the whole class of "close-call" misreads.
+  static const double bubbleR = 6.0; // bubble radius, pt
+  static const double rowH = 13.0 * k;
   static const double numberW = 26 * k;
-  static const double maxBubbleStep = 22.0;
-  static final double naturalRowW =
-      26 * k + bubbleR * k + 2 * k + 6 * k + 22.0 * 3 * k + (bubbleR + 6) * k;
+  static const double maxBubbleStep = 25.0;
+  static final double naturalRowW = 26 * k +
+      bubbleR * k +
+      2 * k +
+      6 * k +
+      maxBubbleStep * 3 * k +
+      (bubbleR + 6) * k;
   static final double bubbleAreaX = numberW + bubbleR * k + 2 * k;
   static final double bubbleLeft = bubbleAreaX + 6 * k;
   static final double boxHeaderH = 13 * k;
