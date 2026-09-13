@@ -154,6 +154,14 @@ class OMrScanner {
   static const double fillThreshold = 0.45;
   static const double weakThreshold = 0.22;
 
+  /// How much darker the best option must be than the row's runner-up
+  /// before it counts as a real mark. Guards against a uniformly elevated
+  /// baseline (the bubble's own printed ring, lighting, a slightly
+  /// oversized sample circle) letting pure noise cross fillThreshold on a
+  /// genuinely blank row — the whole row rises together, but a real pen
+  /// mark still stands out from its siblings by far more than this.
+  static const double minOptionMargin = 0.15;
+
   static Future<OmScanResult> scan(
     Uint8List photoBytes, {
     required int total,
@@ -611,15 +619,21 @@ class OMrScanner {
         row.add(_inkRatio(ink, w, h, p.dx, p.dy, sampleR));
       }
       inks.add(row);
-      final filled = [0, 1, 2, 3].where((o) => row[o] >= fillThreshold).toList();
-      if (filled.length == 1) {
-        answers[no - 1] = filled.first;
-      } else if (filled.isEmpty) {
-        // Nothing solid. A single weak mark is still reported as blank but
-        // stays visible in the ink table for the tutor.
-        answers[no - 1] = -1;
-      } else {
+      final order = [0, 1, 2, 3]..sort((a, b) => row[b].compareTo(row[a]));
+      final best = row[order[0]], second = row[order[1]];
+      if (second >= fillThreshold) {
+        // Both the top two are solidly dark — a real double-mark, not
+        // noise (noise never pushes two options past fillThreshold at
+        // once on a blank row).
         answers[no - 1] = -2;
+      } else if (best >= fillThreshold && best - second >= minOptionMargin) {
+        // Clearly darker than its own row's runner-up: a real mark.
+        answers[no - 1] = order[0];
+      } else {
+        // Nothing solid, or the top option didn't separate enough from
+        // the rest of its row to trust. A single weak mark is still
+        // reported as blank but stays visible in the ink table.
+        answers[no - 1] = -1;
       }
     }
 
@@ -680,21 +694,23 @@ class OMrScanner {
     var setCode = -1;
     final setDiag = <String>[];
     {
-      var best = -1, second = -1;
-      var bestR = 0.0;
+      var best = -1;
+      var bestR = 0.0, secondR = 0.0;
       for (var o = 0; o < 4; o++) {
         final p = applyHomography(homography, geo.setBubble(o));
         final r = _inkRatio(ink, w, h, p.dx, p.dy, sampleR);
         setDiag.add('${'কখগঘ'[o]}=${r.toStringAsFixed(2)}');
         if (r > bestR) {
-          second = best;
+          secondR = bestR;
           bestR = r;
           best = o;
-        } else if (r > second) {
-          second = o;
+        } else if (r > secondR) {
+          secondR = r;
         }
       }
-      if (bestR >= fillThreshold) setCode = best;
+      if (bestR >= fillThreshold && bestR - secondR >= minOptionMargin) {
+        setCode = best;
+      }
     }
     diagLines.add('set [$setCode]: ${setDiag.join(' ')}');
     diagLines.addAll(digitDiag);

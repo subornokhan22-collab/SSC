@@ -610,6 +610,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
       final rec = ui.PictureRecorder();
       final canvas = Canvas(rec);
+      // Scale the full-resolution photo down to the canvas — without
+      // this, drawImage paints the top-left corner of the photo 1:1 and
+      // silently crops everything else away (and every marker, which is
+      // positioned with the work→display factor k, lands off-target).
+      canvas.scale(s);
       canvas.drawImage(img, Offset.zero,
           Paint()..filterQuality = FilterQuality.medium);
 
