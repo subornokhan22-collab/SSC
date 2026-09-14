@@ -598,7 +598,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// filled circle in the verdict colour (green = correct, red = wrong,
   /// orange = double-marked, grey = blank row), exactly the size of the
   /// sheet's own printed bubble; a wrong/blank question also gets a
-  /// green ring around the correct option.
+  /// filled green disc on the correct option.
   Future<Uint8List?> _buildOverlay(OmScanResult res, OmGraded g) async {
     final photo = _photoBytes;
     final img = _photoImage;
@@ -672,18 +672,20 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             ..color = verdict.withOpacity(.65);
           canvas.drawLine(p0 * k, p3 * k, dim);
         }
-        // The key ring for wrong/blank answers — outline only, at exactly
-        // the printed bubble's size (the read answer's disc above is
-        // filled, so the two stay distinct), and never larger than the
-        // sheet's own bubble.
+        // The key marker for wrong/blank answers — a filled disc at
+        // exactly the printed bubble's size, in its own green (the read
+        // answer's disc carries the verdict colour, so the two stay
+        // distinct).
         if (status == 1 || (status == 2 && g.key[i] >= 0)) {
           final pc = OMrScanner.applyHomography(
               res.homography, geo.questionBubble(i + 1, g.key[i]));
           canvas.drawCircle(pc * k, br,
+              ui.Paint()..color = const Color(0x6612A150));
+          canvas.drawCircle(pc * k, br,
               ui.Paint()
                 ..style = ui.PaintingStyle.stroke
                 ..strokeWidth = 2
-                ..color = const Color(0x9912A150));
+                ..color = const Color(0xCC12A150));
         }
       }
 
