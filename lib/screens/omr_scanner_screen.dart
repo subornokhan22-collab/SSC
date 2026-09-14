@@ -672,13 +672,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             ..color = verdict.withOpacity(.65);
           canvas.drawLine(p0 * k, p3 * k, dim);
         }
-        // Ring the correct option for wrong/blank answers — a slim halo
-        // just outside the printed bubble (the verdict circle above is
-        // filled and exactly bubble-sized, so the halo stays distinct).
+        // The key ring for wrong/blank answers — outline only, at exactly
+        // the printed bubble's size (the read answer's disc above is
+        // filled, so the two stay distinct), and never larger than the
+        // sheet's own bubble.
         if (status == 1 || (status == 2 && g.key[i] >= 0)) {
           final pc = OMrScanner.applyHomography(
               res.homography, geo.questionBubble(i + 1, g.key[i]));
-          canvas.drawCircle(pc * k, br + 5,
+          canvas.drawCircle(pc * k, br,
               ui.Paint()
                 ..style = ui.PaintingStyle.stroke
                 ..strokeWidth = 2
