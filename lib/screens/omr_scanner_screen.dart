@@ -613,13 +613,20 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
       final rec = ui.PictureRecorder();
       final canvas = Canvas(rec);
-      // Scale the full-resolution photo down to the canvas — without
-      // this, drawImage paints the top-left corner of the photo 1:1 and
-      // silently crops everything else away (and every marker, which is
-      // positioned with the work→display factor k, lands off-target).
-      canvas.scale(s);
-      canvas.drawImage(img, Offset.zero,
-          Paint()..filterQuality = FilterQuality.medium);
+      // Scale the full-resolution photo down to the canvas size. The
+      // markers below are positioned in *device* pixels with the
+      // work→display factor k, so the canvas must NOT be pre-scaled —
+      // a canvas.scale(s) here stretched every marker by s away from
+      // the top-left corner (a few percent on phone screenshots: small
+      // near the top-left, clearly visible at the bottom-right — the
+      // "slightly off" overlay look). drawImageRect scales the photo
+      // without scaling the coordinate system.
+      canvas.drawImageRect(
+        img,
+        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+        Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
+        Paint()..filterQuality = FilterQuality.medium,
+      );
 
       final br = OMrGeometry.bubbleRadiusPx * k; // bubble radius, display px
       final ringPaint = ui.Paint()
