@@ -23,6 +23,7 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/problem_dialog.dart';
 import 'omr_scanner_screen.dart';
 import 'subscription_screen.dart';
 import '../models/subject_info.dart';
@@ -983,9 +984,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         setCode: _setLetter,
       );
     } catch (e) {
-      if (mounted)
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Print error: $e')));
+      if (mounted) {
+        setState(() => _busyPrint = false);
+        await showProblemDialog(
+            context, title: 'Print error', message: '$e');
+      }
     } finally {
       if (mounted) setState(() => _busyPrint = false);
     }

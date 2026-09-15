@@ -20,6 +20,7 @@ import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/problem_dialog.dart';
 
 /// CI release number baked in at build time (--dart-define). OMR
 /// failures show it so a screenshot of a reported scan identifies the
@@ -330,42 +331,23 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _googleScannerUnavailable(String reason,
       {String? detail}) async {
     if (!mounted) return;
-    final useInApp = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: const Text('Google scanner unavailable'),
-        content: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(reason),
-            if (detail != null) ...[
-              const SizedBox(height: 10),
-              Text('Error: $detail',
-                  style: const TextStyle(
-                      fontSize: 10.5, height: 1.35, color: AppTheme.muted)),
-            ],
-          ]),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              try {
-                await _appChannel.invokeMethod('openPlayServices');
-              } catch (_) {}
-              if (context.mounted) Navigator.of(context).pop(false);
-            },
-            child: const Text('Open Play Store'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Use in-app camera'),
-          ),
-        ],
-      ),
+    // Professional problem popup (scale+fade card, red blinking warning
+    // icon) so this failure can't be missed.
+    await showProblemDialog(
+      context,
+      title: 'Google scanner unavailable',
+      message: reason,
+      detail: detail != null ? 'Error: $detail' : null,
+      dismissible: false,
+      actions: [
+        ProblemAction('Open Play Store', () async {
+          try {
+            await _appChannel.invokeMethod('openPlayServices');
+          } catch (_) {}
+        }),
+        ProblemAction('Use in-app camera', _openLiveScan, primary: true),
+      ],
     );
-    if (useInApp == true) {
-      await _openLiveScan();
-    }
   }
 
   static const MethodChannel _appChannel =
@@ -537,8 +519,15 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final res = await _runOmScan(photo, rectified: rectified);
       _lastScan = res;
       if (!res.ok) {
-        _snack('${res.error ?? 'Scan failed'} (build $kOmrBuildNumber)');
         setState(() => _busy = false);
+        if (mounted) {
+          await showProblemDialog(
+            context,
+            title: 'Could not read this OMR sheet',
+            message: res.error ?? 'Scan failed',
+            detail: 'Build $kOmrBuildNumber',
+          );
+        }
         return;
       }
       final graded = OMrScanner.grade(res, _key);
@@ -559,11 +548,21 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       });
       _loadHistory();
     } on OmDecodeException catch (e) {
-      _snack('Image could not be read: ${e.detail}');
       setState(() => _busy = false);
+      if (mounted) {
+        await showProblemDialog(
+            context, title: 'Image could not be read', message: e.detail);
+      }
     } catch (e) {
-      _snack('Scan error: $e (build $kOmrBuildNumber)');
       setState(() => _busy = false);
+      if (mounted) {
+        await showProblemDialog(
+          context,
+          title: 'Scan error',
+          message: '$e',
+          detail: 'Build $kOmrBuildNumber',
+        );
+      }
     }
   }
 
@@ -751,7 +750,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         key: _key,
       );
     } catch (e) {
-      _snack('Print error: $e');
+      if (mounted) {
+        await showProblemDialog(
+            context, title: 'Print error', message: '$e');
+      }
     }
   }
 
@@ -1577,8 +1579,15 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _batchMode = false;
     });
     _loadHistory();
-    if (items.isEmpty) {
-      _snack('No sheet could be read. Check the photos and try again.');
+    if (items.isEmpty && mounted) {
+      await showProblemDialog(
+        context,
+        title: 'No sheet could be read',
+        message: 'None of the selected photos could be aligned to the OMR '
+            'grid.',
+        detail:
+            'Check that each sheet is flat, fills the frame with a small margin, and the bubbles are clearly filled — then try again.',
+      );
     }
   }
 
@@ -1648,6 +1657,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         builder: (c) => AlertDialog(
               title: Text('রোল ${r.roll.isEmpty ? '—' : r.roll} • ${r.score}/${r.total}'),
               content: SizedBox(
+                height: 200,
                 width: double.maxFinite,
                 child: SingleChildScrollView(
                   child: Wrap(spacing: 10, runSpacing: 6, children: [

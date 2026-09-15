@@ -14,6 +14,7 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/app_button.dart';
+import '../widgets/problem_dialog.dart';
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
 import '../data/english_answers_data.dart';
@@ -898,21 +899,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Could not start printing'),
-          content: Text(
-            'Error: $e\n\nTip: অনেক ফোনে system print service বন্ধ থাকলে এমন হয়। আবার চেষ্টা করুন — না হলে ফোন restart দিন।',
-            style: const TextStyle(fontSize: 13, height: 1.5),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+      setState(() => _busyPrint = false);
+      await showProblemDialog(
+        context,
+        title: 'Could not start printing',
+        message: 'Error: $e',
+        detail:
+            'Tip: অনেক ফোনে system print service বন্ধ থাকলে এমন হয়। আবার চেষ্টা করুন — না হলে ফোন restart দিন।',
       );
     }
   }
