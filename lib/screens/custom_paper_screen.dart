@@ -50,6 +50,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   int _saqN = 5;
   int _cqN = 3;
   bool _busy = false;
+  // True while the (now multi-step) save/print actions run, so the
+  // buttons can show a loading spinner instead of looking dead.
+  bool _busySave = false;
+  bool _busyPrint = false;
   bool _generated = false;
   bool _isPro = false;
   bool _showAnswerKey = false;
@@ -867,6 +871,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     }
     if (_subject == null) return;
     final sid = _subject!.id;
+    // PDF/layout is slow on phone — show the loading icon while it runs.
+    setState(() => _busyPrint = true);
     try {
       if (_isEnglish2nd(sid) && _englishSet != null) {
         await PaperPdf.printEnglishPaper(
@@ -980,6 +986,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       if (mounted)
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Print error: $e')));
+    } finally {
+      if (mounted) setState(() => _busyPrint = false);
     }
   }
 
@@ -1077,6 +1085,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   /// scanner can grade sheets against it without retyping the key.
   Future<void> _savePaper() async {
     if (_mcqs.isEmpty || _subject == null) return;
+    setState(() => _busySave = true);
     try {
       final sp = SavedPaper(
         id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
@@ -1114,6 +1123,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Save failed: $e')));
       }
+    } finally {
+      if (mounted) setState(() => _busySave = false);
     }
   }
 
@@ -1689,17 +1700,23 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                         child: AppButton(
-                            label: 'PDF / Print',
+                            label: _busyPrint
+                                ? 'PDF তৈরি হচ্ছে…'
+                                : 'PDF / Print',
                             icon: Icons.print_rounded,
-                            onPressed: _print)),
+                            loading: _busyPrint,
+                            onPressed: _busyPrint ? null : _print)),
                   ]),
                   if (_mcqs.isNotEmpty && !_isEnglish) ...[
                     const SizedBox(height: 10),
                     AppButton(
-                        label: 'Save paper (with answer key)',
+                        label: _busySave
+                            ? 'Saving paper + pages…'
+                            : 'Save paper (with answer key)',
                         icon: Icons.save_rounded,
+                        loading: _busySave,
                         outlined: true,
-                        onPressed: _savePaper),
+                        onPressed: _busySave ? null : _savePaper),
                     const SizedBox(height: 10),
                     SizedBox(
                         width: double.infinity,

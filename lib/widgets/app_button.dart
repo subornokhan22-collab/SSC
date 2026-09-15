@@ -9,17 +9,25 @@ class AppButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final bool outlined;
   final bool fullWidth;
-  const AppButton({super.key, required this.label, this.icon, required this.onPressed, this.outlined = false, this.fullWidth = true});
+  /// While true the button is disabled and shows a small spinner in
+  /// place of its icon (long-running actions: saving, PDF rendering).
+  final bool loading;
+  const AppButton({super.key, required this.label, this.icon, required this.onPressed, this.outlined = false, this.fullWidth = true, this.loading = false});
   @override State<AppButton> createState() => _AppButtonState();
 }
 class _AppButtonState extends State<AppButton> {
   bool _pressed = false;
   @override
   Widget build(BuildContext context) {
-    final disabled = widget.onPressed == null;
+    final disabled = widget.onPressed == null || widget.loading;
     final fg = widget.outlined ? AppTheme.primary : Colors.white;
     final child = Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, children: [
-      if (widget.icon != null) ...[Icon(widget.icon, size: 20, color: fg), const SizedBox(width: 8)],
+      if (widget.loading)
+        SizedBox(width: 18, height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: fg))
+      else if (widget.icon != null)
+        Icon(widget.icon, size: 20, color: fg),
+      if (widget.loading || widget.icon != null) const SizedBox(width: 8),
       Flexible(child: Text(widget.label, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: fg))),
     ]);
     final button = AnimatedScale(

@@ -78,6 +78,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   String? _chapter;
 
   bool _busy = false;
+  // True while the (now multi-step) save/print actions run, so the
+  // buttons can show a loading spinner instead of looking dead.
+  bool _busySave = false;
+  bool _busyPrint = false;
   bool _generated = false;
   EnglishBoardSet? _englishSet;
 
@@ -799,6 +803,16 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       return;
     }
     if (!_generated) return;
+    // PDF/layout is slow on phone — show the loading icon while it runs.
+    setState(() => _busyPrint = true);
+    try {
+      await _runPrint();
+    } finally {
+      if (mounted) setState(() => _busyPrint = false);
+    }
+  }
+
+  Future<void> _runPrint() async {
     // English 2nd Paper: exact board-paper layout (boxes, columns, rows)
     if (_isEnglish2nd(_subject!.id) && _englishSet != null) {
       await PaperPdf.printEnglishPaper(
@@ -1594,9 +1608,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: AppButton(
-                label: 'PDF / Print',
+                label: _busyPrint ? 'PDF তৈরি হচ্ছে…' : 'PDF / Print',
                 icon: Icons.print_rounded,
-                onPressed: _onPrintTap,
+                loading: _busyPrint,
+                onPressed: _busyPrint ? null : _onPrintTap,
               ),
             ),
           ],
@@ -1606,10 +1621,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         if (_generated && _mcqs.isNotEmpty) ...[
           const SizedBox(height: 10),
           AppButton(
-            label: 'Save paper (with answer key)',
+            label: _busySave
+                ? 'Saving paper + pages…'
+                : 'Save paper (with answer key)',
             icon: Icons.save_rounded,
+            loading: _busySave,
             outlined: true,
-            onPressed: _savePaper,
+            onPressed: _busySave ? null : _savePaper,
           ),
         ],
       ],
@@ -1620,6 +1638,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   /// correct option) to the Question Papers library → Saved tab.
   Future<void> _savePaper() async {
     if (_mcqs.isEmpty || _subject == null) return;
+    setState(() => _busySave = true);
     try {
       final sp = SavedPaper(
         id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
@@ -1657,6 +1676,8 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Save failed: $e')));
       }
+    } finally {
+      if (mounted) setState(() => _busySave = false);
     }
   }
 
