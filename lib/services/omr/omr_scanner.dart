@@ -2136,10 +2136,12 @@ class OMrScanner {
           buf[o + 3] = 255;
         }
       }
+      // `buf` is a fresh standalone allocation, so its backing ByteBuffer
+      // covers exactly the pixel data (offset 0, full length).
       final im = img.Image.fromBytes(
         width: outW,
         height: outH,
-        bytes: buf.buffer.asByteBuffer(buf.offsetInBytes, buf.lengthInBytes),
+        bytes: buf.buffer,
         numChannels: 4,
         order: img.ChannelOrder.rgba,
       );
