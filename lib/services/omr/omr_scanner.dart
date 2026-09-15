@@ -2136,8 +2136,13 @@ class OMrScanner {
           buf[o + 3] = 255;
         }
       }
-      final im = img.Image(width: outW, height: outH);
-      im.buffer.setAll(0, buf);
+      final im = img.Image.fromBytes(
+        width: outW,
+        height: outH,
+        bytes: buf.asByteBuffer(),
+        numChannels: 4,
+        order: img.ChannelOrder.rgba,
+      );
       return img.encodeJpg(im, quality: 85);
     } catch (_) {
       return null;
