@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/bangla_1st/bangla_1st_literature_questions.dart';
@@ -878,6 +879,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final sid = _subject!.id;
     // PDF/layout is slow on phone — show the loading icon while it runs.
     setState(() => _busyPrint = true);
+    // Wait one painted frame so the spinner is visible BEFORE the slow
+    // synchronous layout/raster work starts (it blocks the UI thread).
+    await SchedulerBinding.instance.endOfFrame;
     try {
       if (_isEnglish2nd(sid) && _englishSet != null) {
         await PaperPdf.printEnglishPaper(
@@ -1093,6 +1097,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   Future<void> _savePaper() async {
     if (_mcqs.isEmpty || _subject == null) return;
     setState(() => _busySave = true);
+    // Paint the spinner frame before the (synchronous) page encoding starts.
+    await SchedulerBinding.instance.endOfFrame;
     try {
       final sp = SavedPaper(
         id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
