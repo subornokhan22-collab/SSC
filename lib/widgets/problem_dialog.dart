@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// One action inside a [ProblemDialog].
+/// One action inside a problem dialog.
 class ProblemAction {
   final String label;
 
@@ -11,6 +11,10 @@ class ProblemAction {
   final bool primary;
   const ProblemAction(this.label, this.onTap, {this.primary = false});
 }
+
+void _noop() {}
+
+final List<ProblemAction> _defaultActions = [ProblemAction('OK', _noop)];
 
 /// A polished, impossible-to-miss "problem" alert.
 ///
@@ -38,7 +42,7 @@ Future<void> showProblemDialog(
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
     barrierColor: Colors.black.withOpacity(.55),
     transitionDuration: const Duration(milliseconds: 320),
-    transitionBuilder: (c, enter, _) {
+    transitionBuilder: (c, enter, _, child) {
       final curved = CurvedAnimation(
         parent: enter,
         curve: Curves.easeOutCubic,
@@ -47,14 +51,14 @@ Future<void> showProblemDialog(
       final scale = Tween<double>(begin: .88, end: 1).animate(curved);
       return FadeTransition(
         opacity: curved,
-        child: ScaleTransition(scale: scale, child: c),
+        child: ScaleTransition(scale: scale, child: child),
       );
     },
     pageBuilder: (c, _, __) => _ProblemCard(
       title: title,
       message: message,
       detail: detail,
-      actions: actions ?? const [ProblemAction('OK', () {})],
+      actions: actions ?? _defaultActions,
     ),
   );
 }
