@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'data/question_bank.dart';
 import 'data/question_sync.dart';
+import 'services/app_settings.dart';
 import 'services/app_style.dart';
 import 'services/auth_service.dart';
 import 'services/paper_library.dart';
@@ -34,6 +35,7 @@ Future<void> main() async {
   // nothing waits on it.
   await QuestionSync.loadCache();
   await AppStyle.load();
+  await AppSettings.load();
   await AuthService.init();
 
   // Fresh install (empty library)? Put the tutor's papers back from the

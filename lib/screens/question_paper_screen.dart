@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
+import '../services/app_settings.dart';
 import '../services/app_style.dart';
 import '../services/paper_license.dart';
 import '../services/paper_library.dart';
@@ -130,8 +131,11 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   String? _note;
   bool _mixAi = false; // 🤖 AI প্রশ্ন ব্যাংকের সাথে মেশাবে কি না
   int _aiShare = 50;   // পেপারে AI প্রশ্নের শতাংশ (25/50/75)
-  final TextEditingController _titleCtrl =
-      TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
+  // Settings → Default paper name overrides the built-in default.
+  final TextEditingController _titleCtrl = TextEditingController(
+      text: AppSettings.defaultName.isNotEmpty
+          ? AppSettings.defaultName
+          : 'মডেল পরীক্ষা — ২০২৭');
   String _setLetter = 'ক';
   static const _setLetters = ['ক', 'খ', 'গ', 'ঘ'];
   // PDF যাচাইকৃত বিষয় কোড – Page-1 সূচিপত্র

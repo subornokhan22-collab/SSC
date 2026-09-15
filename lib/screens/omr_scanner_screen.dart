@@ -15,6 +15,7 @@ import '../services/omr/omr_scanner.dart';
 import '../services/omr/omr_store.dart';
 import 'omr_analytics_screen.dart';
 import 'omr_live_scan_screen.dart';
+import '../services/app_settings.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
@@ -97,7 +98,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     } else {
       _key = List<int>.filled(30, -1);
     }
-    _titleCtrl = TextEditingController(text: widget.paperTitle);
+    // Default name from Settings fills the title when no paper is chosen.
+    _titleCtrl = TextEditingController(
+        text: widget.paperTitle.isNotEmpty
+            ? widget.paperTitle
+            : AppSettings.defaultName);
     _subjectCtrl = TextEditingController(text: widget.initialSubject);
     _loadHistory();
   }
@@ -584,12 +589,18 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   OmScanRecord _recordOf(OmScanResult res, OmGraded g) => OmScanRecord(
         id: 's_${DateTime.now().microsecondsSinceEpoch}',
         date: DateTime.now(),
-        paperTitle: _titleCtrl.text.trim(),
+        paperTitle: _titleCtrl.text.trim().isEmpty
+            ? AppSettings.defaultName
+            : _titleCtrl.text.trim(),
         subjectName: _subjectCtrl.text.trim(),
         roll: res.roll,
         registration: res.registration,
-        subjectCode: res.subjectCode,
-        setCode: res.setCode >= 0 ? _letters[res.setCode] : '—',
+        // Prefill off (Settings) → ignore the sheet's printed codes.
+        subjectCode: AppSettings.omrPrefill ? res.subjectCode : '',
+        setCode:
+            AppSettings.omrPrefill && res.setCode >= 0
+                ? _letters[res.setCode]
+                : '—',
         total: _total,
         score: g.score,
         correct: g.correct,
@@ -734,7 +745,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     if (res == null || g == null) return;
     try {
       await PaperPdf.printOmScorecard(
-        title: _titleCtrl.text.trim().isEmpty ? 'OMR Test' : _titleCtrl.text.trim(),
+        title: _titleCtrl.text.trim().isEmpty
+            ? (AppSettings.defaultName.isNotEmpty
+                ? AppSettings.defaultName
+                : 'OMR Test')
+            : _titleCtrl.text.trim(),
         subject: _subjectCtrl.text.trim(),
         roll: res.roll,
         registration: res.registration,
@@ -1045,10 +1060,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           result.registration.contains('?')
                               ? AppTheme.warning
                               : AppTheme.primaryDark),
-                      _chip('বিষয় কোড ${result.subjectCode}', AppTheme.primaryDark),
-                      _chip(
-                          'সেট ${result.setCode >= 0 ? _letters[result.setCode] : '—'}',
-                          AppTheme.primaryDark),
+                      // Prefill off in Settings → sheet codes are not used.
+                      if (AppSettings.omrPrefill) ...[
+                        _chip('বিষয় কোড ${result.subjectCode}',
+                            AppTheme.primaryDark),
+                        _chip('সেট ${result.setCode >= 0 ? _letters[result.setCode] : '—'}',
+                            AppTheme.primaryDark),
+                      ],
                     ]),
                     const SizedBox(height: 12),
                     if (result.registration.contains('?'))

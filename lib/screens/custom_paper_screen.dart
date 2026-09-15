@@ -10,6 +10,7 @@ import '../data/questions_data.dart';
 import '../services/ai_question_generator.dart';
 import '../services/bangla_first_board_pattern.dart';
 import '../services/bangla_second_board_pattern.dart';
+import '../services/app_settings.dart';
 import '../services/app_style.dart';
 import '../services/english_paper_adapter.dart';
 import '../services/general_math_board_pattern.dart';
@@ -65,8 +66,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   bool _banglaFirstBoardPattern = false;
   bool _banglaSecondBoardPattern = false;
   int _aiShare = 50;
-  final TextEditingController _titleCtrl =
-      TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
+  // Settings → Default paper name overrides the built-in default.
+  final TextEditingController _titleCtrl = TextEditingController(
+      text: AppSettings.defaultName.isNotEmpty
+          ? AppSettings.defaultName
+          : 'মডেল পরীক্ষা — ২০২৭');
   String _setLetter = 'ক';
   static const _setLetters = ['ক', 'খ', 'গ', 'ঘ'];
 

@@ -10,8 +10,8 @@ import 'custom_paper_screen.dart';
 import 'omr_analytics_screen.dart';
 import 'omr_scanner_screen.dart';
 import 'papers_library_screen.dart';
-import 'profile_screen.dart';
 import 'question_paper_screen.dart';
+import 'settings_screen.dart';
 import 'subscription_screen.dart';
 import '../widgets/app_logo.dart';
 
@@ -171,12 +171,12 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 icon: Icons.manage_accounts_rounded,
               ),
               _ActionTile(
-                icon: Icons.person_rounded,
-                title: 'Profile & Settings',
-                subtitle: 'Details, workspace theme, Pro sync, sign out',
+                icon: Icons.settings_rounded,
+                title: 'Settings',
+                subtitle: 'Profile, OMR prefill switch, default paper name',
                 accentIndex: 4,
                 compact: true,
-                onTap: () => _open(const ProfileScreen()),
+                onTap: () => _open(const SettingsScreen()),
               ),
               if (!_isPro)
                 _ActionTile(
