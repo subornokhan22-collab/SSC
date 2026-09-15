@@ -2139,7 +2139,7 @@ class OMrScanner {
       final im = img.Image.fromBytes(
         width: outW,
         height: outH,
-        bytes: buf.asByteBuffer(),
+        bytes: buf.buffer.asByteBuffer(buf.offsetInBytes, buf.lengthInBytes),
         numChannels: 4,
         order: img.ChannelOrder.rgba,
       );
