@@ -99,6 +99,9 @@ class SavedPaper {
   final List<int> key; // option index (0–3) per MCQ
   final List<SavedQuestion> questions;
   final DateTime createdAt;
+  /// Rendered page count (p1.jpg…pN.jpg in the entry dir). 0 for entries
+  /// saved before pages were stored.
+  final int pages;
 
   const SavedPaper({
     required this.id,
@@ -111,6 +114,7 @@ class SavedPaper {
     required this.key,
     required this.questions,
     required this.createdAt,
+    this.pages = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -124,6 +128,7 @@ class SavedPaper {
         'key': key,
         'questions': [for (final q in questions) q.toJson()],
         'createdAt': createdAt.toIso8601String(),
+        'pages': pages,
       };
 
   static SavedPaper fromJson(Map<String, dynamic> m) => SavedPaper(
@@ -144,6 +149,7 @@ class SavedPaper {
         createdAt:
             DateTime.tryParse(m['createdAt'] as String? ?? '') ??
                 DateTime.now(),
+        pages: m['pages'] as int? ?? 0,
       );
 }
 
@@ -268,23 +274,65 @@ class PaperLibrary {
     unawaited(PaperBackup.autoSave());
   }
 
-  /// Stores a paper saved from the in-app builder (MCQ list + answer key).
-  static Future<void> addSavedPaper(SavedPaper paper) async {
+  /// Stores a builder paper (metadata + answer key) under kind 'saved'.
+  /// When [pageImages] (the builder's rendered page PNGs) are given, the
+  /// paper is also saved as viewable pages (p1.jpg…, thumb.jpg) — the
+  /// same layout [addFromImages] uses — so it can be viewed, printed,
+  /// and shared from the Saved tab.
+  static Future<SavedPaper> addSavedPaper(
+    SavedPaper paper, {
+    List<Uint8List>? pageImages,
+  }) async {
     final dir = await _dirFor(paper.id);
+    var pages = paper.pages;
+    if (pageImages != null && pageImages.isNotEmpty) {
+      final norm = <Uint8List>[];
+      for (final raw in pageImages) {
+        try {
+          norm.add(await _normalizeJpeg(raw));
+        } catch (_) {
+          // Unencodable page — skip rather than fail the whole save.
+        }
+      }
+      if (norm.isNotEmpty) {
+        for (var i = 0; i < norm.length; i++) {
+          await File('${dir.path}${Platform.pathSeparator}p${i + 1}.jpg')
+              .writeAsBytes(norm[i]);
+        }
+        final thumb = await _thumbFrom(norm.first);
+        await File('${dir.path}${Platform.pathSeparator}thumb.jpg')
+            .writeAsBytes(thumb);
+        pages = norm.length;
+      }
+    }
+    final saved = SavedPaper(
+      id: paper.id,
+      title: paper.title,
+      subject: paper.subject,
+      subjectId: paper.subjectId,
+      subjectCode: paper.subjectCode,
+      setCode: paper.setCode,
+      total: paper.total,
+      key: paper.key,
+      questions: paper.questions,
+      createdAt: paper.createdAt,
+      pages: pages,
+    );
     await File('${dir.path}${Platform.pathSeparator}paper.json')
-        .writeAsString(json.encode(paper.toJson()));
+        .writeAsString(json.encode(saved.toJson()));
     final entry = PaperEntry(
       id: paper.id,
       title: paper.title,
       subject: paper.subject,
       year: '',
       kind: 'saved',
-      pages: 0,
+      pages: pages,
       createdAt: paper.createdAt,
     );
     final all = await loadEntries();
     await _saveEntries([entry, ...all]);
     unawaited(PaperBackup.autoSave());
+    return saved;
   }
 
   /// The saved paper (with its answer key) stored under entry [id], if any.

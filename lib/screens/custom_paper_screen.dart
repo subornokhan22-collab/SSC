@@ -1096,8 +1096,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             ),
         ],
         createdAt: DateTime.now(),
+        pages: _pagePngs?.length ?? 0,
       );
-      await PaperLibrary.addSavedPaper(sp);
+      // Also save the rendered pages so the paper itself (not just the
+      // key) is stored locally and can be viewed/printed from Saved.
+      await PaperLibrary.addSavedPaper(sp, pageImages: _pagePngs);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

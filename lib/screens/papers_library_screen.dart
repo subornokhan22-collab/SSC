@@ -253,10 +253,33 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               _iconBtn(Icons.qr_code_scanner_rounded, 'Scan OMR',
                   () => _scanWith(p)),
               _iconBtn(Icons.key_rounded, 'View answers', () => _showKey(p)),
+              if (p.pages > 0)
+                _iconBtn(Icons.description_rounded, 'View paper',
+                    () => _viewSaved(p)),
               _iconBtn(Icons.delete_outline_rounded, 'Delete',
                   () => _deleteSaved(p), color: AppTheme.danger),
             ]),
       ]),
+    );
+  }
+
+  /// Opens a saved builder paper's rendered pages in the same full-screen
+  /// viewer the Added tab uses (tap to zoom, swipe to turn pages).
+  Future<void> _viewSaved(SavedPaper p) async {
+    final thumbs = <Uint8List>[];
+    for (var i = 1; i <= p.pages; i++) {
+      final b = await PaperLibrary.pageBytes(p.id, i);
+      if (b != null) thumbs.add(b);
+    }
+    if (thumbs.isEmpty) {
+      _snack('Pages not found.');
+      return;
+    }
+    if (!mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => _PaperViewer(title: p.title, pages: thumbs)),
     );
   }
 

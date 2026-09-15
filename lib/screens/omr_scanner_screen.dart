@@ -78,8 +78,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   // ── batch (whole-class) scan state ──
   bool _batchMode = false;
   List<OmScanRecord> _batch = [];
+  /// Result overlays accumulated during a camera batch (one per _batch
+  /// entry; null when a sheet's overlay could not be rendered).
+  List<Uint8List?> _batchOverlays = [];
   String? _batchProgress;
   List<OmScanRecord>? _batchDone;
+  /// Overlays for _batchDone (parallel list — same index, may be null).
+  List<Uint8List?> _batchDoneOverlays = const [];
 
   @override
   void initState() {
@@ -541,7 +546,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final overlay = await _buildOverlay(res, graded);
       final rec = _recordOf(res, graded);
       await OmrStore.addRecord(rec);
-      if (_batchMode) _batch.add(rec);
+      if (_batchMode) {
+        _batch.add(rec);
+        _batchOverlays.add(overlay);
+      }
       if (!mounted) return;
       setState(() {
         _result = res;
@@ -599,10 +607,26 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// orange = double-marked, grey = blank row), exactly the size of the
   /// sheet's own printed bubble; a wrong/blank question also gets a
   /// filled green disc on the correct option.
-  Future<Uint8List?> _buildOverlay(OmScanResult res, OmGraded g) async {
-    final photo = _photoBytes;
-    final img = _photoImage;
-    if (photo == null || img == null) return null;
+  Future<Uint8List?> _buildOverlay(
+    OmScanResult res,
+    OmGraded g, {
+    Uint8List? photoBytes,
+  }) async {
+    // Batch items are scanned from their own photos, not the current
+    // _photoBytes — decode the item's bytes when given.
+    ui.Image? img;
+    if (photoBytes != null) {
+      try {
+        final frame =
+            await (await ui.instantiateImageCodec(photoBytes)).getNextFrame();
+        img = frame.image;
+      } catch (_) {
+        img = null;
+      }
+    } else {
+      img = _photoImage;
+    }
+    if (img == null) return null;
     try {
       const maxSide = 1500.0;
       final s = maxSide / math.max(img.width, img.height);
@@ -1014,6 +1038,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       if (graded.ambiguous > 0)
                         _chip('দ্বি-দাগ ${graded.ambiguous}', AppTheme.warning),
                       _chip('রোল ${result.roll}', AppTheme.primaryDark),
+                      _chip(
+                          'রেজিস্ট্রেশন ${result.registration}',
+                          result.registration.contains('?')
+                              ? AppTheme.warning
+                              : AppTheme.primaryDark),
                       _chip('বিষয় কোড ${result.subjectCode}', AppTheme.primaryDark),
                       _chip(
                           'সেট ${result.setCode >= 0 ? _letters[result.setCode] : '—'}',
@@ -1085,6 +1114,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           child: const Text('Close')),
                     ]),
                     const SizedBox(height: 8),
+                    if (_batchDoneOverlays.isNotEmpty) ...[
+                      _batchSheetPager(),
+                      const SizedBox(height: 12),
+                    ],
                     _batchSummary(),
                     const SizedBox(height: 10),
                     for (var i = 0; i < _batchDone!.length; i++)
@@ -1193,6 +1226,59 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   // ── batch results helpers ──
 
   double _pct(OmScanRecord r) => r.score * 100.0 / math.max(1, r.total);
+
+  /// Swipeable pager over every graded sheet of the batch (swipe
+  /// right-to-left, or left-to-right). Each page = the sheet's result
+  /// overlay with a roll/score caption.
+  Widget _batchSheetPager() {
+    final n = _batchDoneOverlays.length;
+    return Column(children: [
+      SizedBox(
+        height: 460,
+        child: PageView.builder(
+          itemCount: n,
+          itemBuilder: (c, i) {
+            final rec = _batchDone![i];
+            final overlay = _batchDoneOverlays[i];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Column(children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: overlay == null
+                        ? const Center(
+                            child: Text(
+                              'শিটের ছবি পাওয়া যায়নি — ফল নিচের সারিতে',
+                              style: TextStyle(color: AppTheme.muted),
+                            ),
+                          )
+                        : Image.memory(overlay, fit: BoxFit.contain),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${i + 1}/$n • '
+                  '${rec.roll.isEmpty ? 'রোল —' : 'রোল ${rec.roll}'} • '
+                  '${rec.score}/${rec.total} • '
+                  '${rec.correct} সঠিক • ${rec.wrong} ভুল',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 11.5, color: AppTheme.muted),
+                ),
+              ]),
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 4),
+      const Text(
+        '⟵  স্লাইড করে পরের শিট দেখুন  ⟶',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 11, color: AppTheme.muted),
+      ),
+    ]);
+  }
 
   Widget _batchSummary() {
     final items = _batchDone!;
@@ -1408,21 +1494,25 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Batch scan'),
-        content: const Text(
-            'Every sheet is graded with the current answer key and saved to the scan history.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text(
+              'Every sheet is graded with the current answer key and saved to the scan history.'),
+          const SizedBox(height: 14),
           FilledButton.icon(
             icon: const Icon(Icons.photo_library_rounded, size: 18),
             label: const Text('Gallery (pick many)'),
             onPressed: () => Navigator.pop(c, 'gallery'),
           ),
+          const SizedBox(height: 10),
           FilledButton.icon(
             icon: const Icon(Icons.photo_camera_rounded, size: 18),
             label: const Text('Camera (one by one)'),
             onPressed: () => Navigator.pop(c, 'camera'),
           ),
+        ]),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
         ],
       ),
     );
@@ -1432,7 +1522,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       setState(() {
         _batchMode = true;
         _batch = [];
+        _batchOverlays = [];
         _batchDone = null;
+        _batchDoneOverlays = const [];
       });
       _snack('Batch mode on — scan each student, then tap Finish batch.');
     }
@@ -1444,6 +1536,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         await ImagePicker().pickMultiImage(imageQuality: 90, maxWidth: 4096);
     if (picked.isEmpty || !mounted) return;
     final items = <OmScanRecord>[];
+    final overlays = <Uint8List?>[];
     setState(() {
       _busy = true;
       _batchProgress = 'Scanning 0/${picked.length}…';
@@ -1466,7 +1559,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         if (!res.ok) continue; // unreadable sheet — skip, keep going
         final g = OMrScanner.grade(res, _key);
         final rec = _recordOf(res, g);
+        // Overlay for the batch review (swipe through every sheet).
+        final overlay = await _buildOverlay(res, g, photoBytes: bytes);
         items.add(rec);
+        overlays.add(overlay);
         await OmrStore.addRecord(rec);
       } catch (_) {
         // Skip this sheet and continue the batch.
@@ -1477,6 +1573,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _busy = false;
       _batchProgress = null;
       _batchDone = items;
+      _batchDoneOverlays = overlays;
       _batchMode = false;
     });
     _loadHistory();
@@ -1488,8 +1585,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   void _finishBatch() {
     setState(() {
       _batchDone = _batch;
+      _batchDoneOverlays = _batchOverlays;
       _batchMode = false;
       _batch = [];
+      _batchOverlays = [];
     });
   }
 
@@ -1501,7 +1600,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   }
 
   void _closeBatchResults() {
-    setState(() => _batchDone = null);
+    setState(() {
+      _batchDone = null;
+      _batchDoneOverlays = const [];
+    });
   }
 
   Widget _verdictGrid(OmGraded g) {
@@ -1516,7 +1618,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         Wrap(spacing: 10, runSpacing: 6, children: [
           for (var i = 0; i < g.total; i++)
             Text(
-              '${i + 1}._choiceLetter(i, g)}${_glyph(g.status[i])}',
+              '${i + 1}.${_choiceLetter(i, g)}${_glyph(g.status[i])}',
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
