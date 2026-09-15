@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:image/image.dart' as img;
+
 import 'omr_geometry.dart';
 
 /// Argument bundle for running [OMrScanner.scan] via [compute] —
@@ -68,6 +70,13 @@ class OmScanResult {
   /// against how much ink was really there (faint pen vs. wrong position).
   final List<String>? inkDiag;
 
+  /// A front-on, auto-cropped JPEG of just the sheet (A4-proportioned,
+  /// long side ≈1500 px). Present for uploaded photos after a successful
+  /// alignment, so they get the same "cropped sheet" look the document
+  /// scanner's camera crop produces. Null for scanner-rectified photos
+  /// (already cropped) and failed reads.
+  final Uint8List? rectifiedJpeg;
+
   OmScanResult._({
     required this.total,
     required this.answers,
@@ -84,6 +93,7 @@ class OmScanResult {
     this.error,
     this.debug,
     this.inkDiag,
+    this.rectifiedJpeg,
   });
 
   factory OmScanResult.failed(String message,
@@ -757,6 +767,13 @@ class OMrScanner {
     diagLines.add('set [$setCode]: ${setDiag.join(' ')}');
     diagLines.addAll(digitDiag);
 
+    // Auto-crop: for uploaded (non-rectified) photos, warp the photo to a
+    // front-on view of just the sheet so the result looks like the
+    // scanner's camera crop. Runs in-isolate; a failed warp simply keeps
+    // the original-photo overlay.
+    final rectifiedCrop =
+        !rectified ? rectifiedJpeg(srcBytes, srcW, srcH, w, h, homography) : null;
+
     return OmScanResult._(
       total: total,
       answers: answers,
@@ -771,6 +788,7 @@ class OMrScanner {
       workWidth: w,
       workHeight: h,
       inkDiag: diagLines,
+      rectifiedJpeg: rectifiedCrop,
     );
   }
 
@@ -2045,6 +2063,85 @@ class OMrScanner {
       (h[0] * p.dx + h[1] * p.dy + h[2]) / w,
       (h[3] * p.dx + h[4] * p.dy + h[5]) / w,
     );
+  }
+
+  /// Warps the full-resolution photo through the page→work homography so
+  /// the output is a front-on, auto-cropped view of just the sheet — the
+  /// same look the document scanner's camera crop gives for taken photos.
+  ///
+  /// The output is A4-proportioned (pageW×pageH, long side [maxSide]) so
+  /// the verdict overlay can place markers in plain page coordinates.
+  /// Returns null on any failure — the caller keeps the original photo.
+  static Uint8List? rectifiedJpeg(
+    Uint8List src,
+    int srcW,
+    int srcH,
+    int workW,
+    int workH,
+    List<double> h, {
+    double maxSide = 1500,
+  }) {
+    try {
+      final s = maxSide / OMrGeometry.pageH;
+      final outW = (OMrGeometry.pageW * s).round();
+      final outH = (OMrGeometry.pageH * s).round();
+      final inv = 1 / s; // out px → page px
+      final kx = srcW / workW.toDouble(); // work px → photo px
+      final ky = srcH / workH.toDouble();
+      final h0 = h[0], h1 = h[1], h2 = h[2];
+      final h3 = h[3], h4 = h[4], h5 = h[5];
+      final h6 = h[6], h7 = h[7];
+      final buf = Uint8List(outW * outH * 4);
+      final lastX = srcW - 1, lastY = srcH - 1;
+      for (var oy = 0; oy < outH; oy++) {
+        final py = (oy + .5) * inv;
+        final a1 = h1 * py;
+        final b1 = h4 * py;
+        final c1 = h7 * py;
+        final rowO = oy * outW * 4;
+        for (var ox = 0; ox < outW; ox++) {
+          final px = (ox + .5) * inv;
+          final wH = h6 * px + c1 + 1;
+          if (wH == 0) continue;
+          var sx = (h0 * px + a1 + h2) / wH * kx;
+          var sy = (h3 * px + b1 + h5) / wH * ky;
+          if (sx < 0) {
+            sx = 0;
+          } else if (sx > lastX) {
+            sx = lastX.toDouble();
+          }
+          if (sy < 0) {
+            sy = 0;
+          } else if (sy > lastY) {
+            sy = lastY.toDouble();
+          }
+          final x0 = sx.floor(), y0 = sy.floor();
+          final x1 = x0 >= lastX ? lastX : x0 + 1;
+          final y1 = y0 >= lastY ? lastY : y0 + 1;
+          final fx = sx - x0, fy = sy - y0;
+          final i00 = (y0 * srcW + x0) * 4;
+          final i10 = (y0 * srcW + x1) * 4;
+          final i01 = (y1 * srcW + x0) * 4;
+          final i11 = (y1 * srcW + x1) * 4;
+          final o = rowO + ox * 4;
+          final top0 = src[i00] * (1 - fx) + src[i10] * fx;
+          final top1 = src[i00 + 1] * (1 - fx) + src[i10 + 1] * fx;
+          final top2 = src[i00 + 2] * (1 - fx) + src[i10 + 2] * fx;
+          final bot0 = src[i01] * (1 - fx) + src[i11] * fx;
+          final bot1 = src[i01 + 1] * (1 - fx) + src[i11 + 1] * fx;
+          final bot2 = src[i01 + 2] * (1 - fx) + src[i11 + 2] * fx;
+          buf[o] = (top0 * (1 - fy) + bot0 * fy).round();
+          buf[o + 1] = (top1 * (1 - fy) + bot1 * fy).round();
+          buf[o + 2] = (top2 * (1 - fy) + bot2 * fy).round();
+          buf[o + 3] = 255;
+        }
+      }
+      final im = img.Image(width: outW, height: outH);
+      im.buffer.setAll(0, buf);
+      return img.encodeJpg(im, quality: 85);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Fraction of dark pixels inside a disc (0 outside the frame).

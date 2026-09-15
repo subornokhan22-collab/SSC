@@ -624,17 +624,34 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   }) async {
     // Batch items are scanned from their own photos, not the current
     // _photoBytes — decode the item's bytes when given.
+    // When the scan produced an auto-cropped (rectified) sheet, prefer
+    // that: the user gets the same "cropped sheet" look the camera
+    // scanner gives, and markers are placed in plain page coordinates.
     ui.Image? img;
-    if (photoBytes != null) {
+    bool cropped = false;
+    if (res.rectifiedJpeg != null) {
       try {
         final frame =
-            await (await ui.instantiateImageCodec(photoBytes)).getNextFrame();
+            await (await ui.instantiateImageCodec(res.rectifiedJpeg!))
+                .getNextFrame();
         img = frame.image;
+        cropped = true;
       } catch (_) {
         img = null;
       }
-    } else {
-      img = _photoImage;
+    }
+    if (img == null) {
+      if (photoBytes != null) {
+        try {
+          final frame =
+              await (await ui.instantiateImageCodec(photoBytes)).getNextFrame();
+          img = frame.image;
+        } catch (_) {
+          img = null;
+        }
+      } else {
+        img = _photoImage;
+      }
     }
     if (img == null) return null;
     try {
@@ -642,8 +659,24 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final s = maxSide / math.max(img.width, img.height);
       final w = (img.width * s).round();
       final h = (img.height * s).round();
-      final k = (w / res.workWidth.toDouble()); // work → display
+      // Cropped image is A4-proportioned (page space); the original
+      // photo is the work grid — the two need different display factors.
+      final k =
+          cropped ? (w / OMrGeometry.pageW) : (w / res.workWidth.toDouble());
       final geo = OMrGeometry(_total);
+      // Marker placement: cropped mode maps page points straight to the
+      // display; photo mode runs them through the scan's homography.
+      Offset _mp(Offset pagePt) => cropped
+          ? pagePt * k
+          : OMrScanner.applyHomography(res.homography, pagePt) * k;
+      final cornerPts = cropped
+          ? [
+              OMrGeometry.markCenter(0),
+              OMrGeometry.markCenter(1),
+              OMrGeometry.markCenter(2),
+              OMrGeometry.markCenter(3),
+            ]
+          : res.photoCorners.map((c) => c.point).toList();
 
       final rec = ui.PictureRecorder();
       final canvas = Canvas(rec);
@@ -670,9 +703,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       // Registration corners — the circle is sized to the corner mark
       // itself, so it sits concentric on the printed square.
       ringPaint.color = const Color(0xB33D5AFE);
-      for (final c in res.photoCorners) {
+      for (final c in cornerPts) {
         canvas.drawCircle(
-            c.point * k, OMrGeometry.markSize / 2 * k + 2, ringPaint);
+            c * k, OMrGeometry.markSize / 2 * k + 2, ringPaint);
       }
 
       for (var i = 0; i < _total; i++) {
@@ -691,38 +724,33 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         }
         ringPaint.color = verdict;
         if (a >= 0) {
-          final p = OMrScanner.applyHomography(
-              res.homography, geo.questionBubble(i + 1, a));
           // Filled disc at exactly the printed bubble's radius — an
           // oversized ring reads as sitting "off" the bubble, while a
           // concentric, same-size fill makes any misalignment visible
           // (and makes the verdict legible).
-          final c2 = p * k;
+          final c2 = _mp(geo.questionBubble(i + 1, a));
           canvas.drawCircle(c2, br,
               ui.Paint()..color = verdict.withOpacity(.35));
           canvas.drawCircle(c2, br, ringPaint);
         } else {
           // blank / unread: draw a dim line across the row
-          final p0 = OMrScanner.applyHomography(
-              res.homography, geo.questionBubble(i + 1, 0));
-          final p3 = OMrScanner.applyHomography(
-              res.homography, geo.questionBubble(i + 1, 3));
+          final p0 = _mp(geo.questionBubble(i + 1, 0));
+          final p3 = _mp(geo.questionBubble(i + 1, 3));
           final dim = ui.Paint()
             ..style = ui.PaintingStyle.stroke
             ..strokeWidth = 2.0
             ..color = verdict.withOpacity(.65);
-          canvas.drawLine(p0 * k, p3 * k, dim);
+          canvas.drawLine(p0, p3, dim);
         }
         // The key marker for wrong/blank answers — a filled disc at
         // exactly the printed bubble's size, in its own green (the read
         // answer's disc carries the verdict colour, so the two stay
         // distinct).
         if (status == 1 || (status == 2 && g.key[i] >= 0)) {
-          final pc = OMrScanner.applyHomography(
-              res.homography, geo.questionBubble(i + 1, g.key[i]));
-          canvas.drawCircle(pc * k, br,
+          final pc = _mp(geo.questionBubble(i + 1, g.key[i]));
+          canvas.drawCircle(pc, br,
               ui.Paint()..color = const Color(0x6612A150));
-          canvas.drawCircle(pc * k, br,
+          canvas.drawCircle(pc, br,
               ui.Paint()
                 ..style = ui.PaintingStyle.stroke
                 ..strokeWidth = 2
