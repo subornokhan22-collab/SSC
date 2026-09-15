@@ -14,6 +14,7 @@ import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/question_figure.dart';
 import '../data/questions_data.dart';
+import 'app_settings.dart';
 import 'omr/omr_geometry.dart';
 
 /// একটি স্ট্যাকড ভগ্নাংশ (লব উপরে, দাগ মাঝে, হর নিচে)
@@ -1843,6 +1844,10 @@ class PaperPdf {
   }) async {
     await _loadFonts();
     final geo = OMrGeometry(total.clamp(1, 100).toInt());
+    // Settings → "Prefill set & subject code in OMR": when off, the
+    // generated sheet leaves the set bubble & subject-code digits blank
+    // (students fill them in) and the scanner leaves them blank too.
+    final prefill = AppSettings.omrPrefill;
 
     final pages = <Uint8List>[];
     const double sw = 1654.0;
@@ -2059,7 +2064,8 @@ class PaperPdf {
 
     digitPanel(0, 'রোল নম্বর');
     digitPanel(1, 'রেজিস্ট্রেশন নম্বর');
-    digitPanel(2, 'বিষয় কোড', digits: _toLatinDigits(subjectCode ?? ''));
+    digitPanel(2, 'বিষয় কোড',
+        digits: prefill ? _toLatinDigits(subjectCode ?? '') : '');
 
     // ── Set code + instructions ────────────────────────────────────
     final setTop = geo.setTop;
@@ -2072,7 +2078,8 @@ class PaperPdf {
             setTop + (OMrGeometry.setH - setTitle.height) / 2));
     for (var i = 0; i < 4; i++) {
       final p = geo.setBubble(i);
-      bubble(p.dx, p.dy, _optionLetters[i], selected: setCode == _optionLetters[i]);
+      bubble(p.dx, p.dy, _optionLetters[i],
+          selected: prefill && setCode == _optionLetters[i]);
     }
 
     final rulesX = OMrGeometry.margin + OMrGeometry.setW + 12 * _k;

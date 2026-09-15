@@ -133,15 +133,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Prefill set & subject code',
+                              const Text(
+                                  'Prefill set & subject code in OMR',
                                   style: TextStyle(
                                       fontSize: 14.5,
                                       fontWeight: FontWeight.w800)),
                               const SizedBox(height: 2),
                               Text(
                                 on
-                                    ? 'Scanner reads the set & subject code printed on each sheet'
-                                    : 'Off — set & subject code will be left blank on results',
+                                    ? 'OMR sheets print the set & subject code already filled, and scan results show them'
+                                    : 'OMR sheets print the set & subject code blank (students fill it in) and scan results leave it blank',
                                 style: const TextStyle(
                                     fontSize: 11.5, color: AppTheme.muted),
                               ),

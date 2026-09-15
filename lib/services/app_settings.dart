@@ -3,8 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Global app settings, persisted across launches.
 ///
-///  • [omrPrefillCodes] — whether the OMR scanner reads the set & subject
-///    code printed on each sheet and uses them in the result (default ON).
+///  • [omrPrefillCodes] — whether generated OMR sheets print the set &
+///    subject code pre-filled (and whether scan results use the codes
+///    read from the sheet) (default ON).
   ///  • [defaultPaperName] — default title for generated question papers and
   ///    OMR tests (empty = the built-in defaults).
 class AppSettings {
