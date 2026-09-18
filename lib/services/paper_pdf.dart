@@ -588,6 +588,20 @@ class PaperPdf {
   // ১ম অংশ (লিখিত পত্র): সৃজনশীল + সংক্ষিপ্ত-উত্তর, মান ডান কলামে।
   // ২য় অংশ (বহুনির্বাচনি পত্র): স্কুল-বোর্ড স্টাইল হেডার (প্রাপ্ত নম্বর ও
   // কোড বাক্স, নাম/রোল/শাখা লাইন, দ্রষ্টব্য বাক্স) + দুই কলাম MCQ।
+  /// The rendering loops below do seconds of continuous text layout
+  /// (TextPainter) on the UI thread. Yield to the event loop roughly every
+  /// 8 ms so the UI can paint the loading spinner and keep responding to
+  /// touch — prevents the Android "app not responding" dialog while a paper
+  /// is being rendered.
+  static int _lastYieldAt = 0;
+  static Future<void> _yieldToUi() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - _lastYieldAt >= 8) {
+      await Future<void>.delayed(Duration.zero);
+      _lastYieldAt = DateTime.now().millisecondsSinceEpoch;
+    }
+  }
+
   static Future<List<Uint8List>> _renderPages({
     required String title,
     required String modeLine,
@@ -1075,6 +1089,7 @@ class PaperPdf {
       double indent = 0,
       bool preserveSpaces = false,
     }) async {
+      await PaperPdf._yieldToUi();
       final line = rich(text, size,
           isBold: isBold,
           align: align,
@@ -1098,6 +1113,7 @@ class PaperPdf {
       double gapBefore = 0,
       double indent = 0,
     }) async {
+      await PaperPdf._yieldToUi();
       final markW = 26 * _k; // মান কলাম ≈ ৯ মিমি
       final line = rich(text, size,
           isBold: isBold, maxWidth: contentW - indent * _k - markW);
@@ -1627,6 +1643,7 @@ class PaperPdf {
         double gapBefore = 0,
         double gapAfter = 2,
         TextAlign align = TextAlign.left}) async {
+      await PaperPdf._yieldToUi();
       final tp = TextPainter(
         text: TextSpan(text: _safe(text), style: st(size, isBold, 1.45)),
         textDirection: TextDirection.ltr,

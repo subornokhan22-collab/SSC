@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
@@ -468,37 +469,11 @@ class PaperLibrary {
   /// Decodes a picked photo, applies its EXIF orientation and re-encodes as
   /// a compact upright JPEG. Display, thumbnails and PDF assembly then all
   /// use the same correct-upright bytes.
-  static Future<Uint8List> _normalizeJpeg(Uint8List raw) async {
-    final image = img.decodeImage(raw);
-    if (image == null) return raw; // not decodable — keep as-is, best effort
-    var im = image;
-    final orientation = exifOrientation(raw);
-    if (orientation != null) {
-      im = _applyOrientation(im, orientation);
-    }
-    // Cap long side at 2200 px — plenty for print, keeps storage small.
-    const maxSide = 2200;
-    final side = im.width > im.height ? im.width : im.height;
-    if (side > maxSide) {
-      final s = maxSide / side;
-      im = img.copyResize(
-          im,
-          width: (im.width * s).round(),
-          height: (im.height * s).round());
-    }
-    return img.encodeJpg(im, quality: 85);
-  }
+  static Future<Uint8List> _normalizeJpeg(Uint8List raw) =>
+      compute(_normalizeJpegCore, raw);
 
-  static Future<Uint8List> _thumbFrom(Uint8List page) async {
-    final image = img.decodeImage(page);
-    if (image == null) return page;
-    final s = 360.0 / (image.width > image.height ? image.width : image.height);
-    final im = s < 1
-        ? img.copyResize(image,
-            width: (image.width * s).round(), height: (image.height * s).round())
-        : image;
-    return img.encodeJpg(im, quality: 78);
-  }
+  static Future<Uint8List> _thumbFrom(Uint8List page) =>
+      compute(_thumbCore, page);
 
   // ═══════════ EXIF orientation (JPEG only) ═══════════
 
@@ -580,6 +555,43 @@ class PaperLibrary {
         return im;
     }
   }
+}
+
+/// Core of [PaperLibrary._normalizeJpeg] — runs in a background isolate via
+/// compute() so decoding + re-encoding a full-size photo never blocks the
+/// UI thread (no lag / "app not responding" while saving or uploading).
+Uint8List _normalizeJpegCore(Uint8List raw) {
+  final image = img.decodeImage(raw);
+  if (image == null) return raw; // not decodable — keep as-is, best effort
+  var im = image;
+  final orientation = PaperLibrary.exifOrientation(raw);
+  if (orientation != null) {
+    im = PaperLibrary._applyOrientation(im, orientation);
+  }
+  // Cap long side at 2200 px — plenty for print, keeps storage small.
+  const maxSide = 2200;
+  final side = im.width > im.height ? im.width : im.height;
+  if (side > maxSide) {
+    final s = maxSide / side;
+    im = img.copyResize(
+        im,
+        width: (im.width * s).round(),
+        height: (im.height * s).round());
+  }
+  return img.encodeJpg(im, quality: 85);
+}
+
+/// Core of [PaperLibrary._thumbFrom] — runs in a background isolate via
+/// compute().
+Uint8List _thumbCore(Uint8List page) {
+  final image = img.decodeImage(page);
+  if (image == null) return page;
+  final s = 360.0 / (image.width > image.height ? image.width : image.height);
+  final im = s < 1
+      ? img.copyResize(image,
+          width: (image.width * s).round(), height: (image.height * s).round())
+      : image;
+  return img.encodeJpg(im, quality: 78);
 }
 
 /// Automatic backup / restore for the whole paper library.
