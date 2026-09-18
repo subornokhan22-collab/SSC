@@ -180,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             onSubmitted: (_) => _persistName(),
                             onEditingComplete: _persistName,
                             decoration: InputDecoration(
-                              hintText: 'e.g. মডেল টেস্ট — প্রথম ধাপ',
+                              hintText: 'e.g. Model Test — First Phase',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
                                 borderSide:

@@ -913,7 +913,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         title: 'Could not start printing',
         message: 'Error: $e',
         detail:
-            'Tip: অনেক ফোনে system print service বন্ধ থাকলে এমন হয়। আবার চেষ্টা করুন — না হলে ফোন restart দিন।',
+            'Tip: on many phones this happens when the system print service is off. Try again — if it keeps happening, restart your phone.',
       );
     }
   }
@@ -1609,7 +1609,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: AppButton(
-                label: _busyPrint ? 'PDF তৈরি হচ্ছে…' : 'PDF / Print',
+                label: _busyPrint ? 'Creating PDF…' : 'PDF / Print',
                 icon: Icons.print_rounded,
                 loading: _busyPrint,
                 onPressed: _busyPrint ? null : _onPrintTap,

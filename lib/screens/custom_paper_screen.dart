@@ -1714,7 +1714,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                     Expanded(
                         child: AppButton(
                             label: _busyPrint
-                                ? 'PDF তৈরি হচ্ছে…'
+                                ? 'Creating PDF…'
                                 : 'PDF / Print',
                             icon: Icons.print_rounded,
                             loading: _busyPrint,
