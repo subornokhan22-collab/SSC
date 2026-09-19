@@ -414,11 +414,12 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   }
 
   // ── পেপার তৈরি ────────────────────────────────────────────────────
-  Future<void> _generate() async {
   /// The standard red, animated problem dialog — every error the user must
   /// act on uses this (never a plain snackbar).
   Future<void> _problem(String title, String message, {String? detail}) =>
       showProblemDialog(context, title: title, message: message, detail: detail);
+
+  Future<void> _generate() async {
 
     if (_subject == null) return;
     if (_mode == 'chapter' && _chapter == null) {

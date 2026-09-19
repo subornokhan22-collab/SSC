@@ -324,11 +324,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     });
   }
 
-  void _setChapterMcqCount(String chapter, int next) {
   /// The standard red, animated problem dialog — every error the user must
   /// act on uses this (never a plain snackbar).
   Future<void> _problem(String title, String message, {String? detail}) =>
       showProblemDialog(context, title: title, message: message, detail: detail);
+
+  void _setChapterMcqCount(String chapter, int next) {
 
     final current = _chapterMcqCounts[chapter] ?? 0;
     final proposedTotal = _requestedMcqTotal - current + next;
