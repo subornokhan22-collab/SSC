@@ -6,6 +6,8 @@ import '../widgets/animations.dart';
 import 'auth_choice_screen.dart';
 import 'teacher_home_screen.dart';
 import '../widgets/app_logo.dart';
+import '../services/connectivity_service.dart';
+import '../widgets/problem_dialog.dart';
 
 /// App gatekeeper —
 ///  • not signed in → welcome / sign-in screen
@@ -36,6 +38,23 @@ class _RootGateState extends State<RootGate> {
   void initState() {
     super.initState();
     _boot = _prepare();
+    _checkOfflineOnOpen();
+  }
+
+  /// App-open page: if the app is opened with no internet, show the
+  /// red offline error once. The global banner covers the session
+  /// afterwards (and re-appears if the connection drops later).
+  Future<void> _checkOfflineOnOpen() async {
+    await ConnectivityService.instance.refresh();
+    if (!mounted || ConnectivityService.instance.isOnline) return;
+    await showProblemDialog(
+      context,
+      title: 'No internet connection',
+      message:
+          'You are offline. Generating, printing, saving and OMR '
+          'scanning still work — AI question generation is '
+          'unavailable until the connection is back.',
+    );
   }
 
   /// Warms up the profile/Pro state before showing the workspace so the

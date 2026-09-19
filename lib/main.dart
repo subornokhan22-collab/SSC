@@ -12,6 +12,7 @@ import 'services/paper_library.dart';
 import 'theme/app_theme.dart';
 import 'screens/root_gate.dart';
 import 'widgets/animated_background.dart';
+import 'widgets/offline_banner.dart';
 
 Future<void> main() async {
   // Binding must exist before Supabase / preferences are touched.
@@ -70,7 +71,9 @@ class ALearningApp extends StatelessWidget {
               maxScaleFactor: 1.25,
             ),
           ),
-          child: AnimatedBackground(child: child ?? const SizedBox.shrink()),
+          child: ConnectivityBanner(
+            child: AnimatedBackground(child: child ?? const SizedBox.shrink()),
+          ),
         );
       },
     );
