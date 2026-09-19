@@ -415,11 +415,15 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
 
   // ── পেপার তৈরি ────────────────────────────────────────────────────
   Future<void> _generate() async {
+  /// The standard red, animated problem dialog — every error the user must
+  /// act on uses this (never a plain snackbar).
+  Future<void> _problem(String title, String message, {String? detail}) =>
+      showProblemDialog(context, title: title, message: message, detail: detail);
+
     if (_subject == null) return;
     if (_mode == 'chapter' && _chapter == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No chapters found for this subject — choose "Full Model Test"')),
-      );
+      await _problem('No chapters available',
+          'No chapters found for this subject — choose "Full Model Test".');
       return;
     }
 
@@ -797,9 +801,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         const SnackBar(content: Text('🎉 Pro unlocked! Generate the paper again.')),
       );
     } else if (ok == false && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incorrect code.')),
-      );
+      await _problem('Incorrect code', 'The code you entered is incorrect.');
     }
   }
 
@@ -1676,8 +1678,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Save failed: $e')));
+        await _problem('Save failed', '$e');
       }
     } finally {
       if (mounted) setState(() => _busySave = false);

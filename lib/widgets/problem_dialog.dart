@@ -139,7 +139,7 @@ class _ProblemCardState extends State<_ProblemCard>
               color: AppTheme.surface,
               borderRadius: BorderRadius.circular(20),
               border:
-                  Border.all(color: AppTheme.danger.withOpacity(.45), width: 1.4),
+                  Border.all(color: AppTheme.danger.withOpacity(.7), width: 1.4),
               boxShadow: const [
                 BoxShadow(
                     color: Color(0x2E16203A),
@@ -179,7 +179,7 @@ class _ProblemCardState extends State<_ProblemCard>
                 style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
-                    color: AppTheme.textDark),
+                    color: AppTheme.danger),
               ),
               const SizedBox(height: 8),
               ConstrainedBox(
@@ -191,7 +191,7 @@ class _ProblemCardState extends State<_ProblemCard>
                       widget.message,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                          fontSize: 13.5, height: 1.5, color: AppTheme.muted),
+                          fontSize: 13.5, height: 1.5, color: Color(0xFFB23A41)),
                     ),
                     if (widget.detail != null) ...[
                       const SizedBox(height: 10),

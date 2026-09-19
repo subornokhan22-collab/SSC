@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/subject_info.dart';
 import '../services/paper_library.dart';
+import '../widgets/problem_dialog.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 import 'omr_scanner_screen.dart';
@@ -81,6 +82,11 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
+  /// The standard red, animated problem dialog — every error the user must
+  /// act on uses this (never a plain snackbar).
+  Future<void> _problem(String title, String message, {String? detail}) =>
+      showProblemDialog(context, title: title, message: message, detail: detail);
+
 
   // ── Auto-save (one-time nudge) ──────────────────────────────────
   // Android deletes the app's private folder on uninstall. With the one-time
@@ -272,7 +278,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       if (b != null) thumbs.add(b);
     }
     if (thumbs.isEmpty) {
-      _snack('Pages not found.');
+      await _problem('Pages not found', 'The stored pages for this paper could not be found.');
       return;
     }
     if (!mounted) return;
@@ -433,7 +439,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       _tabs.animateTo(1);
       await _reload();
     } catch (e) {
-      _snack('Could not add: $e');
+      await _problem('Could not add paper', '$e');
     } finally {
       if (mounted) setState(() => _busyAdd = false);
     }
@@ -453,7 +459,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       if (result == null || result.files.isEmpty) return;
       final path = result.files.single.path;
       if (path == null) {
-        _snack('PDF path not found.');
+        await _problem('PDF not found', 'The stored PDF for this paper could not be found.');
         return;
       }
       final bytes = await File(path).readAsBytes();
@@ -463,7 +469,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       _tabs.animateTo(1);
       await _reload();
     } catch (e) {
-      _snack('Could not add: $e');
+      await _problem('Could not add paper', '$e');
     } finally {
       if (mounted) setState(() => _busyAdd = false);
     }
@@ -473,7 +479,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     if (e.kind == 'pdf') {
       final bytes = await PaperLibrary.pdfBytes(e.id);
       if (bytes == null) {
-        _snack('PDF not found.');
+        await _problem('PDF not found', 'The stored PDF for this paper could not be found.');
         return;
       }
       if (!mounted) return;
@@ -488,7 +494,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       if (b != null) thumbs.add(b);
     }
     if (thumbs.isEmpty) {
-      _snack('Pages not found.');
+      await _problem('Pages not found', 'The stored pages for this paper could not be found.');
       return;
     }
     if (!mounted) return;
@@ -503,7 +509,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     try {
       await PaperLibrary.printEntry(e);
     } catch (err) {
-      _snack('Could not print: $err');
+      await _problem('Could not print', '$err');
     }
   }
 
@@ -511,7 +517,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     try {
       await PaperLibrary.shareEntry(e);
     } catch (err) {
-      _snack('Could not share: $err');
+      await _problem('Could not share', '$err');
     }
   }
 

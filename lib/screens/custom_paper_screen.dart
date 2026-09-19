@@ -325,13 +325,16 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   }
 
   void _setChapterMcqCount(String chapter, int next) {
+  /// The standard red, animated problem dialog — every error the user must
+  /// act on uses this (never a plain snackbar).
+  Future<void> _problem(String title, String message, {String? detail}) =>
+      showProblemDialog(context, title: title, message: message, detail: detail);
+
     final current = _chapterMcqCounts[chapter] ?? 0;
     final proposedTotal = _requestedMcqTotal - current + next;
     if (next < 1 || proposedTotal > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content:
-            Text('একটি কাস্টম MCQ টেস্টে সর্বোচ্চ ১০০টি প্রশ্ন রাখা যাবে।'),
-      ));
+      _problem('Limit reached',
+          'A custom MCQ test can hold at most 100 questions.');
       return;
     }
     setState(() {
@@ -512,21 +515,18 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   // ── Main generate (now with preview) ──
   Future<void> _generate() async {
     if (_subject == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Choose a subject first')));
+      await _problem('Nothing selected', 'Choose a subject first.');
       return;
     }
     if (!_isEnglish &&
         !_usesAutomaticBoardPattern &&
         _chapterMcqCounts.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content:
-              Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
+      await _problem('Nothing selected',
+          'Choose at least one chapter and set its MCQ count.');
       return;
     }
     if (!_usesAutomaticBoardPattern && _requestedMcqTotal > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
+      await _problem('Limit reached', 'Total MCQ cannot exceed 100.');
       return;
     }
     setState(() {
@@ -700,12 +700,12 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           if (shortage > 0) {
             if (!hasKey) {
               throw Exception(
-                  '${entry.key}-এ ${shortage}টি সংরক্ষিত প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
+                  '$shortage more saved questions needed for ${entry.key} than exist. Add a Gemini API key or reduce the number.');
             }
             final source = await ChapterSourceService.getSource(sid, entry.key);
             if (source.trim().isEmpty) {
               throw Exception(
-                  '${entry.key}-এর নির্ভরযোগ্য অধ্যায়-উৎস পাঠ পাওয়া যায়নি। উৎস পাঠ যোগ করো অথবা MCQ সংখ্যা ${pool.length}-এর মধ্যে রাখো।');
+                  'No reliable chapter source text found for ${entry.key}. Add the source text or keep the MCQ count within ${pool.length}.');
             }
             final ai = await AiQuestionGenerator.generateMcqs(
               apiKey: _apiKey!,
@@ -716,7 +716,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             );
             if (ai.length != shortage) {
               throw Exception(
-                  '${entry.key}-এর জন্য Gemini ${shortage}টির বদলে ${ai.length}টি বৈধ MCQ দিয়েছে। আবার চেষ্টা করো অথবা সংখ্যা কমাও।');
+                  'Gemini returned ${ai.length} valid MCQs instead of $shortage for ${entry.key}. Try again or reduce the number.');
             }
             customMcqs.addAll(
               ai.map((q) => _generatedForChapter(q, sid, entry.key)),
@@ -726,7 +726,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         customMcqs.shuffle();
         if (customMcqs.length != _requestedMcqTotal) {
           throw Exception(
-              'চাওয়া MCQ সংখ্যা ঠিকভাবে তৈরি হয়নি। আবার চেষ্টা করো।');
+              'The requested MCQ count could not be generated correctly. Try again.');
         }
         _advanceSetCode();
         if (!mounted) return;
@@ -833,8 +833,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       await _buildPreviewPages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        await _problem('Could not generate', '$e');
         setState(() => _busy = false);
       }
     }
@@ -842,8 +841,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
   Future<void> _print() async {
     if (!_generated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Generate preview first!')));
+      await _problem('Nothing to print', 'Generate the preview first.');
       return;
     }
     final pro = await PaperLicense.isPro();
@@ -1086,8 +1084,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       );
     } catch (e) {
       if (mounted)
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('OMR print error: $e')));
+        await _problem('OMR print error', '$e');
     }
   }
 
@@ -1133,8 +1130,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Save failed: $e')));
+        await _problem('Save failed', '$e');
       }
     } finally {
       if (mounted) setState(() => _busySave = false);

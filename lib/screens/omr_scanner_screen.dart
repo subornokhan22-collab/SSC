@@ -141,13 +141,18 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _overlayJpg = null;
       });
     } catch (e) {
-      _snack('Could not load the image: $e');
+      await _problem('Could not load image', '$e');
     }
   }
 
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
+  /// The standard red, animated problem dialog — every error the user must
+  /// act on uses this (never a plain snackbar).
+  Future<void> _problem(String title, String message, {String? detail}) =>
+      showProblemDialog(context, title: title, message: message, detail: detail);
+
 
   /// Primary capture path: Google's ML Kit document scanner — live corner
   /// tracking, auto-capture and a crop step, all inside Google's own
@@ -167,7 +172,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// failure point for clean printed OMR sheets that never use it.
   Future<void> _openCamera() async {
     if (_key.any((k) => k < 0)) {
-      _snack('Complete the answer key first — or tap "Use saved paper".');
+      await _problem('Answer key incomplete', 'Complete the answer key first — or tap "Use saved paper".');
       return;
     }
     final (status, statusError) = await _scannerModuleStatus();
@@ -362,7 +367,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// sheet/marks/sharp indicators and auto-captures a steady frame.
   Future<void> _openLiveScan() async {
     if (_key.any((k) => k < 0)) {
-      _snack('Complete the answer key first — or tap "Use saved paper".');
+      await _problem('Answer key incomplete', 'Complete the answer key first — or tap "Use saved paper".');
       return;
     }
     final result = await Navigator.of(context).push<String>(
@@ -392,7 +397,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       });
       _scan(rectified: rectified);
     } catch (e) {
-      _snack('Could not load the photo: $e');
+      await _problem('Could not load photo', '$e');
     }
   }
 
@@ -479,7 +484,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           ? 'Debug images saved to Downloads/TutorsDeskDebug — send those files over.'
           : 'Debug images saved to ${out.path} — send those files over.');
     } catch (e) {
-      _snack('Could not save debug images: $e');
+      await _problem('Could not save debug images', '$e');
     }
   }
 
@@ -506,11 +511,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _scan({bool rectified = false}) async {
     final photo = _photoBytes;
     if (photo == null) {
-      _snack('Take a clear photo of the OMR sheet first.');
+      await _problem('No sheet to scan', 'Take a clear photo of the OMR sheet first.');
       return;
     }
     if (_key.any((k) => k < 0)) {
-      _snack('${_total - _keyDone} answer key question(s) still empty.');
+      await _problem('Answer key incomplete', '${_total - _keyDone} answer key question(s) still empty.');
       return;
     }
     setState(() {
@@ -1482,7 +1487,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _pickSavedPaper() async {
     final papers = await PaperLibrary.loadSavedPapers();
     if (papers.isEmpty) {
-      _snack('No saved papers yet. Generate a paper and tap "Save paper".');
+      await _problem('No saved papers', 'No saved papers yet. Generate a paper and tap "Save paper".');
       return;
     }
     if (!mounted) return;
@@ -1535,7 +1540,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// Entry point for batch scanning: pick the source for the whole class.
   Future<void> _batchDialog() async {
     if (_key.any((k) => k < 0)) {
-      _snack('Complete the answer key first — or tap "Use saved paper".');
+      await _problem('Answer key incomplete', 'Complete the answer key first — or tap "Use saved paper".');
       return;
     }
     final mode = await showDialog<String>(
@@ -1731,7 +1736,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _restoreKeyDraft() async {
     final draft = await OmrStore.loadKeyDraft();
     if (draft == null || draft.key.isEmpty) {
-      _snack('No saved key found.');
+      await _problem('No saved key', 'No saved key found.');
       return;
     }
     setState(() {
