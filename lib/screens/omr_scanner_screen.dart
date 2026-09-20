@@ -911,7 +911,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     child: OutlinedButton.icon(
                       onPressed: _busy ? null : _batchDialog,
                       icon: const Icon(Icons.groups_rounded, size: 18),
-                      label: const Text('Batch scan (whole class)'),
+                      label: const Text('Batch scan'),
                     ),
                   ),
                 ],
@@ -953,10 +953,19 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton.icon(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppTheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                      ),
                       onPressed: _busy ? null : _pickSavedPaper,
                       icon: const Icon(Icons.bookmarks_rounded, size: 18),
-                      label: const Text('Use saved paper (key auto-loads)'),
+                      label: const Text('Use saved paper (key auto-loads)',
+                          style: TextStyle(
+                              fontSize: 13.5, fontWeight: FontWeight.w800)),
                     ),
                   ),
                   const SizedBox(height: 12),

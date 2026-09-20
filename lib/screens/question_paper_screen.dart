@@ -433,6 +433,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
       _generated = false;
       _note = null;
     });
+    // Paint the spinner frame before the heavy (now yielding) generation
+    // work starts, so the loading icon is visible the whole time.
+    await SchedulerBinding.instance.endOfFrame;
 
     final sid = _subject!.id;
     // ── English 2nd Paper: fixed board set from the bank — no AI mix,
@@ -1113,8 +1116,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           ),
           const SizedBox(height: 12),
           AppButton(
-            label: 'Generate Paper',
+            label: _busy ? 'Generating…' : 'Generate Paper',
             icon: Icons.auto_fix_high,
+            loading: _busy,
             onPressed: _busy ? null : _generate,
           ),
         ],

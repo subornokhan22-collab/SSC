@@ -538,6 +538,9 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       _literatureQuestions = const <LiteratureQuestion>[];
       _bangla2WrittenQuestions = const <Bangla2WrittenQuestion>[];
     });
+    // Paint the spinner frame before the heavy (now yielding) generation
+    // work starts, so the loading icon is visible the whole time.
+    await SchedulerBinding.instance.endOfFrame;
     try {
       final sid = _subject!.id;
 

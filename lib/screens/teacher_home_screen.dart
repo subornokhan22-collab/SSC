@@ -78,8 +78,16 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     super.dispose();
   }
 
-  Future<void> _open(Widget screen) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  Future<void> _open(Widget screen, {bool fast = false}) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => screen,
+        // Snappier transition for lightweight screens (Settings).
+        transitionDuration: Duration(milliseconds: fast ? 200 : 300),
+        reverseTransitionDuration: Duration(milliseconds: fast ? 160 : 300),
+      ),
+    );
     if (mounted) _load(); // Pro state / name may have changed.
   }
 
@@ -176,7 +184,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 subtitle: 'Profile, OMR prefill switch, default paper name',
                 accentIndex: 4,
                 compact: true,
-                onTap: () => _open(const SettingsScreen()),
+                onTap: () => _open(const SettingsScreen(), fast: true),
               ),
               if (!_isPro)
                 _ActionTile(
