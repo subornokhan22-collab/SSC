@@ -79,15 +79,38 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   Future<void> _open(Widget screen, {bool fast = false}) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => screen,
-        // Snappier transition for lightweight screens (Settings).
-        transitionDuration: Duration(milliseconds: fast ? 200 : 300),
-        reverseTransitionDuration: Duration(milliseconds: fast ? 160 : 300),
-      ),
-    );
+    if (fast) {
+      // Snappier custom transition for lightweight screens (Settings) —
+      // built on PageRouteBuilder + SlideTransition (stable core APIs;
+      // the newer Flutter toolchain dropped the duration parameters from
+      // MaterialPageRoute).
+      await Navigator.push(
+        context,
+        PageRouteBuilder<void>(
+          transitionDuration: const Duration(milliseconds: 200),
+          reverseTransitionDuration: const Duration(milliseconds: 160),
+          pageBuilder: (context, _, __) => screen,
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
+            );
+          },
+        ),
+      );
+    } else {
+      await Navigator.push(
+          context, MaterialPageRoute(builder: (_) => screen));
+    }
     if (mounted) _load(); // Pro state / name may have changed.
   }
 
