@@ -7,7 +7,6 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
 import 'custom_paper_screen.dart';
-import 'omr_analytics_screen.dart';
 import 'omr_scanner_screen.dart';
 import 'papers_library_screen.dart';
 import 'question_paper_screen.dart';
@@ -179,14 +178,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     'Photograph a filled sheet → auto marks + printable scorecard',
                 accentIndex: 5,
                 onTap: () => _open(const OMrScannerScreen()),
-              ),
-              _ActionTile(
-                icon: Icons.insights_rounded,
-                title: 'OMR Analytics',
-                subtitle:
-                    'Subject-wise breakdown, class leaderboard, most-missed questions',
-                accentIndex: 3,
-                onTap: () => _open(const OMrAnalyticsScreen()),
               ),
               _ActionTile(
                 icon: Icons.photo_library_rounded,

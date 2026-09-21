@@ -272,14 +272,19 @@ class AuthService {
   }
 
   /// Turns Pro on for this device when the server has it enabled.
+  /// Carries the subscription end date (monthly / yearly plans); a
+  /// one-time unlock leaves it null = forever.
   static Future<bool> syncProFromServer() async {
     if (!isLoggedIn) return false;
     final p = await fetchProfile();
-    if (p != null && p['is_pro'] == true) {
-      await PaperLicense.markProFromServer();
-      return true;
+    if (p == null || p['is_pro'] != true) return false;
+    DateTime? until;
+    final raw = p['pro_until']?.toString();
+    if (raw != null && raw.isNotEmpty) {
+      until = DateTime.tryParse(raw.replaceFirst('Z', '+00:00'));
     }
-    return false;
+    await PaperLicense.markProFromServer(until: until);
+    return true;
   }
 
   static Future<void> signOut() async {

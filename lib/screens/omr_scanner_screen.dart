@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../services/omr/omr_geometry.dart';
 import '../services/omr/omr_scanner.dart';
@@ -67,10 +66,6 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   bool _busy = false;
   OmScanResult? _result;
 
-  /// The most recent scan — success OR failure. Failures carry the
-  /// alignment diagnostics (OmScanResult.debug), which "Save debug images"
-  /// writes to the meta file; [_result] is success-only (drives the UI).
-  OmScanResult? _lastScan;
   OmGraded? _graded;
   Uint8List? _overlayJpg;
   int? _scanMs;
@@ -136,8 +131,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _photoBytes = bytes;
         _photoImage = frame.image;
         _result = null;
-        _lastScan = null;
-        _graded = null;
+          _graded = null;
         _overlayJpg = null;
       });
     } catch (e) {
@@ -391,100 +385,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _photoBytes = bytes;
         _photoImage = frame.image;
         _result = null;
-        _lastScan = null;
-        _graded = null;
+          _graded = null;
         _overlayJpg = null;
       });
       _scan(rectified: rectified);
     } catch (e) {
       await _problem('Could not load photo', '$e');
-    }
-  }
-
-  /// Writes the received page, the result overlay and the geometry the
-  /// reader used to <app external dir>/tutors_desk_debug/ — so a bad
-  /// read can be analyzed against the exact pixels the app saw.
-  Future<void> _saveDebugImages() async {
-    final bytes = _photoBytes;
-    if (bytes == null) return;
-    try {
-      // The app's own external folder — always writable under scoped
-      // storage. The raw /storage/emulated/0 root needs the special
-      // "all files access" permission, which users often never grant
-      // (that produced the "Permission denied" on earlier builds).
-      Directory? base;
-      try {
-        base = await getExternalStorageDirectory();
-      } catch (_) {}
-      base ??= await getApplicationDocumentsDirectory();
-      final out =
-          Directory('${base.path}/tutors_desk_debug')..createSync(recursive: true);
-      final ts = DateTime.now().toIso8601String().replaceAll(':', '-');
-      final written = <File>[
-        File('${out.path}/page_$ts.jpg')..writeAsBytesSync(bytes),
-      ];
-      final overlay = _overlayJpg;
-      if (overlay != null) {
-        written.add(File('${out.path}/overlay_$ts.jpg')..writeAsBytesSync(overlay));
-      }
-      // A failed scan is the interesting case: it carries the detected
-      // corners, per-set scales and mark-reprojection residuals.
-      final res = _lastScan ?? _result;
-      final meta = StringBuffer()
-        ..writeln('saved: $ts')
-        ..writeln('build: $kOmrBuildNumber')
-        ..writeln('page bytes: ${bytes.length}');
-      if (res != null) {
-        meta.writeln('result: ${res.ok ? 'ok' : 'FAILED — ${res.error}'}');
-        final dbg = res.debug;
-        if (dbg != null) {
-          for (final e in dbg.entries) {
-            meta.writeln('dbg ${e.key}: ${e.value}');
-          }
-        }
-        if (res.ok) {
-          meta
-            ..writeln('work: ${res.workWidth}x${res.workHeight}')
-            ..writeln('scale: ${res.scale.toStringAsFixed(4)}')
-            ..writeln('homography: ${res.homography.map((v) => v.toStringAsFixed(5)).join(', ')}')
-            ..writeln('photo corners (TL,TR,BL,BR):');
-          for (final c in res.photoCorners) {
-            meta.writeln(
-                '  (${c.point.dx.toStringAsFixed(1)}, ${c.point.dy.toStringAsFixed(1)}) mark=${c.fromMark}');
-          }
-          meta
-            ..writeln('answers: ${res.answers}')
-            ..writeln('set code: ${res.setCode} subject: ${res.subjectCode}');
-          final diag = res.inkDiag;
-          if (diag != null && diag.isNotEmpty) {
-            meta.writeln('ink diag (opt=ink seen, panels: digit@best/second):');
-            for (final line in diag) {
-              meta.writeln('  $line');
-            }
-          }
-        }
-      }
-      written.add(
-          File('${out.path}/meta_$ts.txt')..writeAsStringSync(meta.toString()));
-      // The Android/data folder is hidden in most file managers, so also
-      // copy the files into the shared Downloads folder (MediaStore —
-      // visible in every file manager, no permission needed).
-      var copiedAny = false;
-      for (final f in written) {
-        final mime =
-            f.path.endsWith('.jpg') ? 'image/jpeg' : 'text/plain';
-        try {
-          final copied = await _appChannel.invokeMethod<String>(
-              'copyToDownloads',
-              {'source': f.path, 'name': f.path.split('/').last, 'mime': mime});
-          copiedAny = copiedAny || copied != null;
-        } catch (_) {}
-      }
-      _snack(copiedAny
-          ? 'Debug images saved to Downloads/TutorsDeskDebug — send those files over.'
-          : 'Debug images saved to ${out.path} — send those files over.');
-    } catch (e) {
-      await _problem('Could not save debug images', '$e');
     }
   }
 
@@ -499,7 +405,6 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _key[i] = old[i];
       }
       _result = null;
-      _lastScan = null;
       _graded = null;
     });
   }
@@ -521,13 +426,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     setState(() {
       _busy = true;
       _result = null;
-      _lastScan = null;
       _graded = null;
     });
     try {
       final sw = Stopwatch()..start();
       final res = await _runOmScan(photo, rectified: rectified);
-      _lastScan = res;
       if (!res.ok) {
         setState(() => _busy = false);
         if (mounted) {
@@ -820,7 +723,6 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _photoBytes = null;
       _photoImage = null;
       _result = null;
-      _lastScan = null;
       _graded = null;
       _overlayJpg = null;
     });
@@ -898,11 +800,6 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       onPressed: () => _scanNext(),
                       icon: const Icon(Icons.close_rounded, size: 16),
                       label: const Text('Change / remove photo'),
-                    ),
-                    TextButton.icon(
-                      onPressed: _busy ? null : _saveDebugImages,
-                      icon: const Icon(Icons.bug_report_rounded, size: 16),
-                      label: const Text('Save debug images'),
                     ),
                   ],
                   const SizedBox(height: 8),
@@ -1537,7 +1434,6 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       _titleCtrl.text = p.title;
       _subjectCtrl.text = p.subject;
       _result = null;
-      _lastScan = null;
       _graded = null;
       _overlayJpg = null;
     });

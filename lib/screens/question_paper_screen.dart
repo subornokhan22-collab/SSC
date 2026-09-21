@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
-import '../services/ai_question_generator.dart';
 import '../services/app_settings.dart';
 import '../services/app_style.dart';
 import '../services/paper_license.dart';
@@ -122,16 +121,11 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
   /// Mixed English পেপারে প্রতিটি প্রশ্ন-গ্রুপের উৎস-সিরিয়াল।
   List<int> _e2Src = []; // 2nd paper: 12 গ্রুপ (Q1..Q12)
   List<int> _e1Src = []; // 1st paper: 9 গ্রুপ
-  List<Question> _eAiMcqs = const []; // 🤖 English AI-অতিরিক্ত প্রশ্ন
-
   /// 👁️ প্রিভিউ পেজগুলো — printed PDF-এর হুবহু রূপ।
   List<Uint8List>? _pagePngs;
   bool _isPro = false;
   bool _showAnswerKey = false;
-  String? _apiKey;
   String? _note;
-  bool _mixAi = false; // 🤖 AI প্রশ্ন ব্যাংকের সাথে মেশাবে কি না
-  int _aiShare = 50;   // পেপারে AI প্রশ্নের শতাংশ (25/50/75)
   // Settings → Default paper name overrides the built-in default.
   final TextEditingController _titleCtrl = TextEditingController(
       text: AppSettings.defaultName.isNotEmpty
@@ -183,7 +177,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     final subj = subjectById(widget.initialSubjectId) ?? _subject;
     if (!mounted) return;
     setState(() {
-      _apiKey = prefs.getString('gemini_api_key');
       _isPro = pro;
       if (subj != null) _subject = subj;
       if (widget.initialMode != null) _mode = widget.initialMode!;
@@ -443,14 +436,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     if (_isEnglish2nd(sid)) {
       // 🔀 প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে — প্রতিবার নতুন পেপার
       final m = EnglishBoardMixer.mix();
-      final ai = await _englishAiMcqs('English Second Paper–2024 (Board style)');
       final pages = await PaperPdf.renderEnglishPages(
         paperTitle: _titleText,
         subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
-        sections: [
-          ...EnglishPaperAdapter.second(m.set),
-          if (ai.isNotEmpty) EnglishPaperAdapter.aiSection(ai),
-        ],
+        sections: [...EnglishPaperAdapter.second(m.set)],
         setCode: _setLetter,
       );
       if (!mounted) return;
@@ -465,7 +454,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         _firstSet = null;
         _e2Src = m.sources;
         _e1Src = [];
-        _eAiMcqs = ai;
         _pagePngs = pages;
       });
       return;
@@ -474,14 +462,10 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     // no random pick; the paper prints same-to-same as the board paper ──
     if (_isEnglish1st(sid)) {
       final m = EnglishFirstMixer.mix();
-      final ai = await _englishAiMcqs('English First Paper–2024 (Board style)');
       final pages = await PaperPdf.renderEnglishPages(
         paperTitle: _titleText,
         subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
-        sections: [
-          ...EnglishPaperAdapter.first(m.set),
-          if (ai.isNotEmpty) EnglishPaperAdapter.aiSection(ai),
-        ],
+        sections: [...EnglishPaperAdapter.first(m.set)],
         setCode: _setLetter,
       );
       if (!mounted) return;
@@ -495,7 +479,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         _englishSet = null;
         _e2Src = [];
         _e1Src = m.sources;
-        _eAiMcqs = ai;
         _firstSet = m.set;
         _pagePngs = pages;
       });
@@ -536,82 +519,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     } else {
       mcqs = List<Question>.from(bankMcqs)..shuffle();
       cqs = List<CreativeQuestion>.from(bankCqs)..shuffle();
-    }
-
-    // ── AI ব্যবহার ──
-    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-    final chapterLabel = _mode == 'chapter' ? (_chapter ?? 'সাধারণ') : 'সব অধ্যায় মিলিয়ে';
-
-    if (_mixAi && hasKey) {
-      // 🤖 মিক্স মোড: পেপারের নির্দিষ্ট অংশ AI-এর নতুন প্রশ্ন, বাকিটা ব্যাংকের
-      try {
-        final aiMcqNeed = (mcqNeed * _aiShare / 100).round();
-        if (aiMcqNeed > 0) {
-          final gen = await AiQuestionGenerator.generateMcqs(
-            apiKey: _apiKey!,
-            subjectName: _subject!.name,
-            chapter: chapterLabel,
-            sourceText: '',
-            count: aiMcqNeed,
-          );
-          var rest = mcqNeed - gen.length;
-          if (rest < 0) rest = 0;
-          mcqs = [...mcqs.take(rest), ...gen]..shuffle();
-        }
-      } catch (e) {
-        _note = 'AI MCQs could not be mixed: ${e.toString().replaceFirst('Exception: ', '')} — using bank questions.';
-      }
-      try {
-        final aiCqNeed = (cqNeed * _aiShare / 100).round();
-        if (aiCqNeed > 0) {
-          final gen = await AiQuestionGenerator.generateCqs(
-            apiKey: _apiKey!,
-            subjectName: _subject!.name,
-            chapter: chapterLabel,
-            sourceText: '',
-            count: aiCqNeed,
-          );
-          var rest = cqNeed - gen.length;
-          if (rest < 0) rest = 0;
-          cqs = [...cqs.take(rest), ...gen]..shuffle();
-        }
-      } catch (e) {
-        _note = 'AI creative questions could not be mixed: ${e.toString().replaceFirst('Exception: ', '')} — using bank questions.';
-      }
-    } else if (_mixAi && !hasKey) {
-      _note = 'To mix AI questions, save a 🔑 Gemini API key first — this paper uses bank questions only.';
-    }
-
-    // মিক্স বন্ধ থাকলে আগের নিয়মে: ভান্ডারে কম থাকলে AI দিয়ে পূরণ
-    if (!_mixAi && (mcqs.length < mcqNeed || cqs.length < cqNeed) && hasKey) {
-      try {
-        if (mcqs.length < mcqNeed) {
-          final gen = await AiQuestionGenerator.generateMcqs(
-            apiKey: _apiKey!,
-            subjectName: _subject!.name,
-            chapter: chapterLabel,
-            sourceText: '',
-            count: mcqNeed - mcqs.length,
-          );
-          mcqs = [...mcqs, ...gen]..shuffle();
-        }
-      } catch (e) {
-        _note = 'Could not fill MCQs: ${e.toString().replaceFirst('Exception: ', '')}';
-      }
-      try {
-        if (cqs.length < cqNeed) {
-          final gen = await AiQuestionGenerator.generateCqs(
-            apiKey: _apiKey!,
-            subjectName: _subject!.name,
-            chapter: chapterLabel,
-            sourceText: '',
-            count: cqNeed - cqs.length,
-          );
-          cqs = [...cqs, ...gen]..shuffle();
-        }
-      } catch (e) {
-        _note = 'Could not fill CQs: ${e.toString().replaceFirst('Exception: ', '')}';
-      }
     }
 
     final pickedMcqs = mcqs.take(mcqNeed).toList();
@@ -655,7 +562,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           : pickedCqs.take(PaperLicense.demoCqLimit).toList();
       _saqs = _isPro ? saqs : saqs.take(5).toList();
       if (!hasKey && (mcqs.isEmpty && cqs.isEmpty)) {
-        _note = 'No banked questions for this subject. To build with AI, save a Gemini API key from the 🔑 on the AI Tutor page.';
+        _note = 'No banked questions found for this subject — choose another subject or chapter.';
       }
     });
     await _buildPreviewPages();
@@ -727,86 +634,13 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
     } catch (_) {}
   }
 
-  /// 🤖 English বিষয়ে AI-অতিরিক্ত MCQ (toggle + API key থাকলে; 25→3, 50→5, 75→8)
-  Future<List<Question>> _englishAiMcqs(String subjectName) async {
-    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-    if (!_mixAi) return const [];
-    if (!hasKey) {
-      _note = 'To add AI questions, first save a 🔑 Gemini API key below.';
-      return const [];
-    }
-    try {
-      final n = _aiShare == 25 ? 3 : (_aiShare == 75 ? 8 : 5);
-      return await AiQuestionGenerator.generateMcqs(
-        apiKey: _apiKey!,
-        subjectName: subjectName,
-        chapter: 'Board-style mixed paper 2024',
-        sourceText: '',
-        count: n,
-      );
-    } catch (_) {
-      _note = 'AI questions could not be added — showing board questions only.';
-      return const [];
-    }
-  }
-
-  // ── প্রো আনলক ডায়ালগ ─────────────────────────────────────────────
-  Future<void> _showUnlockDialog() async {
-    final controller = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Unlock Pro (Tutor Version)'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Demo includes limited questions and a "DEMO" watermark.\n'
-              'Pro unlocks full papers, no watermark, and printing.\n',
-              style: TextStyle(fontSize: 13, height: 1.5),
-            ),
-            TextField(
-              controller: controller,
-              textCapitalization: TextCapitalization.characters,
-              decoration: const InputDecoration(
-                hintText: 'Activation code (XXXX-XXXX)',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-              );
-            },
-            child: const Text('Buy Pro'),
-          ),
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () async {
-              final success = await PaperLicense.activate(controller.text);
-              if (context.mounted) Navigator.pop(context, success);
-            },
-            child: const Text('Unlock'),
-          ),
-        ],
-      ),
+  // ── প্রো আনলক ─────────────────────────────────────────────
+  /// Pro is bought in-app via bKash — straight to the subscription screen.
+  void _showUnlockDialog() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
     );
-    if (ok == true && mounted) {
-      setState(() => _isPro = true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🎉 Pro unlocked! Generate the paper again.')),
-      );
-    } else if (ok == false && mounted) {
-      await _problem('Incorrect code', 'The code you entered is incorrect.');
-    }
   }
 
   Future<void> _onPrintTap() async {
@@ -835,7 +669,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
         sections: [
           ...EnglishPaperAdapter.second(_englishSet!),
-          if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs),
         ],
         setCode: _setLetter,
       );
@@ -847,7 +680,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
         sections: [
           ...EnglishPaperAdapter.first(_firstSet!),
-          if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs),
         ],
         setCode: _setLetter,
       );
@@ -1102,13 +934,11 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             style: const TextStyle(fontSize: 11.5, color: AppTheme.muted),
           ),
           const SizedBox(height: 10),
-          _aiMixSection(),
-          const SizedBox(height: 8),
           Text(
             _isEnglish2nd(_subject?.id)
-                ? '📋 Mixed Board Papers 2024 — Part–A: Grammar (Q1–9, 60) + Part–B: Composition (Q10–12, 40)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + ঐচ্ছিক AI'
+                ? '📋 Mixed Board Papers 2024 — Part–A: Grammar (Q1–9, 60) + Part–B: Composition (Q10–12, 40)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + '
                 : _isEnglish1st(_subject?.id)
-                    ? '📋 Mixed Board Papers 2024 — Part–A: Reading (Q1–9, 70) + Part–B: Writing (Q10–11, 30)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + ঐচ্ছিক AI'
+                    ? '📋 Mixed Board Papers 2024 — Part–A: Reading (Q1–9, 70) + Part–B: Writing (Q10–11, 30)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + '
                     : (_mode == 'chapter'
                         ? '📋 Structure: MCQ 10 + Creative 2  •  Marks 30  •  1 hour'
                         : _patternInfoLine()),
@@ -1124,120 +954,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
         ],
       ),
     );
-  }
-
-  // ── 🤖 AI মিক্স নিয়ন্ত্রণ ──────────────────────────────────────
-  Widget _aiMixSection() {
-    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-    if (!hasKey) {
-      return SizedBox(
-        width: double.infinity,
-        child: OutlinedButton.icon(
-          onPressed: _showApiKeyDialog,
-          icon: const Icon(Icons.vpn_key_outlined, size: 18),
-          label: const Text('🔑 Set a Gemini API key (to mix AI questions)'),
-        ),
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          dense: true,
-          value: _mixAi,
-          onChanged: (v) => setState(() {
-            _mixAi = v;
-            _generated = false;
-          }),
-          title: const Text('🤖 Mix AI questions with the bank',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-          subtitle: Text(
-            'Every paper blends fresh AI questions with banked ones',
-            style: const TextStyle(fontSize: 11.5, color: AppTheme.muted),
-          ),
-        ),
-        if (_mixAi) ...[
-          const Text('How much AI content:',
-              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          SegmentedButton<int>(
-            segments: const [
-              ButtonSegment(value: 25, label: Text('25%')),
-              ButtonSegment(value: 50, label: Text('50%')),
-              ButtonSegment(value: 75, label: Text('75%')),
-            ],
-            selected: {_aiShare},
-            onSelectionChanged: (s) => setState(() {
-              _aiShare = s.first;
-              _generated = false;
-            }),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'With AI mixing, internet is required and generation takes 20–40 seconds. Always review the questions before printing.',
-            style: const TextStyle(fontSize: 11, color: AppTheme.muted, height: 1.4),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Future<void> _showApiKeyDialog() async {
-    final controller = TextEditingController(text: _apiKey ?? '');
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('🔑 Gemini API Key'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '1) Open your phone browser: aistudio.google.com\n'
-              '2) Sign in with your Google account\n'
-              '3) Tap "Get API key" → "Create API key"\n'
-              '4) Copy the free key and paste it below — needed only once.',
-              style: TextStyle(fontSize: 13, height: 1.6),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: 'Paste the key that starts with AIza...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true && mounted) {
-      final prefs = await SharedPreferences.getInstance();
-      final key = controller.text.trim();
-      await prefs.setString('gemini_api_key', key);
-      if (!mounted) return;
-      setState(() {
-        _apiKey = key.isEmpty ? null : key;
-        _mixAi = key.isNotEmpty;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(key.isEmpty
-                ? 'Key removed.'
-                : '✅ Key saved! AI question mixing is on — generate your paper.')),
-      );
-    }
   }
 
   Widget _noteCard() {

@@ -23,6 +23,7 @@ dependencies:
   file_picker: ^8.1.2    # PDF প্রশ্নপত্র যোগ করা
   path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
   connectivity_plus: ^6.0.0  # offline detection (global banner + app-open error)
+  url_launcher: ^6.3.0       # open the bKash checkout (bKash payment flow)
 
 dev_dependencies:
   flutter_test:

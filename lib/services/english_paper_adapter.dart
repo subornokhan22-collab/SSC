@@ -120,19 +120,4 @@ class EnglishPaperAdapter {
     ];
   }
 
-  // ═══════════ 🤖 AI Extra Practice (শুধু AI-mix ON হলে) ═══════════
-  static EnglishSection aiSection(List<Question> mcqs,
-      {String head =
-          'AI Extra Practice — fresh AI questions  (উত্তরো পেতে উত্তরমালা দেখুন)'}) {
-    final lines = <String>[];
-    for (var i = 0; i < mcqs.length; i++) {
-      final q = mcqs[i];
-      lines.add('${i + 1}. ${q.questionText}');
-      for (var o = 0; o < q.options.length; o++) {
-        lines.add('    ${_ltr[o]}) ${q.options[o]}');
-      }
-      lines.add('');
-    }
-    return EnglishSection(head, lines);
-  }
 }

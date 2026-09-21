@@ -8,7 +8,6 @@ import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
 import '../data/questions_data.dart';
-import '../services/ai_question_generator.dart';
 import '../services/bangla_first_board_pattern.dart';
 import '../services/bangla_second_board_pattern.dart';
 import '../services/app_settings.dart';
@@ -20,7 +19,6 @@ import '../services/paper_license.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
-import '../services/chapter_source_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/app_button.dart';
@@ -60,13 +58,10 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   bool _generated = false;
   bool _isPro = false;
   bool _showAnswerKey = false;
-  String? _apiKey;
-  bool _mixAi = false;
   bool _mathBoardPattern = false;
   bool _ictBoardPattern = false;
   bool _banglaFirstBoardPattern = false;
   bool _banglaSecondBoardPattern = false;
-  int _aiShare = 50;
   // Settings → Default paper name overrides the built-in default.
   final TextEditingController _titleCtrl = TextEditingController(
       text: AppSettings.defaultName.isNotEmpty
@@ -143,7 +138,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   List<Bangla2WrittenQuestion> _bangla2WrittenQuestions = [];
   EnglishBoardSet? _englishSet;
   EnglishFirstSet? _firstSet;
-  List<Question> _eAiMcqs = const [];
   List<int> _e2Src = [];
   List<int> _e1Src = [];
 
@@ -159,7 +153,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final pro = await PaperLicense.isPro();
     if (!mounted) return;
     setState(() {
-      _apiKey = p.getString('gemini_api_key');
       _isPro = pro;
       final idx = p.getInt('paper_set_idx') ?? 0;
       _setLetter = _setLetters[idx % _setLetters.length];
@@ -196,24 +189,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         explanation: q.explanation.isNotEmpty ? q.explanation : q.answer,
         source: q.source,
         sourceLabel: q.sourceLabel,
-        figure: q.figure,
-      );
-
-  /// Gemini's parser intentionally returns generic identities. Reattach the
-  /// exact selected subject/chapter before adding generated shortage items to
-  /// a custom test so downstream filtering and provenance remain correct.
-  static Question _generatedForChapter(
-          Question q, String subjectId, String chapter) =>
-      Question(
-        id: q.id,
-        subjectId: subjectId,
-        chapter: chapter,
-        questionText: q.questionText,
-        options: List<String>.unmodifiable(q.options),
-        correctIndex: q.correctIndex,
-        explanation: q.explanation,
-        source: QuestionSource.ai,
-        sourceLabel: 'Gemini • chapter-source grounded',
         figure: q.figure,
       );
 
@@ -546,22 +521,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
       // English: mixed board + preview
       if (_isEnglish) {
-        List<Question> aiMcqs = const [];
-        final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-        if (_mixAi && hasKey) {
-          try {
-            final n = _aiShare == 25 ? 3 : (_aiShare == 75 ? 8 : 5);
-            aiMcqs = await AiQuestionGenerator.generateMcqs(
-              apiKey: _apiKey!,
-              subjectName: _isEnglish2nd(sid)
-                  ? 'English Second Paper (Board-2024 style)'
-                  : 'English First Paper (Board-2024 style)',
-              chapter: 'Board-style mixed paper 2024',
-              sourceText: '',
-              count: n,
-            );
-          } catch (_) {}
-        }
         final ttl = _titleText.isEmpty ? 'Model Test' : _titleText;
         if (_isEnglish2nd(sid)) {
           final m = EnglishBoardMixer.mix();
@@ -570,7 +529,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
             sections: [
               ...EnglishPaperAdapter.second(m.set),
-              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)
             ],
             setCode: _setLetter,
           );
@@ -580,7 +538,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             _firstSet = null;
             _e2Src = m.sources;
             _e1Src = [];
-            _eAiMcqs = aiMcqs;
             _pagePngs = pages;
             _mcqs = [];
             _cqs = [];
@@ -595,7 +552,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
             sections: [
               ...EnglishPaperAdapter.first(m.set),
-              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)
             ],
             setCode: _setLetter,
           );
@@ -605,7 +561,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             _englishSet = null;
             _e1Src = m.sources;
             _e2Src = [];
-            _eAiMcqs = aiMcqs;
             _pagePngs = pages;
             _mcqs = [];
             _cqs = [];
@@ -693,7 +648,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       // Custom MCQ PDF + OMR: keep each chapter quantity exactly as the user requested.
       if (_chapterMcqCounts.isNotEmpty) {
         final customMcqs = <Question>[];
-        final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
         for (final entry in _chapterMcqCounts.entries) {
           final pool = allMCQs
               .where((q) => q.subjectId == sid && q.chapter == entry.key)
@@ -702,29 +656,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           customMcqs.addAll(pool.take(entry.value));
           final shortage = entry.value - pool.length;
           if (shortage > 0) {
-            if (!hasKey) {
-              throw Exception(
-                  '$shortage more saved questions needed for ${entry.key} than exist. Add a Gemini API key or reduce the number.');
-            }
-            final source = await ChapterSourceService.getSource(sid, entry.key);
-            if (source.trim().isEmpty) {
-              throw Exception(
-                  'No reliable chapter source text found for ${entry.key}. Add the source text or keep the MCQ count within ${pool.length}.');
-            }
-            final ai = await AiQuestionGenerator.generateMcqs(
-              apiKey: _apiKey!,
-              subjectName: _subject!.bengaliName,
-              chapter: entry.key,
-              sourceText: source,
-              count: shortage,
-            );
-            if (ai.length != shortage) {
-              throw Exception(
-                  'Gemini returned ${ai.length} valid MCQs instead of $shortage for ${entry.key}. Try again or reduce the number.');
-            }
-            customMcqs.addAll(
-              ai.map((q) => _generatedForChapter(q, sid, entry.key)),
-            );
+            throw Exception(
+                '$shortage more saved questions needed for ${entry.key} than exist — reduce the count for that chapter.');
           }
         }
         customMcqs.shuffle();
@@ -759,41 +692,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           .toList()
         ..shuffle();
 
-      List<Question> aiMcqs = const [];
-      List<CreativeQuestion> aiCqs = const [];
-      final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-      if (_mixAi && hasKey) {
-        final chapLabel =
-            _chapters.isEmpty ? 'সব অধ্যায় মিলিয়ে' : _chapters.join(', ');
-        try {
-          final aiMcqNeed = (_mcqN * _aiShare / 100).round();
-          if (aiMcqNeed > 0) {
-            aiMcqs = await AiQuestionGenerator.generateMcqs(
-                apiKey: _apiKey!,
-                subjectName: _subject!.name,
-                chapter: chapLabel,
-                sourceText: '',
-                count: aiMcqNeed);
-          }
-        } catch (_) {}
-        try {
-          final aiCqNeed = (_cqN * _aiShare / 100).round();
-          if (aiCqNeed > 0) {
-            aiCqs = await AiQuestionGenerator.generateCqs(
-                apiKey: _apiKey!,
-                subjectName: _subject!.name,
-                chapter: chapLabel,
-                sourceText: '',
-                count: aiCqNeed);
-          }
-        } catch (_) {}
-      }
-
-      final mcqBankN = _mcqN - aiMcqs.length;
-      final cqBankN = _cqN - aiCqs.length;
-      final mcqs = [...mcqPool.take(mcqBankN < 0 ? 0 : mcqBankN), ...aiMcqs]
-        ..shuffle();
-      final cqs = [...cqPool.take(cqBankN < 0 ? 0 : cqBankN), ...aiCqs];
+      final mcqs = mcqPool.take(_mcqN).toList()..shuffle();
+      final cqs = cqPool.take(_cqN).toList();
 
       final usedIds = mcqs.map((q) => q.id).toSet();
       final saqPool = mcqPool
@@ -891,7 +791,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
           sections: [
             ...EnglishPaperAdapter.second(_englishSet!),
-            if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)
           ],
           setCode: _setLetter,
         );
@@ -903,7 +802,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
           sections: [
             ...EnglishPaperAdapter.first(_firstSet!),
-            if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)
           ],
           setCode: _setLetter,
         );
@@ -1152,77 +1050,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         ),
       ),
     );
-  }
-
-  // AI mix card
-  Widget _aiMixCard() {
-    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-    if (!hasKey) {
-      return SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-              onPressed: _showApiKeyDialog,
-              icon: const Icon(Icons.vpn_key_outlined, size: 18),
-              label:
-                  const Text('🔑 Set Gemini API key (to mix AI questions)')));
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-          color: AppTheme.surfaceAlt,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _accentColor.withOpacity(0.45))),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            value: _mixAi,
-            onChanged: (v) => setState(() => _mixAi = v),
-            title: const Text('🤖 Mix AI questions',
-                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-            subtitle: const Text('Fresh AI + bank',
-                style: TextStyle(fontSize: 11, color: AppTheme.muted))),
-        if (_mixAi) ...[
-          const Text('AI %:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          SegmentedButton<int>(segments: const [
-            ButtonSegment(value: 25, label: Text('25%')),
-            ButtonSegment(value: 50, label: Text('50%')),
-            ButtonSegment(value: 75, label: Text('75%'))
-          ], selected: {
-            _aiShare
-          }, onSelectionChanged: (s) => setState(() => _aiShare = s.first)),
-        ],
-      ]),
-    );
-  }
-
-  Future<void> _showApiKeyDialog() async {
-    final controller = TextEditingController(text: _apiKey ?? '');
-    final ok = await showDialog<bool>(
-        context: context,
-        builder: (c) => AlertDialog(
-                title: const Text('🔑 Gemini API Key'),
-                content: TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(hintText: 'AIza...')),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(c, false),
-                      child: const Text('Cancel')),
-                  FilledButton(
-                      onPressed: () => Navigator.pop(c, true),
-                      child: const Text('Save'))
-                ]));
-    if (ok == true && mounted) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('gemini_api_key', controller.text.trim());
-      setState(() {
-        _apiKey = controller.text.trim();
-        _mixAi = _apiKey!.isNotEmpty;
-      });
-    }
   }
 
   @override
@@ -1626,7 +1453,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                               : 'English 1st: Reading 70 + Writing 30 (mixed boards)',
                           style: const TextStyle(
                               fontSize: 12, color: Color(0xFF7FE7DC)))),
-                if (!_usesAutomaticBoardPattern) _aiMixCard(),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(14),
