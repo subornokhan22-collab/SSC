@@ -336,8 +336,10 @@ class OMrScanner {
     final marks = <DetectedCorner?>[
       for (var c = 0; c < 4; c++)
         _detectCornerMark(c, dark, w, h) ??
-            _detectCornerMark(c, dark1, w, h, nearCorner: true) ??
-            _detectCornerMark(c, dark2, w, h, nearCorner: true),
+            _detectCornerMark(c, dark1, w, h,
+                nearCorner: true, minFill: 0.80) ??
+            _detectCornerMark(c, dark2, w, h,
+                nearCorner: true, minFill: 0.80),
     ];
     final markCount = marks.where((m) => m != null).length;
     // Alignment diagnostics carried by every failure that follows (see
@@ -367,8 +369,14 @@ class OMrScanner {
     var sharedCompReady = false;
     Uint8List? paperComp() {
       if (!sharedCompReady) {
-        sharedComp =
-            _paperComponent(paper, w, h, seed.dx.round(), seed.dy.round());
+        // The mark centroid can sit on a filled bubble (student ink) —
+        // nudge the seed onto the nearest paper pixel so the sheet
+        // component is found (a null component let the corner fallback
+        // search the whole frame and capture the bright background).
+        final sp = _paperSeed(paper, w, h, seed.dx.round(), seed.dy.round());
+        sharedComp = sp == null
+            ? null
+            : _paperComponent(paper, w, h, sp.$1, sp.$2);
         sharedCompReady = true;
       }
       return sharedComp;
@@ -426,7 +434,12 @@ class OMrScanner {
       // into the homography (→ "no valid scale"). The estimate is the
       // last resort, for when the paper edge genuinely can't be found.
       final fallback = _paperCornerFallback(c, paper, w, h, paperComp());
-      if (fallback != null) {
+      // A paper point on the frame border is a background hit (bright
+      // desk/wall merged with the sheet in the paper mask), not the sheet
+      // corner — the sheet's true corner is inside the frame, so the
+      // parallelogram of the real marks is the better anchor. The edge
+      // point is kept only as a last resort.
+      if (fallback != null && !fallback.edgeSuspect) {
         corners.add(fallback);
         continue;
       }
@@ -438,6 +451,10 @@ class OMrScanner {
           corners.add(DetectedCorner(est, false));
           continue;
         }
+      }
+      if (fallback != null) {
+        corners.add(fallback);
+        continue;
       }
       return OmScanResult.failed(
           'Corner marks not found. Keep the whole OMR sheet in frame, in '
@@ -486,7 +503,14 @@ class OMrScanner {
           altChanged = true;
         }
       }
-      if (altChanged) cornerSets.add(alt);
+      if (altChanged) {
+        // An edge-suspect anchor is known-bad: the all-marks set wins.
+        if (corners.any((k) => k.edgeSuspect)) {
+          cornerSets.insert(0, alt);
+        } else {
+          cornerSets.add(alt);
+        }
+      }
     }
 
     List<double>? candidate;
@@ -878,6 +902,7 @@ class OMrScanner {
     int w,
     int h, {
     bool nearCorner = false,
+    double minFill = 0.85,
   }) {
     // Wide enough for a sheet that lies sideways in the frame (a phone
     // photo with a 90° EXIF orientation puts the marks far from the photo
@@ -945,7 +970,7 @@ class OMrScanner {
         final ratio = bw < bh ? bw / bh : bh / bw;
         final blobD = math.sqrt(bw * bw + bh * bh);
         if (area < 40) continue; // too small to be a mark
-        if (fill < 0.85) continue; // not solid (bubble circle ≈ 0.78, text ≪)
+        if (fill < minFill) continue; // not solid (bubble circle ≈ 0.78, text ≪)
         if (ratio < 0.75 || ratio > 1.35) continue; // band/line, not square
         if (blobD < diag * 0.003 || blobD > diag * 0.08) continue;
         // Clipped by the search boundary → a region (desk/shadow/grid),
@@ -1113,6 +1138,30 @@ class OMrScanner {
       return null;
     }
     return est;
+  }
+
+  /// [seed] nudged onto the nearest paper pixel.
+  ///
+  /// The mark centroid (the default seed) can land on a filled bubble or a
+  /// dark printed stroke — pixels that are ink, not paper — which would
+  /// leave the paper component null and let the corner fallback search the
+  /// whole frame (capturing the bright background at the photo corner).
+  /// Search outward on expanding rings until a paper pixel is reached.
+  static (int, int)? _paperSeed(
+      Uint8List paper, int w, int h, int sx, int sy) {
+    if (sx >= 0 && sy >= 0 && sx < w && sy < h && paper[sy * w + sx] == 1) {
+      return (sx, sy);
+    }
+    if (sx < 0 || sy < 0 || sx >= w || sy >= h) return null;
+    final maxR = (math.sqrt(w * w + h * h) * 0.15).round();
+    for (var r = 2; r <= maxR; r += 4) {
+      for (var a = 0; a < 360; a += 8) {
+        final x = (sx + (r * math.cos(a * math.pi / 180)).round()).clamp(0, w - 1);
+        final y = (sy + (r * math.sin(a * math.pi / 180)).round()).clamp(0, h - 1);
+        if (paper[y * w + x] == 1) return (x, y);
+      }
+    }
+    return null;
   }
 
   /// The paper-mask connected component containing (sx, sy), or null when
