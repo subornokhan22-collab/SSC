@@ -561,7 +561,7 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           ? pickedCqs
           : pickedCqs.take(PaperLicense.demoCqLimit).toList();
       _saqs = _isPro ? saqs : saqs.take(5).toList();
-      if (!hasKey && (mcqs.isEmpty && cqs.isEmpty)) {
+      if (mcqs.isEmpty && cqs.isEmpty) {
         _note = 'No banked questions found for this subject — choose another subject or chapter.';
       }
     });
@@ -936,9 +936,9 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
           const SizedBox(height: 10),
           Text(
             _isEnglish2nd(_subject?.id)
-                ? '📋 Mixed Board Papers 2024 — Part–A: Grammar (Q1–9, 60) + Part–B: Composition (Q10–12, 40)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + '
+                ? '📋 Mixed Board Papers 2024 — Part–A: Grammar (Q1–9, 60) + Part–B: Composition (Q10–12, 40)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে'
                 : _isEnglish1st(_subject?.id)
-                    ? '📋 Mixed Board Papers 2024 — Part–A: Reading (Q1–9, 70) + Part–B: Writing (Q10–11, 30)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে + '
+                    ? '📋 Mixed Board Papers 2024 — Part–A: Reading (Q1–9, 70) + Part–B: Writing (Q10–11, 30)  •  প্রতিটি প্রশ্ন আলাদা বোর্ড থেকে'
                     : (_mode == 'chapter'
                         ? '📋 Structure: MCQ 10 + Creative 2  •  Marks 30  •  1 hour'
                         : _patternInfoLine()),
@@ -1604,15 +1604,6 @@ class _QuestionPaperScreenState extends State<QuestionPaperScreen> {
             break;
         }
       }
-    }
-
-    if (_eAiMcqs.isNotEmpty) {
-      const opL = ['a', 'b', 'c', 'd'];
-      final b = StringBuffer();
-      for (var i = 0; i < _eAiMcqs.length; i++) {
-        b.write('${i + 1}. ${opL[_eAiMcqs[i].correctIndex]}    ');
-      }
-      sec('🤖 AI Extra Practice — MCQ answers', b.toString(), 'AI-generated');
     }
 
     if (children.isEmpty) {
