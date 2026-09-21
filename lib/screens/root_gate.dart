@@ -7,7 +7,7 @@ import 'auth_choice_screen.dart';
 import 'teacher_home_screen.dart';
 import '../widgets/app_logo.dart';
 import '../services/connectivity_service.dart';
-import '../widgets/problem_dialog.dart';
+import '../widgets/offline_dialog.dart';
 
 /// App gatekeeper —
 ///  • not signed in → welcome / sign-in screen
@@ -47,25 +47,24 @@ class _RootGateState extends State<RootGate> {
   Future<void> _checkOfflineOnOpen() async {
     await ConnectivityService.instance.refresh();
     if (!mounted || ConnectivityService.instance.isOnline) return;
-    await showProblemDialog(
-      context,
-      title: 'No internet connection',
-      message:
-          'You are offline. Generating, printing, saving and OMR '
-          'scanning still work — AI question generation is '
-          'unavailable until the connection is back.',
-    );
+    await showOfflineDialog(context);
   }
 
   /// Warms up the profile/Pro state before showing the workspace so the
   /// home screen never flickers between logged-out and logged-in states.
   Future<bool> _prepare() async {
     if (!AuthService.ready || !AuthService.isLoggedIn) return false;
-    try {
+    Future<void> bootSync() async {
       await AuthService.ensureTeacherProfile();
       await AuthService.syncProFromServer();
+    }
+    try {
+      // Hard cap: a dead network must never hold the boot screen — the
+      // profile sync gets 8 seconds, then the app opens with local state.
+      await bootSync().timeout(const Duration(seconds: 8));
     } catch (_) {
-      // Offline is fine — the local Pro flag and banked questions still work.
+      // Offline / slow network — the local Pro flag and banked questions
+      // still work.
     }
     return true;
   }

@@ -8,8 +8,8 @@ import '../theme/app_theme.dart';
 /// A global, animated "offline" bar pinned to the top of every screen.
 ///
 /// Wraps the whole app (MaterialApp.builder): when the device loses
-/// internet the red bar slides down above whatever screen is open, and
-/// slides back up when the connection returns.
+/// internet the red gradient bar slides down above whatever screen is
+/// open, and slides back up when the connection returns.
 class ConnectivityBanner extends StatefulWidget {
   final Widget child;
   const ConnectivityBanner({super.key, required this.child});
@@ -77,25 +77,49 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
               child: _offline
                   ? Container(
                       width: double.infinity,
-                      color: AppTheme.danger,
-                      padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
+                      padding: const EdgeInsets.fromLTRB(14, 7, 14, 9),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFE5484D), Color(0xFFA81F26)],
+                          stops: [0, .85],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0x33E5484D),
+                              blurRadius: 14,
+                              offset: Offset(0, 4)),
+                        ],
+                      ),
                       child: Row(children: [
-                        const Icon(Icons.cloud_off_rounded,
-                            color: Colors.white, size: 17),
-                        const SizedBox(width: 9),
-                        Expanded(
-                          child: Text(
-                            'Offline — no internet connection. AI question '
-                            'generation is unavailable; the rest of the app '
-                            'works normally.',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              height: 1.35,
-                              fontWeight: FontWeight.w700,
-                            ),
+                        const _PulsingOfflineIcon(),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Offline — no internet connection',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              SizedBox(height: 1),
+                              Text(
+                                'AI question generation unavailable — '
+                                'everything else works',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Color(0xE6FFE3E4),
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ]),
@@ -105,6 +129,40 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
           },
         ),
       ],
+    );
+  }
+}
+
+/// The cloud-off icon with a gentle breathing pulse so the bar reads as
+/// "live" while offline.
+class _PulsingOfflineIcon extends StatefulWidget {
+  const _PulsingOfflineIcon();
+
+  @override
+  State<_PulsingOfflineIcon> createState() => _PulsingOfflineIconState();
+}
+
+class _PulsingOfflineIconState extends State<_PulsingOfflineIcon>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (context, _) =>
+          Transform.scale(scale: 1 + .14 * _c.value,
+              child: const Icon(Icons.cloud_off_rounded,
+                  color: Colors.white, size: 18)),
     );
   }
 }

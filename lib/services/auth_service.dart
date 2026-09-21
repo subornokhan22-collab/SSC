@@ -189,8 +189,12 @@ class AuthService {
     final u = _c.auth.currentUser;
     if (u == null) return null;
     try {
-      final row =
-          await _c.from('profiles').select().eq('id', u.id).maybeSingle();
+      final row = await _c
+          .from('profiles')
+          .select()
+          .eq('id', u.id)
+          .maybeSingle()
+          .timeout(const Duration(seconds: 6));
       if (row != null) _profileCache = Map<String, dynamic>.from(row);
       return _profileCache;
     } catch (_) {
@@ -209,13 +213,15 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c.from('profiles').insert({
-          'id': u.id,
-          'email': u.email ?? '',
-          'role': teacherRole,
-          'name': name,
-          'phone': phone,
-        });
+        await _c.from('profiles')
+            .insert({
+              'id': u.id,
+              'email': u.email ?? '',
+              'role': teacherRole,
+              'name': name,
+              'phone': phone,
+            })
+            .timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -228,7 +234,10 @@ class AuthService {
           patch['role'] = teacherRole;
         }
         if (patch.isNotEmpty) {
-          await _c.from('profiles').update(patch).eq('id', u.id);
+          await _c.from('profiles')
+              .update(patch)
+              .eq('id', u.id)
+              .timeout(const Duration(seconds: 6));
         }
       }
     } catch (_) {
@@ -255,7 +264,10 @@ class AuthService {
     if (name != null) patch['name'] = name.trim();
     if (phone != null) patch['phone'] = phone.trim();
     if (patch.isEmpty) return;
-    await _c.from('profiles').update(patch).eq('id', u.id);
+    await _c.from('profiles')
+        .update(patch)
+        .eq('id', u.id)
+        .timeout(const Duration(seconds: 6));
     await fetchProfile();
   }
 
