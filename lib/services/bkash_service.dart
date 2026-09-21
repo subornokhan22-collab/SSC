@@ -43,21 +43,17 @@ class BkashService {
     String name = '',
     String email = '',
   }) async {
-    final res = await Supabase.instance.client.functions.invoke('bkash',
-        body: {
-          'action': 'initiate',
-          'plan': plan.id,
-          'phone': phone,
-          'buyerName': name,
-          'buyerEmail': email,
-        });
-    if (res.error != null) throw BkashError(res.error.message);
-    final j = res.data;
-    if (j is! Map) throw const BkashError('Unexpected payment response.');
+    final j = await _invoke({
+      'action': 'initiate',
+      'plan': plan.id,
+      'phone': phone,
+      'buyerName': name,
+      'buyerEmail': email,
+    });
     final trxId = j['trxId'] as String?;
     final url = j['checkoutUrl'] as String?;
     if (trxId == null || url == null || url.isEmpty) {
-      throw BkashError('Could not start the bKash payment. Try again.');
+      throw const BkashError('Could not start the bKash payment. Try again.');
     }
     return (trxId, url);
   }
@@ -65,14 +61,51 @@ class BkashService {
   /// Asks bKash (via the function) what happened to this TrxID.
   /// Returns 'active' (paid + Pro turned on), 'pending', or 'failed'.
   static Future<String> verify(String trxId) async {
-    final res = await Supabase.instance.client
-        .functions.invoke('bkash', body: {'action': 'verify', 'trxId': trxId});
-    if (res.error != null) throw BkashError(res.error.message);
-    final j = res.data;
-    if (j is Map) {
+    try {
+      final j = await _invoke({'action': 'verify', 'trxId': trxId});
       return (j['status'] as String?) ?? 'pending';
+    } on BkashError {
+      // A dead network while polling must not kill the wait loop.
+      return 'pending';
     }
-    return 'pending';
+  }
+
+  /// Calls the "bkash" edge function and returns its JSON object.
+  ///
+  /// Current supabase packages throw on a non-2xx reply (the response no
+  /// longer carries an `error` field); the server's
+  /// `{ok: false, error: "..."}` body rides along as the exception's
+  /// `details`, which is where the human message is read from.
+  static Future<Map<String, dynamic>> _invoke(
+      Map<String, Object?> body) async {
+    try {
+      final res =
+          await Supabase.instance.client.functions.invoke('bkash', body: body);
+      final d = res.data;
+      if (d is Map) return Map<String, dynamic>.from(d);
+      throw const BkashError('Unexpected payment response.');
+    } on BkashError {
+      rethrow;
+    } catch (e) {
+      final details = _detailsOf(e);
+      if (details is Map && details['error'] is String) {
+        throw BkashError(details['error'] as String);
+      }
+      if (details is String && details.isNotEmpty && details.length < 300) {
+        throw BkashError(details);
+      }
+      throw BkashError(
+          'Could not reach the payment server — check your connection and try again.');
+    }
+  }
+
+  /// `details` of a supabase functions exception, when it has one.
+  static Object? _detailsOf(Object e) {
+    try {
+      return (e as dynamic).details;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Opens the bKash checkout in the bKash app when available, otherwise
