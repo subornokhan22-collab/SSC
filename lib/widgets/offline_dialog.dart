@@ -29,7 +29,7 @@ Future<bool> showOfflineDialog(BuildContext context) {
       );
     },
     pageBuilder: (c, _, __) => const _OfflineCard(),
-  );
+  ).then((v) => v ?? false);
 }
 
 class _OfflineCard extends StatefulWidget {
