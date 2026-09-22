@@ -102,7 +102,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     onScaleStart: (_) => _scaleStart = _zoom,
                     onScaleUpdate: (d) {
                       _zoom = (_scaleStart * d.scale).clamp(1.0, _maxZoom).toDouble();
-                      _off = _off + d.delta;
+                      _off = _off + d.focalPointDelta;
                       _clampOffset(side);
                     },
                     onScaleEnd: (_) {},
