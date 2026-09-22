@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:markdown/markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/gemini_client.dart';
@@ -235,7 +235,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
   Future<void> _pickAudio() async {
     try {
-      final res = await FilePicker.platform.pickFiles(type: FilePickerType.audio);
+      final res = await FilePicker.platform.pickFiles(
+          allowedExtensions: ['mp3', 'wav', 'ogg', 'flac', 'aiff', 'aif']);
       final f = res?.files.single;
       if (f == null || f.path == null) return;
       final bytes = await _readFile(f.path!);
@@ -268,8 +269,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
   Future<void> _pickPdf() async {
     try {
-      final res = await FilePicker.platform
-          .pickFiles(type: FilePickerType.any, allowedExtensions: ['pdf']);
+      final res =
+          await FilePicker.platform.pickFiles(allowedExtensions: ['pdf']);
       final f = res?.files.single;
       if (f == null || f.path == null) return;
       final bytes = await _readFile(f.path!);
@@ -311,7 +312,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
         Paint()..filterQuality = FilterQuality.high);
     final out = await rec.endRecording().toImage(w, h);
-    final data = await out.toByteData(format: ui.ImageByteFormat.jpg, quality: quality);
+    final data = await out.toByteData(format: ui.ImageByteFormat.jpeg, quality: quality);
     return data!.buffer.asUint8List();
   }
 
@@ -354,15 +355,18 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
     // History: the last 8 turns, text-only (attachments live in the
     // current turn only — that is what the model should solve).
-    final history = <Map<String, String>>[
-      for (final m in _msgs.take(_msgs.length - 1).reversed.take(8))
+    final prev = _msgs.length > 1
+        ? _msgs.sublist(0, _msgs.length - 1)
+        : const <_ChatMsg>[];
+    final history = [
+      for (final m in prev.reversed.take(8))
         {
           'role': m.isUser ? 'user' : 'model',
           'text': m.text.isEmpty && m.atts.isNotEmpty
               ? '[attachment: ${m.atts.map((a) => a.kind).join(', ')}]'
               : m.text,
         },
-    ]..reverse();
+    ].reversed.toList();
 
     // Paint the first frame so the loading state is visible before the
     // (slow) network work starts.
@@ -417,8 +421,9 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
   Future<void> _persist() async {
     final p = await SharedPreferences.getInstance();
+    final start = _msgs.length > 40 ? _msgs.length - 40 : 0;
     final list = [
-      for (final m in _msgs.takeLast(40))
+      for (final m in _msgs.sublist(start))
         {
           'r': m.isUser ? 1 : 0,
           't': m.text.length > 4000 ? m.text.substring(0, 4000) : m.text,
@@ -659,9 +664,9 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 13.5, height: 1.5),
                           )
-                        : MarkdownBody(
+                        : md.MarkdownBody(
                             data: m.text,
-                            styleSheet: const MarkdownStyleSheet(
+                            styleSheet: const md.MarkdownStyleSheet(
                               baseTextStyle: TextStyle(
                                   fontSize: 13.5,
                                   height: 1.5,
@@ -719,9 +724,9 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                               color: AppTheme.muted)),
                     ]),
                   if ((_streaming ?? '').isNotEmpty) ...[
-                    MarkdownBody(
+                    md.MarkdownBody(
                       data: _streaming ?? '',
-                      styleSheet: const MarkdownStyleSheet(
+                      styleSheet: const md.MarkdownStyleSheet(
                         baseTextStyle: TextStyle(
                             fontSize: 13.5,
                             height: 1.5,

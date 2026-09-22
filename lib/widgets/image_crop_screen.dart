@@ -120,14 +120,14 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                         children: [
                           Transform(
                             alignment: Alignment.center,
-                            transform: ui.Matrix4.identity()
+                            transform: Matrix4.identity()
                               ..translate(_off.dx, _off.dy)
                               ..scale(_zoom),
-                            child: Image(
+                            child: RawImage(
                               image: _img,
                               width: dw,
                               height: dh,
-                              fit: BoxFit.exact,
+                              fit: BoxFit.fill,
                             ),
                           ),
                           // crop window frame
@@ -198,7 +198,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   Future<void> _crop() async {
     // Re-derive geometry from the current viewport size.
     final ctx = context;
-    final box = ctx.size;
+    final box = ctx.size!;
     final side = (math_min(box.width, box.height) - 28).clamp(180.0, 1200.0).toDouble();
     final base = _baseFit(side) * _zoom;
     final half = (side / 2) / base;
@@ -212,15 +212,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     final outH = (outW * rect.height / rect.width).round();
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final shader = canvas.createImageShader(_img, ui.TileMode.clamp);
-    final paint = Paint()
-      ..shader = shader
-      ..filterQuality = FilterQuality.high;
+    final paint = Paint()..filterQuality = FilterQuality.high;
     canvas.drawImageRect(_img, rect,
         Rect.fromLTWH(0, 0, outW.toDouble(), outH.toDouble()), paint);
     final out = await recorder.endRecording().toImage(outW, outH);
     final data =
-        await out.toByteData(format: ui.ImageByteFormat.jpg, quality: 85);
+        await out.toByteData(format: ui.ImageByteFormat.jpeg, quality: 85);
     if (!mounted) return;
     Navigator.pop(context, data?.buffer.asUint8List());
   }

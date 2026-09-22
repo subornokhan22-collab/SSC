@@ -24,7 +24,7 @@ dependencies:
   path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
   connectivity_plus: ^6.0.0  # offline detection (global banner + app-open error)
   url_launcher: ^6.3.0       # open the bKash checkout (bKash payment flow)
-  markdown: ^7.3.1         # render Boktul's markdown answers
+  flutter_markdown_plus: ^1.0.12   # render Boktul's markdown answers
 
 dev_dependencies:
   flutter_test:
