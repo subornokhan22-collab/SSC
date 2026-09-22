@@ -20,6 +20,111 @@ import '../widgets/glass_card.dart';
 import '../widgets/image_crop_screen.dart';
 import '../widgets/problem_dialog.dart';
 
+// ── LaTeX → plain Unicode (the chat renderer cannot do math) ──────────
+
+const Map<String, String> _latCmds = {
+  'rightarrow': '→', 'to': '→', 'xrightarrow': '→',
+  'leftarrow': '←', 'xleftarrow': '←', 'leftrightarrow': '↔',
+  'uparrow': '↑', 'downarrow': '↓', 'approx': '≈', 'ne': '≠', 'neq': '≠',
+  'pm': '±', 'times': '×', 'cdot': '·', 'div': '÷', 'le': '≤', 'leq': '≤',
+  'ge': '≥', 'geq': '≥', 'infty': '∞', 'circ': '°', 'angle': '∠',
+  'sqrt': '√', 'pi': 'π', 'alpha': 'α', 'beta': 'β', 'gamma': 'γ',
+  'delta': 'δ', 'Delta': 'Δ', 'theta': 'θ', 'lambda': 'λ', 'mu': 'μ',
+  'nu': 'ν', 'sigma': 'σ', 'phi': 'φ', 'rho': 'ρ', 'eta': 'η',
+  'omega': 'ω', 'Omega': 'Ω',
+};
+
+const Map<String, String> _supMap = {
+  '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶',
+  '7': '⁷', '8': '⁸', '9': '⁹', '+': '⁺', '-': '⁻',
+  'a': 'ᵃ', 'b': 'ᵇ', 'c': 'ᶜ', 'd': 'ᵈ', 'e': 'ᵉ', 'f': 'ᶠ', 'g': 'ᵍ',
+  'h': 'ʰ', 'i': 'ⁱ', 'k': 'ᵏ', 'l': 'ˡ', 'm': 'ᵐ', 'n': 'ⁿ', 'o': 'ᵒ',
+  'p': 'ᵖ', 'r': 'ʳ', 't': 'ᵗ', 'u': 'ᵘ', 'v': 'ᵛ', 'w': 'ʷ', 'x': 'ˣ',
+  'y': 'ʸ', 'A': 'ᴬ', 'B': 'ᴮ', 'D': 'ᴰ', 'E': 'ᴱ', 'F': 'ᶠ', 'G': 'ᴳ',
+  'H': 'ᴴ', 'I': 'ᴵ', 'J': 'ᴶ', 'K': 'ᴷ', 'L': 'ᴸ', 'M': 'ᴹ', 'N': 'ᴺ',
+  'O': 'ᴼ', 'P': 'ᴾ', 'T': 'ᵀ',
+};
+
+const Map<String, String> _subMap = {
+  '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆',
+  '7': '₇', '8': '₈', '9': '₉', '+': '₊', '-': '₋',
+  'a': 'ₐ', 'e': 'ₑ', 'h': 'ₕ', 'i': 'ᵢ', 'k': 'ₖ', 'l': 'ₗ', 'm': 'ₘ',
+  'n': 'ₙ', 'o': 'ₒ', 'p': 'ₚ', 's': 'ₛ', 't': 'ₜ', 'x': 'ₓ',
+};
+
+String _mapScript(String group, Map<String, String> map) {
+  final buf = StringBuffer();
+  for (final rune in group.runes) {
+    buf.write(map[String.fromCharCode(rune)] ?? String.fromCharCode(rune));
+  }
+  return buf.toString();
+}
+
+/// Turns the LaTeX the model sometimes emits (MgCl_2, Mg^{2+},
+/// \rightarrow, \text{...}) into the plain Unicode text the chat
+/// bubble can actually render: MgCl₂, Mg²⁺, →. No-op for normal text.
+String plainifyMath(String text) {
+  if (!text.contains(r'\') && !text.contains('\$')) return text;
+  var s = text;
+
+  // \begin{env} ... \end{env} -> drop the tags, keep the content.
+  s = s.replaceAll(RegExp(r'\\(?:begin|end)\{[^{}]*\}'), '');
+  s = s.replaceAll('&', ' ');
+
+  // \text{...} / \mathrm{...} -> the inner text (repeat for nesting).
+  for (var i = 0; i < 4; i++) {
+    final t = s.replaceAll(RegExp(r'\\(?:text|textrm|mathrm|mathbf)\{([^{}]*)\}'), r'\1');
+    if (t == s) break;
+    s = t;
+  }
+  s = s.replaceAll(RegExp(r'\\(?:left|right)([|.(])?(?![a-zA-Z])'), r'\1');
+
+  // \frac{a}{b} -> (a)/(b), one level of nested braces allowed
+  for (var i = 0; i < 3; i++) {
+    final t = s.replaceAll(
+        RegExp(r'\\frac\{((?:[^{}]|\{[^{}]*\})*)\}\{((?:[^{}]|\{[^{}]*\})*)\}'),
+        r'(\1)/(\2)');
+    if (t == s) break;
+    s = t;
+  }
+
+  // Named commands -> Unicode. Longest keys first so \ne wins over
+  // \neq, \leftarrow over shorter prefixes, etc.
+  final cmdEntries = _latCmds.entries.toList()
+    ..sort((a, b) => b.key.length.compareTo(a.key.length));
+  for (final e in cmdEntries) {
+    s = s.replaceAll('\\${e.key}', e.value);
+  }
+
+  // Escapes & spacing.
+  s = s.replaceAll(RegExp(r'\\[,;:!]'), ' ');
+  s = s.replaceAll(r'\%', '%');
+  s = s.replaceAll(r'\\', '\n'); // math line break
+  s = s.replaceAll(r'\$', '');
+
+  // Superscripts and subscripts.
+  s = s.replaceAllMapped(RegExp(r'\^\{([^{}]*)\}'),
+      (m) => _mapScript(m.group(1)!, _supMap));
+  s = s.replaceAllMapped(RegExp(r'\^([0-9+\-])'),
+      (m) => _supMap[m.group(1)!] ?? m.group(1)!);
+  s = s.replaceAllMapped(RegExp(r'_\{([^{}]*)\}'),
+      (m) => _mapScript(m.group(1)!, _subMap));
+  s = s.replaceAllMapped(RegExp(r'_([0-9+\-])'),
+      (m) => _subMap[m.group(1)!] ?? m.group(1)!);
+
+  // Leftovers: $ delimiters, braces, unknown commands.
+  s = s.replaceAll('\$', '');
+  s = s.replaceAll('{', '').replaceAll('}', '');
+  s = s.replaceAllMapped(RegExp(r'\\([a-zA-Z]+)'), (m) {
+    final c = m.group(1)!;
+    return (c == 'quad' || c == 'qquad') ? '  ' : '';
+  });
+  s = s.replaceAll(r'\', '');
+
+  s = s.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+  return s;
+}
+
 /// MiMi — the in-app AI assistant.
 ///
 /// Answers and solves questions in Bangladesh Education Board style using
@@ -665,7 +770,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                                 color: Colors.white, fontSize: 13.5, height: 1.5),
                           )
                         : md.MarkdownBody(
-                            data: m.text,
+                            data: plainifyMath(m.text),
                             styleSheet: md.MarkdownStyleSheet(
                               p: TextStyle(
                                   fontSize: 13.5,
@@ -733,7 +838,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                     ]),
                   if ((_streaming ?? '').isNotEmpty) ...[
                     md.MarkdownBody(
-                      data: _streaming ?? '',
+                      data: plainifyMath(_streaming ?? ''),
                       styleSheet: md.MarkdownStyleSheet(
                         p: TextStyle(
                             fontSize: 13.5,

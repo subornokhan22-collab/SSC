@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
 /// Pure-Flutter photo cropper — ZERO native code, so it can never trigger
-/// the "app has a bug" native crash dialog that killed the app when a
+/// the native "app has a bug" crash dialog that killed the app when a
 /// native cropper plugin was used.
 ///
-/// The photo fills the whole screen (cover fit). The crop window is a
-/// fixed square in the exact centre — the dimmed overlay and the frame are
-/// drawn from the same numbers the crop math uses, so what you see is
-/// exactly what gets sent. Pinch to zoom, drag to position.
+/// The photo fills the whole screen (cover fit) and stays still. The crop
+/// window has freely draggable CORNERS and EDGES, and the whole window can
+/// be moved by dragging its centre — exactly like a camera app's crop tool.
+/// Whatever is inside the white frame is exactly what gets sent.
 /// "Use as is" (or the back arrow) returns null = the caller keeps the
 /// original (resized) photo.
 class ImageCropScreen extends StatefulWidget {
@@ -21,8 +21,8 @@ class ImageCropScreen extends StatefulWidget {
 
   const ImageCropScreen({super.key, required this.image, required this.bytes});
 
-  /// Opens the cropper. Returns the 1024px square JPEG, or null when the
-  /// user chose "Use as is" / went back.
+  /// Opens the cropper. Returns a JPEG (longest side ≤ 1024px) of the area
+  /// inside the frame, or null when the user chose "Use as is" / went back.
   static Future<Uint8List?> open(
       BuildContext context, ui.Image image, Uint8List bytes) {
     return Navigator.push<Uint8List?>(
@@ -35,35 +35,43 @@ class ImageCropScreen extends StatefulWidget {
   State<ImageCropScreen> createState() => _ImageCropScreenState();
 }
 
-class _ImageCropScreenState extends State<ImageCropScreen> {
-  static const double _maxZoom = 6.0;
-  static const int _outSize = 1024;
-  static const double _frameMargin = 32; // gap between frame and screen edge
+enum _Grab {
+  none,
+  move,
+  topLeft,
+  topRight,
+  botLeft,
+  botRight,
+  left,
+  right,
+  top,
+  bottom,
+}
 
-  double _zoom = 1.0;
-  Offset _off = Offset.zero;
-  double _zoomStart = 1.0;
+class _ImageCropScreenState extends State<ImageCropScreen> {
+  static const int _maxOut = 1024;
+  static const double _minSize = 44.0; // smallest crop window (screen px)
+  static const double _cornerHit = 46.0; // finger zone around a corner
+  static const double _edgeHit = 26.0; // finger zone around an edge
 
   /// The image area = the body (everything below the app bar). Captured
   /// every build; the crop math reuses exactly these numbers.
   Size _view = Size.zero;
 
+  /// The crop window in screen coordinates, always inside [ _view ].
+  Rect _rect = Rect.zero;
+  Rect _startRect = Rect.zero;
+  Offset _startPos = Offset.zero;
+  _Grab _grab = _Grab.none;
+
   ui.Image get _img => widget.image;
 
-  double _side(double w, double h) =>
-      (math.min(w, h) - _frameMargin).clamp(180.0, 1200.0).toDouble();
-
-  /// Cover-fit scale: image pixels per screen pixel at zoom 1.
-  double _coverBase(double w, double h) =>
-      math.max(w / _img.width, h / _img.height);
-
-  void _clamp() {
-    final base = _coverBase(_view.width, _view.height) * _zoom;
-    final maxX = math.max(0.0, (_img.width * base) - _view.width) / 2;
-    final maxY = math.max(0.0, (_img.height * base) - _view.height) / 2;
-    _off = Offset(_off.dx.clamp(-maxX, maxX), _off.dy.clamp(-maxY, maxY));
-    if (!mounted) return;
-    setState(() {});
+  void _initRect() {
+    final w = _view.width, h = _view.height;
+    if (w <= 0 || h <= 0) return;
+    final s = math.min(w, h) * 0.82;
+    _rect = Rect.fromCenter(
+        center: Offset(w / 2, h / 2), width: s, height: s);
   }
 
   @override
@@ -88,119 +96,201 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         ],
       ),
       body: LayoutBuilder(builder: (context, box) {
-        final w = box.maxWidth;
-        final h = box.maxHeight;
-        _view = Size(w, h);
-        final side = _side(w, h);
-        final base = _coverBase(w, h);
+        _view = box.constraints.biggest;
+        if (_rect.isEmpty) _initRect();
+        final w = _view.width, h = _view.height;
+        final base = math.max(w / _img.width, h / _img.height);
         final dw = _img.width * base;
         final dh = _img.height * base;
 
-        return Stack(fit: StackFit.expand, children: [
-          // The photo: one recognizer drives BOTH pinch (d.scale) and
-          // one-finger drag (d.focalPointDelta). A second pan recognizer
-          // would fight this one and eat the drag — never add one.
-          GestureDetector(
-            onScaleStart: (_) => _zoomStart = _zoom,
-            onScaleUpdate: (d) {
-              _zoom = (_zoomStart * d.scale).clamp(1.0, _maxZoom).toDouble();
-              _off = _off + d.focalPointDelta;
-              _clamp();
-            },
-            child: Center(
-              child: Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..translate(_off.dx, _off.dy)
-                  ..scale(_zoom),
-                child: RawImage(image: _img, width: dw, height: dh, filterQuality: FilterQuality.high),
-              ),
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanStart: (d) => _onPanStart(d.localPosition),
+          onPanUpdate: (d) => _onPanUpdate(d.localPosition),
+          child: Stack(fit: StackFit.expand, children: [
+            // The photo, still — the frame moves, not the photo.
+            Center(
+              child: RawImage(
+                  image: _img,
+                  width: dw,
+                  height: dh,
+                  filterQuality: FilterQuality.high),
             ),
-          ),
-          // Dimmed outside + white frame + corner ticks. Drawn with the
-          // SAME side/centre as the crop math, so visible == output.
-          Positioned.fill(
-            child: IgnorePointer(
-                child: CustomPaint(painter: _CropOverlay(side: side))),
-          ),
-          // Floating controls at the bottom of the photo.
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 14,
-            child: Column(children: [
-              const Text(
-                'Pinch to zoom • then drag to position the question',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  color: Colors.white70,
-                  shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+            // Dimmed outside + white frame + grid + drag handles. Drawn
+            // from the same [ _rect ] the crop math uses: visible == out.
+            IgnorePointer(
+                child: CustomPaint(painter: _CropOverlay(rect: _rect))),
+            // Floating controls at the bottom of the photo.
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 14,
+              child: Column(children: [
+                const Text(
+                  'Drag the corners or edges to fit the question • drag inside to move',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: Colors.white70,
+                    shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Row(children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white70,
-                      side: const BorderSide(color: Colors.white24),
+                const SizedBox(height: 8),
+                Row(children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white70,
+                        side: const BorderSide(color: Colors.white24),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _initRect();
+                        });
+                      },
+                      child: const Text('Reset'),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _zoom = 1.0;
-                        _off = Offset.zero;
-                      });
-                    },
-                    child: const Text('Reset'),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFF3D5AFE),
-                        foregroundColor: Colors.white),
-                    onPressed: _crop,
-                    icon: const Icon(Icons.crop_rounded, size: 18),
-                    label: const Text('Crop'),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF3D5AFE),
+                          foregroundColor: Colors.white),
+                      onPressed: _crop,
+                      icon: const Icon(Icons.crop_rounded, size: 18),
+                      label: const Text('Crop'),
+                    ),
                   ),
-                ),
+                ]),
               ]),
-            ]),
-          ),
-        ]);
+            ),
+          ]),
+        );
       }),
     );
   }
 
+  // ── gestures: one pan recognizer drives corners, edges AND move ──
+
+  void _onPanStart(Offset p) {
+    final r = _rect;
+    _startRect = r;
+    _startPos = p;
+    // Corners first (they sit on the edge hit-zones).
+    final corners = [
+      MapEntry(_Grab.topLeft, Offset(r.left, r.top)),
+      MapEntry(_Grab.topRight, Offset(r.right, r.top)),
+      MapEntry(_Grab.botLeft, Offset(r.left, r.bottom)),
+      MapEntry(_Grab.botRight, Offset(r.right, r.bottom)),
+    ];
+    for (final e in corners) {
+      if ((p - e.value).distance <= _cornerHit) {
+        _grab = e.key;
+        return;
+      }
+    }
+    if (p.dx >= r.left - _edgeHit && p.dx <= r.right + _edgeHit) {
+      if (p.dy >= r.top - _edgeHit && p.dy <= r.top + _edgeHit) {
+        _grab = _Grab.top;
+        return;
+      }
+      if (p.dy >= r.bottom - _edgeHit && p.dy <= r.bottom + _edgeHit) {
+        _grab = _Grab.bottom;
+        return;
+      }
+    }
+    if (p.dy >= r.top - _edgeHit && p.dy <= r.bottom + _edgeHit) {
+      if (p.dx >= r.left - _edgeHit && p.dx <= r.left + _edgeHit) {
+        _grab = _Grab.left;
+        return;
+      }
+      if (p.dx >= r.right - _edgeHit && p.dx <= r.right + _edgeHit) {
+        _grab = _Grab.right;
+        return;
+      }
+    }
+    _grab = r.contains(p) ? _Grab.move : _Grab.none;
+  }
+
+  void _onPanUpdate(Offset p) {
+    if (_grab == _Grab.none) return;
+    final dx = p.dx - _startPos.dx;
+    final dy = p.dy - _startPos.dy;
+    final r = _startRect;
+    final W = _view.width, H = _view.height;
+    var left = r.left, top = r.top, right = r.right, bottom = r.bottom;
+    switch (_grab) {
+      case _Grab.move:
+        left = (r.left + dx).clamp(0.0, W - r.width).toDouble();
+        top = (r.top + dy).clamp(0.0, H - r.height).toDouble();
+        right = left + r.width;
+        bottom = top + r.height;
+      case _Grab.topLeft:
+        left = (r.left + dx).clamp(0.0, r.right - _minSize).toDouble();
+        top = (r.top + dy).clamp(0.0, r.bottom - _minSize).toDouble();
+      case _Grab.topRight:
+        right = (r.right + dx).clamp(r.left + _minSize, W).toDouble();
+        top = (r.top + dy).clamp(0.0, r.bottom - _minSize).toDouble();
+      case _Grab.botLeft:
+        left = (r.left + dx).clamp(0.0, r.right - _minSize).toDouble();
+        bottom = (r.bottom + dy).clamp(r.top + _minSize, H).toDouble();
+      case _Grab.botRight:
+        right = (r.right + dx).clamp(r.left + _minSize, W).toDouble();
+        bottom = (r.bottom + dy).clamp(r.top + _minSize, H).toDouble();
+      case _Grab.left:
+        left = (r.left + dx).clamp(0.0, r.right - _minSize).toDouble();
+      case _Grab.right:
+        right = (r.right + dx).clamp(r.left + _minSize, W).toDouble();
+      case _Grab.top:
+        top = (r.top + dy).clamp(0.0, r.bottom - _minSize).toDouble();
+      case _Grab.bottom:
+        bottom = (r.bottom + dy).clamp(r.top + _minSize, H).toDouble();
+      case _Grab.none:
+        return;
+    }
+    setState(() => _rect = Rect.fromLTRB(left, top, right, bottom));
+  }
+
   Future<void> _crop() async {
-    // Geometry: image centre maps to (screen centre + _off). The frame
-    // centre is the screen centre, at zoom `base` image px per screen px.
-    final w = _view.width;
-    final h = _view.height;
+    // Geometry: cover fit. Image pixel of screen point (sx, sy) is
+    // ((sx - ox)/base, (sy - oy)/base) — the same numbers the preview
+    // uses, so what you see framed is exactly what gets sent.
+    final w = _view.width, h = _view.height;
     if (w <= 0 || h <= 0) return;
-    final side = _side(w, h);
-    final base = _coverBase(w, h) * _zoom;
-    final half = (side / 2) / base;
-    final cx = _img.width / 2 - _off.dx / base;
-    final cy = _img.height / 2 - _off.dy / base;
+    final base = math.max(w / _img.width, h / _img.height);
+    final ox = (w - _img.width * base) / 2;
+    final oy = (h - _img.height * base) / 2;
 
     try {
       final source = img.decodeImage(widget.bytes);
       if (source == null) {
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
         return;
       }
-      final x = (cx - half).clamp(0.0, source.width.toDouble() - 1).round();
-      final y = (cy - half).clamp(0.0, source.height.toDouble() - 1).round();
-      final rw = (half * 2).round().clamp(1, source.width - x);
-      final rh = (half * 2).round().clamp(1, source.height - y);
+      final iw = source.width.toDouble();
+      final ih = source.height.toDouble();
+      final x1 = ((_rect.left - ox) / base).clamp(0.0, iw);
+      final y1 = ((_rect.top - oy) / base).clamp(0.0, ih);
+      var x2 = ((_rect.right - ox) / base).clamp(0.0, iw);
+      var y2 = ((_rect.bottom - oy) / base).clamp(0.0, ih);
+      if (x2 - x1 < 2) x2 = math.min(iw, x1 + 2);
+      if (y2 - y1 < 2) y2 = math.min(ih, y1 + 2);
+      final x = x1.round(), y = y1.round();
+      final rw = (x2.round() - x).clamp(1, source.width - x);
+      final rh = (y2.round() - y).clamp(1, source.height - y);
       final cropped = img.copyCrop(source, x: x, y: y, width: rw, height: rh);
-      // The frame is square in screen space → square in image space too.
-      final out = img.copyResize(cropped,
-          width: _outSize, height: _outSize, interpolation: img.Interpolation.cubic);
+      var out = cropped;
+      final longest = math.max(cropped.width, cropped.height);
+      if (longest > _maxOut) {
+        out = img.copyResize(
+          cropped,
+          width: (cropped.width * _maxOut / longest).round(),
+          height: (cropped.height * _maxOut / longest).round(),
+          interpolation: img.Interpolation.cubic,
+        );
+      }
       final data = Uint8List.fromList(img.encodeJpg(out, quality: 85));
       if (!mounted) return;
       Navigator.pop(context, data);
@@ -212,47 +302,92 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
 }
 
 class _CropOverlay extends CustomPainter {
-  final double side;
-  const _CropOverlay({required this.side});
+  final Rect rect;
+  const _CropOverlay({required this.rect});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final left = cx - side / 2;
-    final top = cy - side / 2;
-    final right = cx + side / 2;
-    final bottom = cy + side / 2;
+    final r = rect;
 
+    // Dim everything outside the window.
     final dim = Paint()..color = const Color(0xB3000000);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, top), dim);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, r.top), dim);
     canvas.drawRect(
-        Rect.fromLTWH(0, bottom, size.width, size.height - bottom), dim);
-    canvas.drawRect(Rect.fromLTWH(0, top, left, side), dim);
+        Rect.fromLTWH(0, r.bottom, size.width, size.height - r.bottom), dim);
+    canvas.drawRect(Rect.fromLTWH(0, r.top, r.left, r.height), dim);
     canvas.drawRect(
-        Rect.fromLTWH(right, top, size.width - right, side), dim);
+        Rect.fromLTWH(r.right, r.top, size.width - r.right, r.height), dim);
 
+    // Rule-of-thirds grid inside the window.
+    final grid = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = Colors.white.withOpacity(0.45);
+    for (final f in const [1.0 / 3, 2.0 / 3]) {
+      canvas.drawLine(
+          Offset(r.left + r.width * f, r.top),
+          Offset(r.left + r.width * f, r.bottom),
+          grid);
+      canvas.drawLine(
+          Offset(r.left, r.top + r.height * f),
+          Offset(r.right, r.top + r.height * f),
+          grid);
+    }
+
+    // White frame.
     final frame = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
+      ..strokeWidth = 2.4
       ..color = Colors.white;
-    canvas.drawRect(Rect.fromLTWH(left, top, side, side), frame);
+    canvas.drawRect(r, frame);
 
+    // Amber corner brackets.
     final tick = Paint()
-      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
       ..color = const Color(0xFFFFC93C);
-    const L = 22.0;
-    canvas.drawLine(Offset(left, top + L), Offset(left, top), tick);
-    canvas.drawLine(Offset(left, top), Offset(left + L, top), tick);
-    canvas.drawLine(Offset(right - L, top), Offset(right, top), tick);
-    canvas.drawLine(Offset(right, top), Offset(right, top + L), tick);
-    canvas.drawLine(Offset(left, bottom - L), Offset(left, bottom), tick);
-    canvas.drawLine(Offset(left, bottom), Offset(left + L, bottom), tick);
-    canvas.drawLine(Offset(right - L, bottom), Offset(right, bottom), tick);
-    canvas.drawLine(Offset(right, bottom), Offset(right, bottom - L), tick);
+    const L = 26.0;
+    canvas.drawLine(Offset(r.left, r.top + L), Offset(r.left, r.top), tick);
+    canvas.drawLine(Offset(r.left, r.top), Offset(r.left + L, r.top), tick);
+    canvas.drawLine(Offset(r.right - L, r.top), Offset(r.right, r.top), tick);
+    canvas.drawLine(Offset(r.right, r.top), Offset(r.right, r.top + L), tick);
+    canvas.drawLine(Offset(r.left, r.bottom - L), Offset(r.left, r.bottom), tick);
+    canvas.drawLine(Offset(r.left, r.bottom), Offset(r.left + L, r.bottom), tick);
+    canvas.drawLine(Offset(r.right - L, r.bottom), Offset(r.right, r.bottom), tick);
+    canvas.drawLine(
+        Offset(r.right, r.bottom), Offset(r.right, r.bottom - L), tick);
+
+    // Drag handles: white squares at the 4 corners + 4 edge midpoints.
+    final pts = <Offset>[
+      Offset(r.left, r.top),
+      Offset(r.right, r.top),
+      Offset(r.left, r.bottom),
+      Offset(r.right, r.bottom),
+      Offset(r.center.dx, r.top),
+      Offset(r.center.dx, r.bottom),
+      Offset(r.left, r.center.dy),
+      Offset(r.right, r.center.dy),
+    ];
+    const hs = 15.0;
+    final halo = Paint()..color = Colors.black.withOpacity(.35);
+    final white = Paint()..color = Colors.white;
+    for (final p in pts) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromCenter(center: p, width: hs + 5, height: hs + 5),
+            const Radius.circular(6)),
+        halo,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromCenter(center: p, width: hs, height: hs),
+            const Radius.circular(4)),
+        white,
+      );
+    }
   }
 
   @override
-  bool shouldRepaint(_CropOverlay old) => old.side != side;
+  bool shouldRepaint(_CropOverlay old) => old.rect != rect;
 }
