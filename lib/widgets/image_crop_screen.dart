@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 
 import '../theme/app_theme.dart';
 
@@ -12,14 +13,18 @@ import '../theme/app_theme.dart';
 /// original); back also returns null.
 class ImageCropScreen extends StatefulWidget {
   final ui.Image image;
-  const ImageCropScreen({super.key, required this.image});
+  final Uint8List bytes;
+  const ImageCropScreen(
+      {super.key, required this.image, required this.bytes});
 
   /// Opens the cropper over [image]. Returns the cropped JPEG bytes, or
   /// null when the user chose "Use as is" / went back.
   static Future<Uint8List?> open(
-      BuildContext context, ui.Image image) {
+      BuildContext context, ui.Image image, Uint8List bytes) {
     return Navigator.push<Uint8List?>(
-        context, MaterialPageRoute(builder: (_) => ImageCropScreen(image: image)));
+        context,
+        MaterialPageRoute(
+            builder: (_) => ImageCropScreen(image: image, bytes: bytes)));
   }
 
   @override
@@ -37,6 +42,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   Offset _offsetStart = Offset.zero;
 
   ui.Image get _img => widget.image;
+  Uint8List get _bytes => widget.bytes;
 
   /// Scale that makes the image COVER the square viewport of side [side].
   double _baseFit(double side) =>
@@ -208,18 +214,31 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         .intersect(Rect.fromLTWH(0, 0, _img.width.toDouble(), _img.height.toDouble()));
     if (rect.width < 8 || rect.height < 8) rect = Rect.fromLTWH(0, 0, _img.width.toDouble(), _img.height.toDouble());
 
-    final outW = _outSize;
-    final outH = (outW * rect.height / rect.width).round();
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-    final paint = Paint()..filterQuality = FilterQuality.high;
-    canvas.drawImageRect(_img, rect,
-        Rect.fromLTWH(0, 0, outW.toDouble(), outH.toDouble()), paint);
-    final out = await recorder.endRecording().toImage(outW, outH);
-    final data =
-        await out.toByteData(format: ui.ImageByteFormat.jpeg, quality: 85);
-    if (!mounted) return;
-    Navigator.pop(context, data?.buffer.asUint8List());
+    // Pure-Dart crop + JPEG encode (the engine no longer JPEG-encodes).
+    try {
+      final source = img.decodeImage(_bytes);
+      if (source == null) {
+        Navigator.pop(context);
+        return;
+      }
+      final x = rect.left.round().clamp(0, source.width - 1);
+      final y = rect.top.round().clamp(0, source.height - 1);
+      final w = rect.width.round().clamp(1, source.width - x);
+      final h = rect.height.round().clamp(1, source.height - y);
+      final cropped = img.copyCrop(source, x, y, w, h);
+      final out = img.copyResize(
+        cropped,
+        width: _outSize,
+        height: _outSize,
+        interpolation: img.Interpolation.cubic,
+      );
+      final data = Uint8List.fromList(img.encodeJpg(out, quality: 85));
+      if (!mounted) return;
+      Navigator.pop(context, data);
+    } catch (_) {
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
   }
 }
 

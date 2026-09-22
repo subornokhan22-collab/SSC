@@ -8,6 +8,7 @@ import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -223,7 +224,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       final frame = await codec.getNextFrame();
       final img = frame.image;
       // Optional in-app crop — "Use as is" (or back) keeps the original.
-      final cropped = await ImageCropScreen.open(context, img);
+      final cropped = await ImageCropScreen.open(context, img, bytes);
       if (!mounted) return;
       final att = cropped ?? await _resizeJpeg(bytes, 1600, 82);
       setState(() => _pending.add(
@@ -295,25 +296,24 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   }
 
   /// Scales a photo down to at most [maxSide] px and re-encodes as JPEG,
-  /// keeping the payload small enough for the model.
+  /// keeping the payload small enough for the model. Pure Dart (the engine
+  /// no longer JPEG-encodes raw images).
   Future<Uint8List> _resizeJpeg(Uint8List bytes, int maxSide, int quality) async {
-    final codec = await ui.instantiateImageCodec(bytes);
-    final frame = await codec.getNextFrame();
-    final img = frame.image;
-    final s = maxSide / math.max(img.width.toDouble(), img.height.toDouble());
-    final w = (img.width * s).round();
-    final h = (img.height * s).round();
-    if (w >= img.width && h >= img.height) return bytes;
-    final rec = ui.PictureRecorder();
-    final canvas = Canvas(rec);
-    canvas.drawImageRect(
-        img,
-        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
-        Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
-        Paint()..filterQuality = FilterQuality.high);
-    final out = await rec.endRecording().toImage(w, h);
-    final data = await out.toByteData(format: ui.ImageByteFormat.jpeg, quality: quality);
-    return data!.buffer.asUint8List();
+    try {
+      final source = img.decodeImage(bytes);
+      if (source == null) return bytes;
+      final longest = math.max(source.width, source.height);
+      if (longest <= maxSide) return bytes;
+      final out = img.copyResize(
+        source,
+        width: (source.width * maxSide / longest).round(),
+        height: (source.height * maxSide / longest).round(),
+        interpolation: img.Interpolation.cubic,
+      );
+      return Uint8List.fromList(img.encodeJpg(out, quality: quality));
+    } catch (_) {
+      return bytes;
+    }
   }
 
   static String _fmtBytes(int n) {
@@ -666,16 +666,24 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                           )
                         : md.MarkdownBody(
                             data: m.text,
-                            styleSheet: const md.MarkdownStyleSheet(
-                              baseTextStyle: TextStyle(
+                            styleSheet: md.MarkdownStyleSheet(
+                              p: TextStyle(
                                   fontSize: 13.5,
                                   height: 1.5,
                                   color: AppTheme.textDark),
                               strong: TextStyle(
                                   fontWeight: FontWeight.w800,
                                   color: AppTheme.textDark),
-                              headingSmall: TextStyle(
+                              h1: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.primaryDark),
+                              h2: TextStyle(
                                   fontSize: 14.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.primaryDark),
+                              h3: TextStyle(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: AppTheme.primaryDark),
                               code: TextStyle(
@@ -726,16 +734,24 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                   if ((_streaming ?? '').isNotEmpty) ...[
                     md.MarkdownBody(
                       data: _streaming ?? '',
-                      styleSheet: const md.MarkdownStyleSheet(
-                        baseTextStyle: TextStyle(
+                      styleSheet: md.MarkdownStyleSheet(
+                        p: TextStyle(
                             fontSize: 13.5,
                             height: 1.5,
                             color: AppTheme.textDark),
                         strong: TextStyle(
                             fontWeight: FontWeight.w800,
                             color: AppTheme.textDark),
-                        headingSmall: TextStyle(
+                        h1: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.primaryDark),
+                        h2: TextStyle(
                             fontSize: 14.5,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.primaryDark),
+                        h3: TextStyle(
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: AppTheme.primaryDark),
                         code: TextStyle(
