@@ -96,7 +96,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         ],
       ),
       body: LayoutBuilder(builder: (context, box) {
-        _view = box.constraints.biggest;
+        _view = box.biggest;
         if (_rect.isEmpty) _initRect();
         final w = _view.width, h = _view.height;
         final base = math.max(w / _img.width, h / _img.height);
