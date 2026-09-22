@@ -8,6 +8,7 @@ import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
@@ -16,7 +17,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/gemini_client.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
-import '../widgets/glass_card.dart';
 import '../widgets/image_crop_screen.dart';
 import '../widgets/problem_dialog.dart';
 
@@ -131,6 +131,10 @@ String plainifyMath(String text) {
 /// the tutor's free Gemini API key (stored on the device). Accepts text
 /// plus attachments: photos (with in-app crop), audio and PDFs — each with
 /// a size limit so the model can actually work with them.
+///
+/// UI: a dark "mission control" look — full-width glass bubbles over a
+/// slowly drifting neon backdrop, a glowing thinking orb while MiMi works,
+/// and a rotating glow border while an answer streams in.
 class AiTutorScreen extends StatefulWidget {
   const AiTutorScreen({super.key});
 
@@ -144,6 +148,12 @@ const int kAudioMaxBytes = 5 * 1024 * 1024;
 const int kPdfMaxBytes = 10 * 1024 * 1024;
 const int kTextMaxChars = 4000;
 const int kMaxAttachments = 3;
+
+// ── the dark palette (every colour already exists elsewhere in the app) ─
+const Color _mimiBg = Color(0xFF0B0E17); // same deep navy as the crop screen
+const Color _mimiTeal = Color(0xFF7FE7DC); // bright teal from the crop screen
+const Color _mimiAmber = Color(0xFFFFC93C); // amber from the crop corner ticks
+const Color _mimiText = Color(0xFFE9EDF8);
 
 class _AttMeta {
   final String kind; // 'photo' | 'audio' | 'pdf'
@@ -168,7 +178,7 @@ class _Pending {
 }
 
 class _AiTutorScreenState extends State<AiTutorScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   static const _keyPref = 'gemini_api_key';
   static const _chatPref = 'boktul_chat_v1';
 
@@ -181,23 +191,46 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
   bool _busy = false;
   String? _streaming;
-  late final AnimationController _blink;
+
+  /// Drives the thinking orb, the streaming glow border, the equalizer and
+  /// the caret. Only runs while MiMi is working.
+  late final AnimationController _fx;
+  /// Drives the drifting aurora / star backdrop. Always running (while the
+  /// app is in the foreground).
+  late final AnimationController _bg;
 
   @override
   void initState() {
     super.initState();
-    _blink = AnimationController(
-            vsync: this, duration: const Duration(milliseconds: 700))
-      ..repeat(reverse: true);
+    _fx = AnimationController(vsync: this, duration: const Duration(milliseconds: 2600));
+    _bg = AnimationController(vsync: this, duration: const Duration(seconds: 26))
+      ..repeat();
     _ctrl.addListener(() {
       if (mounted) setState(() {});
     });
+    SystemChrome.setSystemUIOverlayStyle(
+        AppTheme.overlayStyle.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent, systemNavigationBarColor: _mimiBg, systemNavigationBarIconBrightness: Brightness.light));
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (!_bg.isAnimating) _bg.repeat();
+      if (_busy && !_fx.isAnimating) _fx.repeat();
+    } else {
+      _bg.stop();
+      _fx.stop();
+    }
+  }
+
+  @override
   void dispose() {
-    _blink.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    SystemChrome.setSystemUIOverlayStyle(AppTheme.overlayStyle);
+    _fx.dispose();
+    _bg.dispose();
     _ctrl.dispose();
     _scroll.dispose();
     super.dispose();
@@ -237,7 +270,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   Future<void> _problem(String title, String message, {String? detail}) =>
       showProblemDialog(context, title: title, message: message, detail: detail);
 
-  // ── key ──────────────────────────────────────────────────────────
+  // ── key ─────────────────────────────────────────────────────────
 
   /// Re-reads the key after the setup card saves it.
   Future<void> _reloadKey() async {
@@ -440,7 +473,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     return '${(n / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
-  // ── send ─────────────────────────────────────────────────────────
+  // ── send ────────────────────────────────────────────────────────
 
   Future<void> _send() async {
     if (_busy) return;
@@ -470,6 +503,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       _busy = true;
       _streaming = '';
     });
+    if (!_fx.isAnimating) _fx.repeat();
     _scrollToEnd();
 
     // History: the last 8 turns, text-only (attachments live in the
@@ -511,6 +545,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         _busy = false;
         _streaming = null;
       });
+      _fx.stop();
       await _persist();
       _scrollToEnd();
     } on GeminiException catch (e) {
@@ -519,6 +554,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         _busy = false;
         _streaming = null;
       });
+      _fx.stop();
       await _problem('MiMi could not answer', e.message);
     } catch (e) {
       if (!mounted) return;
@@ -526,6 +562,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         _busy = false;
         _streaming = null;
       });
+      _fx.stop();
       await _problem('Something went wrong', '$e');
     }
   }
@@ -579,20 +616,33 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _mimiBg,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        automaticallyImplyLeading: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleSpacing: 12,
         title: Row(children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: AppTheme.brandGradient,
-            ),
-            child: const Icon(Icons.school_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 10),
-          const Text('MiMi',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
+          _orb(size: 32, active: false),
+          const SizedBox(width: 11),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('MiMi',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: .6)),
+            const SizedBox(height: 1),
+            const Text('AI TUTOR • ONLINE',
+                style: TextStyle(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w800,
+                    color: _mimiTeal,
+                    letterSpacing: 2.6)),
+          ]),
         ]),
         actions: [
           if (_msgs.isNotEmpty)
@@ -603,48 +653,194 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             ),
         ],
       ),
-      body: SafeArea(
-        child: Column(children: [
-          Expanded(
-            child: !_ready
-                ? const Center(child: BusyIndicator(message: 'Loading…'))
-                : (_key == null
-                    ? ListView(
-                        padding: const EdgeInsets.all(18),
-                        children: [
-                          _SetupCard(onKeySaved: _reloadKey),
-                        ],
-                      )
-                    : ListView(
-                        controller: _scroll,
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
-                        children: [
-                          if (_msgs.isEmpty) _emptyState(),
-                          for (final m in _msgs) _bubble(m),
-                          if (_busy && _streaming != null)
-                            _streamingBubble(),
-                          const SizedBox(height: 8),
-                        ],
-                      )),
-          ),
-          if (_pending.isNotEmpty)
+      body: Stack(children: [
+        // Drifting aurora + star field + fine grid behind everything.
+        Positioned.fill(
+            child: _MimiBackdrop(controller: _bg, visible: _ready)),
+        SafeArea(
+          child: Column(children: [
+            // Neon hairline under the app bar.
             Container(
-              padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
-              child: Wrap(spacing: 8, runSpacing: 8, children: [
-                for (final a in _pending) _pendingChip(a),
-              ]),
+              height: 1,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  Colors.transparent,
+                  Color(0x8C3D5AFE),
+                  Color(0x667FE7DC),
+                  Colors.transparent,
+                ]),
+              ),
             ),
-          _inputBar(),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
-            child: Text(
-              'Photo ≤ 15 MB • Audio ≤ 5 MB • PDF ≤ 10 MB • up to 3 attachments per question',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 10, color: AppTheme.muted),
+            Expanded(
+              child: !_ready
+                  ? _bootState()
+                  : (_key == null
+                      ? ListView(
+                          padding: const EdgeInsets.all(18),
+                          children: [
+                            _SetupCard(onKeySaved: _reloadKey),
+                          ],
+                        )
+                      : ListView(
+                          controller: _scroll,
+                          padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
+                          children: [
+                            if (_msgs.isEmpty) _emptyState(),
+                            for (var i = 0; i < _msgs.length; i++)
+                              FadeSlideIn(
+                                delay:
+                                    Duration(milliseconds: (i * 45).clamp(0, 360)),
+                                child: _bubble(_msgs[i]),
+                              ),
+                            if (_busy && _streaming != null)
+                              _streamingBubble(),
+                            const SizedBox(height: 8),
+                          ],
+                        )),
             ),
-          ),
-        ]),
+            if (_pending.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                child: Wrap(spacing: 8, runSpacing: 8, children: [
+                  for (final a in _pending) _pendingChip(a),
+                ]),
+              ),
+            _inputBar(),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: Text(
+                'Photo ≤ 15 MB • Audio ≤ 5 MB • PDF ≤ 10 MB • up to 3 attachments per question',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10, color: Colors.white54),
+              ),
+            ),
+          ]),
+        ),
+      ]),
+    );
+  }
+
+  /// First frame: the orb "booting up".
+  Widget _bootState() {
+    return Center(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        _orb(size: 64, active: false),
+        const SizedBox(height: 18),
+        const Text('CONNECTING TO MIMI',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: Colors.white60,
+                letterSpacing: 2.4)),
+      ]),
+    );
+  }
+
+  /// The glowing MiMi orb. [active] = spin the energy arcs (MiMi is
+  /// working). Inactive orbs are fully static — zero tickers, so a chat
+  /// full of avatars costs nothing.
+  Widget _orb({required double size, required bool active}) {
+    if (!active) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: AppTheme.brandGradient,
+          boxShadow: [
+            BoxShadow(
+                color: AppTheme.primary.withOpacity(.4),
+                blurRadius: size * .34,
+                spreadRadius: size * .03),
+          ],
+        ),
+        child: Icon(Icons.school_rounded,
+            color: Colors.white, size: size * .3),
+      );
+    }
+    return SizedBox(
+      width: size,
+      height: size,
+      child: AnimatedBuilder(
+        animation: _fx,
+        builder: (context, _) {
+          return RepaintBoundary(
+            child: Stack(alignment: Alignment.center, children: [
+              CustomPaint(
+                  size: Size.square(size), painter: _OrbArcsPainter(_fx.value)),
+              Pulse(
+                min: .92,
+                max: 1.08,
+                period: const Duration(milliseconds: 900),
+                child: Container(
+                  width: size * .58,
+                  height: size * .58,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppTheme.brandGradient,
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppTheme.primary.withOpacity(.75),
+                          blurRadius: size * .38,
+                          spreadRadius: size * .04),
+                    ],
+                  ),
+                  child: Icon(Icons.school_rounded,
+                      color: Colors.white, size: size * .3),
+                ),
+              ),
+            ]),
+          );
+        },
       ),
+    );
+  }
+
+  /// The "MiMi is thinking" row: orb + shimmering label + bouncing dots.
+  Widget _thinkingRow() {
+    return AnimatedBuilder(
+      animation: _fx,
+      builder: (context, _) {
+        final t = _fx.value;
+        return Row(children: [
+          Flexible(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                'MiMi is thinking',
+                style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: .5,
+                    color: _mimiText.withOpacity(.92)),
+              ),
+              const SizedBox(height: 7),
+              Row(children: [
+                for (var i = 0; i < 3; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Transform.translate(
+                      offset: Offset(
+                          0, -3.2 * math.sin(2 * math.pi * (t * 1.7 + i * .27)).abs()),
+                      child: Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: AppTheme.brandGradient,
+                          boxShadow: [
+                            BoxShadow(
+                                color: AppTheme.primary.withOpacity(.6),
+                                blurRadius: 7),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ]),
+            ]),
+          ),
+        ]);
+      },
     );
   }
 
@@ -656,15 +852,25 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       'দাও: সংক্ষিপ্ত প্রশ্নের নমুনা উত্তর (উপাদান-নির্ভর)',
     ];
     return Column(children: [
-      const SizedBox(height: 26),
+      const SizedBox(height: 30),
+      _orb(size: 84, active: false),
+      const SizedBox(height: 20),
+      const Text('MIMI ASSISTANT',
+          style: TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: _mimiTeal,
+              letterSpacing: 3.4)),
+      const SizedBox(height: 10),
       const Center(
         child: Text(
           'Ask anything from the SSC syllabus —\nMCQ, creative question, short answer,\nmaths steps, or attach a photo of the question.',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13.5, height: 1.6, color: AppTheme.muted),
+          style: TextStyle(
+              fontSize: 13.5, height: 1.65, color: Colors.white70),
         ),
       ),
-      const SizedBox(height: 18),
+      const SizedBox(height: 20),
       Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -675,60 +881,55 @@ class _AiTutorScreenState extends State<AiTutorScreen>
               onTap: () => setState(() => _ctrl.text = c),
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
                 decoration: BoxDecoration(
-                  color: AppTheme.card,
+                  color: Colors.white.withOpacity(.05),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.border),
+                  border: Border.all(color: AppTheme.primary.withOpacity(.4)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppTheme.primary.withOpacity(.16),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3)),
+                  ],
                 ),
                 child: Text(c,
                     style: const TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.textDark)),
+                        color: _mimiText)),
               ),
             ),
         ],
       ),
+      const SizedBox(height: 24),
     ]);
-  }
-
-  Widget _avatar() {
-    return Container(
-      width: 34,
-      height: 34,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: AppTheme.brandGradient,
-      ),
-      child: const Icon(Icons.school_rounded, color: Colors.white, size: 19),
-    );
   }
 
   Widget _attChip(_AttMeta a, {Color? iconColor}) {
     final icon = a.kind == 'photo'
         ? Icons.photo_library_rounded
         : (a.kind == 'audio' ? Icons.record_voice_over_rounded : Icons.picture_as_pdf_rounded);
+    final c = iconColor ?? _mimiTeal;
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: (iconColor ?? AppTheme.primary).withOpacity(.10),
+        color: c.withOpacity(.10),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: (iconColor ?? AppTheme.primary).withOpacity(.35)),
+        border: Border.all(color: c.withOpacity(.4)),
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 14, color: iconColor ?? AppTheme.primary),
+        Icon(icon, size: 14, color: c),
         const SizedBox(width: 6),
         Text(a.label,
             style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: iconColor ?? AppTheme.primary)),
+                fontSize: 11, fontWeight: FontWeight.w700, color: c)),
         if (a.size.isNotEmpty) ...[
           const SizedBox(width: 5),
           Text(a.size,
-              style: TextStyle(fontSize: 10, color: iconColor?.withOpacity(.8) ?? AppTheme.muted)),
+              style: TextStyle(
+                  fontSize: 10, color: Colors.white.withOpacity(.55))),
         ],
       ]),
     );
@@ -737,29 +938,42 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   Widget _bubble(_ChatMsg m) {
     final isU = m.isUser;
     return Padding(
-      padding: EdgeInsets.only(bottom: 12, left: isU ? 52 : 0, right: isU ? 0 : 52),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: isU ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isU) ...[
-            _avatar(),
+            _orb(size: 30, active: false),
             const SizedBox(width: 8),
           ],
-          Flexible(
+          Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
               decoration: BoxDecoration(
-                color: isU ? AppTheme.primary : Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                color: isU
+                    ? null
+                    : Colors.white.withOpacity(.045),
+                gradient: isU ? AppTheme.brandGradient : null,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: isU ? AppTheme.primaryDark : AppTheme.border),
+                    color: isU
+                        ? Colors.transparent
+                        : AppTheme.primary.withOpacity(.3)),
+                boxShadow: [
+                  BoxShadow(
+                      color: isU
+                          ? AppTheme.primary.withOpacity(.30)
+                          : AppTheme.primary.withOpacity(.10),
+                      blurRadius: isU ? 14 : 12,
+                      offset: const Offset(0, 5)),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: isU ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   for (final a in m.atts)
-                    _attChip(a, iconColor: isU ? Colors.white : AppTheme.primary),
+                    _attChip(a, iconColor: isU ? null : _mimiTeal),
                   if (m.text.isEmpty)
                     const SizedBox(height: 2)
                   else
@@ -767,33 +981,11 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                         ? Text(
                             m.text,
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 13.5, height: 1.5),
+                                color: Colors.white, fontSize: 13.8, height: 1.55),
                           )
                         : md.MarkdownBody(
                             data: plainifyMath(m.text),
-                            styleSheet: md.MarkdownStyleSheet(
-                              p: TextStyle(
-                                  fontSize: 13.5,
-                                  height: 1.5,
-                                  color: AppTheme.textDark),
-                              strong: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: AppTheme.textDark),
-                              h1: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppTheme.primaryDark),
-                              h2: TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppTheme.primaryDark),
-                              h3: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppTheme.primaryDark),
-                              code: TextStyle(
-                                  fontSize: 12.5, color: AppTheme.primaryDark),
-                            ),
+                            styleSheet: _mdSheet(),
                           ),
                 ],
               ),
@@ -804,80 +996,123 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     );
   }
 
+  md.MarkdownStyleSheet _mdSheet() {
+    return md.MarkdownStyleSheet(
+      p: TextStyle(
+          fontSize: 13.8, height: 1.55, color: _mimiText.withOpacity(.94)),
+      strong: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
+      em: TextStyle(
+          color: _mimiText.withOpacity(.85), fontStyle: FontStyle.italic),
+      h1: TextStyle(
+          fontSize: 15.5, fontWeight: FontWeight.w800, color: _mimiTeal),
+      h2: TextStyle(
+          fontSize: 14.8, fontWeight: FontWeight.w800, color: _mimiTeal),
+      h3: TextStyle(
+          fontSize: 14, fontWeight: FontWeight.w800, color: _mimiTeal),
+      code: TextStyle(
+          fontSize: 12.5, color: _mimiAmber, backgroundColor: Colors.white.withOpacity(.08)),
+      blockquote: TextStyle(
+          color: _mimiText.withOpacity(.75), fontStyle: FontStyle.italic),
+    );
+  }
+
   Widget _streamingBubble() {
+    final hasText = (_streaming ?? '').isNotEmpty;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, left: 0),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _avatar(),
+          _orb(size: 30, active: true),
           const SizedBox(width: 8),
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppTheme.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if ((_streaming ?? '').isEmpty)
-                    Row(children: [
-                      const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 2)),
-                      const SizedBox(width: 10),
-                      const Text('MiMi is solving…',
-                          style: TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.muted)),
-                    ]),
-                  if ((_streaming ?? '').isNotEmpty) ...[
-                    md.MarkdownBody(
-                      data: plainifyMath(_streaming ?? ''),
-                      styleSheet: md.MarkdownStyleSheet(
-                        p: TextStyle(
-                            fontSize: 13.5,
-                            height: 1.5,
-                            color: AppTheme.textDark),
-                        strong: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.textDark),
-                        h1: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.primaryDark),
-                        h2: TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.primaryDark),
-                        h3: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.primaryDark),
-                        code: TextStyle(
-                            fontSize: 12.5, color: AppTheme.primaryDark),
+            child: Stack(children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.045),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!hasText)
+                      _thinkingRow()
+                    else ...[
+                      md.MarkdownBody(
+                        data: plainifyMath(_streaming ?? ''),
+                        styleSheet: _mdSheet(),
                       ),
-                    ),
-                    FadeTransition(
-                      opacity: _blink,
-                      child: const Text('▍',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppTheme.primary,
-                              fontWeight: FontWeight.w900)),
-                    ),
+                      const SizedBox(height: 6),
+                      Row(children: [
+                        _equalizer(),
+                        const SizedBox(width: 8),
+                        AnimatedBuilder(
+                          animation: _fx,
+                          builder: (context, _) {
+                            final t = _fx.value;
+                            // crisp on/off blink
+                            final on = (t * 2.4) % 1.0 < 0.62;
+                            return Opacity(
+                              opacity: on ? 1 : .15,
+                              child: const Text('▍',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: _mimiTeal,
+                                      fontWeight: FontWeight.w900)),
+                            );
+                          },
+                        ),
+                      ]),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
+              // Rotating neon border — its own tiny per-frame layer so the
+              // markdown text is never re-laid-out at 60fps.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedBuilder(
+                    animation: _fx,
+                    builder: (_, __) =>
+                        CustomPaint(painter: _GlowBorderPainter(_fx.value)),
+                  ),
+                ),
+              ),
+            ]),
           ),
         ],
       ),
+    );
+  }
+
+  /// Four tiny neon bars dancing while tokens stream in.
+  Widget _equalizer() {
+    return AnimatedBuilder(
+      animation: _fx,
+      builder: (context, _) {
+        final t = _fx.value;
+        return SizedBox(
+          height: 14,
+          child: Row(children: [
+            for (var i = 0; i < 4; i++)
+              Padding(
+                padding: const EdgeInsets.only(right: 2.5),
+                child: Container(
+                  width: 3,
+                  height: 4 + 9 * math.sin(2 * math.pi * (t * 2.1 + i * .23)).abs(),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [AppTheme.primary, _mimiTeal]),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+          ]),
+        );
+      },
     );
   }
 
@@ -886,14 +1121,17 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         ? Icons.photo_library_rounded
         : (a.kind == 'audio' ? Icons.record_voice_over_rounded : Icons.picture_as_pdf_rounded);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
-        color: AppTheme.primary.withOpacity(.08),
+        color: AppTheme.primary.withOpacity(.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.primary.withOpacity(.4)),
+        border: Border.all(color: AppTheme.primary.withOpacity(.45)),
+        boxShadow: [
+          BoxShadow(color: AppTheme.primary.withOpacity(.2), blurRadius: 9),
+        ],
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 15, color: AppTheme.primary),
+        Icon(icon, size: 15, color: _mimiTeal),
         const SizedBox(width: 6),
         Flexible(
           child: Text(
@@ -903,12 +1141,12 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             style: const TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.primaryDark),
+                color: _mimiText),
           ),
         ),
         const SizedBox(width: 4),
         Text(_fmtBytes(a.bytes.length),
-            style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
+            style: const TextStyle(fontSize: 10.5, color: Colors.white54)),
         const SizedBox(width: 4),
         InkWell(
           onTap: () => setState(() => _pending.remove(a)),
@@ -922,26 +1160,29 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   Widget _inputBar() {
     final canSend =
         !_busy && (_ctrl.text.trim().isNotEmpty || _pending.isNotEmpty);
+    final armed = _ctrl.text.trim().isNotEmpty || _pending.isNotEmpty;
     return Container(
-      margin: const EdgeInsets.fromLTRB(14, 6, 14, 6),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppTheme.border),
+        color: Colors.white.withOpacity(.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+            color: armed ? _mimiTeal.withOpacity(.65) : AppTheme.primary.withOpacity(.35)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
+              color: armed
+                  ? _mimiTeal.withOpacity(.22)
+                  : AppTheme.primary.withOpacity(.14),
+              blurRadius: armed ? 18 : 12,
+              offset: const Offset(0, 4)),
         ],
       ),
       child: Row(children: [
         IconButton(
           tooltip: 'Attach photo, audio or PDF',
           onPressed: _busy ? null : _openAttachSheet,
-          icon: const Icon(Icons.attach_file_rounded,
-              color: AppTheme.primary),
+          icon: const Icon(Icons.attach_file_rounded, color: _mimiTeal),
         ),
         Expanded(
           child: TextField(
@@ -951,38 +1192,47 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             enabled: !_busy,
             textInputAction: TextInputAction.send,
             onSubmitted: (_) => _send(),
-            style: const TextStyle(fontSize: 14, color: AppTheme.textDark),
+            style: const TextStyle(
+                fontSize: 14, color: _mimiText, height: 1.4),
             decoration: InputDecoration(
-              isCollapsed: true,
+              isCollapsed: false,
+              filled: false,
               border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
               hintText: 'Ask MiMi — type, or attach a photo / audio / PDF…',
-              hintStyle:
-                  const TextStyle(fontSize: 13, color: AppTheme.muted),
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              hintStyle: TextStyle(
+                  fontSize: 13, color: Colors.white.withOpacity(.38)),
+              contentPadding: const EdgeInsets.symmetric(vertical: 13),
             ),
           ),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 2),
         GestureDetector(
           onTap: canSend ? _send : null,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: 42,
-            height: 42,
+            duration: const Duration(milliseconds: 220),
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: canSend ? AppTheme.primary : AppTheme.border,
+              gradient: canSend ? AppTheme.brandGradient : null,
+              color: canSend ? null : Colors.white.withOpacity(.08),
+              border: Border.all(
+                  color: canSend
+                      ? Colors.transparent
+                      : Colors.white.withOpacity(.14)),
               boxShadow: canSend
                   ? [
                       BoxShadow(
-                          color: AppTheme.primary.withOpacity(.35),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3))
+                          color: AppTheme.primary.withOpacity(.55),
+                          blurRadius: 14,
+                          offset: const Offset(0, 4))
                     ]
                   : null,
             ),
-            child: const Icon(Icons.arrow_upward_rounded,
-                color: Colors.white, size: 22),
+            child: Icon(Icons.arrow_upward_rounded,
+                color: canSend ? Colors.white : Colors.white38, size: 22),
           ),
         ),
       ]),
@@ -990,31 +1240,232 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   }
 }
 
-/// The one-time setup card shown until the tutor saves a Gemini key.
-class _SetupCard extends StatelessWidget {
-  final VoidCallback onKeySaved;
+// ── backdrop: aurora blobs, star field, fine grid, slow scan band ─────
 
-  _SetupCard({required this.onKeySaved});
+class _MimiBackdrop extends StatelessWidget {
+  final AnimationController controller;
+  final bool visible;
+  const _MimiBackdrop({required this.controller, required this.visible});
+
+  static final List<Offset> _stars = [];
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      highlighted: true,
+    if (_stars.isEmpty) {
+      final rnd = math.Random(7);
+      for (var i = 0; i < 46; i++) {
+        _stars.add(Offset(rnd.nextDouble(), rnd.nextDouble()));
+      }
+    }
+    if (!visible) {
+      return const DecoratedBox(
+          decoration: BoxDecoration(color: _mimiBg));
+    }
+    return RepaintBoundary(
+      child: ColoredBox(
+        color: _mimiBg,
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (_, __) => CustomPaint(
+              painter: _MimiScenePainter(controller.value, _stars)),
+        ),
+      ),
+    );
+  }
+}
+
+class _MimiScenePainter extends CustomPainter {
+  final double t;
+  final List<Offset> stars;
+  _MimiScenePainter(this.t, this.stars);
+
+  void _blob(Canvas canvas, Offset c, double r, Color color) {
+    canvas.drawCircle(
+      c,
+      r,
+      Paint()
+        ..shader = ui.Gradient.radial(
+            c,
+            r,
+            [color, color.withOpacity(0)],
+            const [0.0, 1.0],
+            ui.TileMode.clamp),
+    );
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width, h = size.height;
+    final drift = t * 2 * math.pi;
+
+    // Aurora blobs drifting slowly.
+    _blob(canvas,
+        Offset(w * (.18 + .06 * math.sin(drift)), h * (.16 + .05 * math.cos(drift))),
+        w * .62, AppTheme.primary.withOpacity(.20));
+    _blob(canvas,
+        Offset(w * (.86 + .05 * math.cos(drift * 1.3)), h * (.58 + .07 * math.sin(drift * .8))),
+        w * .55, _mimiTeal.withOpacity(.11));
+    _blob(canvas,
+        Offset(w * (.5 + .08 * math.sin(drift * .7)), h * 1.02),
+        w * .7, AppTheme.primaryDark.withOpacity(.34));
+
+    // Fine grid.
+    final grid = Paint()
+      ..strokeWidth = 1
+      ..color = Colors.white.withOpacity(.028);
+    const step = 46.0;
+    for (double x = 0; x < w; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, h), grid);
+    }
+    for (double y = 0; y < h; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(w, y), grid);
+    }
+
+    // Twinkling stars.
+    for (var i = 0; i < stars.length; i++) {
+      final a = .12 + .22 * math.sin(drift * 2 + i * 1.7).abs();
+      canvas.drawCircle(
+        Offset(stars[i].dx * w, stars[i].dy * h),
+        0.8 + (i % 3) * .45,
+        Paint()..color = Colors.white.withOpacity(a),
+      );
+    }
+
+    // A slow scan band sweeping down — mission-control feel.
+    final bandY = ((t * 1.25) % 1.3) * h - h * .15;
+    canvas.drawRect(
+      Rect.fromLTWH(0, bandY, w, h * .16),
+      Paint()
+        ..shader = ui.Gradient.linear(
+            Offset(0, bandY),
+            Offset(0, bandY + h * .16),
+            [Colors.white.withOpacity(0), Colors.white.withOpacity(.03), Colors.white.withOpacity(0)]),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_MimiScenePainter old) => old.t != t;
+}
+
+// ── orb energy arcs ───────────────────────────────────────────────────
+
+class _OrbArcsPainter extends CustomPainter {
+  final double t;
+  _OrbArcsPainter(this.t);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final r = size.width / 2 - 2.5;
+    final rect = Rect.fromCircle(center: c, radius: r);
+
+    canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1
+          ..color = Colors.white.withOpacity(.14));
+
+    final a1 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.6
+      ..strokeCap = StrokeCap.round
+      ..color = AppTheme.primary;
+    canvas.drawArc(rect, t * 2 * math.pi, 1.15, false, a1);
+
+    final a2 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..color = _mimiTeal;
+    canvas.drawArc(rect, math.pi - t * 2 * math.pi * .83, .75, false, a2);
+
+    // A tiny comet dot riding the primary arc.
+    final ang = t * 2 * math.pi + 1.15;
+    canvas.drawCircle(
+      c + Offset(math.cos(ang), math.sin(ang)) * r,
+      2.2,
+      Paint()..color = _mimiTeal,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_OrbArcsPainter old) => old.t != t;
+}
+
+// ── rotating neon border for the streaming bubble ─────────────────────
+
+class _GlowBorderPainter extends CustomPainter {
+  final double t;
+  _GlowBorderPainter(this.t);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const r = 16.0;
+    final rect = Rect.fromLTWH(1, 1, size.width - 2, size.height - 2);
+    final border = RRect.fromRectAndRadius(rect, const Radius.circular(r));
+    final c = rect.center(Offset.zero);
+    final reach = (size.width + size.height) / 2;
+    final ang = t * 2 * math.pi;
+    final b = c + Offset(math.cos(ang), math.sin(ang)) * reach;
+    final e = c - Offset(math.cos(ang), math.sin(ang)) * reach;
+
+    // Soft outer glow.
+    canvas.drawRRect(
+      border,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 5
+        ..color = AppTheme.primary.withOpacity(.16),
+    );
+
+    // Rotating 4-stop neon gradient line.
+    canvas.drawRRect(
+      border,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.6
+        ..shader = ui.Gradient.linear(b, e, const [
+          AppTheme.primary,
+          _mimiTeal,
+          _mimiAmber,
+          AppTheme.primary,
+        ]),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_GlowBorderPainter old) => old.t != t;
+}
+
+/// The one-time setup card shown until the tutor saves a Gemini key
+/// (dark glass version for the MiMi screen).
+class _SetupCard extends StatelessWidget {
+  final VoidCallback onKeySaved;
+
+  const _SetupCard({required this.onKeySaved});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(.045),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primary.withOpacity(.3)),
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.primary.withOpacity(.16),
+              blurRadius: 24,
+              offset: const Offset(0, 8)),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: AppTheme.brandGradient,
-              ),
-              child: const Icon(Icons.school_rounded,
-                  color: Colors.white, size: 24),
-            ),
+            _orbWidget(),
             const SizedBox(width: 12),
             const Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1022,32 +1473,53 @@ class _SetupCard extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w900,
-                        color: AppTheme.textDark)),
+                        color: Colors.white)),
                 SizedBox(height: 2),
                 Text('Your AI assistant — answers in Education Board style',
-                    style: TextStyle(fontSize: 12, color: AppTheme.muted)),
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.white60)),
               ]),
             ),
           ]),
           const SizedBox(height: 14),
           const Text(
             'MiMi reads questions and attachments (photo, audio, PDF) and solves them the way the Education Board expects — MCQ reason, four-part creative question, short answers, maths steps.',
-            style: TextStyle(fontSize: 12.8, height: 1.6, color: AppTheme.muted),
+            style: TextStyle(
+                fontSize: 12.8, height: 1.6, color: Colors.white70),
           ),
           const SizedBox(height: 14),
-          const Text('One-time setup (2 minutes)',
+          const Text('ONE-TIME SETUP (2 MINUTES)',
               style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: AppTheme.primaryDark)),
-          const SizedBox(height: 8),
+                  color: _mimiTeal,
+                  letterSpacing: 1.6)),
+          const SizedBox(height: 10),
           const _Step(n: 1, text: 'Open aistudio.google.com in your phone browser (free Google account).'),
           const _Step(n: 2, text: 'Tap "Get API key" → "Create API key" and copy it.'),
           const _Step(n: 3, text: 'Paste the key below — it is stored on this phone only.'),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           _KeyField(onSaved: onKeySaved),
         ],
       ),
+    );
+  }
+
+  Widget _orbWidget() {
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: AppTheme.brandGradient,
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.primary.withOpacity(.5),
+              blurRadius: 18,
+              spreadRadius: 1),
+        ],
+      ),
+      child: const Icon(Icons.school_rounded, color: Colors.white, size: 24),
     );
   }
 }
@@ -1066,7 +1538,7 @@ class _Step extends StatelessWidget {
         alignment: Alignment.center,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: AppTheme.primary,
+          gradient: AppTheme.brandGradient,
         ),
         child: Text('$n',
             style: const TextStyle(
@@ -1078,7 +1550,7 @@ class _Step extends StatelessWidget {
       Expanded(
         child: Text(text,
             style: const TextStyle(
-                fontSize: 12.5, height: 1.45, color: AppTheme.textDark)),
+                fontSize: 12.5, height: 1.5, color: Colors.white70)),
       ),
     ]);
   }
@@ -1133,28 +1605,62 @@ class _KeyFieldState extends State<_KeyField> {
         child: TextField(
           controller: _ctrl,
           obscureText: !_show,
+          style: const TextStyle(color: _mimiText, fontSize: 13.5),
           decoration: InputDecoration(
             hintText: 'Paste the key (AIza… or AQ…)',
-            prefixIcon: const Icon(Icons.vpn_key_rounded, size: 18),
+            hintStyle: TextStyle(color: Colors.white.withOpacity(.35)),
+            prefixIcon: const Icon(Icons.vpn_key_rounded, size: 18, color: _mimiTeal),
             suffixIcon: IconButton(
               tooltip: _show ? 'Hide key' : 'Show key',
               onPressed: () => setState(() => _show = !_show),
               icon: Icon(_show
-                  ? Icons.visibility_off_rounded
-                  : Icons.visibility_rounded, size: 17),
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
+                  size: 17,
+                  color: Colors.white60),
+            ),
+            filled: true,
+            fillColor: Colors.white.withOpacity(.06),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14, vertical: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: Border.all(color: AppTheme.primary.withOpacity(.35)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: Border.all(color: AppTheme.primary.withOpacity(.35)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: Border.all(color: _mimiTeal, width: 1.4),
             ),
           ),
         ),
       ),
       const SizedBox(width: 8),
-      FilledButton(
-        onPressed: _busy ? null : _save,
-        child: _busy
-            ? const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2))
-            : const Text('Save'),
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+                color: AppTheme.primary.withOpacity(.4),
+                blurRadius: 12,
+                offset: const Offset(0, 4)),
+          ],
+        ),
+        child: FilledButton(
+          onPressed: _busy ? null : _save,
+          style: FilledButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+          child: _busy
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2))
+              : const Text('Save'),
+        ),
       ),
     ]);
   }
