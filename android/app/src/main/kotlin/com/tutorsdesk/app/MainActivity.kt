@@ -3,13 +3,50 @@ package com.tutorsdesk.app
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 
 class MainActivity : FlutterActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Safety net: any uncaught Java/Kotlin exception (including from
+        // plugins) is saved to crash.log BEFORE the process dies. On the
+        // next launch the app shows the report to the user so a crash is
+        // never a silent, unexplainable "app closed" again.
+        try {
+            val previous = Thread.getDefaultUncaughtExceptionHandler()
+            Thread.setDefaultUncaughtExceptionHandler { t, e ->
+                try {
+                    val sb = StringBuilder()
+                    sb.append("time: ").append(System.currentTimeMillis()).append('\n')
+                    sb.append("thread: ").append(t.name).append('\n')
+                    sb.append(e).append('\n')
+                    e.stackTrace.take(20).forEach { sb.append("  at ").append(it).append('\n') }
+                    var c: Throwable? = e.cause
+                    var guard = 0
+                    while (c != null && guard < 3) {
+                        sb.append("caused by: ").append(c).append('\n')
+                        c.stackTrace.take(8).forEach { sb.append("  at ").append(it).append('\n') }
+                        c = c.cause
+                        guard++
+                    }
+                    // app_flutter/ == Flutter's getApplicationDocumentsDirectory()
+                    val f = File(filesDir, "app_flutter/crash.log")
+                    f.parentFile?.mkdirs()
+                    f.writeText(sb.toString() + "\n---\n")
+                } catch (_: Exception) {
+                }
+                previous?.uncaughtException(t, e)
+            }
+        } catch (_: Exception) {
+        }
+        super.onCreate(savedInstanceState)
+    }
     private val channelName = "com.tutorsdesk.app/storage"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {

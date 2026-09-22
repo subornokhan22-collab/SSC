@@ -20,7 +20,6 @@ dependencies:
   camera: ^0.12.1        # লাইভ ক্যামেরা প্রিভিউ + গাইডেড অটো-ক্যাপচার (OMR)
   google_mlkit_document_scanner: ^0.6.1  # Google ডকুমেন্ট স্ক্যানার — শিট শনাক্ত/অটো-ক্যাপচার (ML Kit)
   image: ^4.2.0          # pure-Dart image processing (OMR bubble reading)
-  image_cropper: ^12.2.1     # native photo cropper for MiMi attachments (square lock, pinch/pan)
   file_picker: ^8.1.2    # PDF প্রশ্নপত্র যোগ করা
   path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
   connectivity_plus: ^6.0.0  # offline detection (global banner + app-open error)

@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +17,7 @@ import '../services/gemini_client.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/image_crop_screen.dart';
 import '../widgets/problem_dialog.dart';
 
 /// MiMi — the in-app AI assistant.
@@ -232,43 +232,19 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     }
   }
 
-  /// Opens the native cropper. The photo is copied into the app's own
-  /// temp folder first: the gallery usually returns a content:// URI,
-  /// which the native cropper cannot open (that used to crash the app).
+  /// Pure-Flutter cropper (no native code → no native crash possible).
+  /// "Use as is" / back keeps the original, resized for the API.
   Future<void> _attachPhoto(Uint8List bytes) async {
-    File? tmp;
     try {
-      final dir = await getTemporaryDirectory();
-      tmp = File(
-          '${dir.path}/mimi_photo_${DateTime.now().millisecondsSinceEpoch}.jpg');
-      await tmp.writeAsBytes(bytes);
-      final CroppedFile? cropped = await ImageCropper().cropImage(
-        sourcePath: tmp.path,
-        maxWidth: 1600,
-        maxHeight: 1600,
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 88,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop the question',
-            toolbarColor: AppTheme.primary,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-            aspectRatioPresets: const [CropAspectRatioPreset.square],
-          ),
-        ],
-      );
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      final cropped = await ImageCropScreen.open(context, frame.image, bytes);
       if (!mounted) return;
-      final att = cropped != null
-          ? await cropped.readAsBytes()
-          : await _resizeJpeg(bytes, 1600, 82);
+      final att = cropped ?? await _resizeJpeg(bytes, 1600, 82);
       setState(() => _pending
           .add(_Pending('photo', 'Photo', 'image/jpeg', att)));
-    } finally {
-      try {
-        await tmp?.delete();
-      } catch (_) {}
+    } catch (e) {
+      await _problem('Could not open the photo', '$e');
     }
   }
 
