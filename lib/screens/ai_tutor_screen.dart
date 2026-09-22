@@ -1405,7 +1405,7 @@ class _GlowBorderPainter extends CustomPainter {
     const r = 16.0;
     final rect = Rect.fromLTWH(1, 1, size.width - 2, size.height - 2);
     final border = RRect.fromRectAndRadius(rect, const Radius.circular(r));
-    final c = rect.center(Offset.zero);
+    final c = Offset(rect.left + rect.width / 2, rect.top + rect.height / 2);
     final reach = (size.width + size.height) / 2;
     final ang = t * 2 * math.pi;
     final b = c + Offset(math.cos(ang), math.sin(ang)) * reach;
@@ -1625,15 +1625,15 @@ class _KeyFieldState extends State<_KeyField> {
                 horizontal: 14, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: Border.all(color: AppTheme.primary.withOpacity(.35)),
+              borderSide: BorderSide(color: AppTheme.primary.withOpacity(.35)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: Border.all(color: AppTheme.primary.withOpacity(.35)),
+              borderSide: BorderSide(color: AppTheme.primary.withOpacity(.35)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: Border.all(color: _mimiTeal, width: 1.4),
+              borderSide: BorderSide(color: _mimiTeal, width: 1.4),
             ),
           ),
         ),
