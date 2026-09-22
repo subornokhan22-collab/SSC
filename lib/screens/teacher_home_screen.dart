@@ -6,6 +6,7 @@ import '../services/paper_license.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
+import 'ai_tutor_screen.dart';
 import 'custom_paper_screen.dart';
 import 'omr_scanner_screen.dart';
 import 'papers_library_screen.dart';
@@ -164,6 +165,20 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 subtitle: 'Mix chapters with MCQ, short-answer and CQ counts',
                 accentIndex: 3,
                 onTap: () => _open(const CustomPaperScreen()),
+              ),
+              const SizedBox(height: 20),
+              const SectionTitle(
+                title: 'Study help',
+                subtitle: 'Your AI co-tutor for board-style answers.',
+                icon: Icons.auto_stories_rounded,
+              ),
+              _ActionTile(
+                icon: Icons.auto_awesome_rounded,
+                title: 'Boktul — AI Tutor',
+                subtitle:
+                    'Ask or attach a photo, audio or PDF — solved in board style',
+                accentIndex: 3,
+                onTap: () => _open(const AiTutorScreen()),
               ),
               const SizedBox(height: 20),
               const SectionTitle(
