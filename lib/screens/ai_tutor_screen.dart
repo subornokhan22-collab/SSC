@@ -10,6 +10,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -163,6 +164,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
           ),
           _attachOption(c, Icons.photo_library_rounded, 'Photo',
               'From gallery — with crop (max 15 MB)', 'photo', AppTheme.primary),
+          _attachOption(c, Icons.photo_camera_rounded, 'Camera',
+              'Take a photo of the question — with crop', 'camera', AppTheme.success),
           _attachOption(c, Icons.record_voice_over_rounded, 'Audio',
               'Voice note / mp3 / wav / ogg / flac (max 5 MB)', 'audio', AppTheme.secondary),
           _attachOption(c, Icons.picture_as_pdf_rounded, 'PDF',
@@ -172,6 +175,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       ),
     );
     if (choice == 'photo') await _pickPhoto();
+    if (choice == 'camera') await _pickPhoto(fromCamera: true);
     if (choice == 'audio') await _pickAudio();
     if (choice == 'pdf') await _pickPdf();
   }
@@ -208,10 +212,13 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     );
   }
 
-  Future<void> _pickPhoto() async {
+  Future<void> _pickPhoto({bool fromCamera = false}) async {
     try {
-      final xfile =
-          await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 95, maxWidth: 4096);
+      final xfile = await ImagePicker().pickImage(
+        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+        imageQuality: 95,
+        maxWidth: 4096,
+      );
       if (xfile == null) return;
       final bytes = await xfile.readAsBytes();
       if (bytes.length > kPhotoMaxBytes) {
@@ -219,10 +226,24 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             'This photo is ${_fmtBytes(bytes.length)}. The limit is 15 MB so MiMi can read it reliably.');
         return;
       }
-      // Native cropper (image_cropper): locked square, pinch to zoom,
-      // drag to position, done in one tap. Cancel → keep the original.
+      await _attachPhoto(bytes);
+    } catch (e) {
+      await _problem('Could not open the photo', '$e');
+    }
+  }
+
+  /// Opens the native cropper. The photo is copied into the app's own
+  /// temp folder first: the gallery usually returns a content:// URI,
+  /// which the native cropper cannot open (that used to crash the app).
+  Future<void> _attachPhoto(Uint8List bytes) async {
+    File? tmp;
+    try {
+      final dir = await getTemporaryDirectory();
+      tmp = File(
+          '${dir.path}/mimi_photo_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await tmp.writeAsBytes(bytes);
       final CroppedFile? cropped = await ImageCropper().cropImage(
-        sourcePath: xfile.path,
+        sourcePath: tmp.path,
         maxWidth: 1600,
         maxHeight: 1600,
         compressFormat: ImageCompressFormat.jpg,
@@ -242,10 +263,12 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       final att = cropped != null
           ? await cropped.readAsBytes()
           : await _resizeJpeg(bytes, 1600, 82);
-      setState(() => _pending.add(
-          _Pending('photo', 'Photo', 'image/jpeg', att)));
-    } catch (e) {
-      await _problem('Could not open the photo', '$e');
+      setState(() => _pending
+          .add(_Pending('photo', 'Photo', 'image/jpeg', att)));
+    } finally {
+      try {
+        await tmp?.delete();
+      } catch (_) {}
     }
   }
 
