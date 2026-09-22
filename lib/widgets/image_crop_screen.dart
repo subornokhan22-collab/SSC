@@ -225,7 +225,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       final y = rect.top.round().clamp(0, source.height - 1);
       final w = rect.width.round().clamp(1, source.width - x);
       final h = rect.height.round().clamp(1, source.height - y);
-      final cropped = img.copyCrop(source, x, y, w, h);
+      final cropped = img.copyCrop(source, x: x, y: y, width: w, height: h);
       final out = img.copyResize(
         cropped,
         width: _outSize,
