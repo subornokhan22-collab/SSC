@@ -20,7 +20,7 @@ import '../widgets/glass_card.dart';
 import '../widgets/image_crop_screen.dart';
 import '../widgets/problem_dialog.dart';
 
-/// Boktul — the in-app AI co-tutor.
+/// MiMi — the in-app AI assistant.
 ///
 /// Answers and solves questions in Bangladesh Education Board style using
 /// the tutor's free Gemini API key (stored on the device). Accepts text
@@ -217,7 +217,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       final bytes = await xfile.readAsBytes();
       if (bytes.length > kPhotoMaxBytes) {
         await _problem('Photo too large',
-            'This photo is ${_fmtBytes(bytes.length)}. The limit is 15 MB so Boktul can read it reliably.');
+            'This photo is ${_fmtBytes(bytes.length)}. The limit is 15 MB so MiMi can read it reliably.');
         return;
       }
       final codec = await ui.instantiateImageCodec(bytes);
@@ -258,7 +258,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       }
       if (bytes.length > kAudioMaxBytes) {
         await _problem('Audio too long',
-            'This audio is ${_fmtBytes(bytes.length)} — the limit is 5 MB (roughly one minute) so Boktul can listen and answer.');
+            'This audio is ${_fmtBytes(bytes.length)} — the limit is 5 MB (roughly one minute) so MiMi can listen and answer.');
         return;
       }
       setState(() => _pending
@@ -335,7 +335,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     final key = _key;
     if (key == null) {
       await _problem('Set the Gemini key first',
-          'Boktul needs a free Gemini API key to answer. Open the setup card below and paste your key — it takes a minute.',
+          'MiMi needs a free Gemini API key to answer. Open the setup card below and paste your key — it takes a minute.',
           );
       return;
     }
@@ -374,7 +374,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     try {
       final answer = await GeminiClient.chat(
         apiKey: key,
-        systemPrompt: kBoktulSystemPrompt,
+        systemPrompt: kMimiSystemPrompt,
         history: history,
         userText: text,
         attachments: [
@@ -400,7 +400,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         _busy = false;
         _streaming = null;
       });
-      await _problem('Boktul could not answer', e.message);
+      await _problem('MiMi could not answer', e.message);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -472,22 +472,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             child: const Icon(Icons.school_rounded, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 10),
-          const Text('Boktul',
+          const Text('MiMi',
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: AppTheme.accent.withOpacity(.14),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.accent.withOpacity(.5)),
-            ),
-            child: const Text('AI tutor',
-                style: TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w800,
-                    color: AppTheme.accent)),
-          ),
         ]),
         actions: [
           if (_msgs.isNotEmpty)
@@ -725,7 +711,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                           height: 14,
                           child: CircularProgressIndicator(strokeWidth: 2)),
                       const SizedBox(width: 10),
-                      const Text('Boktul is solving…',
+                      const Text('MiMi is solving…',
                           style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
@@ -850,7 +836,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             decoration: InputDecoration(
               isCollapsed: true,
               border: InputBorder.none,
-              hintText: 'Ask Boktul — type, or attach a photo / audio / PDF…',
+              hintText: 'Ask MiMi — type, or attach a photo / audio / PDF…',
               hintStyle:
                   const TextStyle(fontSize: 13, color: AppTheme.muted),
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -913,20 +899,20 @@ class _SetupCard extends StatelessWidget {
             const SizedBox(width: 12),
             const Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Meet Boktul',
+                Text('Meet MiMi',
                     style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w900,
                         color: AppTheme.textDark)),
                 SizedBox(height: 2),
-                Text('Your AI co-tutor — answers in Education Board style',
+                Text('Your AI assistant — answers in Education Board style',
                     style: TextStyle(fontSize: 12, color: AppTheme.muted)),
               ]),
             ),
           ]),
           const SizedBox(height: 14),
           const Text(
-            'Boktul reads questions and attachments (photo, audio, PDF) and solves them the way the Education Board expects — MCQ reason, four-part creative question, short answers, maths steps.',
+            'MiMi reads questions and attachments (photo, audio, PDF) and solves them the way the Education Board expects — MCQ reason, four-part creative question, short answers, maths steps.',
             style: TextStyle(fontSize: 12.8, height: 1.6, color: AppTheme.muted),
           ),
           const SizedBox(height: 14),
@@ -1001,12 +987,12 @@ class _KeyFieldState extends State<_KeyField> {
 
   Future<void> _save() async {
     final k = _ctrl.text.trim();
-    if (!RegExp(r'^AIza[0-9A-Za-z\-_]{20,}$').hasMatch(k)) {
+    if (!RegExp(r'^(AIza|AQ)[A-Za-z0-9._\-]{16,}$').hasMatch(k)) {
       await showProblemDialog(
         context,
         title: 'That key does not look right',
         message:
-            'A Gemini API key starts with "AIza" and is about 39 characters long.',
+            'A Gemini API key starts with "AIza" or "AQ" — usually about 39 characters.',
       );
       return;
     }
@@ -1029,7 +1015,7 @@ class _KeyFieldState extends State<_KeyField> {
           controller: _ctrl,
           obscureText: !_show,
           decoration: InputDecoration(
-            hintText: 'Paste the key (AIza…)',
+            hintText: 'Paste the key (AIza… or AQ…)',
             prefixIcon: const Icon(Icons.vpn_key_rounded, size: 18),
             suffixIcon: IconButton(
               tooltip: _show ? 'Hide key' : 'Show key',

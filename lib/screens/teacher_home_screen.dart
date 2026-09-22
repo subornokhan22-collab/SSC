@@ -167,14 +167,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 onTap: () => _open(const CustomPaperScreen()),
               ),
               const SizedBox(height: 20),
-              const SectionTitle(
-                title: 'Study help',
-                subtitle: 'Your AI co-tutor for board-style answers.',
-                icon: Icons.auto_stories_rounded,
-              ),
               _ActionTile(
                 icon: Icons.auto_awesome_rounded,
-                title: 'Boktul — AI Tutor',
+                title: 'MiMi — AI Assistant',
                 subtitle:
                     'Ask or attach a photo, audio or PDF — solved in board style',
                 accentIndex: 3,
