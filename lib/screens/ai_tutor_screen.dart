@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
@@ -17,7 +17,6 @@ import '../services/gemini_client.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
-import '../widgets/image_crop_screen.dart';
 import '../widgets/problem_dialog.dart';
 
 /// MiMi — the in-app AI assistant.
@@ -220,13 +219,29 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             'This photo is ${_fmtBytes(bytes.length)}. The limit is 15 MB so MiMi can read it reliably.');
         return;
       }
-      final codec = await ui.instantiateImageCodec(bytes);
-      final frame = await codec.getNextFrame();
-      final img = frame.image;
-      // Optional in-app crop — "Use as is" (or back) keeps the original.
-      final cropped = await ImageCropScreen.open(context, img, bytes);
+      // Native cropper (image_cropper): locked square, pinch to zoom,
+      // drag to position, done in one tap. Cancel → keep the original.
+      final CroppedFile? cropped = await ImageCropper().cropImage(
+        sourcePath: xfile.path,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 88,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop the question',
+            toolbarColor: AppTheme.primary,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+            aspectRatioPresets: const [CropAspectRatioPreset.square],
+          ),
+        ],
+      );
       if (!mounted) return;
-      final att = cropped ?? await _resizeJpeg(bytes, 1600, 82);
+      final att = cropped != null
+          ? await cropped.readAsBytes()
+          : await _resizeJpeg(bytes, 1600, 82);
       setState(() => _pending.add(
           _Pending('photo', 'Photo', 'image/jpeg', att)));
     } catch (e) {
