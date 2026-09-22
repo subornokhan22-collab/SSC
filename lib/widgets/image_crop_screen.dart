@@ -37,9 +37,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
 
   double _zoom = 1.0;
   Offset _off = Offset.zero;
-  bool _scaling = false;
   double _scaleStart = 1.0;
-  Offset _offsetStart = Offset.zero;
 
   ui.Image get _img => widget.image;
   Uint8List get _bytes => widget.bytes;
@@ -97,28 +95,17 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               Expanded(
                 child: Center(
                   child: GestureDetector(
-                    onScaleStart: (_) {
-                      _scaling = true;
-                      _scaleStart = _zoom;
-                    },
+                    // ONE recognizer does both jobs: two fingers pinch
+                    // (d.scale) AND one finger drags (d.delta). Running a
+                    // separate pan recognizer fights the scale one and the
+                    // drag never wins, which made the image unmovable.
+                    onScaleStart: (_) => _scaleStart = _zoom,
                     onScaleUpdate: (d) {
-                      setState(() {
-                        _zoom = (_scaleStart * d.scale).clamp(1.0, _maxZoom).toDouble();
-                        _clampOffset(side);
-                      });
+                      _zoom = (_scaleStart * d.scale).clamp(1.0, _maxZoom).toDouble();
+                      _off = _off + d.delta;
+                      _clampOffset(side);
                     },
-                    onScaleEnd: (_) => _scaling = false,
-                    onPanStart: (_) {
-                      if (_scaling) return;
-                      _offsetStart = _off;
-                    },
-                    onPanUpdate: (d) {
-                      if (_scaling) return;
-                      setState(() {
-                        _off = _offsetStart + d.delta;
-                        _clampOffset(side);
-                      });
-                    },
+                    onScaleEnd: (_) {},
                     child: ClipRect(
                       child: Stack(
                         fit: StackFit.loose,
@@ -159,6 +146,14 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       ),
                     ),
                   ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20, 4, 20, 4),
+                child: Text(
+                  'Pinch to zoom • then drag to position the question',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11.5, color: Colors.white70),
                 ),
               ),
               Padding(

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Direct Gemini API client (REST, v1beta).
 ///
@@ -36,7 +37,17 @@ class GeminiAttachment {
 
 class GeminiClient {
   static const _apiBase = 'https://generativelanguage.googleapis.com/v1beta';
-  static const _models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+
+  /// Stable flash models, best for everyday + multimodal first.
+  static const _models = [
+    'gemini-3.6-flash',
+    'gemini-3.8-flash',
+    'gemini-3.7-flash',
+    'gemini-3.5-flash',
+    'gemini-2.5-flash',
+  ];
+
+  static String? _discovered;
 
   /// [history] = earlier turns, oldest first: keys 'user' | 'model'.
   static Future<String> chat({
@@ -79,17 +90,111 @@ class GeminiClient {
       },
     });
 
+    // Try the model that worked last time first, then the static list,
+    // and finally whatever the API says this key can access.
+    final cached = await _cachedModel();
+    final candidates = <String>[
+      if (cached != null) cached,
+      ..._models,
+      if (_discovered != null && _discovered != cached) _discovered!,
+    ].toSet().toList();
+
     GeminiException? last;
-    for (final model in _models) {
+    bool onlyModelMiss = true;
+    for (final model in candidates) {
       try {
-        return await _stream(model, apiKey, body, onChunk, timeout);
+        final out = await _stream(model, apiKey, body, onChunk, timeout);
+        await _saveModel(model);
+        return out;
       } on GeminiException catch (e) {
         if (e.fatal) rethrow;
         last = e; // model missing for this key — try the next model
+        onlyModelMiss = onlyModelMiss && e.message == 'Model unavailable';
       }
+    }
+
+    // Every static model 404'd — ask the API which models this key can use.
+    final discovered = _discovered ?? await _discoverModel(apiKey);
+    if (discovered != null && !candidates.contains(discovered)) {
+      try {
+        final out =
+            await _stream(discovered, apiKey, body, onChunk, timeout);
+        await _saveModel(discovered);
+        return out;
+      } on GeminiException catch (e) {
+        if (e.fatal) rethrow;
+        last = e;
+      }
+    }
+    if (onlyModelMiss) {
+      throw const GeminiException(
+          'No Gemini model is available for this key. Check the key on aistudio.google.com and try again.');
     }
     throw last ?? const GeminiException('Gemini request failed.');
   }
+
+  static Future<String?> _cachedModel() async {
+    try {
+      final p = await SharedPreferences.getInstance();
+      return p.getString('mimi_model');
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> _saveModel(String model) async {
+    try {
+      final p = await SharedPreferences.getInstance();
+      await p.setString('mimi_model', model);
+    } catch (_) {}
+  }
+
+  /// Asks the API to list the models this key can access and returns a
+  /// suitable stable generative "flash" model (never lite/image/live/preview).
+  static Future<String?> _discoverModel(String apiKey) async {
+    if (_discovered != null) return _discovered;
+    try {
+      final client = http.Client();
+      final resp = await client
+          .get(Uri.parse('$_apiBase/models?pageSize=200&key=$apiKey'))
+          .timeout(const Duration(seconds: 20));
+      client.close();
+      if (resp.statusCode != 200) return null;
+      final j = jsonDecode(resp.body) as Map<String, dynamic>;
+      final models = j['models'];
+      if (models is! List) return null;
+      final ids = <String>[
+        for (final m in models)
+          if (m is Map && m['name'] is String)
+            (m['name'] as String).replaceFirst('models/', ''),
+      ];
+      String? best;
+      for (final w in _models) {
+        if (ids.contains(w)) {
+          best = w;
+          break;
+        }
+      }
+      if (best == null) {
+        for (final id in ids) {
+          if (id.contains('flash') &&
+              !id.contains('lite') &&
+              !id.contains('image') &&
+              !id.contains('live') &&
+              !id.contains('preview') &&
+              !id.contains('transcribe')) {
+            best = id;
+            break;
+          }
+        }
+      }
+      if (best != null) _discovered = best;
+      return best;
+    } catch (_) {
+      return null;
+    }
+  }
+
 
   static Future<String> _stream(String model, String apiKey, String bodyJson,
       void Function(String chunk)? onChunk, Duration timeout) async {
