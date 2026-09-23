@@ -116,7 +116,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _head('By subject', Icons.school_rounded),
+          _head('By subject', Icons.menu_book_rounded),
           const SizedBox(height: 10),
           for (final e in rows)
             Padding(

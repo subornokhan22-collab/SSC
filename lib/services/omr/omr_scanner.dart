@@ -514,6 +514,7 @@ class OMrScanner {
     }
 
     List<double>? candidate;
+    List<DetectedCorner>? winCorners;
     var failReason =
         'Could not align the sheet (found $markCount of 4 corner marks). Keep it centered with a small margin, in even light, away from any other paper, and take the photo again.';
     for (var si = 0; si < cornerSets.length; si++) {
@@ -522,11 +523,33 @@ class OMrScanner {
       // decide orientation from the printed grid, which a drop-out sheet
       // shows even when completely blank.
       final solved = _bestRotationHomography(geo, cs, struct, pixels, w, h);
+      final rot = solved.$2;
       final cand =
-          (solved != null && solved.every((v) => v.isFinite)) ? solved : null;
+          (solved.$1 != null && solved.$1.every((v) => v.isFinite))
+              ? solved.$1
+              : null;
       if (cand == null) {
         dbg['set${si}'] = 'no surviving candidate';
         continue;
+      }
+      // The winning fit may have assumed a sheet turned rot × 90° in the
+      // frame: page corner k is paired with the photo point the list
+      // currently assigns to corner (k + rot). Re-assign the corner list
+      // by that shift so the scale/reprojection gates below — and the
+      // mark-consistency gate after the loop — check exactly the
+      // correspondence the fit was built from (a rotated fit reprojected
+      // against the un-rotated list shows the whole sheet diagonal).
+      var csEff = cs;
+      if (rot != 0) {
+        // CW corner order: 0=TL, 1=TR, 2=BR, 3=BL. `cs` is indexed
+        // TL=0, TR=1, BL=2, BR=3, so CW index j ↔ cs index [0,1,3,2][j].
+        const cwToCs = [0, 1, 3, 2];
+        const csToCw = [0, 1, 3, 2]; // the same map is its own inverse
+        csEff = <DetectedCorner>[
+          for (var i = 0; i < 4; i++)
+            cs[cwToCs[(csToCw[i] + rot) % 4]],
+        ];
+        dbg['set${si}_rot'] = rot;
       }
       final tl0 = applyHomography(cand, const ui.Offset(0, 0));
       final br0 = applyHomography(
@@ -560,12 +583,12 @@ class OMrScanner {
       final setRes = <String>[];
       var precise = true;
       for (var k = 0; k < 4; k++) {
-        if (!cs[k].fromMark) continue;
+        if (!csEff[k].fromMark) continue;
         final e = applyHomography(cand, OMrGeometry.markCenter(k));
-        final dxx = e.dx - cs[k].point.dx;
-        final dyy = e.dy - cs[k].point.dy;
+        final dxx = e.dx - csEff[k].point.dx;
+        final dyy = e.dy - csEff[k].point.dy;
         final res = math.sqrt(dxx * dxx + dyy * dyy);
-        final tol = math.max(cs[k].blobDiag * 3, sc * 15);
+        final tol = math.max(csEff[k].blobDiag * 3, sc * 15);
         setRes.add(
             '${_cornerNames[k]} ${res.isFinite ? res.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tol.toStringAsFixed(1)})');
         if (!res.isFinite || res > tol) {
@@ -578,6 +601,7 @@ class OMrScanner {
       dbg['set${si}_markResiduals'] = setRes.join(' | ');
       if (!precise) continue;
       candidate = cand;
+      winCorners = csEff;
       break;
     }
     // A page returned by the document scanner is already straight and
@@ -647,14 +671,18 @@ class OMrScanner {
     // below performs, recorded so a failure can be checked against the
     // photo without the device. Kept separate so the block that follows
     // stays exactly as specified.
+    // The winning set (possibly rotation-reassigned) is the one the
+    // homography was fitted through — check those points, not the
+    // original list.
+    final guardCorners = winCorners ?? corners;
     final dbgFinal = <String>[];
     for (var k = 0; k < 4; k++) {
-      if (!corners[k].fromMark) continue;
+      if (!guardCorners[k].fromMark) continue;
       final expect = applyHomography(homography, OMrGeometry.markCenter(k));
-      final dx = expect.dx - corners[k].point.dx;
-      final dy = expect.dy - corners[k].point.dy;
+      final dx = expect.dx - guardCorners[k].point.dx;
+      final dy = expect.dy - guardCorners[k].point.dy;
       final residual = math.sqrt(dx * dx + dy * dy);
-      final tolerance = math.max(corners[k].blobDiag * 3, scale * 15);
+      final tolerance = math.max(guardCorners[k].blobDiag * 3, scale * 15);
       dbgFinal.add(
           '${_cornerNames[k]} ${residual.isFinite ? residual.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tolerance.toStringAsFixed(1)})');
     }
@@ -669,12 +697,12 @@ class OMrScanner {
     // guarantees the grid-sampling precision the rest of the pipeline
     // depends on, and a genuinely good fit satisfies it trivially.
     for (var k = 0; k < 4; k++) {
-      if (!corners[k].fromMark) continue;
+      if (!guardCorners[k].fromMark) continue;
       final expect = applyHomography(homography, OMrGeometry.markCenter(k));
-      final dx = expect.dx - corners[k].point.dx;
-      final dy = expect.dy - corners[k].point.dy;
+      final dx = expect.dx - guardCorners[k].point.dx;
+      final dy = expect.dy - guardCorners[k].point.dy;
       final residual = math.sqrt(dx * dx + dy * dy);
-      final tolerance = math.max(corners[k].blobDiag * 3, scale * 15);
+      final tolerance = math.max(guardCorners[k].blobDiag * 3, scale * 15);
       if (!residual.isFinite || residual > tolerance) {
         return OmScanResult.failed(
             'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.',
@@ -1263,7 +1291,13 @@ class OMrScanner {
   ///     probe) and the bottom is not denser than the top,
   ///  5. mark anchors are preferred over paper anchors, and a photo-corner
   ///     ("edge suspect") anchor is heavily penalised.
-  static List<double>? _bestRotationHomography(
+  /// The homography for the best (anchor mask, rotation) pair, plus the
+  /// winning rotation: `rot` is the quarter-turn applied to the photo-side
+  /// corner correspondence (0 = upright in frame, 1 = sheet turned 90°
+  /// clockwise, …). The caller must re-assign its corner list by the same
+  /// shift so every downstream gate checks the correspondence the fit
+  /// actually used.
+  static (List<double>?, int) _bestRotationHomography(
       OMrGeometry geo, List<DetectedCorner> corners,
       [Uint8List? ink, Uint8List? luma, int w = 0, int h = 0]) {
     // Clockwise corner order: TL, TR, BR, BL.
@@ -1301,6 +1335,7 @@ class OMrScanner {
 
     List<double>? bestH;
     var bestErr = 1e18;
+    var bestRot = 0;
 
     for (var mask = 0; mask < 16; mask++) {
       final p = <ui.Offset>[];
@@ -1456,10 +1491,11 @@ class OMrScanner {
         if (err < bestErr) {
           bestErr = err;
           bestH = hHom;
+          bestRot = rot;
         }
       }
     }
-    return bestH;
+    return (bestH, bestRot);
   }
 
   /// Alignment for a page a document scanner returned: the image is

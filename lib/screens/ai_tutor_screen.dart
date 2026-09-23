@@ -754,7 +754,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                 spreadRadius: size * .03),
           ],
         ),
-        child: Icon(Icons.school_rounded,
+        child: Icon(Icons.auto_awesome_rounded,
             color: Colors.white, size: size * .3),
       );
     }
@@ -785,7 +785,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                           spreadRadius: size * .04),
                     ],
                   ),
-                  child: Icon(Icons.school_rounded,
+                  child: Icon(Icons.auto_awesome_rounded,
                       color: Colors.white, size: size * .3),
                 ),
               ),
@@ -1519,7 +1519,7 @@ class _SetupCard extends StatelessWidget {
               spreadRadius: 1),
         ],
       ),
-      child: const Icon(Icons.school_rounded, color: Colors.white, size: 24),
+      child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
     );
   }
 }

@@ -95,6 +95,27 @@ void _letterBlob(img.Image im, int cx, int cy, int gray) {
   }
 }
 
+void _strokeRect(img.Image im, int x, int y, int w, int h, int t, int gray) {
+  final px = im.getBytes();
+  void line(int x0, int y0, int x1, int y1) {
+    for (var i = 0; i < t; i++) {
+      for (var j = x0; j <= x1; j++) {
+        final yy = y0 + i;
+        if (j < 0 || yy < 0 || j >= im.width || yy >= im.height) continue;
+        final k = (yy * im.width + j) * 4;
+        px[k] = gray;
+        px[k + 1] = gray;
+        px[k + 2] = gray;
+      }
+    }
+  }
+
+  line(x, y, x + w, y);
+  line(x, y + h, x + w, y + h);
+  line(x, y, x, y + h);
+  line(x + w, y, x + w, y + h);
+}
+
 /// Rasterises one OMR page from [OMrGeometry].
 ///
 /// [answers] is the option index per question (-1 = blank). Questions listed
@@ -163,12 +184,47 @@ img.Image _buildOmPage({
       _letterBlob(im, x, y, 60);
     }
   }
+
+  // Printed structure: each question sits in its own box and the identity
+  // panels are framed — the scanner's orientation probe distinguishes the
+  // grid band from the blank bottom edge through exactly this structure,
+  // so the synthetic sheet must carry it.
+  for (var no = 1; no <= total; no++) {
+    final i = no - 1;
+    final col = (i / geo.perColumn).floor();
+    final row = i % geo.perColumn;
+    _strokeRect(
+        im,
+        geo.columnX(col).round(),
+        (OMrGeometry.questionsTop +
+                OMrGeometry.boxHeaderH +
+                row * OMrGeometry.rowH)
+            .round(),
+        geo.questionWidth.round(),
+        OMrGeometry.rowH.round(),
+        2,
+        90);
+  }
+  for (final panel in <List<double>>[
+    [geo.rollPanelX, geo.rollPanelW],
+    [geo.registrationPanelX, geo.registrationPanelW],
+    [geo.subjectPanelX, geo.subjectPanelW],
+  ]) {
+    final x = panel[0].round(), pw = panel[1].round();
+    final y = geo.identityTop.round();
+    _strokeRect(im, x, y, pw, OMrGeometry.panelH.round(), 2, 90);
+    // Label line above the digit rows.
+    _fillRect(im, x + 6, y + 5, pw - 12, 4, 60);
+  }
   return im;
 }
 
 /// Scatters the page pixels through homography [h] into a pw×ph photo.
 img.Image _warp(img.Image page, List<double> h, int pw, int ph) {
-  final out = _canvas(pw, ph, 255);
+  // A real photo shows the desk around the sheet; a pure-white frame
+  // fuses with the paper in the scanner's paper mask and trips the
+  // cut-off check on rotated shots.
+  final out = _canvas(pw, ph, 128);
   final po = out.getBytes();
   final pp = page.getBytes();
   for (var y = 0; y < page.height; y++) {
@@ -201,6 +257,7 @@ void main() {
   answers[4] = -1; // q5 blank
   answers[9] = -1; // q10 blank
   final doubles = {8: [0, 1]}; // q9 double-marked
+  answers[8] = -2; // the scanner reports a double-mark as -2
 
   final expectedKey =
       List<int>.generate(total, (i) => (i == 4 || i == 9) ? 0 : i % 4);
