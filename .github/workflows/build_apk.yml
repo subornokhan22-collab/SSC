@@ -10,6 +10,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # The `secrets` context is not allowed inside step `if:` conditions,
+    # so the "does the keystore exist" check is staged through env here.
+    env:
+      HAS_RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,7 +39,7 @@ jobs:
         run: flutter test
 
       - name: Restore release keystore (from GitHub Secrets)
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        if: ${{ env.HAS_RELEASE_KEYSTORE == 'true' }}
         run: |
           echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
           ls -la android/app/release.keystore
