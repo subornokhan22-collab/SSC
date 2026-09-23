@@ -22,7 +22,8 @@ void main() {
       'lib/screens/exam_screen.dart',
       'lib/screens/model_test_screen.dart',
       'lib/screens/ai_generate_screen.dart',
-      'lib/screens/ai_tutor_screen.dart',
+      // The AI tutor was re-added later as a TEACHER tool (MiMi) — it is
+      // intentionally not on this removed list.
       'lib/screens/pdf_resource_screen.dart',
       'lib/screens/splash_screen.dart',
     ];

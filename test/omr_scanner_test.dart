@@ -19,7 +19,7 @@ import 'package:tutors_desk/services/omr/omr_scanner.dart';
 // ════════════════════════════════════════════════════════════════════
 
 img.Image _canvas(int w, int h, int v) {
-  final im = img.Image(width: w, height: h);
+  final im = img.Image(width: w, height: h, numChannels: 4);
   final px = im.getBytes();
   final byte = v.toUnsigned(8);
   for (var i = 0; i < w * h; i++) {

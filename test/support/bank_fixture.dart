@@ -44,7 +44,14 @@ class BankFixture {
       final rows = json.decode(file.readAsStringSync()) as List;
       for (final row in rows) {
         final map = row as Map<String, dynamic>;
-        (_banks[map['bank'] as String] ??= <String>{}).add(map['id'] as String);
+        // The exported files use camelCase bank ids (physicsCqs); tests
+        // address them in snake_case (physics_cqs) — register both.
+        final bank = map['bank'] as String;
+        (_banks[bank] ??= <String>{}).add(map['id'] as String);
+        final alias = _snake(bank);
+        if (alias != bank) {
+          (_banks[alias] ??= <String>{}).add(map['id'] as String);
+        }
         switch (map['type']) {
           case 'mcq':
             mcqs.add(questionFromJson(map));
@@ -59,6 +66,12 @@ class BankFixture {
     QuestionBank.seed(mcqs: mcqs, saqs: saqs, cqs: cqs);
     _loaded = true;
   }
+
+  /// camelCase -> snake_case (physicsCqs -> physics_cqs,
+  /// generalMathMcqs -> general_math_mcqs, physicsSAQs -> physics_saqs).
+  static String _snake(String camel) => camel
+      .replaceAll(RegExp(r'([a-z0-9])([A-Z])'), r'\1_\2')
+      .toLowerCase();
 
   /// Ids belonging to one exported bank file, e.g. `physics_mcqs`.
   static final Map<String, Set<String>> _banks = {};
