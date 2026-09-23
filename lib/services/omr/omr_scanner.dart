@@ -524,10 +524,9 @@ class OMrScanner {
       // shows even when completely blank.
       final solved = _bestRotationHomography(geo, cs, struct, pixels, w, h);
       final rot = solved.$2;
+      final solvedH = solved.$1;
       final cand =
-          (solved.$1 != null && solved.$1.every((v) => v.isFinite))
-              ? solved.$1
-              : null;
+          (solvedH != null && solvedH.every((v) => v.isFinite)) ? solvedH : null;
       if (cand == null) {
         dbg['set${si}'] = 'no surviving candidate';
         continue;
