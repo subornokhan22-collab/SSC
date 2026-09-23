@@ -1414,8 +1414,14 @@ class OMrScanner {
         for (var k = 0; k < 4; k++) {
           if (!hasMark[k]) continue;
           final mp = applyHomography(hHom, markAnchor[k]);
-          final dxx = mp.dx - photoPoint[k].dx;
-          final dyy = mp.dy - photoPoint[k].dy;
+          // Against THIS candidate's photo point (qq, i.e. rotated by
+          // [rot]) — a mark-true rotated fit sits ~0 px from it, while a
+          // page-corner anchor or the wrong rotation is inset-shifted.
+          // Comparing against the un-rotated photoPoint rejected every
+          // rotated candidate (residual ≈ sheet corner distance) and made
+          // rotated sheets unreadable.
+          final dxx = mp.dx - qq[k].dx;
+          final dyy = mp.dy - qq[k].dy;
           final res = math.sqrt(dxx * dxx + dyy * dyy);
           if (!res.isFinite) {
             // This transform's line at infinity passes through a detected
