@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/bangla_1st/bangla_1st_literature_questions.dart';
@@ -7,21 +8,23 @@ import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/english_board_data.dart';
 import '../data/english_first_data.dart';
 import '../data/questions_data.dart';
-import '../services/ai_question_generator.dart';
 import '../services/bangla_first_board_pattern.dart';
 import '../services/bangla_second_board_pattern.dart';
+import '../services/app_settings.dart';
 import '../services/app_style.dart';
 import '../services/english_paper_adapter.dart';
 import '../services/general_math_board_pattern.dart';
 import '../services/ict_board_pattern.dart';
 import '../services/paper_license.dart';
+import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../services/chapter_catalog.dart';
-import '../services/chapter_source_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/problem_dialog.dart';
+import 'omr_scanner_screen.dart';
 import 'subscription_screen.dart';
 import '../models/subject_info.dart';
 
@@ -48,18 +51,22 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   int _saqN = 5;
   int _cqN = 3;
   bool _busy = false;
+  // True while the (now multi-step) save/print actions run, so the
+  // buttons can show a loading spinner instead of looking dead.
+  bool _busySave = false;
+  bool _busyPrint = false;
   bool _generated = false;
   bool _isPro = false;
   bool _showAnswerKey = false;
-  String? _apiKey;
-  bool _mixAi = false;
   bool _mathBoardPattern = false;
   bool _ictBoardPattern = false;
   bool _banglaFirstBoardPattern = false;
   bool _banglaSecondBoardPattern = false;
-  int _aiShare = 50;
-  final TextEditingController _titleCtrl =
-      TextEditingController(text: 'মডেল পরীক্ষা — ২০২৭');
+  // Settings → Default paper name overrides the built-in default.
+  final TextEditingController _titleCtrl = TextEditingController(
+      text: AppSettings.defaultName.isNotEmpty
+          ? AppSettings.defaultName
+          : 'মডেল পরীক্ষা — ২০২৭');
   String _setLetter = 'ক';
   static const _setLetters = ['ক', 'খ', 'গ', 'ঘ'];
 
@@ -131,7 +138,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   List<Bangla2WrittenQuestion> _bangla2WrittenQuestions = [];
   EnglishBoardSet? _englishSet;
   EnglishFirstSet? _firstSet;
-  List<Question> _eAiMcqs = const [];
   List<int> _e2Src = [];
   List<int> _e1Src = [];
 
@@ -147,7 +153,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     final pro = await PaperLicense.isPro();
     if (!mounted) return;
     setState(() {
-      _apiKey = p.getString('gemini_api_key');
       _isPro = pro;
       final idx = p.getInt('paper_set_idx') ?? 0;
       _setLetter = _setLetters[idx % _setLetters.length];
@@ -184,24 +189,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         explanation: q.explanation.isNotEmpty ? q.explanation : q.answer,
         source: q.source,
         sourceLabel: q.sourceLabel,
-        figure: q.figure,
-      );
-
-  /// Gemini's parser intentionally returns generic identities. Reattach the
-  /// exact selected subject/chapter before adding generated shortage items to
-  /// a custom test so downstream filtering and provenance remain correct.
-  static Question _generatedForChapter(
-          Question q, String subjectId, String chapter) =>
-      Question(
-        id: q.id,
-        subjectId: subjectId,
-        chapter: chapter,
-        questionText: q.questionText,
-        options: List<String>.unmodifiable(q.options),
-        correctIndex: q.correctIndex,
-        explanation: q.explanation,
-        source: QuestionSource.ai,
-        sourceLabel: 'Gemini • chapter-source grounded',
         figure: q.figure,
       );
 
@@ -312,14 +299,18 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     });
   }
 
+  /// The standard red, animated problem dialog — every error the user must
+  /// act on uses this (never a plain snackbar).
+  Future<void> _problem(String title, String message, {String? detail}) =>
+      showProblemDialog(context, title: title, message: message, detail: detail);
+
   void _setChapterMcqCount(String chapter, int next) {
+
     final current = _chapterMcqCounts[chapter] ?? 0;
     final proposedTotal = _requestedMcqTotal - current + next;
     if (next < 1 || proposedTotal > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content:
-            Text('একটি কাস্টম MCQ টেস্টে সর্বোচ্চ ১০০টি প্রশ্ন রাখা যাবে।'),
-      ));
+      _problem('Limit reached',
+          'A custom MCQ test can hold at most 100 questions.');
       return;
     }
     setState(() {
@@ -500,21 +491,18 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
   // ── Main generate (now with preview) ──
   Future<void> _generate() async {
     if (_subject == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Choose a subject first')));
+      await _problem('Nothing selected', 'Choose a subject first.');
       return;
     }
     if (!_isEnglish &&
         !_usesAutomaticBoardPattern &&
         _chapterMcqCounts.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content:
-              Text('অন্তত একটি অধ্যায় বেছে নিয়ে MCQ সংখ্যা নির্ধারণ করো।')));
+      await _problem('Nothing selected',
+          'Choose at least one chapter and set its MCQ count.');
       return;
     }
     if (!_usesAutomaticBoardPattern && _requestedMcqTotal > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('মোট MCQ ১০০-এর বেশি হতে পারবে না।')));
+      await _problem('Limit reached', 'Total MCQ cannot exceed 100.');
       return;
     }
     setState(() {
@@ -525,27 +513,14 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       _literatureQuestions = const <LiteratureQuestion>[];
       _bangla2WrittenQuestions = const <Bangla2WrittenQuestion>[];
     });
+    // Paint the spinner frame before the heavy (now yielding) generation
+    // work starts, so the loading icon is visible the whole time.
+    await SchedulerBinding.instance.endOfFrame;
     try {
       final sid = _subject!.id;
 
       // English: mixed board + preview
       if (_isEnglish) {
-        List<Question> aiMcqs = const [];
-        final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-        if (_mixAi && hasKey) {
-          try {
-            final n = _aiShare == 25 ? 3 : (_aiShare == 75 ? 8 : 5);
-            aiMcqs = await AiQuestionGenerator.generateMcqs(
-              apiKey: _apiKey!,
-              subjectName: _isEnglish2nd(sid)
-                  ? 'English Second Paper (Board-2024 style)'
-                  : 'English First Paper (Board-2024 style)',
-              chapter: 'Board-style mixed paper 2024',
-              sourceText: '',
-              count: n,
-            );
-          } catch (_) {}
-        }
         final ttl = _titleText.isEmpty ? 'Model Test' : _titleText;
         if (_isEnglish2nd(sid)) {
           final m = EnglishBoardMixer.mix();
@@ -554,7 +529,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
             sections: [
               ...EnglishPaperAdapter.second(m.set),
-              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)
             ],
             setCode: _setLetter,
           );
@@ -564,7 +538,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             _firstSet = null;
             _e2Src = m.sources;
             _e1Src = [];
-            _eAiMcqs = aiMcqs;
             _pagePngs = pages;
             _mcqs = [];
             _cqs = [];
@@ -579,7 +552,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
             sections: [
               ...EnglishPaperAdapter.first(m.set),
-              if (aiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(aiMcqs)
             ],
             setCode: _setLetter,
           );
@@ -589,7 +561,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
             _englishSet = null;
             _e1Src = m.sources;
             _e2Src = [];
-            _eAiMcqs = aiMcqs;
             _pagePngs = pages;
             _mcqs = [];
             _cqs = [];
@@ -677,7 +648,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       // Custom MCQ PDF + OMR: keep each chapter quantity exactly as the user requested.
       if (_chapterMcqCounts.isNotEmpty) {
         final customMcqs = <Question>[];
-        final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
         for (final entry in _chapterMcqCounts.entries) {
           final pool = allMCQs
               .where((q) => q.subjectId == sid && q.chapter == entry.key)
@@ -686,35 +656,14 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           customMcqs.addAll(pool.take(entry.value));
           final shortage = entry.value - pool.length;
           if (shortage > 0) {
-            if (!hasKey) {
-              throw Exception(
-                  '${entry.key}-এ ${shortage}টি সংরক্ষিত প্রশ্ন কম আছে। Gemini API key যোগ করো অথবা সংখ্যাটি কমাও।');
-            }
-            final source = await ChapterSourceService.getSource(sid, entry.key);
-            if (source.trim().isEmpty) {
-              throw Exception(
-                  '${entry.key}-এর নির্ভরযোগ্য অধ্যায়-উৎস পাঠ পাওয়া যায়নি। উৎস পাঠ যোগ করো অথবা MCQ সংখ্যা ${pool.length}-এর মধ্যে রাখো।');
-            }
-            final ai = await AiQuestionGenerator.generateMcqs(
-              apiKey: _apiKey!,
-              subjectName: _subject!.bengaliName,
-              chapter: entry.key,
-              sourceText: source,
-              count: shortage,
-            );
-            if (ai.length != shortage) {
-              throw Exception(
-                  '${entry.key}-এর জন্য Gemini ${shortage}টির বদলে ${ai.length}টি বৈধ MCQ দিয়েছে। আবার চেষ্টা করো অথবা সংখ্যা কমাও।');
-            }
-            customMcqs.addAll(
-              ai.map((q) => _generatedForChapter(q, sid, entry.key)),
-            );
+            throw Exception(
+                '$shortage more saved questions needed for ${entry.key} than exist — reduce the count for that chapter.');
           }
         }
         customMcqs.shuffle();
         if (customMcqs.length != _requestedMcqTotal) {
           throw Exception(
-              'চাওয়া MCQ সংখ্যা ঠিকভাবে তৈরি হয়নি। আবার চেষ্টা করো।');
+              'The requested MCQ count could not be generated correctly. Try again.');
         }
         _advanceSetCode();
         if (!mounted) return;
@@ -743,41 +692,8 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           .toList()
         ..shuffle();
 
-      List<Question> aiMcqs = const [];
-      List<CreativeQuestion> aiCqs = const [];
-      final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-      if (_mixAi && hasKey) {
-        final chapLabel =
-            _chapters.isEmpty ? 'সব অধ্যায় মিলিয়ে' : _chapters.join(', ');
-        try {
-          final aiMcqNeed = (_mcqN * _aiShare / 100).round();
-          if (aiMcqNeed > 0) {
-            aiMcqs = await AiQuestionGenerator.generateMcqs(
-                apiKey: _apiKey!,
-                subjectName: _subject!.name,
-                chapter: chapLabel,
-                sourceText: '',
-                count: aiMcqNeed);
-          }
-        } catch (_) {}
-        try {
-          final aiCqNeed = (_cqN * _aiShare / 100).round();
-          if (aiCqNeed > 0) {
-            aiCqs = await AiQuestionGenerator.generateCqs(
-                apiKey: _apiKey!,
-                subjectName: _subject!.name,
-                chapter: chapLabel,
-                sourceText: '',
-                count: aiCqNeed);
-          }
-        } catch (_) {}
-      }
-
-      final mcqBankN = _mcqN - aiMcqs.length;
-      final cqBankN = _cqN - aiCqs.length;
-      final mcqs = [...mcqPool.take(mcqBankN < 0 ? 0 : mcqBankN), ...aiMcqs]
-        ..shuffle();
-      final cqs = [...cqPool.take(cqBankN < 0 ? 0 : cqBankN), ...aiCqs];
+      final mcqs = mcqPool.take(_mcqN).toList()..shuffle();
+      final cqs = cqPool.take(_cqN).toList();
 
       final usedIds = mcqs.map((q) => q.id).toSet();
       final saqPool = mcqPool
@@ -821,8 +737,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
       await _buildPreviewPages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        await _problem('Could not generate', '$e');
         setState(() => _busy = false);
       }
     }
@@ -830,8 +745,7 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
 
   Future<void> _print() async {
     if (!_generated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Generate preview first!')));
+      await _problem('Nothing to print', 'Generate the preview first.');
       return;
     }
     final pro = await PaperLicense.isPro();
@@ -865,6 +779,11 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
     }
     if (_subject == null) return;
     final sid = _subject!.id;
+    // PDF/layout is slow on phone — show the loading icon while it runs.
+    setState(() => _busyPrint = true);
+    // Wait one painted frame so the spinner is visible BEFORE the slow
+    // synchronous layout/raster work starts (it blocks the UI thread).
+    await SchedulerBinding.instance.endOfFrame;
     try {
       if (_isEnglish2nd(sid) && _englishSet != null) {
         await PaperPdf.printEnglishPaper(
@@ -872,7 +791,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           subTitle: 'English (Compulsory)–Second Paper   [Subject Code: 108]',
           sections: [
             ...EnglishPaperAdapter.second(_englishSet!),
-            if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)
           ],
           setCode: _setLetter,
         );
@@ -884,7 +802,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
           subTitle: 'English (Compulsory)–First Paper   [Subject Code: 107]',
           sections: [
             ...EnglishPaperAdapter.first(_firstSet!),
-            if (_eAiMcqs.isNotEmpty) EnglishPaperAdapter.aiSection(_eAiMcqs)
           ],
           setCode: _setLetter,
         );
@@ -975,81 +892,164 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
         setCode: _setLetter,
       );
     } catch (e) {
-      if (mounted)
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Print error: $e')));
+      if (mounted) {
+        setState(() => _busyPrint = false);
+        await showProblemDialog(
+            context, title: 'Print error', message: '$e');
+      }
+    } finally {
+      if (mounted) setState(() => _busyPrint = false);
     }
   }
 
-  // AI mix card
-  Widget _aiMixCard() {
-    final hasKey = _apiKey != null && _apiKey!.isNotEmpty;
-    if (!hasKey) {
-      return SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-              onPressed: _showApiKeyDialog,
-              icon: const Icon(Icons.vpn_key_outlined, size: 18),
-              label:
-                  const Text('🔑 Set Gemini API key (to mix AI questions)')));
+  /// Prints only the OMR answer sheet — [N] identical copies for a class.
+  Future<void> _printOmr() async {
+    if (_mcqs.isEmpty || _subject == null) return;
+    final pro = await PaperLicense.isPro();
+    if (!pro) {
+      if (!mounted) return;
+      showDialog(
+          context: context,
+          builder: (c) => AlertDialog(
+                  title: const Text('Pro required'),
+                  content: const Text(
+                      'Printing OMR sheets is a Pro feature. Unlock Pro to export and print without a watermark.'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(c),
+                        child: const Text('Not now')),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(c);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SubscriptionScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.workspace_premium_rounded,
+                          size: 18),
+                      label: const Text('See Pro'),
+                    ),
+                  ]));
+      return;
     }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-          color: AppTheme.surfaceAlt,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _accentColor.withOpacity(0.45))),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            value: _mixAi,
-            onChanged: (v) => setState(() => _mixAi = v),
-            title: const Text('🤖 Mix AI questions',
-                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-            subtitle: const Text('Fresh AI + bank',
-                style: TextStyle(fontSize: 11, color: AppTheme.muted))),
-        if (_mixAi) ...[
-          const Text('AI %:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          SegmentedButton<int>(segments: const [
-            ButtonSegment(value: 25, label: Text('25%')),
-            ButtonSegment(value: 50, label: Text('50%')),
-            ButtonSegment(value: 75, label: Text('75%'))
-          ], selected: {
-            _aiShare
-          }, onSelectionChanged: (s) => setState(() => _aiShare = s.first)),
-        ],
-      ]),
-    );
-  }
-
-  Future<void> _showApiKeyDialog() async {
-    final controller = TextEditingController(text: _apiKey ?? '');
-    final ok = await showDialog<bool>(
+    int copies = 10;
+    final chosen = await showDialog<int>(
         context: context,
-        builder: (c) => AlertDialog(
-                title: const Text('🔑 Gemini API Key'),
-                content: TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(hintText: 'AIza...')),
+        builder: (c) => StatefulBuilder(
+              builder: (c, setDialog) => AlertDialog(
+                title: const Text('How many OMR sheets?'),
+                content: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Text('${_bn(_mcqs.length)}টি প্রশ্ন • সেট $_setLetter',
+                      style:
+                          const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                  const SizedBox(height: 10),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    IconButton(
+                        onPressed: copies > 1
+                            ? () => setDialog(() => copies--)
+                            : null,
+                        icon: const Icon(Icons.remove_circle_outline)),
+                    SizedBox(
+                        width: 48,
+                        child: Center(
+                            child: Text('$copies',
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800)))),
+                    IconButton(
+                        onPressed: copies < 100
+                            ? () => setDialog(() => copies++)
+                            : null,
+                        icon: const Icon(Icons.add_circle_outline)),
+                  ]),
+                ]),
                 actions: [
                   TextButton(
-                      onPressed: () => Navigator.pop(c, false),
+                      onPressed: () => Navigator.pop(c),
                       child: const Text('Cancel')),
                   FilledButton(
-                      onPressed: () => Navigator.pop(c, true),
-                      child: const Text('Save'))
-                ]));
-    if (ok == true && mounted) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('gemini_api_key', controller.text.trim());
-      setState(() {
-        _apiKey = controller.text.trim();
-        _mixAi = _apiKey!.isNotEmpty;
-      });
+                      onPressed: () => Navigator.pop(c, copies),
+                      child: const Text('Print')),
+                ],
+              ),
+            ));
+    if (chosen == null) return;
+    try {
+      await PaperPdf.printOmrSheet(
+        title: _titleText,
+        total: _mcqs.length,
+        subjectCode: _subjectCodes[_subject!.id],
+        setCode: _setLetter,
+        copies: chosen,
+      );
+    } catch (e) {
+      if (mounted)
+        await _problem('OMR print error', '$e');
     }
+  }
+
+  /// Saves the generated test (title, subject, set + every MCQ with its
+  /// correct option) to the Question Papers library → Saved tab, so the OMR
+  /// scanner can grade sheets against it without retyping the key.
+  Future<void> _savePaper() async {
+    if (_mcqs.isEmpty || _subject == null) return;
+    setState(() => _busySave = true);
+    // Paint the spinner frame before the (synchronous) page encoding starts.
+    await SchedulerBinding.instance.endOfFrame;
+    try {
+      final sp = SavedPaper(
+        id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
+        title: _titleText,
+        subject: _subject!.bengaliName,
+        subjectId: _subject!.id,
+        subjectCode: _subjectCodes[_subject!.id] ?? '',
+        setCode: _setLetter,
+        total: _mcqs.length,
+        key: _mcqs.map((q) => q.correctIndex).toList(),
+        questions: [
+          for (final q in _mcqs)
+            SavedQuestion(
+              text: q.questionText,
+              options: q.options,
+              answer: q.correctIndex,
+            ),
+        ],
+        createdAt: DateTime.now(),
+        pages: _pagePngs?.length ?? 0,
+      );
+      // Also save the rendered pages so the paper itself (not just the
+      // key) is stored locally and can be viewed/printed from Saved.
+      await PaperLibrary.addSavedPaper(sp, pageImages: _pagePngs);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Paper saved. Open Question Papers → Saved, or pick it in the OMR Scanner.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        await _problem('Save failed', '$e');
+      }
+    } finally {
+      if (mounted) setState(() => _busySave = false);
+    }
+  }
+
+  /// Opens the OMR scanner pre-loaded with this paper's answer key.
+  void _scanAnswers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OMrScannerScreen(
+          initialKey: _mcqs.map((q) => q.correctIndex).toList(),
+          paperTitle: _titleText,
+        ),
+      ),
+    );
   }
 
   @override
@@ -1453,7 +1453,6 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                               : 'English 1st: Reading 70 + Writing 30 (mixed boards)',
                           style: const TextStyle(
                               fontSize: 12, color: Color(0xFF7FE7DC)))),
-                if (!_usesAutomaticBoardPattern) _aiMixCard(),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -1530,12 +1529,43 @@ class _CustomPaperScreenState extends State<CustomPaperScreen> {
                             onPressed: () => setState(
                                 () => _showAnswerKey = !_showAnswerKey))),
                     const SizedBox(width: 10),
+                    if (_mcqs.isNotEmpty)
+                      Expanded(
+                          child: AppButton(
+                              label: 'Print OMR',
+                              icon: Icons.crop_original_rounded,
+                              outlined: true,
+                              onPressed: _printOmr)),
+                    const SizedBox(width: 10),
                     Expanded(
                         child: AppButton(
-                            label: 'PDF / Print',
+                            label: _busyPrint
+                                ? 'Creating PDF…'
+                                : 'PDF / Print',
                             icon: Icons.print_rounded,
-                            onPressed: _print)),
+                            loading: _busyPrint,
+                            onPressed: _busyPrint ? null : _print)),
                   ]),
+                  if (_mcqs.isNotEmpty && !_isEnglish) ...[
+                    const SizedBox(height: 10),
+                    AppButton(
+                        label: _busySave
+                            ? 'Saving paper + pages…'
+                            : 'Save paper (with answer key)',
+                        icon: Icons.save_rounded,
+                        loading: _busySave,
+                        outlined: true,
+                        onPressed: _busySave ? null : _savePaper),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                            onPressed: _busy ? null : _scanAnswers,
+                            icon: const Icon(Icons.qr_code_scanner_rounded,
+                                size: 18),
+                            label: Text(
+                                "Scan this test's OMR (key: ${_mcqs.length} questions)"))),
+                  ],
                   if (_showAnswerKey) ...[
                     const SizedBox(height: 12),
                     Container(

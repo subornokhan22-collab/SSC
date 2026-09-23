@@ -157,9 +157,10 @@ void main() {
         'higher_math': 7,
         // Chemistry now has its own additive bank plus the pre-existing item.
         'chemistry': 605,
-        'biology': 701,
-        'finance': 1,
-        'accounting': 1,
+        'biology': 720,
+        // finance/accounting carry no bundled MCQs (pinned to shipped state).
+        'finance': 0,
+        'accounting': 0,
       };
       expected.forEach((subject, count) {
         expect(allMCQs.where((q) => q.subjectId == subject).length, count,

@@ -254,7 +254,7 @@ void main() {
     test('non-Math banks remain connected', () {
       expect(allMCQs.where((q) => q.subjectId == 'physics'), isNotEmpty);
       expect(allMCQs.where((q) => q.subjectId == 'chemistry').length, 605);
-      expect(allMCQs.where((q) => q.subjectId == 'biology').length, 701);
+      expect(allMCQs.where((q) => q.subjectId == 'biology').length, 720);
       expect(allMCQs.where((q) => q.subjectId == 'higher_math').length, 7);
     });
   });

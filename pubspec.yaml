@@ -15,6 +15,16 @@ dependencies:
   printing: ^5.15.0
   # ইমেইল OTP লগইন + Pro সিংক (Supabase)
   supabase_flutter: ^2.8.0
+  # OMR scanner + question-paper library
+  image_picker: ^1.1.0   # OMR শিট / প্রশ্নপত্রের ফটো (ক্যামেরা + গ্যালারি)
+  camera: ^0.12.1        # লাইভ ক্যামেরা প্রিভিউ + গাইডেড অটো-ক্যাপচার (OMR)
+  google_mlkit_document_scanner: ^0.6.1  # Google ডকুমেন্ট স্ক্যানার — শিট শনাক্ত/অটো-ক্যাপচার (ML Kit)
+  image: ^4.2.0          # pure-Dart image processing (OMR bubble reading)
+  file_picker: ^8.1.2    # PDF প্রশ্নপত্র যোগ করা
+  path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
+  connectivity_plus: ^6.0.0  # offline detection (global banner + app-open error)
+  url_launcher: ^6.3.0       # open the bKash checkout (bKash payment flow)
+  flutter_markdown_plus: ^1.0.12   # render Boktul's markdown answers
 
 dev_dependencies:
   flutter_test:

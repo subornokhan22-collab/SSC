@@ -6,9 +6,12 @@ import '../services/paper_license.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
+import 'ai_tutor_screen.dart';
 import 'custom_paper_screen.dart';
-import 'profile_screen.dart';
+import 'omr_scanner_screen.dart';
+import 'papers_library_screen.dart';
 import 'question_paper_screen.dart';
+import 'settings_screen.dart';
 import 'subscription_screen.dart';
 import '../widgets/app_logo.dart';
 
@@ -75,8 +78,39 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     super.dispose();
   }
 
-  Future<void> _open(Widget screen) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  Future<void> _open(Widget screen, {bool fast = false}) async {
+    if (fast) {
+      // Snappier custom transition for lightweight screens (Settings) —
+      // built on PageRouteBuilder + SlideTransition (stable core APIs;
+      // the newer Flutter toolchain dropped the duration parameters from
+      // MaterialPageRoute).
+      await Navigator.push(
+        context,
+        PageRouteBuilder<void>(
+          transitionDuration: const Duration(milliseconds: 200),
+          reverseTransitionDuration: const Duration(milliseconds: 160),
+          pageBuilder: (context, _, __) => screen,
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
+            );
+          },
+        ),
+      );
+    } else {
+      await Navigator.push(
+          context, MaterialPageRoute(builder: (_) => screen));
+    }
     if (mounted) _load(); // Pro state / name may have changed.
   }
 
@@ -133,17 +167,48 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 onTap: () => _open(const CustomPaperScreen()),
               ),
               const SizedBox(height: 20),
+              _ActionTile(
+                icon: Icons.auto_awesome_rounded,
+                title: 'MiMi — AI Assistant',
+                subtitle:
+                    'Ask or attach a photo, audio or PDF — solved in board style',
+                accentIndex: 3,
+                onTap: () => _open(const AiTutorScreen()),
+              ),
+              const SizedBox(height: 20),
+              const SectionTitle(
+                title: 'Examine & archive',
+                subtitle: 'Scan filled OMR sheets; keep your own papers.',
+                icon: Icons.assessment_rounded,
+              ),
+              _ActionTile(
+                icon: Icons.qr_code_scanner_rounded,
+                title: 'OMR Scanner',
+                subtitle:
+                    'Photograph a filled sheet → auto marks + printable scorecard',
+                accentIndex: 5,
+                onTap: () => _open(const OMrScannerScreen()),
+              ),
+              _ActionTile(
+                icon: Icons.photo_library_rounded,
+                title: 'Question Papers',
+                subtitle:
+                    'Saved papers with answer keys + your uploaded photos/PDFs',
+                accentIndex: 2,
+                onTap: () => _open(const PapersLibraryScreen()),
+              ),
+              const SizedBox(height: 20),
               const SectionTitle(
                 title: 'Account',
                 icon: Icons.manage_accounts_rounded,
               ),
               _ActionTile(
-                icon: Icons.person_rounded,
-                title: 'Profile & Settings',
-                subtitle: 'Details, workspace theme, Pro sync, sign out',
+                icon: Icons.settings_rounded,
+                title: 'Settings',
+                subtitle: 'Profile, OMR prefill switch, default paper name',
                 accentIndex: 4,
                 compact: true,
-                onTap: () => _open(const ProfileScreen()),
+                onTap: () => _open(const SettingsScreen(), fast: true),
               ),
               if (!_isPro)
                 _ActionTile(
@@ -271,7 +336,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 ),
                 SizedBox(height: 3),
                 Text(
-                  'Board-verified patterns across every subject, ready offline.',
+                  'SSC board-style patterns across every subject, ready offline.',
                   style: TextStyle(
                       color: AppTheme.muted, fontSize: 11.8, height: 1.4),
                 ),

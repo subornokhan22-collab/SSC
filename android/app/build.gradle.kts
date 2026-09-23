@@ -25,11 +25,30 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release signing from CI secrets. The keystore + passwords are restored
+    // by the GitHub workflow; when they are absent (local dev build) we fall
+    // back to the debug key so nothing breaks.
+    signingConfigs {
+        create("release-ci") {
+            val ksFile = File(projectDir, "release.keystore")
+            storeFile = ksFile
+            storeType = "PKCS12"
+            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (
+                    File(projectDir, "release.keystore").exists() &&
+                    System.getenv("RELEASE_KEYSTORE_PASSWORD") != null
+                ) {
+                    signingConfigs.getByName("release-ci")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
 
             // Strip unused Java/Kotlin classes and shrink bundled resources.
             // Flutter ships default ProGuard rules for its own engine bindings.
@@ -61,6 +80,15 @@ kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
+}
+
+dependencies {
+    // The app module needs the Google Play services API at compile time
+    // (MainActivity's scanner pre-flight check + module download). Both
+    // artifacts are already bundled at runtime by the ML Kit plugin;
+    // these only expose the classes to the app's Kotlin.
+    implementation("com.google.android.gms:play-services-base:18.1.0")
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
 }
 
 flutter {

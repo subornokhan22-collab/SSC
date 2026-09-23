@@ -1,70 +1,59 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Simple offline Demo/Pro license gate for the printable question papers.
+/// Offline Pro licence state for the printable question papers.
 ///
 /// DEMO (free):
-///   - প্রতিটি পেপারে সীমিত প্রশ্ন (MCQ ৬টি, CQ ২টি)
-///   - বড় "DEMO" ওয়াটারমার্ক
-///   - PDF/প্রিন্ট বন্ধ
+///   - limited questions per paper (MCQ 6, CQ 2)
+///   - big "DEMO" watermark
+///   - no PDF / print
 ///
-/// PRO (paid tutors):
-///   - পূর্ণাঙ্গ পেপার, কোনো ওয়াটারমার্ক নেই
-///   - PDF/প্রিন্ট চালু
-///   - অ্যাক্টিভেশন কোড দিয়ে আনলক হয়
+/// PRO (paid via bKash):
+///   - full papers, no watermark
+///   - PDF / print enabled
+///   - subscription expiry when the server sets one (monthly / yearly);
+///     a one-time unlock has no expiry.
 ///
-/// কোড যাচাইকরণ অফলাইনে হয় — নিচের [secret] বদলে নিজের গোপন শব্দ দাও।
-/// যে কোডটি আসবে সেটা দেখতে আপনার IDE তে চালাও:
-///     PaperLicense.expectedCode()  → যেমন "7F3A-9C21"
-/// সেই কোডটি পেট পরিশোধ করা ব্যবহারকারীদের দাও।
-///
-/// ⚠️ সতর্কতা: এটি সম্পূর্ণ ক্লায়েন্ট-সাইড যাচাই — দক্ষ ব্যবহারকারী
-/// কোড ভাঙতে পারে। প্রকৃত পেমেন্ট (bKash/SSLCommerz) হলে সার্ভার-সাইড
-/// যাচাই লাগবে; তখন এই ফাইলের isPro() টাই সার্ভারে জিজ্ঞেস করবে।
+/// Activation happens server-side (the bKash payment is verified on
+/// Supabase and `profiles.is_pro` / `profiles.pro_until` are updated);
+/// this class only caches the state on the device.
 class PaperLicense {
   static const _prefKey = 'paper_pro_unlocked';
+  static const _untilKey = 'paper_pro_until';
 
-  /// ⚠️ নিজের গোপন শব্দ এখানে বসাও (এটাই তোমার কোড-চাবি)
-  static const String secret = 'AL-2027-TUTOR-SECRET';
-
+  /// Pro is active when the device flag is set AND (no expiry stored OR
+  /// the expiry is still in the future).
   static Future<bool> isPro() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_prefKey) ?? false;
-  }
-
-  /// অ্যাক্টিভেশন কোড যাচাই করে; সঠিক হলে Pro আনলক করে ও true ফেরত দেয়।
-  static Future<bool> activate(String code) async {
-    final cleaned = code.trim().toUpperCase();
-    if (cleaned == expectedCode()) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_prefKey, true);
+    if (prefs.getBool(_prefKey) ?? false) {
+      final raw = prefs.getString(_untilKey);
+      if (raw != null && raw.isNotEmpty) {
+        final until = DateTime.tryParse(raw);
+        if (until != null && until.isBefore(DateTime.now())) return false;
+      }
       return true;
     }
     return false;
   }
 
+  /// The server confirmed Pro for this account. [until] = subscription
+  /// end date (monthly / yearly); null = one-time unlock (forever).
+  static Future<void> markProFromServer({DateTime? until}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefKey, true);
+    if (until != null) {
+      await prefs.setString(_untilKey, until.toUtc().toIso8601String());
+    } else {
+      await prefs.remove(_untilKey);
+    }
+  }
+
   static Future<void> deactivate() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_prefKey);
+    await prefs.remove(_untilKey);
   }
 
-  /// সার্ভারে (Supabase profiles.is_pro) এই অ্যাকাউন্ট Pro হিসেবে চিহ্নিত —
-  /// তখন AuthService এই মেথড ডেকে ডিভাইসেও Pro চালু করে দেয়।
-  static Future<void> markProFromServer() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefKey, true);
-  }
-
-  /// [secret] থেকে নির্ধারিত অ্যাক্টিভেশন কোড (যেমন "3F7A-9C21")।
-  static String expectedCode() {
-    var h = 0;
-    for (final c in secret.codeUnits) {
-      h = (h * 31 + c) & 0x7fffffff;
-    }
-    final hex = h.toRadixString(16).toUpperCase().padLeft(8, '0');
-    return '${hex.substring(0, 4)}-${hex.substring(4, 8)}';
-  }
-
-  // ── Demo সীমা ────────────────────────────────────────────────────
+  // ── Demo limits ─────────────────────────────────────────────────
   static const int demoMcqLimit = 6;
   static const int demoCqLimit = 2;
 }

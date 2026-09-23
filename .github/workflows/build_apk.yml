@@ -10,6 +10,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # The `secrets` context is not allowed inside step `if:` conditions,
+    # so the "does the keystore exist" check is staged through env here.
+    env:
+      HAS_RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,18 +32,66 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
+      - name: Analyze (quality gate — blocks on Dart errors)
+        # --no-fatal-warnings: existing warnings (unused vars, deprecated
+        # withOpacity) must not block builds; real errors still fail it.
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log
+
+      - name: Test (quality gate — blocks on failing tests)
+        run: |
+          set -o pipefail
+          flutter test 2>&1 | tee test.log
+
+      - name: Restore release keystore (from GitHub Secrets)
+        if: ${{ env.HAS_RELEASE_KEYSTORE == 'true' }}
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+          ls -la android/app/release.keystore
+
       - name: Generate launcher icons (fixes missing app icon)
         run: dart run flutter_launcher_icons
 
       - name: Build APK
-        run: flutter build apk --release --split-per-abi
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          set -o pipefail
+          flutter build apk --release --split-per-abi --dart-define=BUILD_NUMBER=${{ github.run_number }} 2>&1 | tee flutter-build.log
+
+      - name: Post build log (TEMP diagnostic)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "===== ANALYZE ====="
+            tail -c 30000 analyze.log 2>/dev/null || echo "(no analyze.log)"
+            echo ""
+            echo "===== TEST ====="
+            tail -c 30000 test.log 2>/dev/null || echo "(no test.log)"
+            echo ""
+            echo "===== BUILD ====="
+            tail -c 30000 flutter-build.log 2>/dev/null || echo "(no flutter-build.log)"
+          } > /tmp/log-tail.txt
+          gh release create "ci-diag-${{ github.run_id }}" \
+            --repo "${{ github.repository }}" \
+            --title "CI diagnostic log (temporary)" \
+            --notes-file /tmp/log-tail.txt \
+            --latest=false
 
       - name: Upload APK to Releases (no storage quota!)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # mapping.txt (R8 symbol map) rides along as an asset so any
+          # minified-crash stack can be decoded against this exact build.
           gh release create "apk-${{ github.run_id }}" \
             build/app/outputs/flutter-apk/app-*-release.apk \
+            build/app/outputs/mapping/release/mapping.txt \
             --repo "${{ github.repository }}" \
             --title "Tutor's Desk (build ${{ github.run_number }})" \
             --notes "Tutor's Desk. Most phones need app-arm64-v8a-release.apk." \

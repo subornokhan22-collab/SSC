@@ -189,8 +189,12 @@ class AuthService {
     final u = _c.auth.currentUser;
     if (u == null) return null;
     try {
-      final row =
-          await _c.from('profiles').select().eq('id', u.id).maybeSingle();
+      final row = await _c
+          .from('profiles')
+          .select()
+          .eq('id', u.id)
+          .maybeSingle()
+          .timeout(const Duration(seconds: 6));
       if (row != null) _profileCache = Map<String, dynamic>.from(row);
       return _profileCache;
     } catch (_) {
@@ -209,13 +213,15 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c.from('profiles').insert({
-          'id': u.id,
-          'email': u.email ?? '',
-          'role': teacherRole,
-          'name': name,
-          'phone': phone,
-        });
+        await _c.from('profiles')
+            .insert({
+              'id': u.id,
+              'email': u.email ?? '',
+              'role': teacherRole,
+              'name': name,
+              'phone': phone,
+            })
+            .timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -228,7 +234,10 @@ class AuthService {
           patch['role'] = teacherRole;
         }
         if (patch.isNotEmpty) {
-          await _c.from('profiles').update(patch).eq('id', u.id);
+          await _c.from('profiles')
+              .update(patch)
+              .eq('id', u.id)
+              .timeout(const Duration(seconds: 6));
         }
       }
     } catch (_) {
@@ -255,19 +264,27 @@ class AuthService {
     if (name != null) patch['name'] = name.trim();
     if (phone != null) patch['phone'] = phone.trim();
     if (patch.isEmpty) return;
-    await _c.from('profiles').update(patch).eq('id', u.id);
+    await _c.from('profiles')
+        .update(patch)
+        .eq('id', u.id)
+        .timeout(const Duration(seconds: 6));
     await fetchProfile();
   }
 
   /// Turns Pro on for this device when the server has it enabled.
+  /// Carries the subscription end date (monthly / yearly plans); a
+  /// one-time unlock leaves it null = forever.
   static Future<bool> syncProFromServer() async {
     if (!isLoggedIn) return false;
     final p = await fetchProfile();
-    if (p != null && p['is_pro'] == true) {
-      await PaperLicense.markProFromServer();
-      return true;
+    if (p == null || p['is_pro'] != true) return false;
+    DateTime? until;
+    final raw = p['pro_until']?.toString();
+    if (raw != null && raw.isNotEmpty) {
+      until = DateTime.tryParse(raw.replaceFirst('Z', '+00:00'));
     }
-    return false;
+    await PaperLicense.markProFromServer(until: until);
+    return true;
   }
 
   static Future<void> signOut() async {

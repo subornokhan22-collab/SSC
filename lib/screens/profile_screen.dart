@@ -370,7 +370,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _accountCard() {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
-    final serverPro = _profile?['is_pro'] == true;
+    // Expired subscription = not Pro (a past pro_until with is_pro left
+    // true means the plan ran out).
+    DateTime? pu;
+    final puRaw = _profile?['pro_until']?.toString() ?? '';
+    if (puRaw.isNotEmpty) pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
+    final serverPro = _profile?['is_pro'] == true &&
+        (pu == null || pu.isAfter(DateTime.now()));
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
     final initial =
         (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
@@ -434,31 +440,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              const StatusPill(
-                  label: 'Teacher account',
-                  color: AppTheme.primary,
-                  icon: Icons.verified_user_rounded),
-              StatusPill(
-                label: serverPro ? 'Pro on server' : 'No Pro on server',
-                color: serverPro ? AppTheme.success : AppTheme.muted,
-                icon: serverPro
-                    ? Icons.cloud_done_rounded
-                    : Icons.cloud_outlined,
-              ),
-              StatusPill(
-                label: _devicePro ? 'Pro on this device' : 'Demo on this device',
-                color: _devicePro ? AppTheme.success : AppTheme.muted,
-                icon: _devicePro
-                    ? Icons.verified_rounded
-                    : Icons.lock_outline_rounded,
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
           Row(
             children: [
               Expanded(
