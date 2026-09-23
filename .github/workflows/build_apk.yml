@@ -37,7 +37,7 @@ jobs:
         # withOpacity) must not block builds; real errors still fail it.
         run: |
           set -o pipefail
-          flutter analyze --no-fatal-warnings 2>&1 | tee analyze.log
+          flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log
 
       - name: Test (quality gate — blocks on failing tests)
         run: |
