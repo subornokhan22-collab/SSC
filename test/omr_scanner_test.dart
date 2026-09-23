@@ -355,12 +355,16 @@ void main() {
           roll: '001234',
           subject: '109',
           setOption: 1);
-      // Page TL → photo TR, TR → BR, BR → BL, BL → TL.
+      // Page TL → photo TR, TR → BR, BR → BL, BL → TL. _pageMarks() is in
+      // [TL, TR, BL, BR] order, so the list below is [TR, BR, TL, BL]:
+      // a cyclic photo order keeps the map an honest rotation (a non-cyclic
+      // assignment folds the projective map through infinity and shreds the
+      // sheet across the frame).
       final h = OMrScanner.homographyFrom4(_pageMarks(), [
         const Offset(1950, 200), // page TL → photo TR area
         const Offset(1990, 1400), // page TR → photo BR area
-        const Offset(250, 1350), // page BL → photo BL area
-        const Offset(200, 150), // page BR → photo TL area
+        const Offset(200, 150), // page BL → photo TL area
+        const Offset(250, 1350), // page BR → photo BL area
       ])!;
       final photo = _warp(page, h, 2200, 1600);
       final bytes = img.encodeJpg(photo, quality: 92);
@@ -381,6 +385,8 @@ void main() {
             .join(' | ');
         io.writeln('corners=$corners');
         io.writeln('inkDiag=${(res.inkDiag ?? const <String>[]).take(10).join(' | ')}');
+        final dbg = res.debug?.map((k, v) => '$k=$v').join(' | ') ?? 'null';
+        io.writeln('debug=$dbg');
         print('DIAG90: $io');
       }
       expect(res.answers, answers);
@@ -422,6 +428,8 @@ void main() {
             .join(' | ');
         io.writeln('corners=$corners');
         io.writeln('inkDiag=${(res.inkDiag ?? const <String>[]).take(10).join(' | ')}');
+        final dbg = res.debug?.map((k, v) => '$k=$v').join(' | ') ?? 'null';
+        io.writeln('debug=$dbg');
         print('DIAG180: $io');
       }
       expect(res.answers, answers);

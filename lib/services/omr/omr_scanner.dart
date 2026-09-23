@@ -527,6 +527,7 @@ class OMrScanner {
       final solvedH = solved.$1;
       final cand =
           (solvedH != null && solvedH.every((v) => v.isFinite)) ? solvedH : null;
+      dbg['set${si}_probe'] = solved.$3;
       if (cand == null) {
         dbg['set${si}'] = 'no surviving candidate';
         continue;
@@ -839,6 +840,7 @@ class OMrScanner {
       workWidth: w,
       workHeight: h,
       inkDiag: diagLines,
+      debug: dbg,
       rectifiedJpeg: rectifiedCrop,
     );
   }
@@ -1296,7 +1298,11 @@ class OMrScanner {
   /// clockwise, …). The caller must re-assign its corner list by the same
   /// shift so every downstream gate checks the correspondence the fit
   /// actually used.
-  static (List<double>?, int) _bestRotationHomography(
+  /// Third field: a compact per-candidate score log (`m<mask> r<rot>
+  /// err=…` for every candidate that passed the shape gates) — recorded on
+  /// the result's debug map so a wrong-orientation read can be analyzed
+  /// without the device.
+  static (List<double>?, int, String) _bestRotationHomography(
       OMrGeometry geo, List<DetectedCorner> corners,
       [Uint8List? ink, Uint8List? luma, int w = 0, int h = 0]) {
     // Clockwise corner order: TL, TR, BR, BL.
@@ -1335,6 +1341,7 @@ class OMrScanner {
     List<double>? bestH;
     var bestErr = 1e18;
     var bestRot = 0;
+    final probeLog = <String>[];
 
     for (var mask = 0; mask < 16; mask++) {
       final p = <ui.Offset>[];
@@ -1487,6 +1494,7 @@ class OMrScanner {
         // Prefer the unambiguous mark centres; distrust photo corners.
         err += paperAnchors * 0.05 + suspects * 0.3;
 
+        probeLog.add('m$mask r$rot ${err.toStringAsFixed(2)}');
         if (err < bestErr) {
           bestErr = err;
           bestH = hHom;
@@ -1494,7 +1502,7 @@ class OMrScanner {
         }
       }
     }
-    return (bestH, bestRot);
+    return (bestH, bestRot, probeLog.join(' '));
   }
 
   /// Alignment for a page a document scanner returned: the image is
