@@ -3,3 +3,6 @@
 __pycache__/
 *.pyc
 previews/
+
+# CI-restored release signing keystore (never commit — it lives in GitHub Secrets)
+android/app/release.keystore

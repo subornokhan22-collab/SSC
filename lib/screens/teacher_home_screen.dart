@@ -336,7 +336,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 ),
                 SizedBox(height: 3),
                 Text(
-                  'Board-verified patterns across every subject, ready offline.',
+                  'SSC board-style patterns across every subject, ready offline.',
                   style: TextStyle(
                       color: AppTheme.muted, fontSize: 11.8, height: 1.4),
                 ),
