@@ -367,6 +367,22 @@ void main() {
 
       final res = await OMrScanner.scan(bytes, total: total);
       expect(res.ok, isTrue, reason: res.error);
+      if (res.answers.toString() != answers.toString()) {
+        // TEMP rotation diagnostics — remove once these tests pass.
+        final io = StringBuffer();
+        for (var q = 0; q < 6; q++) {
+          io.writeln('q${q + 1} inks=${res.inks[q].map((v) => v.toStringAsFixed(2)).join(',')}');
+        }
+        io.writeln('scale=${res.scale.toStringAsFixed(3)} work=${res.workWidth}x${res.workHeight}');
+        io.writeln('H=${res.homography.map((v) => v.toStringAsFixed(4)).join(',')}');
+        final corners = res.photoCorners
+            .map((c) =>
+                '${c.point.dx.round()}:${c.point.dy.round()},mark=${c.fromMark}')
+            .join(' | ');
+        io.writeln('corners=$corners');
+        io.writeln('inkDiag=${(res.inkDiag ?? const <String>[]).take(10).join(' | ')}');
+        print('DIAG90: $io');
+      }
       expect(res.answers, answers);
       expect(res.roll, '001234');
       expect(res.setCode, 1);
@@ -392,6 +408,22 @@ void main() {
 
       final res = await OMrScanner.scan(bytes, total: total);
       expect(res.ok, isTrue, reason: res.error);
+      if (res.answers.toString() != answers.toString()) {
+        // TEMP rotation diagnostics — remove once these tests pass.
+        final io = StringBuffer();
+        for (var q = 0; q < 6; q++) {
+          io.writeln('q${q + 1} inks=${res.inks[q].map((v) => v.toStringAsFixed(2)).join(',')}');
+        }
+        io.writeln('scale=${res.scale.toStringAsFixed(3)} work=${res.workWidth}x${res.workHeight}');
+        io.writeln('H=${res.homography.map((v) => v.toStringAsFixed(4)).join(',')}');
+        final corners = res.photoCorners
+            .map((c) =>
+                '${c.point.dx.round()}:${c.point.dy.round()},mark=${c.fromMark}')
+            .join(' | ');
+        io.writeln('corners=$corners');
+        io.writeln('inkDiag=${(res.inkDiag ?? const <String>[]).take(10).join(' | ')}');
+        print('DIAG180: $io');
+      }
       expect(res.answers, answers);
       expect(res.roll, '001234');
       expect(res.subjectCode, '109');
