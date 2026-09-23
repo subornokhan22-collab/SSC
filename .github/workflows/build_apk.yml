@@ -33,10 +33,14 @@ jobs:
         run: flutter pub get
 
       - name: Analyze (quality gate — blocks on Dart errors)
-        run: flutter analyze
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee analyze.log
 
       - name: Test (quality gate — blocks on failing tests)
-        run: flutter test
+        run: |
+          set -o pipefail
+          flutter test 2>&1 | tee test.log
 
       - name: Restore release keystore (from GitHub Secrets)
         if: ${{ env.HAS_RELEASE_KEYSTORE == 'true' }}
@@ -61,7 +65,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tail -c 60000 flutter-build.log > /tmp/log-tail.txt
+          {
+            echo "===== ANALYZE ====="
+            tail -c 30000 analyze.log 2>/dev/null || echo "(no analyze.log)"
+            echo ""
+            echo "===== TEST ====="
+            tail -c 30000 test.log 2>/dev/null || echo "(no test.log)"
+            echo ""
+            echo "===== BUILD ====="
+            tail -c 30000 flutter-build.log 2>/dev/null || echo "(no flutter-build.log)"
+          } > /tmp/log-tail.txt
           gh release create "ci-diag-${{ github.run_id }}" \
             --repo "${{ github.repository }}" \
             --title "CI diagnostic log (temporary)" \
