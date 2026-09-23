@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui' show ByteOrder, Offset;
+import 'dart:ui' show Offset;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
@@ -20,7 +20,7 @@ import 'package:tutors_desk/services/omr/omr_scanner.dart';
 
 img.Image _canvas(int w, int h, int v) {
   final im = img.Image(width: w, height: h);
-  final px = im.getBytes(order: ByteOrder.native);
+  final px = im.getBytes();
   final byte = v.toUnsigned(8);
   for (var i = 0; i < w * h; i++) {
     px[i * 4] = byte;
@@ -32,7 +32,7 @@ img.Image _canvas(int w, int h, int v) {
 }
 
 void _fillRect(img.Image im, int x0, int y0, int ww, int hh, int gray) {
-  final px = im.getBytes(order: ByteOrder.native);
+  final px = im.getBytes();
   for (var y = y0; y < y0 + hh; y++) {
     for (var x = x0; x < x0 + ww; x++) {
       if (x < 0 || y < 0 || x >= im.width || y >= im.height) continue;
@@ -45,7 +45,7 @@ void _fillRect(img.Image im, int x0, int y0, int ww, int hh, int gray) {
 }
 
 void _fillDisk(img.Image im, int cx, int cy, double rad, int gray) {
-  final px = im.getBytes(order: ByteOrder.native);
+  final px = im.getBytes();
   final ri = rad.ceil();
   for (var dy = -ri; dy <= ri; dy++) {
     for (var dx = -ri; dx <= ri; dx++) {
@@ -61,7 +61,7 @@ void _fillDisk(img.Image im, int cx, int cy, double rad, int gray) {
 }
 
 void _ring(img.Image im, int cx, int cy, double rad, double stroke, int gray) {
-  final px = im.getBytes(order: ByteOrder.native);
+  final px = im.getBytes();
   final outer = rad + stroke / 2;
   final ri = outer.ceil();
   for (var dy = -ri; dy <= ri; dy++) {
@@ -81,7 +81,7 @@ void _ring(img.Image im, int cx, int cy, double rad, double stroke, int gray) {
 /// The printed option letter inside an empty bubble — a sparse dark cluster
 /// (~10% ink in the sampling disc), exactly what the real sheet prints.
 void _letterBlob(img.Image im, int cx, int cy, int gray) {
-  final px = im.getBytes(order: ByteOrder.native);
+  final px = im.getBytes();
   for (var dy = -5; dy <= 5; dy++) {
     for (var dx = -3; dx <= 3; dx++) {
       if ((dx * 3 + dy * 5).abs() % 5 != 0) continue;
@@ -169,8 +169,8 @@ img.Image _buildOmPage({
 /// Scatters the page pixels through homography [h] into a pw×ph photo.
 img.Image _warp(img.Image page, List<double> h, int pw, int ph) {
   final out = _canvas(pw, ph, 255);
-  final po = out.getBytes(order: ByteOrder.native);
-  final pp = page.getBytes(order: ByteOrder.native);
+  final po = out.getBytes();
+  final pp = page.getBytes();
   for (var y = 0; y < page.height; y++) {
     for (var x = 0; x < page.width; x++) {
       final w = h[6] * x + h[7] * y + 1;
