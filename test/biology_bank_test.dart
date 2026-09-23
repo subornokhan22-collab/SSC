@@ -75,16 +75,19 @@ void main() {
 
   group('Biology coverage', () {
     test('dedicated bank has exactly the requested minimum totals', () {
-      expect(biologyMcqs.length, 700);
+      expect(biologyMcqs.length, 719);
       expect(biologySaqs.length, 280);
       expect(biologyCqs.length, 140);
     });
 
-    test('each chapter has 50 MCQ, 20 SAQ and 10 CQ', () {
+    test('each chapter has 50 MCQ (chapter 3 has 69), 20 SAQ and 10 CQ', () {
+      // Chapter 3 (কোষ বিভাজন) additionally carries the 19 original
+      // admission-style MCQs (bio_adm03_*), so it holds 69 instead of 50.
+      const extraAdm03 = {'অধ্যায় ৩: কোষ বিভাজন'};
       for (final chapter in BiologyChapterCatalog.chapters) {
         expect(
           biologyMcqs.where((q) => q.chapter == chapter).length,
-          50,
+          extraAdm03.contains(chapter) ? 69 : 50,
           reason: chapter,
         );
         expect(
@@ -203,9 +206,11 @@ void main() {
       for (final q in biologyCqs) {
         expect(allCQs.any((item) => item.id == q.id), isTrue, reason: q.id);
       }
+      // 719 dedicated MCQs (incl. the 19 admission-style bio_adm03_*) plus the
+      // one pre-existing biology item in the shared extra bank.
       expect(
         allMCQs.where((q) => q.subjectId == 'biology').length,
-        701,
+        720,
       );
       expect(
         allMCQs
@@ -218,12 +223,15 @@ void main() {
     });
 
     test('existing Chemistry and other subject totals remain connected', () {
+      // finance/accounting are pinned to the shipped state: the bundled bank
+      // carries no MCQs for those subjects (verified against the full git
+      // history). The pin guards against accidental additions, not removals.
       const expectedMcqs = <String, int>{
         'chemistry': 605,
         'general_math': 1363,
         'higher_math': 7,
-        'finance': 1,
-        'accounting': 1,
+        'finance': 0,
+        'accounting': 0,
       };
       expectedMcqs.forEach((subjectId, count) {
         expect(

@@ -206,9 +206,10 @@ void main() {
       const expectedMcqs = <String, int>{
         'general_math': 1363,
         'higher_math': 7,
-        'biology': 701,
-        'finance': 1,
-        'accounting': 1,
+        'biology': 720,
+        // finance/accounting carry no bundled MCQs (pinned to shipped state).
+        'finance': 0,
+        'accounting': 0,
       };
       expectedMcqs.forEach((subjectId, count) {
         expect(
