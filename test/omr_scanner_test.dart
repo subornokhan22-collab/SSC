@@ -385,7 +385,7 @@ void main() {
             .join(' | ');
         io.writeln('corners=$corners');
         io.writeln('inkDiag=${(res.inkDiag ?? const <String>[]).take(10).join(' | ')}');
-        final dbg = res.debug?.map((k, v) => '$k=$v').join(' | ') ?? 'null';
+        final dbg = res.debug?.entries.map((e) => '${e.key}=${e.value}').join(' | ') ?? 'null';
         io.writeln('debug=$dbg');
         print('DIAG90: $io');
       }
@@ -428,7 +428,7 @@ void main() {
             .join(' | ');
         io.writeln('corners=$corners');
         io.writeln('inkDiag=${(res.inkDiag ?? const <String>[]).take(10).join(' | ')}');
-        final dbg = res.debug?.map((k, v) => '$k=$v').join(' | ') ?? 'null';
+        final dbg = res.debug?.entries.map((e) => '${e.key}=${e.value}').join(' | ') ?? 'null';
         io.writeln('debug=$dbg');
         print('DIAG180: $io');
       }

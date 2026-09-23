@@ -70,7 +70,7 @@ class BankFixture {
   /// camelCase -> snake_case (physicsCqs -> physics_cqs,
   /// generalMathMcqs -> general_math_mcqs, physicsSAQs -> physics_saqs).
   static String _snake(String camel) => camel
-          .replaceAll(RegExp(r'([a-z0-9])([A-Z])'), (m) => '${m[1]}_${m[2]}')
+          .replaceAllMapped(RegExp(r'([a-z0-9])([A-Z])'), (m) => '${m[1]}_${m[2]}')
           .toLowerCase();
 
   /// Ids belonging to one exported bank file, e.g. `physics_mcqs`.
