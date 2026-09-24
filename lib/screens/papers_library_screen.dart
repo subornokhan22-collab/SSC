@@ -13,6 +13,7 @@ import '../widgets/problem_dialog.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 import 'omr_scanner_screen.dart';
+import 'saved_paper_screen.dart';
 
 /// Question Papers — two lists:
 ///  • Saved: papers saved from the in-app builder (with their answer keys) —
@@ -322,25 +323,18 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   /// Opens a saved builder paper's rendered pages in the same full-screen
   /// viewer the Added tab uses (tap to zoom, swipe to turn pages).
   Future<void> _viewSaved(SavedPaper p) async {
-    final thumbs = <Uint8List>[];
-    for (var i = 1; i <= p.pages; i++) {
-      final b = await PaperLibrary.pageBytes(p.id, i);
-      if (b != null) thumbs.add(b);
-    }
-    if (thumbs.isEmpty) {
-      await _problem(
-        'Pages not found',
-        'The stored pages for this paper could not be found.',
-      );
-      return;
-    }
-    if (!mounted) return;
     await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => _PaperViewer(title: p.title, pages: thumbs),
-      ),
-    );
+        context,
+        MaterialPageRoute(
+            builder: (_) => SavedPaperScreen(
+                entry: PaperEntry(
+                    id: p.id,
+                    title: p.title,
+                    subject: p.subject,
+                    year: '',
+                    kind: 'saved',
+                    pages: p.pages,
+                    createdAt: p.createdAt))));
   }
 
   Widget _savedTab() {
@@ -565,40 +559,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   }
 
   Future<void> _view(PaperEntry e) async {
-    if (e.kind == 'pdf') {
-      final bytes = await PaperLibrary.pdfBytes(e.id);
-      if (bytes == null) {
-        await _problem(
-          'PDF not found',
-          'The stored PDF for this paper could not be found.',
-        );
-        return;
-      }
-      if (!mounted) return;
-      // printing 5.x-এর প্রিভিউ ডায়ালগই PDF ভিউয়ার হিসেবে কাজ করে —
-      // zoom/pan করা যায়, সেখান থেকেই ছাপানোও যায়।
-      await Printing.layoutPdf(onLayout: (format) async => bytes);
-      return;
-    }
-    final thumbs = <Uint8List>[];
-    for (var i = 1; i <= e.pages; i++) {
-      final b = await PaperLibrary.pageBytes(e.id, i);
-      if (b != null) thumbs.add(b);
-    }
-    if (thumbs.isEmpty) {
-      await _problem(
-        'Pages not found',
-        'The stored pages for this paper could not be found.',
-      );
-      return;
-    }
-    if (!mounted) return;
     await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => _PaperViewer(title: e.title, pages: thumbs),
-      ),
-    );
+        context, MaterialPageRoute(builder: (_) => SavedPaperScreen(entry: e)));
   }
 
   Future<void> _print(PaperEntry e) async {
@@ -855,47 +817,3 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
 }
 
 /// Full-screen page pager for photo papers.
-class _PaperViewer extends StatefulWidget {
-  final String title;
-  final List<Uint8List> pages;
-  const _PaperViewer({required this.title, required this.pages});
-
-  @override
-  State<_PaperViewer> createState() => _PaperViewerState();
-}
-
-class _PaperViewerState extends State<_PaperViewer> {
-  final PageController _ctrl = PageController();
-  int _page = 0;
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, overflow: TextOverflow.ellipsis),
-        actions: [
-          Text(
-            '${_page + 1}/${widget.pages.length}',
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: PageView.builder(
-        controller: _ctrl,
-        itemCount: widget.pages.length,
-        onPageChanged: (i) => setState(() => _page = i),
-        itemBuilder: (context, i) => Padding(
-          padding: const EdgeInsets.all(8),
-          child: Image.memory(widget.pages[i], fit: BoxFit.contain),
-        ),
-      ),
-    );
-  }
-}

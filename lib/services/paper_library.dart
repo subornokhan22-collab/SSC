@@ -306,7 +306,8 @@ class PaperLibrary {
         try {
           norm.add(await _normalizeJpeg(raw));
         } catch (_) {
-          // Unencodable page — skip rather than fail the whole save.
+          throw StateError(
+              'A page could not be saved. No incomplete paper was added to your library.');
         }
       }
       if (norm.isNotEmpty) {

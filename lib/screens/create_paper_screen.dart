@@ -26,6 +26,7 @@ class CreatePaperScreen extends StatefulWidget {
   final List<Question>? initialQuestions;
   const CreatePaperScreen(
       {super.key,
+      this.quickStart = false,
       this.initialSubjectId,
       this.initialFormat,
       this.initialQuestions});
@@ -346,7 +347,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           Card(
               child: RadioListTile<String>(
                   title: Text(s.name),
-                  subtitle: Text(s.bengaliName),
+                  subtitle: Text(
+                      '${s.bengaliName} · ${PaperComposer.isEnglish(s.id) ? 'English sections available' : '${allMCQs.where((q) => q.subjectId == s.id).length} MCQs in bank'}'),
                   value: s.id,
                   groupValue: c.draft.subjectId,
                   onChanged: (id) => c.selectSubject(id!))),
