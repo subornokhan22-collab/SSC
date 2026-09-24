@@ -6,7 +6,8 @@ done phase by phase, every phase ending with a green CI build.
 Legend: ✅ done (ref) · 🔄 in progress · ⏳ queued · 🔒 needs user action · ⏸ deferred (reason)
 
 > Recovery update (2026-09-24): original files restored on `arena/01a0ce12-ssc`;
-> integration corrections and fresh CI are tracked in `docs/RECOVERY-2026-09-24.md`.
+> Phase 1 CI passed at `65dec3b` (run 35976648526); Phase 2 has started.
+> Integration corrections and verification are tracked in `docs/RECOVERY-2026-09-24.md`.
 > Production RLS/function/signing setup remains unverified.
 
 Historical status: 2026-09-23, **Phase 1 code complete** (7 local commits, see
@@ -38,7 +39,7 @@ session; the session that made them closed when PR #5 merged). CI gates
 | 2 | AI parser (fragile indexOf slice) | ✅ (superseded) | The old `ai_question_generator.dart` JSON-slice parser was removed in a prior session (nothing ships it). Superseded by #6/#34: the Phase 5 generator uses schema-forced output + this validator instead of string slicing. |
 | 5 | AI questions duplicate each other | ✅(part) | Detector built + tested now (#7); wired into the generator in Phase 5 (#14/#38). |
 
-## Phase 2 — architecture (⏳)
+## Phase 2 — architecture (🔄)
 
 | # | Item | Status |
 |---|------|--------|
@@ -46,7 +47,7 @@ session; the session that made them closed when PR #5 merged). CI gates
 | 12/13 | Paper controller + AI controller | ⏳ (folded into 8b) |
 | 14 | Centralize loading/error states | ⏳ (existing red problem-dialog pattern → shared hook) |
 | 15 | Centralize navigation | ⏳ named routes |
-| 16 | Design tokens (colors/typography/spacing in one file) | ⏳ prerequisite for Phase 4 |
+| 16 | Design tokens (colors/typography/spacing in one file) | 🔄 foundation in `lib/theme/design_tokens.dart`; theme, presets and shared button migrated; screen adoption remains |
 | 17 | Centralize question validation | ⏳ (validator already central for AI; extend to bank load) |
 
 ## Phase 3 — UX (⏳)

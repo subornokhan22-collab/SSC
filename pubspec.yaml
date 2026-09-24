@@ -34,6 +34,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Hind Siliguri
+      fonts:
+        - asset: assets/fonts/HindSiliguri-Regular.ttf
+    - family: Noto Serif Bengali
+      fonts:
+        - asset: assets/fonts/NotoSerifBengali-Regular.ttf
+        - asset: assets/fonts/NotoSerifBengali-Bold.ttf
+          weight: 700
   assets:
     - assets/questions/
     - assets/question_figures/

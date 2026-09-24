@@ -93,7 +93,7 @@ jobs:
         run: |
           set -o pipefail
           dart format --output=none --set-exit-if-changed lib test tool 2>&1 | tee format.log \
-            || (echo "::warning::$(grep -c . format.log) unformatted files — run 'dart format .' locally"; true)
+            || (echo "::warning::Formatting changes required — see format.log; run dart format lib test tool"; true)
 
       - name: Question bank health (review item #35)
         # Warnings (duplicate stems etc.) are reported but do not block;
