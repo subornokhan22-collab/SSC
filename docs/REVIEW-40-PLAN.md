@@ -5,7 +5,11 @@ done phase by phase, every phase ending with a green CI build.
 
 Legend: ✅ done (ref) · 🔄 in progress · ⏳ queued · 🔒 needs user action · ⏸ deferred (reason)
 
-Status: 2026-09-23, **Phase 1 code complete** (7 local commits, see
+> Recovery update (2026-09-24): original files restored on `arena/01a0ce12-ssc`;
+> integration corrections and fresh CI are tracked in `docs/RECOVERY-2026-09-24.md`.
+> Production RLS/function/signing setup remains unverified.
+
+Historical status: 2026-09-23, **Phase 1 code complete** (7 local commits, see
 docs/HANDOFF-2026-09-23.md — they still need to land on main in the next
 session; the session that made them closed when PR #5 merged). CI gates
 (analyze + test) live since run 35816456766; first fully green build

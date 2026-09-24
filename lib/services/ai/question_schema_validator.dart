@@ -1,4 +1,4 @@
-import '../questions_data.dart';
+import '../../data/questions_data.dart';
 
 /// One validation outcome.
 ///
@@ -7,11 +7,10 @@ import '../questions_data.dart';
 /// a teacher should look) — e.g. the explanation talks about a
 /// different option than the stored key.
 class QuestionValidation {
-  final bool valid;
+  bool get valid => errors.isEmpty;
   final List<String> errors;
   final List<String> warnings;
-  const QuestionValidation({this.errors = const [], this.warnings = const []})
-      : valid = errors.isEmpty;
+  const QuestionValidation({this.errors = const [], this.warnings = const []});
 
   /// Merges another validation into a new one.
   QuestionValidation merged(QuestionValidation other) =>
@@ -76,7 +75,7 @@ class QuestionSchemaValidator {
     // Answer-sanity heuristic (review item #6, cheap local half): if the
     // explanation quotes an option's wording, it should quote the
     // correct one — not a distractor.
-    if (!errors.isEmpty) return QuestionValidation(errors: errors);
+    if (errors.isNotEmpty) return QuestionValidation(errors: errors);
     final exp = _norm(q.explanation);
     if (exp.isNotEmpty) {
       String? mentionedWrong;
@@ -118,7 +117,7 @@ class QuestionSchemaValidator {
       final first = seen[key];
       if (first != null) {
         out[i] = out[i].merged(QuestionValidation(
-            errors: ['duplicate of question #$${first + 1} in the same batch']));
+            errors: ['duplicate of question #${first + 1} in the same batch']));
       } else {
         seen[key] = i;
       }

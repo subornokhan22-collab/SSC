@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tutors_desk/services/ai/duplicate_detector.dart';
-import 'package:tutors_desk/services/questions_data.dart';
+import 'package:tutors_desk/data/questions_data.dart';
 
 Question q(String id, String stem) => Question(
       id: id,

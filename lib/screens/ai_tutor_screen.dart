@@ -684,6 +684,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     if (ok != true || !mounted) return;
     final p = await SharedPreferences.getInstance();
     await p.remove(_chatPref);
+    if (!mounted) return;
     setState(() => _msgs.clear());
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tutors_desk/services/ai/question_schema_validator.dart';
-import 'package:tutors_desk/services/questions_data.dart';
+import 'package:tutors_desk/data/questions_data.dart';
 
 Question q({
   String id = 'ai_test_1',

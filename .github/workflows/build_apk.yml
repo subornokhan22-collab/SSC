@@ -10,7 +10,41 @@ permissions:
   contents: write
 
 jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: rls_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d rls_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Gemini edge function
+        run: deno check supabase/functions/mimi/index.ts
+      - name: Gateway request boundary tests
+        run: node --experimental-strip-types --test supabase/tests/mimi_request_test.mjs
+      - name: Profiles RLS and audit regression tests (disposable database)
+        env:
+          PGPASSWORD: ci-only-password
+        run: psql -h 127.0.0.1 -U postgres -d rls_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles_rls_test.sql
+
   build:
+    needs: security-tests
     runs-on: ubuntu-latest
     # The `secrets` context is not allowed inside step `if:` conditions,
     # so the "does the keystore exist" check is staged through env here.
@@ -51,6 +85,7 @@ jobs:
         # "dart format ." pass lands (Phase 2), remove the `|| true` so
         # unformatted code fails the build.
         run: |
+          set -o pipefail
           dart format --output=none --set-exit-if-changed lib test tool 2>&1 | tee format.log \
             || (echo "::warning::$(grep -c . format.log) unformatted files — run 'dart format .' locally"; true)
 
@@ -58,6 +93,7 @@ jobs:
         # Warnings (duplicate stems etc.) are reported but do not block;
         # hard problems (bad keys, dup ids, empty options) fail the build.
         run: |
+          set -o pipefail
           python3 tool/bank_health.py | tee bank-health.txt
 
       - name: Upload bank health report

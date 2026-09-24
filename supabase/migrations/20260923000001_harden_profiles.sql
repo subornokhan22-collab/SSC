@@ -33,11 +33,11 @@ declare
   p record;
 begin
   for p in
-    select polname
+    select policyname
     from pg_policies
     where schemaname = 'public' and tablename = 'profiles'
   loop
-    execute format('drop policy if exists %I on public.profiles', p.polname);
+    execute format('drop policy if exists %I on public.profiles', p.policyname);
   end loop;
 end $$;
 

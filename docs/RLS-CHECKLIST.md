@@ -28,17 +28,22 @@ Paste **`supabase/audit_rls.sql`** and Run, then copy the output. Check:
       (`postgres`, `supabase_admin`, `service_role`…) — no custom role
 - [ ] Section 6: the `profiles_protect_pro` trigger exists
 
-## 3. Prove it (optional, 2 minutes)
+## 3. Prove it with an end-user session
 
-In the SQL editor, **as your own signed-in session** (not service role), run:
+Do not test this by merely signing into the SQL Editor: its privileged
+connection is not the app user's JWT, and `auth.uid()` can be null there.
+Use a disposable signed-in account through a Supabase client carrying that
+user's access token (never the service-role key). Verify that:
 
-```sql
-update public.profiles set is_pro = true where id = auth.uid();
-```
+- Updating that account's name/phone succeeds.
+- Writing `is_pro`, `pro_until`, or `pro_plan` leaves the values unchanged.
+- Selecting/updating another account's profile returns no rows.
+- Inserting a profile for another user fails.
+- A backend service-role update still activates Pro for the paid account.
 
-Expected: the row's `is_pro` is still whatever it was before (the trigger
-reverts the change). Then check **Section 5** of the audit output —
-`is_pro` unchanged. That is the attack the migration blocks.
+CI runs `supabase/tests/profiles_rls_test.sql` against a disposable PostgreSQL
+database to cover these cases and migration idempotency. It does not access
+production. The live checks above are still needed for your deployed schema.
 
 ## Keep in mind
 

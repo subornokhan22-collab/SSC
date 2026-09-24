@@ -57,7 +57,7 @@ class AuthService {
   static String? get currentUserToken {
     if (!isLoggedIn) return null;
     try {
-      return _c.auth.currentUser?.accessToken;
+      return _c.auth.currentSession?.accessToken;
     } catch (_) {
       return null;
     }

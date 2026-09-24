@@ -8,7 +8,6 @@
 --   4. roles that bypass RLS (only Supabase's own should appear)
 -- ─────────────────────────────────────────────────────────────────────
 
-\pset pager off
 
 select '── 1. tables & RLS status' as section;
 select tablename,

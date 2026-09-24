@@ -27,6 +27,7 @@
 // ─────────────────────────────────────────────────────────────────────
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { readJsonObject, RequestBodyError } from "./request_body.ts";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
@@ -42,7 +43,6 @@ const MODELS = [
 
 // Kept in sync with the app's limits after resize; anything above the
 // edge-function payload budget is routed by the app to a device key.
-const MAX_BODY_BYTES = 5.5 * 1024 * 1024;
 const MAX_ATTACHMENTS = 3;
 
 const DEFAULT_SYSTEM =
@@ -80,11 +80,16 @@ Deno.serve(async (req: Request) => {
 
   // Never an open proxy: a signed-in Tutor's Desk account is required.
   const authHeader = req.headers.get("Authorization") ?? "";
-  const token = authHeader.replace(/^Bearer\s+/i, "");
+  const token = /^Bearer\s+(\S+)$/i.exec(authHeader)?.[1];
   if (!token) return fail("Sign in to use MiMi.", 401, "UNAUTHORIZED");
-  const { data: userData, error: authError } = await supa.auth.getUser(token);
-  const user = userData?.user;
-  if (!user || authError) return fail("Sign in to use MiMi.", 401, "UNAUTHORIZED");
+  try {
+    const { data: userData, error: authError } = await supa.auth.getUser(token);
+    if (!userData?.user || authError) {
+      return fail("Sign in to use MiMi.", 401, "UNAUTHORIZED");
+    }
+  } catch {
+    return fail("Could not verify your session. Try again.", 503, "AUTH_UNAVAILABLE");
+  }
 
   const key = Deno.env.get("GEMINI_API_KEY") ?? "";
   if (!key) {
@@ -95,28 +100,23 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  if (Number(req.headers.get("Content-Length") ?? 0) > MAX_BODY_BYTES) {
-    return fail(
-      "The attachment is too large for one server request — use a smaller file.",
-      413,
-      "PAYLOAD_TOO_LARGE",
-    );
-  }
-
-  let payload: {
-    action?: string;
-    system?: string;
-    history?: Array<{ role?: string; text?: string }>;
-    text?: string;
-    attachments?: Array<{ mime?: string; data?: string }>;
-  };
+  let payload: Record<string, unknown>;
   try {
-    payload = await req.json();
-  } catch (_) {
-    return fail("Invalid JSON body.", 400, "BAD_REQUEST");
+    payload = await readJsonObject(req);
+  } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return fail(error.message, error.status, error.code);
+    }
+    return fail("Could not read request body.", 400, "BAD_REQUEST");
   }
   if (payload.action !== "chat") return fail("Unknown action.", 400, "BAD_REQUEST");
 
+  if (payload.attachments !== undefined && !Array.isArray(payload.attachments)) {
+    return fail("Attachments must be an array.", 400, "BAD_REQUEST");
+  }
+  if (payload.history !== undefined && !Array.isArray(payload.history)) {
+    return fail("History must be an array.", 400, "BAD_REQUEST");
+  }
   const attachments = Array.isArray(payload.attachments)
     ? payload.attachments
     : [];

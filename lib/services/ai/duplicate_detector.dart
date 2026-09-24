@@ -1,4 +1,4 @@
-import '../questions_data.dart';
+import '../../data/questions_data.dart';
 
 /// One near-duplicate finding.
 class DuplicateHit {
