@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import '../controllers/ai_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 
@@ -513,6 +515,25 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             question: p.mcqs[i],
             number: i + 1,
             onReplace: () => c.replaceQuestion(i),
+            onImprove: () async {
+              final q = p.mcqs[i];
+              final edited = await Navigator.push<List<Question>>(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => AiToolsScreen(
+                          subjectId: q.subjectId,
+                          chapter: q.chapter,
+                          currentPaper: p.mcqs,
+                          forSelection: true,
+                          replaceSelection: true,
+                          initialCommand: TeacherCommand.improve,
+                          initialText: jsonEncode({
+                            'question': q.questionText,
+                            'options': q.options
+                          }))));
+              if (mounted && edited?.length == 1)
+                c.editQuestion(i, edited!.single);
+            },
             onEdit: (q) => c.editQuestion(i, q),
             onDelete: c.draft.format == PaperFormat.board
                 ? null

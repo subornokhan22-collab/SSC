@@ -64,27 +64,10 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: Get packages
         run: flutter pub get
-
-      # Opt-in mechanical formatting for this Arena branch (no force push).
-      # Needed because the editor sandbox has no Flutter/Dart SDK.
-      - name: Format sources on request
-        if: github.ref == 'refs/heads/arena/01a0ce12-ssc' && contains(github.event.head_commit.message, '[format]')
-        run: |
-          set -o pipefail
-          if ! dart format lib test tool 2>&1 | tee format.log; then
-            python3 tool/ci_annotations.py format.log
-            exit 1
-          fi
-          if ! git diff --quiet -- lib test tool; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add lib test tool
-            git commit -m "Format Dart sources for the teacher workflow quality gate"
-            git push origin HEAD:arena/01a0ce12-ssc
-          fi
 
       - name: Analyze (quality gate — blocks on Dart errors)
         # --no-fatal-warnings: existing warnings (unused vars, deprecated

@@ -1,5 +1,11 @@
 # Phase 2 — architecture progress
 
+**Implementation update:** the new teacher workspace, paper/AI controllers, shared
+operation state, named primary routes, bank validation and hard format gate are
+now implemented. See [the current delivery notes](TEACHER-WORKSPACE-2026-09-24.md)
+for the working paths, tests and remaining legacy/deployment limitations. The
+slice-1 report below is retained as historical context, not the current backlog.
+
 Started 2026-09-24 after Phase 1 CI passed at `65dec3b`:
 https://github.com/subornokhan22-collab/SSC/actions/runs/35976648526
 

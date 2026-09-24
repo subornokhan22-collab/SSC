@@ -8,6 +8,7 @@ class PaperQuestionCard extends StatelessWidget {
   final Question question;
   final int number;
   final VoidCallback? onReplace;
+  final VoidCallback? onImprove;
   final VoidCallback? onDelete;
   final ValueChanged<Question>? onEdit;
   const PaperQuestionCard({
@@ -15,6 +16,7 @@ class PaperQuestionCard extends StatelessWidget {
     required this.question,
     required this.number,
     this.onReplace,
+    this.onImprove,
     this.onDelete,
     this.onEdit,
   });
@@ -104,6 +106,11 @@ class PaperQuestionCard extends StatelessWidget {
                       icon: const Icon(Icons.swap_horiz, size: 17),
                       label: const Text('Replace'),
                     ),
+                  if (onImprove != null)
+                    TextButton.icon(
+                        onPressed: onImprove,
+                        icon: const Icon(Icons.auto_awesome_outlined, size: 17),
+                        label: const Text('Improve with AI')),
                   if (onDelete != null)
                     IconButton(
                       tooltip: 'Remove question',

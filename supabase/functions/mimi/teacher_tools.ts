@@ -62,5 +62,5 @@ export async function runTeacherTool(request:ToolRequest,model:JsonModel,emit:(p
   // The second pass cannot see the generator's key or explanation: solve afresh.
   const checks=await model(context+" Independently solve each question. Return each zero-based index once. valid=true ONLY if exactly one choice is correct, the wording is unambiguous, and the content is within the requested SSC chapters. Explain your reasoning. Do not infer correctness from the question's presence.",JSON.stringify(questions.map((q,index)=>({index,chapter:q.chapter,questionText:q.questionText,options:q.options}))),checkSchema,true);
   const reasons=verifyChecks(checks,questions);
-  return {kind:"questions",questions,checked:true,checkReasons:reasons};
+  return {kind:"questions",questions:questions.map((q,index)=>({...q,explanation:reasons[index]})),checked:true,checkReasons:reasons};
 }

@@ -42,6 +42,9 @@ class QuestionSchemaValidator {
     final errors = <String>[];
     final warnings = <String>[];
 
+    if (q.id.trim().isEmpty ||
+        q.subjectId.trim().isEmpty ||
+        q.chapter.trim().isEmpty) errors.add('missing question metadata');
     final stem = q.questionText.trim();
     if (stem.isEmpty) errors.add('empty question text');
 

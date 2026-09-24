@@ -15,6 +15,7 @@ class AiToolsScreen extends StatefulWidget {
   final String? chapter;
   final List<Question> currentPaper;
   final bool forSelection;
+  final bool replaceSelection;
   final TeacherCommand initialCommand;
   final String initialText;
   const AiToolsScreen({
@@ -23,6 +24,7 @@ class AiToolsScreen extends StatefulWidget {
     this.chapter,
     this.currentPaper = const [],
     this.forSelection = false,
+    this.replaceSelection = false,
     this.initialCommand = TeacherCommand.create,
     this.initialText = '',
   });
@@ -46,6 +48,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
       ..addListener(refresh);
     subject = widget.subjectId ?? 'physics';
     command = widget.initialCommand;
+    if (widget.replaceSelection) count = 1;
     input.text = widget.initialText;
     chapter = widget.chapter;
     if (chapter != null && !chapters.contains(chapter)) chapter = null;
@@ -164,7 +167,9 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                           child: Text(ch, overflow: TextOverflow.ellipsis),
                         ),
                     ],
-                    onChanged: (v) => setState(() => chapter = v),
+                    onChanged: widget.replaceSelection
+                        ? null
+                        : (v) => setState(() => chapter = v),
                   ),
                   if (chapters.isEmpty)
                     const Padding(
@@ -191,7 +196,9 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                                   child: Text('$i questions'),
                                 ),
                             ],
-                            onChanged: (v) => setState(() => count = v!),
+                            onChanged: widget.replaceSelection
+                                ? null
+                                : (v) => setState(() => count = v!),
                           ),
                         ),
                         const SizedBox(width: 12),
