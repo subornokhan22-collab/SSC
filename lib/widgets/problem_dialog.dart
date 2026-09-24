@@ -106,13 +106,15 @@ class _ProblemCardState extends State<_ProblemCard>
           backgroundColor: AppTheme.danger,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(13),
+          ),
         ),
         onPressed: () => _run(a),
-        child: Text(a.label,
-            style:
-                const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
+        child: Text(
+          a.label,
+          style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+        ),
       );
     }
     return OutlinedButton(
@@ -123,8 +125,10 @@ class _ProblemCardState extends State<_ProblemCard>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
       ),
       onPressed: () => _run(a),
-      child: Text(a.label,
-          style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
+      child: Text(
+        a.label,
+        style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+      ),
     );
   }
 
@@ -141,92 +145,114 @@ class _ProblemCardState extends State<_ProblemCard>
               color: AppTheme.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                  color: AppTheme.danger.withOpacity(.7), width: 1.4),
+                color: AppTheme.danger.withOpacity(.7),
+                width: 1.4,
+              ),
               boxShadow: const [
                 BoxShadow(
-                    color: Color(0x2E16203A),
-                    blurRadius: 30,
-                    offset: Offset(0, 12)),
+                  color: Color(0x2E16203A),
+                  blurRadius: 30,
+                  offset: Offset(0, 12),
+                ),
               ],
             ),
             padding: const EdgeInsets.fromLTRB(22, 24, 22, 20),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              // Red blinking warning icon — a smooth pulse so it reads as
-              // "problem" at a glance without strobing.
-              AnimatedBuilder(
-                animation: _blink,
-                builder: (c, _) {
-                  final t = _blink.value;
-                  final col = Color.lerp(
-                      AppTheme.danger.withOpacity(.45), AppTheme.danger, t)!;
-                  return Transform.scale(
-                    scale: 1 + .05 * t,
-                    child: Container(
-                      width: 62,
-                      height: 62,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: col.withOpacity(.12 + .10 * t),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Red blinking warning icon — a smooth pulse so it reads as
+                // "problem" at a glance without strobing.
+                AnimatedBuilder(
+                  animation: _blink,
+                  builder: (c, _) {
+                    final t = _blink.value;
+                    final col = Color.lerp(
+                      AppTheme.danger.withOpacity(.45),
+                      AppTheme.danger,
+                      t,
+                    )!;
+                    return Transform.scale(
+                      scale: 1 + .05 * t,
+                      child: Container(
+                        width: 62,
+                        height: 62,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: col.withOpacity(.12 + .10 * t),
+                        ),
+                        child: Icon(
+                          Icons.error_outline_rounded,
+                          size: 36,
+                          color: col,
+                        ),
                       ),
-                      child: Icon(Icons.error_outline_rounded,
-                          size: 36, color: col),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 14),
-              Text(
-                widget.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
+                    );
+                  },
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  widget.title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
-                    color: AppTheme.danger),
-              ),
-              const SizedBox(height: 8),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * .45),
-                child: SingleChildScrollView(
-                  child: Column(children: [
-                    Text(
-                      widget.message,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 13.5,
-                          height: 1.5,
-                          color: Color(0xFFB23A41)),
-                    ),
-                    if (widget.detail != null) ...[
-                      const SizedBox(height: 10),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFAF1F1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          widget.detail!,
-                          style: const TextStyle(
-                              fontSize: 11.5,
-                              height: 1.45,
-                              color: Color(0xFF8A4B4E)),
-                        ),
-                      ),
-                    ],
-                  ]),
+                    color: AppTheme.danger,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 18),
-              Row(children: [
-                for (var i = 0; i < widget.actions.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 10),
-                  Expanded(child: _actionButton(widget.actions[i])),
-                ],
-              ]),
-            ]),
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * .45,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            height: 1.5,
+                            color: Color(0xFFB23A41),
+                          ),
+                        ),
+                        if (widget.detail != null) ...[
+                          const SizedBox(height: 10),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFAF1F1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              widget.detail!,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                height: 1.45,
+                                color: Color(0xFF8A4B4E),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    for (var i = 0; i < widget.actions.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 10),
+                      Expanded(child: _actionButton(widget.actions[i])),
+                    ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

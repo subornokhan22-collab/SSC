@@ -32,13 +32,14 @@ class BankFixture {
     final saqs = <ShortQuestion>[];
     final cqs = <CreativeQuestion>[];
 
-    final files = dir
-        .listSync()
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.json'))
-        .where((f) => !f.path.endsWith('manifest.json'))
-        .toList()
-      ..sort((a, b) => a.path.compareTo(b.path));
+    final files =
+        dir
+            .listSync()
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.json'))
+            .where((f) => !f.path.endsWith('manifest.json'))
+            .toList()
+          ..sort((a, b) => a.path.compareTo(b.path));
 
     for (final file in files) {
       final rows = json.decode(file.readAsStringSync()) as List;

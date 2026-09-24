@@ -168,7 +168,9 @@ String plainifyMath(String text) {
   // \text{...} / \mathrm{...} -> the inner text (repeat for nesting).
   for (var i = 0; i < 4; i++) {
     final t = s.replaceAll(
-        RegExp(r'\\(?:text|textrm|mathrm|mathbf)\{([^{}]*)\}'), r'\1');
+      RegExp(r'\\(?:text|textrm|mathrm|mathbf)\{([^{}]*)\}'),
+      r'\1',
+    );
     if (t == s) break;
     s = t;
   }
@@ -177,8 +179,9 @@ String plainifyMath(String text) {
   // \frac{a}{b} -> (a)/(b), one level of nested braces allowed
   for (var i = 0; i < 3; i++) {
     final t = s.replaceAll(
-        RegExp(r'\\frac\{((?:[^{}]|\{[^{}]*\})*)\}\{((?:[^{}]|\{[^{}]*\})*)\}'),
-        r'(\1)/(\2)');
+      RegExp(r'\\frac\{((?:[^{}]|\{[^{}]*\})*)\}\{((?:[^{}]|\{[^{}]*\})*)\}'),
+      r'(\1)/(\2)',
+    );
     if (t == s) break;
     s = t;
   }
@@ -199,13 +202,21 @@ String plainifyMath(String text) {
 
   // Superscripts and subscripts.
   s = s.replaceAllMapped(
-      RegExp(r'\^\{([^{}]*)\}'), (m) => _mapScript(m.group(1)!, _supMap));
+    RegExp(r'\^\{([^{}]*)\}'),
+    (m) => _mapScript(m.group(1)!, _supMap),
+  );
   s = s.replaceAllMapped(
-      RegExp(r'\^([0-9+\-])'), (m) => _supMap[m.group(1)!] ?? m.group(1)!);
+    RegExp(r'\^([0-9+\-])'),
+    (m) => _supMap[m.group(1)!] ?? m.group(1)!,
+  );
   s = s.replaceAllMapped(
-      RegExp(r'_\{([^{}]*)\}'), (m) => _mapScript(m.group(1)!, _subMap));
+    RegExp(r'_\{([^{}]*)\}'),
+    (m) => _mapScript(m.group(1)!, _subMap),
+  );
   s = s.replaceAllMapped(
-      RegExp(r'_([0-9+\-])'), (m) => _subMap[m.group(1)!] ?? m.group(1)!);
+    RegExp(r'_([0-9+\-])'),
+    (m) => _subMap[m.group(1)!] ?? m.group(1)!,
+  );
 
   // Leftovers: $ delimiters, braces, unknown commands.
   s = s.replaceAll('\$', '');
@@ -261,8 +272,11 @@ class _ChatMsg {
   final bool isUser;
   final String text;
   final List<_AttMeta> atts;
-  const _ChatMsg(
-      {required this.isUser, required this.text, this.atts = const []});
+  const _ChatMsg({
+    required this.isUser,
+    required this.text,
+    this.atts = const [],
+  });
 }
 
 class _Pending {
@@ -300,18 +314,24 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   void initState() {
     super.initState();
     _fx = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 2600));
-    _bg =
-        AnimationController(vsync: this, duration: const Duration(seconds: 26))
-          ..repeat();
+      vsync: this,
+      duration: const Duration(milliseconds: 2600),
+    );
+    _bg = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 26),
+    )..repeat();
     _ctrl.addListener(() {
       if (mounted) setState(() {});
     });
-    SystemChrome.setSystemUIOverlayStyle(AppTheme.overlayStyle.copyWith(
+    SystemChrome.setSystemUIOverlayStyle(
+      AppTheme.overlayStyle.copyWith(
         statusBarIconBrightness: Brightness.light,
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: _mimiBg,
-        systemNavigationBarIconBrightness: Brightness.light));
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
     WidgetsBinding.instance.addObserver(this);
     _load();
   }
@@ -347,14 +367,16 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         if (j is List) {
           for (final m in j) {
             if (m is Map) {
-              _msgs.add(_ChatMsg(
-                isUser: m['r'] == 1,
-                text: (m['t'] ?? '').toString(),
-                atts: [
-                  for (final a in (m['a'] is List ? m['a'] : const []))
-                    _AttMeta('photo', a.toString(), ''),
-                ].where((a) => a.label.isNotEmpty).toList(),
-              ));
+              _msgs.add(
+                _ChatMsg(
+                  isUser: m['r'] == 1,
+                  text: (m['t'] ?? '').toString(),
+                  atts: [
+                    for (final a in (m['a'] is List ? m['a'] : const []))
+                      _AttMeta('photo', a.toString(), ''),
+                  ].where((a) => a.label.isNotEmpty).toList(),
+                ),
+              );
             }
           }
         }
@@ -370,8 +392,12 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   }
 
   Future<void> _problem(String title, String message, {String? detail}) =>
-      showProblemDialog(context,
-          title: title, message: message, detail: detail);
+      showProblemDialog(
+        context,
+        title: title,
+        message: message,
+        detail: detail,
+      );
 
   // ── key ─────────────────────────────────────────────────────────
 
@@ -392,8 +418,9 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         canPop: true,
         child: AlertDialog(
           backgroundColor: _mimiBg,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           contentPadding: EdgeInsets.zero,
           content: _SetupCard(onKeySaved: _reloadKey, compact: true),
         ),
@@ -405,52 +432,64 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
   Future<void> _openAttachSheet() async {
     if (_pending.length >= kMaxAttachments) {
-      await _problem('Attachment limit',
-          'Up to $kMaxAttachments attachments per question (photo, audio or PDF).');
+      await _problem(
+        'Attachment limit',
+        'Up to $kMaxAttachments attachments per question (photo, audio or PDF).',
+      );
       return;
     }
     final choice = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: AppTheme.card,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (c) => SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Text('Attach to your question',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
-          ),
-          _attachOption(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                'Attach to your question',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+              ),
+            ),
+            _attachOption(
               c,
               Icons.photo_library_rounded,
               'Photo',
               'From gallery — with crop (max 15 MB)',
               'photo',
-              AppTheme.primary),
-          _attachOption(
+              AppTheme.primary,
+            ),
+            _attachOption(
               c,
               Icons.photo_camera_rounded,
               'Camera',
               'Take a photo of the question — with crop',
               'camera',
-              AppTheme.success),
-          _attachOption(
+              AppTheme.success,
+            ),
+            _attachOption(
               c,
               Icons.record_voice_over_rounded,
               'Audio',
               'Voice note / mp3 / wav / ogg / flac (max 5 MB)',
               'audio',
-              AppTheme.secondary),
-          _attachOption(
+              AppTheme.secondary,
+            ),
+            _attachOption(
               c,
               Icons.picture_as_pdf_rounded,
               'PDF',
               'A question paper or book page (max 10 MB)',
               'pdf',
-              AppTheme.accent),
-          const SizedBox(height: 8),
-        ]),
+              AppTheme.accent,
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
     if (choice == 'photo') await _pickPhoto();
@@ -459,37 +498,55 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     if (choice == 'pdf') await _pickPdf();
   }
 
-  Widget _attachOption(BuildContext c, IconData icon, String title, String sub,
-      String kind, Color color) {
+  Widget _attachOption(
+    BuildContext c,
+    IconData icon,
+    String title,
+    String sub,
+    String kind,
+    Color color,
+  ) {
     return InkWell(
       onTap: () => Navigator.pop(c, kind),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        child: Row(children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color.withOpacity(.12),
-              border: Border.all(color: color.withOpacity(.4)),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color.withOpacity(.12),
+                border: Border.all(color: color.withOpacity(.4)),
+              ),
+              child: Icon(icon, color: color, size: 22),
             ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(width: 13),
-          Expanded(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 14.5, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 2),
-              Text(sub,
-                  style:
-                      const TextStyle(fontSize: 11.5, color: AppTheme.muted)),
-            ]),
-          ),
-          const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
-        ]),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    sub,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: AppTheme.muted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
+          ],
+        ),
       ),
     );
   }
@@ -504,8 +561,10 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       if (xfile == null) return;
       final bytes = await xfile.readAsBytes();
       if (bytes.length > kPhotoMaxBytes) {
-        await _problem('Photo too large',
-            'This photo is ${_fmtBytes(bytes.length)}. The limit is 15 MB so MiMi can read it reliably.');
+        await _problem(
+          'Photo too large',
+          'This photo is ${_fmtBytes(bytes.length)}. The limit is 15 MB so MiMi can read it reliably.',
+        );
         return;
       }
       await _attachPhoto(bytes);
@@ -524,7 +583,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       if (!mounted) return;
       final att = cropped ?? await _resizeJpeg(bytes, 1600, 82);
       setState(
-          () => _pending.add(_Pending('photo', 'Photo', 'image/jpeg', att)));
+        () => _pending.add(_Pending('photo', 'Photo', 'image/jpeg', att)),
+      );
     } catch (e) {
       await _problem('Could not open the photo', '$e');
     }
@@ -533,7 +593,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   Future<void> _pickAudio() async {
     try {
       final res = await FilePicker.platform.pickFiles(
-          allowedExtensions: ['mp3', 'wav', 'ogg', 'flac', 'aiff', 'aif']);
+        allowedExtensions: ['mp3', 'wav', 'ogg', 'flac', 'aiff', 'aif'],
+      );
       final f = res?.files.single;
       if (f == null || f.path == null) return;
       final bytes = await _readFile(f.path!);
@@ -548,13 +609,17 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       };
       final mime = ok[ext];
       if (mime == null) {
-        await _problem('Audio format not supported',
-            'Please use MP3, WAV, OGG or FLAC. Your file was .${ext.isEmpty ? 'unknown' : ext}.');
+        await _problem(
+          'Audio format not supported',
+          'Please use MP3, WAV, OGG or FLAC. Your file was .${ext.isEmpty ? 'unknown' : ext}.',
+        );
         return;
       }
       if (bytes.length > kAudioMaxBytes) {
-        await _problem('Audio too long',
-            'This audio is ${_fmtBytes(bytes.length)} — the limit is 5 MB (roughly one minute) so MiMi can listen and answer.');
+        await _problem(
+          'Audio too long',
+          'This audio is ${_fmtBytes(bytes.length)} — the limit is 5 MB (roughly one minute) so MiMi can listen and answer.',
+        );
         return;
       }
       if (!mounted) return; // picker + file read can outlive the screen
@@ -566,19 +631,23 @@ class _AiTutorScreenState extends State<AiTutorScreen>
 
   Future<void> _pickPdf() async {
     try {
-      final res =
-          await FilePicker.platform.pickFiles(allowedExtensions: ['pdf']);
+      final res = await FilePicker.platform.pickFiles(
+        allowedExtensions: ['pdf'],
+      );
       final f = res?.files.single;
       if (f == null || f.path == null) return;
       final bytes = await _readFile(f.path!);
       if (bytes.length > kPdfMaxBytes) {
-        await _problem('PDF too large',
-            'This PDF is ${_fmtBytes(bytes.length)} — the limit is 10 MB. Export only the pages you need.');
+        await _problem(
+          'PDF too large',
+          'This PDF is ${_fmtBytes(bytes.length)} — the limit is 10 MB. Export only the pages you need.',
+        );
         return;
       }
       if (!mounted) return; // picker + file read can outlive the screen
-      setState(() =>
-          _pending.add(_Pending('pdf', f.name, 'application/pdf', bytes)));
+      setState(
+        () => _pending.add(_Pending('pdf', f.name, 'application/pdf', bytes)),
+      );
     } catch (e) {
       await _problem('Could not open the PDF', '$e');
     }
@@ -596,7 +665,10 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   /// keeping the payload small enough for the model. Pure Dart (the engine
   /// no longer JPEG-encodes raw images).
   Future<Uint8List> _resizeJpeg(
-      Uint8List bytes, int maxSide, int quality) async {
+    Uint8List bytes,
+    int maxSide,
+    int quality,
+  ) async {
     try {
       final source = img.decodeImage(bytes);
       if (source == null) return bytes;
@@ -625,8 +697,10 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     if (_busy) return;
     final text = _ctrl.text.trim();
     if (text.length > kTextMaxChars) {
-      await _problem('Message too long',
-          'Your message is more than $kTextMaxChars characters — keep it under the limit.');
+      await _problem(
+        'Message too long',
+        'Your message is more than $kTextMaxChars characters — keep it under the limit.',
+      );
       return;
     }
     if (text.isEmpty && _pending.isEmpty) return;
@@ -638,7 +712,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         _AttMeta(a.kind, a.label, _fmtBytes(a.bytes.length)),
     ];
     final attachments = [
-      for (final a in atts) GeminiAttachment(a.mime, a.bytes)
+      for (final a in atts) GeminiAttachment(a.mime, a.bytes),
     ];
     setState(() {
       _ctrl.clear();
@@ -717,7 +791,9 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   ) async {
     final token = AuthService.currentUserToken;
     final fits = GeminiClient.fitsServerPath(
-        userText: userText, attachments: attachments);
+      userText: userText,
+      attachments: attachments,
+    );
     if (token != null && fits) {
       try {
         return await GeminiClient.chatViaServer(
@@ -733,7 +809,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         if (key == null) {
           if (e.code == 'NOT_CONFIGURED') {
             throw const GeminiException(
-                'MiMi is not set up yet — the server AI key (GEMINI_API_KEY) is missing, and no device key is stored. Ask the app owner to set it in Supabase, or add a device key via the ⚙ button above.');
+              'MiMi is not set up yet — the server AI key (GEMINI_API_KEY) is missing, and no device key is stored. Ask the app owner to set it in Supabase, or add a device key via the ⚙ button above.',
+            );
           }
           rethrow;
         }
@@ -752,14 +829,17 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     if (key == null) {
       if (!fits) {
         throw const GeminiException(
-            'This attachment is too large for the server AI. Use a smaller file, or add a device key via the ⚙ button above.');
+          'This attachment is too large for the server AI. Use a smaller file, or add a device key via the ⚙ button above.',
+        );
       }
       if (token == null) {
         throw const GeminiException(
-            'Sign in with your Tutor\u2019s Desk account to use MiMi — or add a device key via the ⚙ button above.');
+          'Sign in with your Tutor\u2019s Desk account to use MiMi — or add a device key via the ⚙ button above.',
+        );
       }
       throw const GeminiException(
-          'The server AI key is not configured yet. Ask the app owner to set GEMINI_API_KEY in Supabase — or add a device key via the ⚙ button above.');
+        'The server AI key is not configured yet. Ask the app owner to set GEMINI_API_KEY in Supabase — or add a device key via the ⚙ button above.',
+      );
     }
     return GeminiClient.chat(
       apiKey: key,
@@ -789,7 +869,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
           't': m.text.length > 4000 ? m.text.substring(0, 4000) : m.text,
           'a': [
             for (final a in m.atts)
-              '${a.kind} • ${a.label}${a.size.isEmpty ? '' : ' • ${a.size}'}'
+              '${a.kind} • ${a.label}${a.size.isEmpty ? '' : ' • ${a.size}'}',
           ],
         },
     ];
@@ -802,14 +882,17 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       builder: (c) => AlertDialog(
         title: const Text('Clear the conversation?'),
         content: const Text(
-            'This removes the chat from this phone. Your key stays saved.'),
+          'This removes the chat from this phone. Your key stays saved.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(c, false),
-              child: const Text('Keep')),
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Keep'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(c, true),
-              child: const Text('Clear')),
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Clear'),
+          ),
         ],
       ),
     );
@@ -834,25 +917,36 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         automaticallyImplyLeading: true,
         iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 12,
-        title: Row(children: [
-          _orb(size: 32, active: false),
-          const SizedBox(width: 11),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('MiMi',
-                style: TextStyle(
+        title: Row(
+          children: [
+            _orb(size: 32, active: false),
+            const SizedBox(width: 11),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'MiMi',
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
-                    letterSpacing: .6)),
-            const SizedBox(height: 1),
-            const Text('AI TUTOR • ONLINE',
-                style: TextStyle(
+                    letterSpacing: .6,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                const Text(
+                  'AI TUTOR • ONLINE',
+                  style: TextStyle(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w800,
                     color: _mimiTeal,
-                    letterSpacing: 2.6)),
-          ]),
-        ]),
+                    letterSpacing: 2.6,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
         actions: [
           if (_msgs.isNotEmpty)
             IconButton(
@@ -867,80 +961,97 @@ class _AiTutorScreenState extends State<AiTutorScreen>
           ),
         ],
       ),
-      body: Stack(children: [
-        // Drifting aurora + star field + fine grid behind everything.
-        Positioned.fill(child: _MimiBackdrop(controller: _bg, visible: _ready)),
-        SafeArea(
-          child: Column(children: [
-            // Neon hairline under the app bar.
-            Container(
-              height: 1,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  Colors.transparent,
-                  Color(0x8C3D5AFE),
-                  Color(0x667FE7DC),
-                  Colors.transparent,
-                ]),
-              ),
-            ),
-            Expanded(
-              // No key gate (review item #1) — the chat is always
-              // available; the server carries the Gemini key and a
-              // device key (⚙ button) is only a fallback.
-              child: !_ready
-                  ? _bootState()
-                  : ListView(
-                      controller: _scroll,
-                      padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
-                      children: [
-                        if (_msgs.isEmpty) _emptyState(),
-                        for (var i = 0; i < _msgs.length; i++)
-                          FadeSlideIn(
-                            delay:
-                                Duration(milliseconds: (i * 45).clamp(0, 360)),
-                            child: _bubble(_msgs[i]),
-                          ),
-                        if (_busy && _streaming != null) _streamingBubble(),
-                        const SizedBox(height: 8),
+      body: Stack(
+        children: [
+          // Drifting aurora + star field + fine grid behind everything.
+          Positioned.fill(
+            child: _MimiBackdrop(controller: _bg, visible: _ready),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                // Neon hairline under the app bar.
+                Container(
+                  height: 1,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Color(0x8C3D5AFE),
+                        Color(0x667FE7DC),
+                        Colors.transparent,
                       ],
                     ),
+                  ),
+                ),
+                Expanded(
+                  // No key gate (review item #1) — the chat is always
+                  // available; the server carries the Gemini key and a
+                  // device key (⚙ button) is only a fallback.
+                  child: !_ready
+                      ? _bootState()
+                      : ListView(
+                          controller: _scroll,
+                          padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
+                          children: [
+                            if (_msgs.isEmpty) _emptyState(),
+                            for (var i = 0; i < _msgs.length; i++)
+                              FadeSlideIn(
+                                delay: Duration(
+                                  milliseconds: (i * 45).clamp(0, 360),
+                                ),
+                                child: _bubble(_msgs[i]),
+                              ),
+                            if (_busy && _streaming != null) _streamingBubble(),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
+                ),
+                if (_pending.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [for (final a in _pending) _pendingChip(a)],
+                    ),
+                  ),
+                _inputBar(),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+                  child: Text(
+                    'Photo ≤ 15 MB • Audio ≤ 5 MB • PDF ≤ 10 MB • up to 3 attachments per question',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 10, color: Colors.white54),
+                  ),
+                ),
+              ],
             ),
-            if (_pending.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                child: Wrap(spacing: 8, runSpacing: 8, children: [
-                  for (final a in _pending) _pendingChip(a),
-                ]),
-              ),
-            _inputBar(),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
-              child: Text(
-                'Photo ≤ 15 MB • Audio ≤ 5 MB • PDF ≤ 10 MB • up to 3 attachments per question',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 10, color: Colors.white54),
-              ),
-            ),
-          ]),
-        ),
-      ]),
+          ),
+        ],
+      ),
     );
   }
 
   /// First frame: the orb "booting up".
   Widget _bootState() {
     return Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        _orb(size: 64, active: false),
-        const SizedBox(height: 18),
-        const Text('CONNECTING TO MIMI',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _orb(size: 64, active: false),
+          const SizedBox(height: 18),
+          const Text(
+            'CONNECTING TO MIMI',
             style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: Colors.white60,
-                letterSpacing: 2.4)),
-      ]),
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: Colors.white60,
+              letterSpacing: 2.4,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -957,13 +1068,17 @@ class _AiTutorScreenState extends State<AiTutorScreen>
           gradient: AppTheme.brandGradient,
           boxShadow: [
             BoxShadow(
-                color: AppTheme.primary.withOpacity(.4),
-                blurRadius: size * .34,
-                spreadRadius: size * .03),
+              color: AppTheme.primary.withOpacity(.4),
+              blurRadius: size * .34,
+              spreadRadius: size * .03,
+            ),
           ],
         ),
-        child: Icon(Icons.auto_awesome_rounded,
-            color: Colors.white, size: size * .3),
+        child: Icon(
+          Icons.auto_awesome_rounded,
+          color: Colors.white,
+          size: size * .3,
+        ),
       );
     }
     return SizedBox(
@@ -973,31 +1088,40 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         animation: _fx,
         builder: (context, _) {
           return RepaintBoundary(
-            child: Stack(alignment: Alignment.center, children: [
-              CustomPaint(
-                  size: Size.square(size), painter: _OrbArcsPainter(_fx.value)),
-              Pulse(
-                min: .92,
-                max: 1.08,
-                period: const Duration(milliseconds: 900),
-                child: Container(
-                  width: size * .58,
-                  height: size * .58,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: AppTheme.brandGradient,
-                    boxShadow: [
-                      BoxShadow(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CustomPaint(
+                  size: Size.square(size),
+                  painter: _OrbArcsPainter(_fx.value),
+                ),
+                Pulse(
+                  min: .92,
+                  max: 1.08,
+                  period: const Duration(milliseconds: 900),
+                  child: Container(
+                    width: size * .58,
+                    height: size * .58,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: AppTheme.brandGradient,
+                      boxShadow: [
+                        BoxShadow(
                           color: AppTheme.primary.withOpacity(.75),
                           blurRadius: size * .38,
-                          spreadRadius: size * .04),
-                    ],
+                          spreadRadius: size * .04,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.auto_awesome_rounded,
+                      color: Colors.white,
+                      size: size * .3,
+                    ),
                   ),
-                  child: Icon(Icons.auto_awesome_rounded,
-                      color: Colors.white, size: size * .3),
                 ),
-              ),
-            ]),
+              ],
+            ),
           );
         },
       ),
@@ -1010,49 +1134,58 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       animation: _fx,
       builder: (context, _) {
         final t = _fx.value;
-        return Row(children: [
-          Flexible(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                'MiMi is thinking',
-                style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: .5,
-                    color: _mimiText.withOpacity(.92)),
-              ),
-              const SizedBox(height: 7),
-              Row(children: [
-                for (var i = 0; i < 3; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: Transform.translate(
-                      offset: Offset(
-                          0,
-                          -3.2 *
-                              math
-                                  .sin(2 * math.pi * (t * 1.7 + i * .27))
-                                  .abs()),
-                      child: Container(
-                        width: 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: AppTheme.brandGradient,
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppTheme.primary.withOpacity(.6),
-                                blurRadius: 7),
-                          ],
-                        ),
-                      ),
+        return Row(
+          children: [
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'MiMi is thinking',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: .5,
+                      color: _mimiText.withOpacity(.92),
                     ),
                   ),
-              ]),
-            ]),
-          ),
-        ]);
+                  const SizedBox(height: 7),
+                  Row(
+                    children: [
+                      for (var i = 0; i < 3; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: Transform.translate(
+                            offset: Offset(
+                              0,
+                              -3.2 *
+                                  math
+                                      .sin(2 * math.pi * (t * 1.7 + i * .27))
+                                      .abs(),
+                            ),
+                            child: Container(
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: AppTheme.brandGradient,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.primary.withOpacity(.6),
+                                    blurRadius: 7,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -1064,89 +1197,110 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       'Make 5 board-style questions on Motion',
       'দাও: সংক্ষিপ্ত প্রশ্নের নমুনা উত্তর (উপাদান-নির্ভর)',
     ];
-    return Column(children: [
-      const SizedBox(height: 30),
-      _orb(size: 84, active: false),
-      const SizedBox(height: 20),
-      const Text('MIMI ASSISTANT',
+    return Column(
+      children: [
+        const SizedBox(height: 30),
+        _orb(size: 84, active: false),
+        const SizedBox(height: 20),
+        const Text(
+          'MIMI ASSISTANT',
           style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              color: _mimiTeal,
-              letterSpacing: 3.4)),
-      const SizedBox(height: 10),
-      const Center(
-        child: Text(
-          'Ask anything from the SSC syllabus —\nMCQ, creative question, short answer,\nmaths steps, or attach a photo of the question.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13.5, height: 1.65, color: Colors.white70),
-        ),
-      ),
-      const SizedBox(height: 20),
-      // Review item #1: no key entry here — tell them how it activates.
-      if (!AuthService.isLoggedIn && _key == null)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(.05),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppTheme.primary.withOpacity(.35)),
-            ),
-            child: Row(children: [
-              const Icon(Icons.cloud_off_rounded, size: 16, color: _mimiTeal),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Sign in with your Tutor\u2019s Desk account to activate MiMi.',
-                  style: TextStyle(fontSize: 11.5, color: Colors.white70),
-                ),
-              ),
-            ]),
+            fontSize: 10.5,
+            fontWeight: FontWeight.w800,
+            color: _mimiTeal,
+            letterSpacing: 3.4,
           ),
         ),
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        alignment: WrapAlignment.center,
-        children: [
-          for (final c in chips)
-            PressableScale(
-              onTap: () => setState(() => _ctrl.text = c),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.primary.withOpacity(.4)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: AppTheme.primary.withOpacity(.16),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3)),
-                  ],
-                ),
-                child: Text(c,
-                    style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: _mimiText)),
+        const SizedBox(height: 10),
+        const Center(
+          child: Text(
+            'Ask anything from the SSC syllabus —\nMCQ, creative question, short answer,\nmaths steps, or attach a photo of the question.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.5,
+              height: 1.65,
+              color: Colors.white70,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        // Review item #1: no key entry here — tell them how it activates.
+        if (!AuthService.isLoggedIn && _key == null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(.05),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppTheme.primary.withOpacity(.35)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.cloud_off_rounded,
+                    size: 16,
+                    color: _mimiTeal,
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Sign in with your Tutor\u2019s Desk account to activate MiMi.',
+                      style: TextStyle(fontSize: 11.5, color: Colors.white70),
+                    ),
+                  ),
+                ],
               ),
             ),
-        ],
-      ),
-      const SizedBox(height: 24),
-    ]);
+          ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [
+            for (final c in chips)
+              PressableScale(
+                onTap: () => setState(() => _ctrl.text = c),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13,
+                    vertical: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.primary.withOpacity(.4)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primary.withOpacity(.16),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    c,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: _mimiText,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
   }
 
   Widget _attChip(_AttMeta a, {Color? iconColor}) {
     final icon = a.kind == 'photo'
         ? Icons.photo_library_rounded
         : (a.kind == 'audio'
-            ? Icons.record_voice_over_rounded
-            : Icons.picture_as_pdf_rounded);
+              ? Icons.record_voice_over_rounded
+              : Icons.picture_as_pdf_rounded);
     final c = iconColor ?? _mimiTeal;
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -1156,19 +1310,31 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: c.withOpacity(.4)),
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 14, color: c),
-        const SizedBox(width: 6),
-        Text(a.label,
-            style:
-                TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c)),
-        if (a.size.isNotEmpty) ...[
-          const SizedBox(width: 5),
-          Text(a.size,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: c),
+          const SizedBox(width: 6),
+          Text(
+            a.label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: c,
+            ),
+          ),
+          if (a.size.isNotEmpty) ...[
+            const SizedBox(width: 5),
+            Text(
+              a.size,
               style: TextStyle(
-                  fontSize: 10, color: Colors.white.withOpacity(.55))),
+                fontSize: 10,
+                color: Colors.white.withOpacity(.55),
+              ),
+            ),
+          ],
         ],
-      ]),
+      ),
     );
   }
 
@@ -1177,8 +1343,9 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment:
-            isU ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isU
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isU) ...[
@@ -1193,21 +1360,24 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                 gradient: isU ? AppTheme.brandGradient : null,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: isU
-                        ? Colors.transparent
-                        : AppTheme.primary.withOpacity(.3)),
+                  color: isU
+                      ? Colors.transparent
+                      : AppTheme.primary.withOpacity(.3),
+                ),
                 boxShadow: [
                   BoxShadow(
-                      color: isU
-                          ? AppTheme.primary.withOpacity(.30)
-                          : AppTheme.primary.withOpacity(.10),
-                      blurRadius: isU ? 14 : 12,
-                      offset: const Offset(0, 5)),
+                    color: isU
+                        ? AppTheme.primary.withOpacity(.30)
+                        : AppTheme.primary.withOpacity(.10),
+                    blurRadius: isU ? 14 : 12,
+                    offset: const Offset(0, 5),
+                  ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment:
-                    isU ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isU
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   for (final a in m.atts)
                     _attChip(a, iconColor: isU ? null : _mimiTeal),
@@ -1218,9 +1388,10 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                         ? Text(
                             m.text,
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13.8,
-                                height: 1.55),
+                              color: Colors.white,
+                              fontSize: 13.8,
+                              height: 1.55,
+                            ),
                           )
                         : md.MarkdownBody(
                             data: plainifyMath(m.text),
@@ -1238,22 +1409,39 @@ class _AiTutorScreenState extends State<AiTutorScreen>
   md.MarkdownStyleSheet _mdSheet() {
     return md.MarkdownStyleSheet(
       p: TextStyle(
-          fontSize: 13.8, height: 1.55, color: _mimiText.withOpacity(.94)),
+        fontSize: 13.8,
+        height: 1.55,
+        color: _mimiText.withOpacity(.94),
+      ),
       strong: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
       em: TextStyle(
-          color: _mimiText.withOpacity(.85), fontStyle: FontStyle.italic),
+        color: _mimiText.withOpacity(.85),
+        fontStyle: FontStyle.italic,
+      ),
       h1: TextStyle(
-          fontSize: 15.5, fontWeight: FontWeight.w800, color: _mimiTeal),
+        fontSize: 15.5,
+        fontWeight: FontWeight.w800,
+        color: _mimiTeal,
+      ),
       h2: TextStyle(
-          fontSize: 14.8, fontWeight: FontWeight.w800, color: _mimiTeal),
+        fontSize: 14.8,
+        fontWeight: FontWeight.w800,
+        color: _mimiTeal,
+      ),
       h3: TextStyle(
-          fontSize: 14, fontWeight: FontWeight.w800, color: _mimiTeal),
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+        color: _mimiTeal,
+      ),
       code: TextStyle(
-          fontSize: 12.5,
-          color: _mimiAmber,
-          backgroundColor: Colors.white.withOpacity(.08)),
+        fontSize: 12.5,
+        color: _mimiAmber,
+        backgroundColor: Colors.white.withOpacity(.08),
+      ),
       blockquote: TextStyle(
-          color: _mimiText.withOpacity(.75), fontStyle: FontStyle.italic),
+        color: _mimiText.withOpacity(.75),
+        fontStyle: FontStyle.italic,
+      ),
     );
   }
 
@@ -1267,61 +1455,70 @@ class _AiTutorScreenState extends State<AiTutorScreen>
           _orb(size: 30, active: true),
           const SizedBox(width: 8),
           Expanded(
-            child: Stack(children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.045),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!hasText)
-                      _thinkingRow()
-                    else ...[
-                      md.MarkdownBody(
-                        data: plainifyMath(_streaming ?? ''),
-                        styleSheet: _mdSheet(),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(children: [
-                        _equalizer(),
-                        const SizedBox(width: 8),
-                        AnimatedBuilder(
-                          animation: _fx,
-                          builder: (context, _) {
-                            final t = _fx.value;
-                            // crisp on/off blink
-                            final on = (t * 2.4) % 1.0 < 0.62;
-                            return Opacity(
-                              opacity: on ? 1 : .15,
-                              child: const Text('▍',
-                                  style: TextStyle(
+            child: Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13,
+                    vertical: 11,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.045),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!hasText)
+                        _thinkingRow()
+                      else ...[
+                        md.MarkdownBody(
+                          data: plainifyMath(_streaming ?? ''),
+                          styleSheet: _mdSheet(),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            _equalizer(),
+                            const SizedBox(width: 8),
+                            AnimatedBuilder(
+                              animation: _fx,
+                              builder: (context, _) {
+                                final t = _fx.value;
+                                // crisp on/off blink
+                                final on = (t * 2.4) % 1.0 < 0.62;
+                                return Opacity(
+                                  opacity: on ? 1 : .15,
+                                  child: const Text(
+                                    '▍',
+                                    style: TextStyle(
                                       fontSize: 14,
                                       color: _mimiTeal,
-                                      fontWeight: FontWeight.w900)),
-                            );
-                          },
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      ]),
+                      ],
                     ],
-                  ],
-                ),
-              ),
-              // Rotating neon border — its own tiny per-frame layer so the
-              // markdown text is never re-laid-out at 60fps.
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: AnimatedBuilder(
-                    animation: _fx,
-                    builder: (_, __) =>
-                        CustomPaint(painter: _GlowBorderPainter(_fx.value)),
                   ),
                 ),
-              ),
-            ]),
+                // Rotating neon border — its own tiny per-frame layer so the
+                // markdown text is never re-laid-out at 60fps.
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: AnimatedBuilder(
+                      animation: _fx,
+                      builder: (_, __) =>
+                          CustomPaint(painter: _GlowBorderPainter(_fx.value)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -1336,24 +1533,28 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         final t = _fx.value;
         return SizedBox(
           height: 14,
-          child: Row(children: [
-            for (var i = 0; i < 4; i++)
-              Padding(
-                padding: const EdgeInsets.only(right: 2.5),
-                child: Container(
-                  width: 3,
-                  height:
-                      4 + 9 * math.sin(2 * math.pi * (t * 2.1 + i * .23)).abs(),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
+          child: Row(
+            children: [
+              for (var i = 0; i < 4; i++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 2.5),
+                  child: Container(
+                    width: 3,
+                    height:
+                        4 +
+                        9 * math.sin(2 * math.pi * (t * 2.1 + i * .23)).abs(),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [AppTheme.primary, _mimiTeal]),
-                    borderRadius: BorderRadius.circular(2),
+                        colors: [AppTheme.primary, _mimiTeal],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-          ]),
+            ],
+          ),
         );
       },
     );
@@ -1363,8 +1564,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     final icon = a.kind == 'photo'
         ? Icons.photo_library_rounded
         : (a.kind == 'audio'
-            ? Icons.record_voice_over_rounded
-            : Icons.picture_as_pdf_rounded);
+              ? Icons.record_voice_over_rounded
+              : Icons.picture_as_pdf_rounded);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
@@ -1375,28 +1576,39 @@ class _AiTutorScreenState extends State<AiTutorScreen>
           BoxShadow(color: AppTheme.primary.withOpacity(.2), blurRadius: 9),
         ],
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 15, color: _mimiTeal),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Text(
-            a.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontSize: 11.5, fontWeight: FontWeight.w700, color: _mimiText),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: _mimiTeal),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              a.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: _mimiText,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(width: 4),
-        Text(_fmtBytes(a.bytes.length),
-            style: const TextStyle(fontSize: 10.5, color: Colors.white54)),
-        const SizedBox(width: 4),
-        InkWell(
-          onTap: () => setState(() => _pending.remove(a)),
-          child:
-              const Icon(Icons.close_rounded, size: 14, color: AppTheme.danger),
-        ),
-      ]),
+          const SizedBox(width: 4),
+          Text(
+            _fmtBytes(a.bytes.length),
+            style: const TextStyle(fontSize: 10.5, color: Colors.white54),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => setState(() => _pending.remove(a)),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 14,
+              color: AppTheme.danger,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1411,75 +1623,90 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         color: Colors.white.withOpacity(.05),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-            color: armed
-                ? _mimiTeal.withOpacity(.65)
-                : AppTheme.primary.withOpacity(.35)),
+          color: armed
+              ? _mimiTeal.withOpacity(.65)
+              : AppTheme.primary.withOpacity(.35),
+        ),
         boxShadow: [
           BoxShadow(
-              color: armed
-                  ? _mimiTeal.withOpacity(.22)
-                  : AppTheme.primary.withOpacity(.14),
-              blurRadius: armed ? 18 : 12,
-              offset: const Offset(0, 4)),
+            color: armed
+                ? _mimiTeal.withOpacity(.22)
+                : AppTheme.primary.withOpacity(.14),
+            blurRadius: armed ? 18 : 12,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
-      child: Row(children: [
-        IconButton(
-          tooltip: 'Attach photo, audio or PDF',
-          onPressed: _busy ? null : _openAttachSheet,
-          icon: const Icon(Icons.attach_file_rounded, color: _mimiTeal),
-        ),
-        Expanded(
-          child: TextField(
-            controller: _ctrl,
-            minLines: 1,
-            maxLines: 5,
-            enabled: !_busy,
-            textInputAction: TextInputAction.send,
-            onSubmitted: (_) => _send(),
-            style: const TextStyle(fontSize: 14, color: _mimiText, height: 1.4),
-            decoration: InputDecoration(
-              isCollapsed: false,
-              filled: false,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              hintText: 'Ask MiMi — type, or attach a photo / audio / PDF…',
-              hintStyle:
-                  TextStyle(fontSize: 13, color: Colors.white.withOpacity(.38)),
-              contentPadding: const EdgeInsets.symmetric(vertical: 13),
+      child: Row(
+        children: [
+          IconButton(
+            tooltip: 'Attach photo, audio or PDF',
+            onPressed: _busy ? null : _openAttachSheet,
+            icon: const Icon(Icons.attach_file_rounded, color: _mimiTeal),
+          ),
+          Expanded(
+            child: TextField(
+              controller: _ctrl,
+              minLines: 1,
+              maxLines: 5,
+              enabled: !_busy,
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => _send(),
+              style: const TextStyle(
+                fontSize: 14,
+                color: _mimiText,
+                height: 1.4,
+              ),
+              decoration: InputDecoration(
+                isCollapsed: false,
+                filled: false,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                hintText: 'Ask MiMi — type, or attach a photo / audio / PDF…',
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: Colors.white.withOpacity(.38),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 13),
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 2),
-        GestureDetector(
-          onTap: canSend ? _send : null,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: canSend ? AppTheme.brandGradient : null,
-              color: canSend ? null : Colors.white.withOpacity(.08),
-              border: Border.all(
+          const SizedBox(width: 2),
+          GestureDetector(
+            onTap: canSend ? _send : null,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: canSend ? AppTheme.brandGradient : null,
+                color: canSend ? null : Colors.white.withOpacity(.08),
+                border: Border.all(
                   color: canSend
                       ? Colors.transparent
-                      : Colors.white.withOpacity(.14)),
-              boxShadow: canSend
-                  ? [
-                      BoxShadow(
+                      : Colors.white.withOpacity(.14),
+                ),
+                boxShadow: canSend
+                    ? [
+                        BoxShadow(
                           color: AppTheme.primary.withOpacity(.55),
                           blurRadius: 14,
-                          offset: const Offset(0, 4))
-                    ]
-                  : null,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Icon(
+                Icons.arrow_upward_rounded,
+                color: canSend ? Colors.white : Colors.white38,
+                size: 22,
+              ),
             ),
-            child: Icon(Icons.arrow_upward_rounded,
-                color: canSend ? Colors.white : Colors.white38, size: 22),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
@@ -1527,8 +1754,13 @@ class _MimiScenePainter extends CustomPainter {
       c,
       r,
       Paint()
-        ..shader = ui.Gradient.radial(c, r, [color, color.withOpacity(0)],
-            const [0.0, 1.0], ui.TileMode.clamp),
+        ..shader = ui.Gradient.radial(
+          c,
+          r,
+          [color, color.withOpacity(0)],
+          const [0.0, 1.0],
+          ui.TileMode.clamp,
+        ),
     );
   }
 
@@ -1539,19 +1771,29 @@ class _MimiScenePainter extends CustomPainter {
 
     // Aurora blobs drifting slowly.
     _blob(
-        canvas,
-        Offset(w * (.18 + .06 * math.sin(drift)),
-            h * (.16 + .05 * math.cos(drift))),
-        w * .62,
-        AppTheme.primary.withOpacity(.20));
+      canvas,
+      Offset(
+        w * (.18 + .06 * math.sin(drift)),
+        h * (.16 + .05 * math.cos(drift)),
+      ),
+      w * .62,
+      AppTheme.primary.withOpacity(.20),
+    );
     _blob(
-        canvas,
-        Offset(w * (.86 + .05 * math.cos(drift * 1.3)),
-            h * (.58 + .07 * math.sin(drift * .8))),
-        w * .55,
-        _mimiTeal.withOpacity(.11));
-    _blob(canvas, Offset(w * (.5 + .08 * math.sin(drift * .7)), h * 1.02),
-        w * .7, AppTheme.primaryDark.withOpacity(.34));
+      canvas,
+      Offset(
+        w * (.86 + .05 * math.cos(drift * 1.3)),
+        h * (.58 + .07 * math.sin(drift * .8)),
+      ),
+      w * .55,
+      _mimiTeal.withOpacity(.11),
+    );
+    _blob(
+      canvas,
+      Offset(w * (.5 + .08 * math.sin(drift * .7)), h * 1.02),
+      w * .7,
+      AppTheme.primaryDark.withOpacity(.34),
+    );
 
     // Fine grid.
     final grid = Paint()
@@ -1580,12 +1822,15 @@ class _MimiScenePainter extends CustomPainter {
     canvas.drawRect(
       Rect.fromLTWH(0, bandY, w, h * .16),
       Paint()
-        ..shader =
-            ui.Gradient.linear(Offset(0, bandY), Offset(0, bandY + h * .16), [
-          Colors.white.withOpacity(0),
-          Colors.white.withOpacity(.03),
-          Colors.white.withOpacity(0)
-        ]),
+        ..shader = ui.Gradient.linear(
+          Offset(0, bandY),
+          Offset(0, bandY + h * .16),
+          [
+            Colors.white.withOpacity(0),
+            Colors.white.withOpacity(.03),
+            Colors.white.withOpacity(0),
+          ],
+        ),
     );
   }
 
@@ -1606,12 +1851,13 @@ class _OrbArcsPainter extends CustomPainter {
     final rect = Rect.fromCircle(center: c, radius: r);
 
     canvas.drawCircle(
-        c,
-        r,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1
-          ..color = Colors.white.withOpacity(.14));
+      c,
+      r,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = Colors.white.withOpacity(.14),
+    );
 
     final a1 = Paint()
       ..style = PaintingStyle.stroke
@@ -1707,71 +1953,93 @@ class _SetupCard extends StatelessWidget {
         border: Border.all(color: AppTheme.primary.withOpacity(.3)),
         boxShadow: [
           BoxShadow(
-              color: AppTheme.primary.withOpacity(.16),
-              blurRadius: 24,
-              offset: const Offset(0, 8)),
+            color: AppTheme.primary.withOpacity(.16),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (compact) ...[
-            const Text('Device key (fallback)',
-                style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white)),
+            const Text(
+              'Device key (fallback)',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(height: 6),
             const Text(
-                'MiMi normally uses the server AI key. This optional key, stored on this phone only, is used when the server key is unavailable or you are signed out.',
-                style: TextStyle(
-                    fontSize: 12.5, height: 1.55, color: Colors.white70)),
+              'MiMi normally uses the server AI key. This optional key, stored on this phone only, is used when the server key is unavailable or you are signed out.',
+              style: TextStyle(
+                fontSize: 12.5,
+                height: 1.55,
+                color: Colors.white70,
+              ),
+            ),
             const SizedBox(height: 14),
           ] else ...[
-            Row(children: [
-              _orbWidget(),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
+            Row(
+              children: [
+                _orbWidget(),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Meet MiMi',
-                          style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white)),
+                      Text(
+                        'Meet MiMi',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
                       SizedBox(height: 2),
                       Text(
-                          'Your AI assistant — answers in Education Board style',
-                          style:
-                              TextStyle(fontSize: 12, color: Colors.white60)),
-                    ]),
-              ),
-            ]),
+                        'Your AI assistant — answers in Education Board style',
+                        style: TextStyle(fontSize: 12, color: Colors.white60),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 14),
             const Text(
               'MiMi reads questions and attachments (photo, audio, PDF) and solves them the way the Education Board expects — MCQ reason, four-part creative question, short answers, maths steps.',
-              style:
-                  TextStyle(fontSize: 12.8, height: 1.6, color: Colors.white70),
+              style: TextStyle(
+                fontSize: 12.8,
+                height: 1.6,
+                color: Colors.white70,
+              ),
             ),
             const SizedBox(height: 14),
-            const Text('ONE-TIME SETUP (2 MINUTES)',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: _mimiTeal,
-                    letterSpacing: 1.6)),
+            const Text(
+              'ONE-TIME SETUP (2 MINUTES)',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: _mimiTeal,
+                letterSpacing: 1.6,
+              ),
+            ),
             const SizedBox(height: 10),
             const _Step(
-                n: 1,
-                text:
-                    'Open aistudio.google.com in your phone browser (free Google account).'),
+              n: 1,
+              text: 'Open aistudio.google.com in your phone browser (free Google account).',
+            ),
             const _Step(
-                n: 2,
-                text: 'Tap "Get API key" → "Create API key" and copy it.'),
+              n: 2,
+              text: 'Tap "Get API key" → "Create API key" and copy it.',
+            ),
             const _Step(
-                n: 3,
-                text: 'Paste the key below — it is stored on this phone only.'),
+              n: 3,
+              text: 'Paste the key below — it is stored on this phone only.',
+            ),
             const SizedBox(height: 12),
           ],
           _KeyField(onSaved: onKeySaved),
@@ -1789,13 +2057,17 @@ class _SetupCard extends StatelessWidget {
         gradient: AppTheme.brandGradient,
         boxShadow: [
           BoxShadow(
-              color: AppTheme.primary.withOpacity(.5),
-              blurRadius: 18,
-              spreadRadius: 1),
+            color: AppTheme.primary.withOpacity(.5),
+            blurRadius: 18,
+            spreadRadius: 1,
+          ),
         ],
       ),
-      child:
-          const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
+      child: const Icon(
+        Icons.auto_awesome_rounded,
+        color: Colors.white,
+        size: 24,
+      ),
     );
   }
 }
@@ -1807,28 +2079,39 @@ class _Step extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Container(
-        width: 22,
-        height: 22,
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: AppTheme.brandGradient,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 22,
+          height: 22,
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: AppTheme.brandGradient,
+          ),
+          child: Text(
+            '$n',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+            ),
+          ),
         ),
-        child: Text('$n',
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
             style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w900,
-                color: Colors.white)),
-      ),
-      const SizedBox(width: 10),
-      Expanded(
-        child: Text(text,
-            style: const TextStyle(
-                fontSize: 12.5, height: 1.5, color: Colors.white70)),
-      ),
-    ]);
+              fontSize: 12.5,
+              height: 1.5,
+              color: Colors.white70,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -1858,8 +2141,7 @@ class _KeyFieldState extends State<_KeyField> {
       await showProblemDialog(
         context,
         title: 'That key does not look right',
-        message:
-            'A Gemini API key starts with "AIza" or "AQ" — usually about 39 characters.',
+        message: 'A Gemini API key starts with "AIza" or "AQ" — usually about 39 characters.',
       );
       return;
     }
@@ -1876,71 +2158,86 @@ class _KeyFieldState extends State<_KeyField> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Expanded(
-        child: TextField(
-          controller: _ctrl,
-          obscureText: !_show,
-          style: const TextStyle(color: _mimiText, fontSize: 13.5),
-          decoration: InputDecoration(
-            hintText: 'Paste the key (AIza… or AQ…)',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(.35)),
-            prefixIcon:
-                const Icon(Icons.vpn_key_rounded, size: 18, color: _mimiTeal),
-            suffixIcon: IconButton(
-              tooltip: _show ? 'Hide key' : 'Show key',
-              onPressed: () => setState(() => _show = !_show),
-              icon: Icon(
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _ctrl,
+            obscureText: !_show,
+            style: const TextStyle(color: _mimiText, fontSize: 13.5),
+            decoration: InputDecoration(
+              hintText: 'Paste the key (AIza… or AQ…)',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(.35)),
+              prefixIcon: const Icon(
+                Icons.vpn_key_rounded,
+                size: 18,
+                color: _mimiTeal,
+              ),
+              suffixIcon: IconButton(
+                tooltip: _show ? 'Hide key' : 'Show key',
+                onPressed: () => setState(() => _show = !_show),
+                icon: Icon(
                   _show
                       ? Icons.visibility_off_rounded
                       : Icons.visibility_rounded,
                   size: 17,
-                  color: Colors.white60),
-            ),
-            filled: true,
-            fillColor: Colors.white.withOpacity(.06),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: AppTheme.primary.withOpacity(.35)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: AppTheme.primary.withOpacity(.35)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: _mimiTeal, width: 1.4),
+                  color: Colors.white60,
+                ),
+              ),
+              filled: true,
+              fillColor: Colors.white.withOpacity(.06),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: AppTheme.primary.withOpacity(.35),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: AppTheme.primary.withOpacity(.35),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: _mimiTeal, width: 1.4),
+              ),
             ),
           ),
         ),
-      ),
-      const SizedBox(width: 8),
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
+        const SizedBox(width: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
                 color: AppTheme.primary.withOpacity(.4),
                 blurRadius: 12,
-                offset: const Offset(0, 4)),
-          ],
-        ),
-        child: FilledButton(
-          onPressed: _busy ? null : _save,
-          style: FilledButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          child: _busy
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('Save'),
+          child: FilledButton(
+            onPressed: _busy ? null : _save,
+            style: FilledButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: _busy
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Save'),
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }

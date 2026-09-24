@@ -6,23 +6,24 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   OmScanRecord record({int answer = 0}) => OmScanRecord(
-      id: 'review-1',
-      date: DateTime(2026, 9, 24),
-      paperTitle: 'Physics',
-      subjectName: 'Physics',
-      roll: '12',
-      registration: '34',
-      subjectCode: '136',
-      setCode: 'ক',
-      total: 1,
-      score: answer == 0 ? 1 : 0,
-      correct: answer == 0 ? 1 : 0,
-      wrong: answer == 0 ? 0 : 1,
-      blank: 0,
-      ambiguous: 0,
-      answers: [answer],
-      key: [0],
-      correctedIndices: answer == 0 ? [] : [0]);
+    id: 'review-1',
+    date: DateTime(2026, 9, 24),
+    paperTitle: 'Physics',
+    subjectName: 'Physics',
+    roll: '12',
+    registration: '34',
+    subjectCode: '136',
+    setCode: 'ক',
+    total: 1,
+    score: answer == 0 ? 1 : 0,
+    correct: answer == 0 ? 1 : 0,
+    wrong: answer == 0 ? 0 : 1,
+    blank: 0,
+    ambiguous: 0,
+    answers: [answer],
+    key: [0],
+    correctedIndices: answer == 0 ? [] : [0],
+  );
   test('saving a correction replaces the original history record', () async {
     await OmrStore.addRecord(record());
     await OmrStore.addRecord(record(answer: 1));

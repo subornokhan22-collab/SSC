@@ -71,7 +71,10 @@ class GeminiClient {
     final parts = <Map<String, dynamic>>[
       for (final a in attachments)
         {
-          'inline_data': {'mime_type': a.mimeType, 'data': base64Encode(a.data)}
+          'inline_data': {
+            'mime_type': a.mimeType,
+            'data': base64Encode(a.data),
+          },
         },
       if (userText.isNotEmpty) {'text': userText},
     ];
@@ -81,26 +84,20 @@ class GeminiClient {
     final body = jsonEncode({
       'systemInstruction': {
         'parts': [
-          {'text': systemPrompt}
-        ]
+          {'text': systemPrompt},
+        ],
       },
       'contents': [
         for (final h in history)
           {
             'role': h['role'],
             'parts': [
-              {'text': (h['text'] ?? '').isEmpty ? ' ' : h['text']}
-            ]
+              {'text': (h['text'] ?? '').isEmpty ? ' ' : h['text']},
+            ],
           },
-        {
-          'role': 'user',
-          'parts': parts,
-        },
+        {'role': 'user', 'parts': parts},
       ],
-      'generationConfig': {
-        'temperature': 0.4,
-        'maxOutputTokens': 8192,
-      },
+      'generationConfig': {'temperature': 0.4, 'maxOutputTokens': 8192},
     });
 
     // Try the model that worked last time first, then the static list,
@@ -140,7 +137,8 @@ class GeminiClient {
     }
     if (onlyModelMiss) {
       throw const GeminiException(
-          'No Gemini model is available for this key. Check the key on aistudio.google.com and try again.');
+        'No Gemini model is available for this key. Check the key on aistudio.google.com and try again.',
+      );
     }
     throw last ?? const GeminiException('Gemini request failed.');
   }
@@ -207,14 +205,22 @@ class GeminiClient {
     }
   }
 
-  static Future<String> _stream(String model, String apiKey, String bodyJson,
-      void Function(String chunk)? onChunk, Duration timeout) async {
-    final req = http.Request(
-        'POST',
-        Uri.parse(
-            '$_apiBase/models/$model:streamGenerateContent?alt=sse&key=$apiKey'))
-      ..headers['Content-Type'] = 'application/json'
-      ..body = bodyJson;
+  static Future<String> _stream(
+    String model,
+    String apiKey,
+    String bodyJson,
+    void Function(String chunk)? onChunk,
+    Duration timeout,
+  ) async {
+    final req =
+        http.Request(
+            'POST',
+            Uri.parse(
+              '$_apiBase/models/$model:streamGenerateContent?alt=sse&key=$apiKey',
+            ),
+          )
+          ..headers['Content-Type'] = 'application/json'
+          ..body = bodyJson;
     final client = http.Client();
     try {
       final resp = await client.send(req).timeout(timeout);
@@ -224,12 +230,14 @@ class GeminiClient {
       return await _readSse(resp, onChunk);
     } on http.ClientException catch (e) {
       throw GeminiException(
-          'Network error while contacting Gemini: ${e.message}');
+        'Network error while contacting Gemini: ${e.message}',
+      );
     } on SocketException catch (e) {
       throw GeminiException('Network error: ${e.message}');
     } on TimeoutException {
       throw const GeminiException(
-          'Gemini took too long to answer. Try a shorter question or a smaller attachment.');
+        'Gemini took too long to answer. Try a shorter question or a smaller attachment.',
+      );
     } finally {
       client.close();
     }
@@ -240,12 +248,15 @@ class GeminiClient {
   /// device-key path and the server (edge function) path — both speak
   /// the identical wire format.
   static Future<String> _readSse(
-      http.StreamedResponse resp, void Function(String chunk)? onChunk) async {
+    http.StreamedResponse resp,
+    void Function(String chunk)? onChunk,
+  ) async {
     final out = StringBuffer();
     var gotAny = false;
-    await for (final line in resp.stream
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())) {
+    await for (final line
+        in resp.stream
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())) {
       if (!line.startsWith('data:')) continue;
       final payload = line.substring(5).trim();
       if (payload.isEmpty || payload == '[DONE]') continue;
@@ -258,7 +269,8 @@ class GeminiClient {
       final pf = j['promptFeedback'];
       if (pf is Map && (pf['blockReason'] as String?)?.isNotEmpty == true) {
         throw const GeminiException(
-            'Google\'s safety filter blocked this question — rephrase it and try again.');
+          'Google\'s safety filter blocked this question — rephrase it and try again.',
+        );
       }
       final candidates = j['candidates'];
       if (candidates is List && candidates.isNotEmpty) {
@@ -277,7 +289,8 @@ class GeminiClient {
     }
     if (!gotAny) {
       throw const GeminiException(
-          'Gemini returned an empty answer — try once more.');
+        'Gemini returned an empty answer — try once more.',
+      );
     }
     return out.toString();
   }
@@ -319,22 +332,25 @@ class GeminiClient {
       'text': userText,
       'attachments': [
         for (final a in attachments)
-          {'mime': a.mimeType, 'data': base64Encode(a.data)}
+          {'mime': a.mimeType, 'data': base64Encode(a.data)},
       ],
       'history': [
         for (final h in history)
           {
             'role': h['role'],
-            'text': (h['text'] ?? '').isEmpty ? ' ' : h['text']
-          }
+            'text': (h['text'] ?? '').isEmpty ? ' ' : h['text'],
+          },
       ],
     };
-    final req = http.Request(
-        'POST', Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'))
-      ..headers['Content-Type'] = 'application/json'
-      ..headers['Authorization'] = 'Bearer $accessToken'
-      ..headers['apikey'] = SupabaseConfig.anonKey
-      ..body = jsonEncode(body);
+    final req =
+        http.Request(
+            'POST',
+            Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
+          )
+          ..headers['Content-Type'] = 'application/json'
+          ..headers['Authorization'] = 'Bearer $accessToken'
+          ..headers['apikey'] = SupabaseConfig.anonKey
+          ..body = jsonEncode(body);
     final client = http.Client();
     try {
       final resp = await client.send(req).timeout(timeout);
@@ -344,12 +360,14 @@ class GeminiClient {
       return await _readSse(resp, onChunk);
     } on http.ClientException catch (e) {
       throw GeminiException(
-          'Network error while contacting the AI server: ${e.message}');
+        'Network error while contacting the AI server: ${e.message}',
+      );
     } on SocketException catch (e) {
       throw GeminiException('Network error: ${e.message}');
     } on TimeoutException {
       throw const GeminiException(
-          'The AI server took too long to answer. Try a shorter question or a smaller attachment.');
+        'The AI server took too long to answer. Try a shorter question or a smaller attachment.',
+      );
     } finally {
       client.close();
     }
@@ -358,7 +376,8 @@ class GeminiClient {
   /// Maps a non-2xx reply from the `mimi` edge function to a
   /// [GeminiException] carrying its machine-readable [GeminiException.code].
   static Future<GeminiException> _serverErrorOf(
-      http.StreamedResponse resp) async {
+    http.StreamedResponse resp,
+  ) async {
     String text;
     try {
       text = await utf8.decodeStream(resp.stream);
@@ -382,7 +401,9 @@ class GeminiClient {
 
   /// Maps a non-2xx reply to a user-facing [GeminiException].
   static Future<GeminiException> _errorOf(
-      http.StreamedResponse resp, String model) async {
+    http.StreamedResponse resp,
+    String model,
+  ) async {
     String text;
     try {
       text = await utf8.decodeStream(resp.stream);
@@ -405,18 +426,21 @@ class GeminiClient {
     }
     if (msg.contains('API key not valid') || msg.contains('API_KEY_INVALID')) {
       return const GeminiException(
-          'This Gemini API key is not valid — check the key on the setup screen.');
+        'This Gemini API key is not valid — check the key on the setup screen.',
+      );
     }
     if (msg.contains('quota') ||
         msg.contains('RESOURCE_EXHAUSTED') ||
         msg.contains('limit exceeded') ||
         msg.contains('billing')) {
       return const GeminiException(
-          'Gemini usage limit reached for this key — wait a few minutes, then try again.');
+        'Gemini usage limit reached for this key — wait a few minutes, then try again.',
+      );
     }
     if (msg.contains('PAYLOAD_TOO_LARGE') || msg.contains('too large')) {
       return const GeminiException(
-          'The attachment is too large for one request — use a smaller file.');
+        'The attachment is too large for one request — use a smaller file.',
+      );
     }
     return GeminiException(msg);
   }

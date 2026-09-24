@@ -18,8 +18,9 @@ class AppSettings {
   static final ValueNotifier<bool> omrPrefillCodes = ValueNotifier<bool>(true);
 
   /// Live notifier for the default name field.
-  static final ValueNotifier<String> defaultPaperName =
-      ValueNotifier<String>('');
+  static final ValueNotifier<String> defaultPaperName = ValueNotifier<String>(
+    '',
+  );
 
   static bool get omrPrefill => omrPrefillCodes.value;
   static String get defaultName => defaultPaperName.value;

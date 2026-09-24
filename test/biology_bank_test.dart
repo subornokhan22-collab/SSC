@@ -133,8 +133,9 @@ void main() {
     test('MCQ stems do not repeat', () {
       final seen = <String>{};
       for (final q in biologyMcqs) {
-        final normalized =
-            q.questionText.replaceAll(RegExp(r'\s+'), ' ').trim();
+        final normalized = q.questionText
+            .replaceAll(RegExp(r'\s+'), ' ')
+            .trim();
         expect(seen.add(normalized), isTrue, reason: q.id);
       }
     });
@@ -208,15 +209,14 @@ void main() {
       }
       // 719 dedicated MCQs (incl. the 19 admission-style bio_adm03_*) plus the
       // one pre-existing biology item in the shared extra bank.
-      expect(
-        allMCQs.where((q) => q.subjectId == 'biology').length,
-        720,
-      );
+      expect(allMCQs.where((q) => q.subjectId == 'biology').length, 720);
       expect(
         allMCQs
-            .where((q) =>
-                q.subjectId == 'biology' &&
-                q.chapter == 'অধ্যায় ৬: জীবে পরিবহন')
+            .where(
+              (q) =>
+                  q.subjectId == 'biology' &&
+                  q.chapter == 'অধ্যায় ৬: জীবে পরিবহন',
+            )
             .length,
         51,
       );

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,9 +32,10 @@ Future<void> main() async {
   ErrorWidget.builder = (details) => _FriendlyErrorView(details: details);
 
   SystemChrome.setSystemUIOverlayStyle(AppTheme.overlayStyle);
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // The question bank now lives in assets/questions/*.json rather than in
   // Dart source, so it must be read before any screen touches allMCQs.
@@ -198,8 +200,11 @@ class _FriendlyErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.build_circle_outlined,
-                  color: AppTheme.accent, size: 44),
+              const Icon(
+                Icons.build_circle_outlined,
+                color: AppTheme.accent,
+                size: 44,
+              ),
               const SizedBox(height: 14),
               const Text(
                 'Something did not load correctly',
@@ -214,8 +219,11 @@ class _FriendlyErrorView extends StatelessWidget {
               const Text(
                 'Please go back and try again.',
                 textAlign: TextAlign.center,
-                style:
-                    TextStyle(color: AppTheme.muted, fontSize: 13, height: 1.5),
+                style: TextStyle(
+                  color: AppTheme.muted,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
               ),
               if (kDebugMode) ...[
                 const SizedBox(height: 14),
@@ -225,7 +233,10 @@ class _FriendlyErrorView extends StatelessWidget {
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      color: AppTheme.danger, fontSize: 11, height: 1.4),
+                    color: AppTheme.danger,
+                    fontSize: 11,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ],

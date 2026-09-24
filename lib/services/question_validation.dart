@@ -25,15 +25,17 @@ class QuestionValidationService {
         question.stem,
         question.questionK,
         question.questionKh,
-        question.questionG
+        question.questionG,
       ].any((s) => s.trim().isEmpty))
         errors.add('creative question is incomplete');
-      final three = question.marks.length == 3 &&
+      final three =
+          question.marks.length == 3 &&
           question.marks[0] == 2 &&
           question.marks[1] == 4 &&
           question.marks[2] == 4 &&
           question.questionGh.isEmpty;
-      final four = question.marks.length == 4 &&
+      final four =
+          question.marks.length == 4 &&
           question.marks[0] == 1 &&
           question.marks[1] == 2 &&
           question.marks[2] == 3 &&

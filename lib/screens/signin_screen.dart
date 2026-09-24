@@ -66,7 +66,8 @@ class _SignInScreenState extends State<SignInScreen> {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
       setState(
-          () => _err = 'Type your email first, then tap "Forgot password".');
+        () => _err = 'Type your email first, then tap "Forgot password".',
+      );
       return;
     }
     setState(() {
@@ -77,8 +78,9 @@ class _SignInScreenState extends State<SignInScreen> {
     try {
       await AuthService.sendPasswordReset(email);
       if (mounted) {
-        setState(() =>
-            _msg = 'Password reset link sent to $email — check your inbox.');
+        setState(
+          () => _msg = 'Password reset link sent to $email — check your inbox.',
+        );
       }
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
@@ -98,8 +100,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const AuthHero(
               icon: Icons.login_rounded,
               title: 'Welcome back',
-              subtitle:
-                  'Sign in with the email and password you chose when you created your tutor account.',
+              subtitle: 'Sign in with the email and password you chose when you created your tutor account.',
             ),
             const SizedBox(height: 18),
             GlassCard(
@@ -136,9 +137,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       suffixIcon: IconButton(
                         tooltip: _obscure ? 'Show password' : 'Hide password',
                         onPressed: () => setState(() => _obscure = !_obscure),
-                        icon: Icon(_obscure
-                            ? Icons.visibility_rounded
-                            : Icons.visibility_off_rounded),
+                        icon: Icon(
+                          _obscure
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded,
+                        ),
                       ),
                     ),
                   ),
@@ -173,12 +176,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 onPressed: _busy
                     ? null
                     : () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SignUpScreen(
-                                prefillEmail: _emailCtrl.text.trim()),
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SignUpScreen(
+                            prefillEmail: _emailCtrl.text.trim(),
                           ),
                         ),
+                      ),
                 icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
                 label: const Text('No account yet? Create one'),
               ),

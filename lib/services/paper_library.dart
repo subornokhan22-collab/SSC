@@ -39,25 +39,25 @@ class PaperEntry {
       kind == 'pdf' ? 'PDF' : (kind == 'saved' ? 'Saved' : 'ছবি');
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'subject': subject,
-        'year': year,
-        'kind': kind,
-        'pages': pages,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'title': title,
+    'subject': subject,
+    'year': year,
+    'kind': kind,
+    'pages': pages,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   static PaperEntry fromJson(Map<String, dynamic> m) => PaperEntry(
-        id: m['id'] as String,
-        title: m['title'] as String? ?? '',
-        subject: m['subject'] as String? ?? '',
-        year: m['year'] as String? ?? '',
-        kind: m['kind'] as String? ?? 'images',
-        pages: m['pages'] as int? ?? 1,
-        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-            DateTime.now(),
-      );
+    id: m['id'] as String,
+    title: m['title'] as String? ?? '',
+    subject: m['subject'] as String? ?? '',
+    year: m['year'] as String? ?? '',
+    kind: m['kind'] as String? ?? 'images',
+    pages: m['pages'] as int? ?? 1,
+    createdAt:
+        DateTime.tryParse(m['createdAt'] as String? ?? '') ?? DateTime.now(),
+  );
 }
 
 /// One MCQ of a saved paper (kept so the key can be verified on screen).
@@ -72,16 +72,19 @@ class SavedQuestion {
     required this.answer,
   });
 
-  Map<String, dynamic> toJson() =>
-      {'text': text, 'options': options, 'answer': answer};
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'options': options,
+    'answer': answer,
+  };
 
   static SavedQuestion fromJson(Map<String, dynamic> m) => SavedQuestion(
-        text: m['text'] as String? ?? '',
-        options: (m['options'] as List? ?? const [])
-            .map((e) => e.toString())
-            .toList(),
-        answer: (m['answer'] as num? ?? 0).toInt(),
-      );
+    text: m['text'] as String? ?? '',
+    options: (m['options'] as List? ?? const [])
+        .map((e) => e.toString())
+        .toList(),
+    answer: (m['answer'] as num? ?? 0).toInt(),
+  );
 }
 
 /// A question paper saved from the in-app builder (Question Paper / Custom
@@ -119,38 +122,37 @@ class SavedPaper {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'subject': subject,
-        'subjectId': subjectId,
-        'subjectCode': subjectCode,
-        'setCode': setCode,
-        'total': total,
-        'key': key,
-        'questions': [for (final q in questions) q.toJson()],
-        'createdAt': createdAt.toIso8601String(),
-        'pages': pages,
-      };
+    'id': id,
+    'title': title,
+    'subject': subject,
+    'subjectId': subjectId,
+    'subjectCode': subjectCode,
+    'setCode': setCode,
+    'total': total,
+    'key': key,
+    'questions': [for (final q in questions) q.toJson()],
+    'createdAt': createdAt.toIso8601String(),
+    'pages': pages,
+  };
 
   static SavedPaper fromJson(Map<String, dynamic> m) => SavedPaper(
-        id: m['id'] as String? ?? '',
-        title: m['title'] as String? ?? '',
-        subject: m['subject'] as String? ?? '',
-        subjectId: m['subjectId'] as String? ?? '',
-        subjectCode: m['subjectCode'] as String? ?? '',
-        setCode: m['setCode'] as String? ?? '—',
-        total: m['total'] as int? ?? 0,
-        key: (m['key'] as List? ?? const [])
-            .map((e) => (e as num).toInt())
-            .toList(),
-        questions: (m['questions'] as List? ?? const [])
-            .map((e) =>
-                SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
-            .toList(),
-        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-            DateTime.now(),
-        pages: m['pages'] as int? ?? 0,
-      );
+    id: m['id'] as String? ?? '',
+    title: m['title'] as String? ?? '',
+    subject: m['subject'] as String? ?? '',
+    subjectId: m['subjectId'] as String? ?? '',
+    subjectCode: m['subjectCode'] as String? ?? '',
+    setCode: m['setCode'] as String? ?? '—',
+    total: m['total'] as int? ?? 0,
+    key: (m['key'] as List? ?? const [])
+        .map((e) => (e as num).toInt())
+        .toList(),
+    questions: (m['questions'] as List? ?? const [])
+        .map((e) => SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
+        .toList(),
+    createdAt:
+        DateTime.tryParse(m['createdAt'] as String? ?? '') ?? DateTime.now(),
+    pages: m['pages'] as int? ?? 0,
+  );
 }
 
 class PaperLibrary {
@@ -160,8 +162,9 @@ class PaperLibrary {
 
   static Future<Directory> root() async {
     final appDoc = await getApplicationDocumentsDirectory();
-    final dir =
-        Directory('${appDoc.path}${Platform.pathSeparator}tutors_desk_papers');
+    final dir = Directory(
+      '${appDoc.path}${Platform.pathSeparator}tutors_desk_papers',
+    );
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir;
   }
@@ -183,10 +186,13 @@ class PaperLibrary {
     if (!f.existsSync()) return const [];
     try {
       final list = json.decode(f.readAsStringSync()) as List;
-      final entries = list
-          .map((e) => PaperEntry.fromJson((e as Map).cast<String, dynamic>()))
-          .toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final entries =
+          list
+              .map(
+                (e) => PaperEntry.fromJson((e as Map).cast<String, dynamic>()),
+              )
+              .toList()
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return entries;
     } catch (_) {
       return const [];
@@ -346,12 +352,14 @@ class PaperLibrary {
 
   /// The saved paper (with its answer key) stored under entry [id], if any.
   static Future<SavedPaper?> savedPaper(String id) async {
-    final f =
-        File((await _dirFor(id)).path + Platform.pathSeparator + 'paper.json');
+    final f = File(
+      (await _dirFor(id)).path + Platform.pathSeparator + 'paper.json',
+    );
     if (!f.existsSync()) return null;
     try {
       return SavedPaper.fromJson(
-          (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>());
+        (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>(),
+      );
     } catch (_) {
       return null;
     }
@@ -361,8 +369,9 @@ class PaperLibrary {
   /// list for the OMR scanner's answer-key picker. Photo/PDF uploads are
   /// intentionally excluded.
   static Future<List<SavedPaper>> loadSavedPapers() async {
-    final entries =
-        (await loadEntries()).where((e) => e.kind == 'saved').toList();
+    final entries = (await loadEntries())
+        .where((e) => e.kind == 'saved')
+        .toList();
     final out = <SavedPaper>[];
     for (final e in entries) {
       final p = await savedPaper(e.id);
@@ -374,21 +383,24 @@ class PaperLibrary {
 
   static Future<Uint8List?> pageBytes(String id, int page) async {
     final f = File(
-        (await _dirFor(id)).path + Platform.pathSeparator + 'p${page}.jpg');
+      (await _dirFor(id)).path + Platform.pathSeparator + 'p${page}.jpg',
+    );
     if (!f.existsSync()) return null;
     return f.readAsBytes();
   }
 
   static Future<Uint8List?> pdfBytes(String id) async {
-    final f =
-        File((await _dirFor(id)).path + Platform.pathSeparator + 'doc.pdf');
+    final f = File(
+      (await _dirFor(id)).path + Platform.pathSeparator + 'doc.pdf',
+    );
     if (!f.existsSync()) return null;
     return f.readAsBytes();
   }
 
   static Future<Uint8List?> thumbBytes(String id) async {
-    final f =
-        File((await _dirFor(id)).path + Platform.pathSeparator + 'thumb.jpg');
+    final f = File(
+      (await _dirFor(id)).path + Platform.pathSeparator + 'thumb.jpg',
+    );
     if (!f.existsSync()) return null;
     return f.readAsBytes();
   }
@@ -577,8 +589,11 @@ Uint8List _normalizeJpegCore(Uint8List raw) {
   final side = im.width > im.height ? im.width : im.height;
   if (side > maxSide) {
     final s = maxSide / side;
-    im = img.copyResize(im,
-        width: (im.width * s).round(), height: (im.height * s).round());
+    im = img.copyResize(
+      im,
+      width: (im.width * s).round(),
+      height: (im.height * s).round(),
+    );
   }
   return img.encodeJpg(im, quality: 85);
 }
@@ -590,8 +605,11 @@ Uint8List _thumbCore(Uint8List page) {
   if (image == null) return page;
   final s = 360.0 / (image.width > image.height ? image.width : image.height);
   final im = s < 1
-      ? img.copyResize(image,
-          width: (image.width * s).round(), height: (image.height * s).round())
+      ? img.copyResize(
+          image,
+          width: (image.width * s).round(),
+          height: (image.height * s).round(),
+        )
       : image;
   return img.encodeJpg(im, quality: 78);
 }
@@ -731,8 +749,8 @@ class PaperBackup {
   /// are added; stored files are (re)written from the backup. Returns the
   /// number of papers added.
   static Future<int> restore(File f) async {
-    final m =
-        (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>();
+    final m = (json.decode(f.readAsStringSync()) as Map)
+        .cast<String, dynamic>();
     if (m['app'] != 'tutors_desk' ||
         m['entries'] is! List ||
         m['files'] is! Map) {

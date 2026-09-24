@@ -44,7 +44,7 @@ class OmScanResult {
   final int total;
   final List<int> correctedIndices;
   final List<int>
-      answers; // per question: 0–3 option, -1 blank, -2 double-marked
+  answers; // per question: 0–3 option, -1 blank, -2 double-marked
   final List<List<double>> inks; // per question: 4 ink ratios
   final String roll;
   final String registration;
@@ -119,33 +119,37 @@ class OmScanResult {
       );
 
   /// Retains the measured ink/alignment data when a teacher overrides a read.
-  OmScanResult corrected(
-      {List<int>? answers, String? roll, String? registration}) {
+  OmScanResult corrected({
+    List<int>? answers,
+    String? roll,
+    String? registration,
+  }) {
     final next = answers ?? this.answers;
     if (next.length != total || next.any((a) => a < -2 || a > 3))
       throw ArgumentError('Invalid answer correction');
     return OmScanResult._(
-        total: total,
-        answers: List.unmodifiable(next),
-        inks: inks,
-        correctedIndices: {
-          ...correctedIndices,
-          for (var i = 0; i < next.length; i++)
-            if (next[i] != this.answers[i]) i
-        }.toList(),
-        roll: roll ?? this.roll,
-        registration: registration ?? this.registration,
-        subjectCode: subjectCode,
-        setCode: setCode,
-        photoCorners: photoCorners,
-        homography: homography,
-        scale: scale,
-        workWidth: workWidth,
-        workHeight: workHeight,
-        error: error,
-        debug: debug,
-        inkDiag: inkDiag,
-        rectifiedJpeg: rectifiedJpeg);
+      total: total,
+      answers: List.unmodifiable(next),
+      inks: inks,
+      correctedIndices: {
+        ...correctedIndices,
+        for (var i = 0; i < next.length; i++)
+          if (next[i] != this.answers[i]) i,
+      }.toList(),
+      roll: roll ?? this.roll,
+      registration: registration ?? this.registration,
+      subjectCode: subjectCode,
+      setCode: setCode,
+      photoCorners: photoCorners,
+      homography: homography,
+      scale: scale,
+      workWidth: workWidth,
+      workHeight: workHeight,
+      error: error,
+      debug: debug,
+      inkDiag: inkDiag,
+      rectifiedJpeg: rectifiedJpeg,
+    );
   }
 
   bool get ok => error == null;
@@ -238,13 +242,13 @@ class OMrScanner {
     const targetH = 2339;
     final srcW = decoded.width;
     final srcH = decoded.height;
-    final srcBytes =
-        (await decoded.toByteData(format: ui.ImageByteFormat.rawRgba))
-            ?.buffer
-            .asUint8List();
+    final srcBytes = (await decoded.toByteData(
+      format: ui.ImageByteFormat.rawRgba,
+    ))?.buffer.asUint8List();
     if (srcBytes == null) {
       return OmScanResult.failed(
-          'Image could not be processed. Try a different photo.');
+        'Image could not be processed. Try a different photo.',
+      );
     }
     final s = targetH / srcH;
     final w = (srcW * s).round();
@@ -263,10 +267,11 @@ class OMrScanner {
       final ar = w / h; // = source aspect ratio (h is fixed at 2339)
       if (ar < 0.60 || ar > 0.82) {
         return OmScanResult.failed(
-            'The scanner crop only covers part of the sheet. In the '
-            'scanner, open "Crop and rotate" and extend the crop until '
-            'ALL FOUR corners of the sheet are inside it, then scan '
-            'again.');
+          'The scanner crop only covers part of the sheet. In the '
+          'scanner, open "Crop and rotate" and extend the crop until '
+          'ALL FOUR corners of the sheet are inside it, then scan '
+          'again.',
+        );
       }
     }
 
@@ -277,13 +282,15 @@ class OMrScanner {
     final dropout = Uint8List(w * h);
     for (var dy = 0; dy < h; dy++) {
       final sy0 = (dy * srcH / h).floor();
-      final sy1 =
-          math.max(sy0 + 1, ((dy + 1) * srcH / h).ceil()).clamp(0, srcH);
+      final sy1 = math
+          .max(sy0 + 1, ((dy + 1) * srcH / h).ceil())
+          .clamp(0, srcH);
       final orow = dy * w;
       for (var dx = 0; dx < w; dx++) {
         final sx0 = (dx * srcW / w).floor();
-        final sx1 =
-            math.max(sx0 + 1, ((dx + 1) * srcW / w).ceil()).clamp(0, srcW);
+        final sx1 = math
+            .max(sx0 + 1, ((dx + 1) * srcW / w).ceil())
+            .clamp(0, srcW);
         var sum = 0, n = 0;
         var sumR = 0, sumG = 0, sumB = 0;
         for (var sy = sy0; sy < sy1; sy++) {
@@ -292,7 +299,8 @@ class OMrScanner {
             final o = (srow + sx) * 4;
             // Luma (BT.601); the weighted sum is always within 0..65280,
             // so the >> 8 result is a valid 8-bit gray value.
-            sum += (srcBytes[o] * 77 +
+            sum +=
+                (srcBytes[o] * 77 +
                     srcBytes[o + 1] * 150 +
                     srcBytes[o + 2] * 29) >>
                 8;
@@ -370,8 +378,14 @@ class OMrScanner {
     final marks = <DetectedCorner?>[
       for (var c = 0; c < 4; c++)
         _detectCornerMark(c, dark, w, h) ??
-            _detectCornerMark(c, dark1, w, h,
-                nearCorner: true, minFill: 0.80) ??
+            _detectCornerMark(
+              c,
+              dark1,
+              w,
+              h,
+              nearCorner: true,
+              minFill: 0.80,
+            ) ??
             _detectCornerMark(c, dark2, w, h, nearCorner: true, minFill: 0.80),
     ];
     final markCount = marks.where((m) => m != null).length;
@@ -407,8 +421,9 @@ class OMrScanner {
         // component is found (a null component let the corner fallback
         // search the whole frame and capture the bright background).
         final sp = _paperSeed(paper, w, h, seed.dx.round(), seed.dy.round());
-        sharedComp =
-            sp == null ? null : _paperComponent(paper, w, h, sp.$1, sp.$2);
+        sharedComp = sp == null
+            ? null
+            : _paperComponent(paper, w, h, sp.$1, sp.$2);
         sharedCompReady = true;
       }
       return sharedComp;
@@ -442,10 +457,11 @@ class OMrScanner {
         if (edges.isNotEmpty && markCount < 4) {
           final where = edges.toSet().join(' / ');
           return OmScanResult.failed(
-              'The sheet is cut off at the $where of the photo. Step back '
-              'until the whole sheet — including all four corners — is '
-              'inside the frame, then take the photo again.',
-              debug: dbg);
+            'The sheet is cut off at the $where of the photo. Step back '
+            'until the whole sheet — including all four corners — is '
+            'inside the frame, then take the photo again.',
+            debug: dbg,
+          );
         }
       }
     }
@@ -489,9 +505,10 @@ class OMrScanner {
         continue;
       }
       return OmScanResult.failed(
-          'Corner marks not found. Keep the whole OMR sheet in frame, in '
-          'even light, and take the photo again.',
-          debug: dbg);
+        'Corner marks not found. Keep the whole OMR sheet in frame, in '
+        'even light, and take the photo again.',
+        debug: dbg,
+      );
     }
 
     const _cornerNames = ['TL', 'TR', 'BL', 'BR'];
@@ -585,11 +602,18 @@ class OMrScanner {
       }
       final tl0 = applyHomography(cand, const ui.Offset(0, 0));
       final br0 = applyHomography(
-          cand, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
-      final pageDiag0 = math.sqrt(OMrGeometry.pageW * OMrGeometry.pageW +
-          OMrGeometry.pageH * OMrGeometry.pageH);
-      final sc = math.sqrt((br0.dx - tl0.dx) * (br0.dx - tl0.dx) +
-              (br0.dy - tl0.dy) * (br0.dy - tl0.dy)) /
+        cand,
+        const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH),
+      );
+      final pageDiag0 = math.sqrt(
+        OMrGeometry.pageW * OMrGeometry.pageW +
+            OMrGeometry.pageH * OMrGeometry.pageH,
+      );
+      final sc =
+          math.sqrt(
+            (br0.dx - tl0.dx) * (br0.dx - tl0.dx) +
+                (br0.dy - tl0.dy) * (br0.dy - tl0.dy),
+          ) /
           pageDiag0;
       if (!sc.isFinite || sc <= 0) {
         failReason =
@@ -602,8 +626,7 @@ class OMrScanner {
         continue;
       }
       if (OMrGeometry.bubbleRadiusPx * sc < 4) {
-        failReason =
-            'The sheet is too small in the photo. Move closer and take the photo again.';
+        failReason = 'The sheet is too small in the photo. Move closer and take the photo again.';
         continue;
       }
       // Precision gate: every detected mark must reproject onto its own
@@ -621,11 +644,11 @@ class OMrScanner {
         final res = math.sqrt(dxx * dxx + dyy * dyy);
         final tol = math.max(csEff[k].blobDiag * 3, sc * 15);
         setRes.add(
-            '${_cornerNames[k]} ${res.isFinite ? res.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tol.toStringAsFixed(1)})');
+          '${_cornerNames[k]} ${res.isFinite ? res.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tol.toStringAsFixed(1)})',
+        );
         if (!res.isFinite || res > tol) {
           precise = false;
-          failReason =
-              'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.';
+          failReason = 'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.';
           break;
         }
       }
@@ -644,8 +667,15 @@ class OMrScanner {
       candidate = _marksSimilarityHomography(geo, marks, struct, pixels, w, h);
     }
     if (candidate == null && rectified) {
-      candidate =
-          _pageBoundsHomography(geo, struct, pixels, paper, w, h, marks);
+      candidate = _pageBoundsHomography(
+        geo,
+        struct,
+        pixels,
+        paper,
+        w,
+        h,
+        marks,
+      );
     }
     if (candidate == null) {
       return OmScanResult.failed(failReason, debug: dbg);
@@ -668,30 +698,39 @@ class OMrScanner {
     // bad photo.
     final tl = applyHomography(homography, const ui.Offset(0, 0));
     final br = applyHomography(
-        homography, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
-    final pageDiagonal = math.sqrt(OMrGeometry.pageW * OMrGeometry.pageW +
-        OMrGeometry.pageH * OMrGeometry.pageH);
-    final scale = math.sqrt((br.dx - tl.dx) * (br.dx - tl.dx) +
-            (br.dy - tl.dy) * (br.dy - tl.dy)) /
+      homography,
+      const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH),
+    );
+    final pageDiagonal = math.sqrt(
+      OMrGeometry.pageW * OMrGeometry.pageW +
+          OMrGeometry.pageH * OMrGeometry.pageH,
+    );
+    final scale =
+        math.sqrt(
+          (br.dx - tl.dx) * (br.dx - tl.dx) + (br.dy - tl.dy) * (br.dy - tl.dy),
+        ) /
         pageDiagonal;
     dbg['scale'] = scale.toStringAsFixed(4);
     if (!scale.isFinite || scale <= 0) {
       return OmScanResult.failed(
-          'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.',
-          debug: dbg);
+        'Could not align the sheet (no valid scale, $markCount of 4 corner marks). Keep it flat and still, and take the photo again.',
+        debug: dbg,
+      );
     }
     // A physical A4 sheet photographed for OMR sits well within this range;
     // anything else means the "alignment" is a distorted projective fit.
     if (scale < 0.3 || scale > 3.0) {
       return OmScanResult.failed(
-          'Could not align the sheet (scale ${scale.toStringAsFixed(2)} — the whole sheet must fit in frame with a small margin).',
-          debug: dbg);
+        'Could not align the sheet (scale ${scale.toStringAsFixed(2)} — the whole sheet must fit in frame with a small margin).',
+        debug: dbg,
+      );
     }
     final bubbleR = OMrGeometry.bubbleRadiusPx * scale;
     if (bubbleR < 4) {
       return OmScanResult.failed(
-          'The sheet is too small in the photo. Move closer and take the photo again.',
-          debug: dbg);
+        'The sheet is too small in the photo. Move closer and take the photo again.',
+        debug: dbg,
+      );
     }
 
     // Diagnostics (debug export): the same reprojection the verification
@@ -711,7 +750,8 @@ class OMrScanner {
       final residual = math.sqrt(dx * dx + dy * dy);
       final tolerance = math.max(guardCorners[k].blobDiag * 3, scale * 15);
       dbgFinal.add(
-          '${_cornerNames[k]} ${residual.isFinite ? residual.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tolerance.toStringAsFixed(1)})');
+        '${_cornerNames[k]} ${residual.isFinite ? residual.toStringAsFixed(1) : 'NON-FINITE'} (tol ${tolerance.toStringAsFixed(1)})',
+      );
     }
     dbg['finalMarkResiduals'] = dbgFinal.join(' | ');
 
@@ -732,8 +772,9 @@ class OMrScanner {
       final tolerance = math.max(guardCorners[k].blobDiag * 3, scale * 15);
       if (!residual.isFinite || residual > tolerance) {
         return OmScanResult.failed(
-            'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.',
-            debug: dbg);
+          'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.',
+          debug: dbg,
+        );
       }
     }
 
@@ -804,7 +845,8 @@ class OMrScanner {
           }
         }
         colDiag.add(
-            '${bestDigit < 0 ? '-' : bestDigit}@${best.toStringAsFixed(2)}/${second.toStringAsFixed(2)}');
+          '${bestDigit < 0 ? '-' : bestDigit}@${best.toStringAsFixed(2)}/${second.toStringAsFixed(2)}',
+        );
         if (best >= fillThreshold && best > second + 0.12) {
           sb.write('$bestDigit');
         } else if (best >= weakThreshold) {
@@ -1093,11 +1135,7 @@ class OMrScanner {
       }
     }
     if (bestScore <= 0) return null;
-    return DetectedCorner(
-      ui.Offset(bestCx, bestCy),
-      true,
-      blobDiag: bestDiag,
-    );
+    return DetectedCorner(ui.Offset(bestCx, bestCy), true, blobDiag: bestDiag);
   }
 
   /// Global sanity check over the four detected marks. The marks are equal
@@ -1116,8 +1154,9 @@ class OMrScanner {
     ];
     var bad = !_isConvexQuadrilateral(q);
     if (!bad) {
-      double len(ui.Offset a, ui.Offset b) => math
-          .sqrt((b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
+      double len(ui.Offset a, ui.Offset b) => math.sqrt(
+        (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy),
+      );
       final aW = (len(q[0], q[1]) + len(q[3], q[2])) / 2;
       final aH = (len(q[0], q[3]) + len(q[1], q[2])) / 2;
       final aspect = aW < aH ? aW / aH : aH / aW;
@@ -1134,11 +1173,12 @@ class OMrScanner {
     if (!bad) return -1;
     final diags = [
       for (final c in corners)
-        if (c.fromMark) c.blobDiag
+        if (c.fromMark) c.blobDiag,
     ];
     final sorted = [...diags]..sort();
-    final median =
-        (sorted[1] + sorted[2]) / 2 < 1 ? 1.0 : (sorted[1] + sorted[2]) / 2;
+    final median = (sorted[1] + sorted[2]) / 2 < 1
+        ? 1.0
+        : (sorted[1] + sorted[2]) / 2;
     var worst = -1;
     var worstDev = -1.0;
     for (var i = 0; i < 4; i++) {
@@ -1165,7 +1205,11 @@ class OMrScanner {
   /// side's vector) is a close anchor — far closer than a bright pixel
   /// that may belong to a neighbouring sheet.
   static ui.Offset? _parallelogramCorner(
-      int missing, List<DetectedCorner?> marks, int w, int h) {
+    int missing,
+    List<DetectedCorner?> marks,
+    int w,
+    int h,
+  ) {
     final tl = marks[0]?.point;
     final tr = marks[1]?.point;
     final bl = marks[2]?.point;
@@ -1219,10 +1263,14 @@ class OMrScanner {
     final maxR = (math.sqrt(w * w + h * h) * 0.15).round();
     for (var r = 2; r <= maxR; r += 4) {
       for (var a = 0; a < 360; a += 8) {
-        final x =
-            (sx + (r * math.cos(a * math.pi / 180)).round()).clamp(0, w - 1);
-        final y =
-            (sy + (r * math.sin(a * math.pi / 180)).round()).clamp(0, h - 1);
+        final x = (sx + (r * math.cos(a * math.pi / 180)).round()).clamp(
+          0,
+          w - 1,
+        );
+        final y = (sy + (r * math.sin(a * math.pi / 180)).round()).clamp(
+          0,
+          h - 1,
+        );
         if (paper[y * w + x] == 1) return (x, y);
       }
     }
@@ -1232,7 +1280,12 @@ class OMrScanner {
   /// The paper-mask connected component containing (sx, sy), or null when
   /// the seed isn't on paper.
   static Uint8List? _paperComponent(
-      Uint8List paper, int w, int h, int sx, int sy) {
+    Uint8List paper,
+    int w,
+    int h,
+    int sx,
+    int sy,
+  ) {
     if (sx < 0 || sy < 0 || sx >= w || sy >= h) return null;
     if (paper[sy * w + sx] == 0) return null;
     final comp = Uint8List(w * h);
@@ -1264,7 +1317,12 @@ class OMrScanner {
   }
 
   static DetectedCorner? _paperCornerFallback(
-      int corner, Uint8List paper, int w, int h, Uint8List? comp) {
+    int corner,
+    Uint8List paper,
+    int w,
+    int h,
+    Uint8List? comp,
+  ) {
     final band = 0.45;
     // [comp] restricts the search to the paper region connected to the
     // scan's seed point (the sheet itself) — computed once by the caller
@@ -1339,8 +1397,13 @@ class OMrScanner {
   /// the result's debug map so a wrong-orientation read can be analyzed
   /// without the device.
   static (List<double>?, int, String) _bestRotationHomography(
-      OMrGeometry geo, List<DetectedCorner> corners,
-      [Uint8List? ink, Uint8List? luma, int w = 0, int h = 0]) {
+    OMrGeometry geo,
+    List<DetectedCorner> corners, [
+    Uint8List? ink,
+    Uint8List? luma,
+    int w = 0,
+    int h = 0,
+  ]) {
     // Clockwise corner order: TL, TR, BR, BL.
     // `corners` is indexed TL(0), TR(1), BL(2), BR(3).
     final markAnchor = [
@@ -1414,7 +1477,9 @@ class OMrScanner {
           applyHomography(hHom, const ui.Offset(0, 0)),
           applyHomography(hHom, const ui.Offset(OMrGeometry.pageW, 0)),
           applyHomography(
-              hHom, ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH)),
+            hHom,
+            ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH),
+          ),
           applyHomography(hHom, const ui.Offset(0, OMrGeometry.pageH)),
         ];
         // A nearly-collinear anchor set can produce a homography that maps
@@ -1422,15 +1487,18 @@ class OMrScanner {
         // comparisons would silently pass every gate below, so reject such
         // fits here. A real sheet can never project beyond ~10 frames.
         final frameDiag = math.sqrt(w * w + h * h) * 10;
-        if (pts.any((pt) =>
-            !pt.dx.isFinite ||
-            !pt.dy.isFinite ||
-            pt.dx.abs() > frameDiag ||
-            pt.dy.abs() > frameDiag)) {
+        if (pts.any(
+          (pt) =>
+              !pt.dx.isFinite ||
+              !pt.dy.isFinite ||
+              pt.dx.abs() > frameDiag ||
+              pt.dy.abs() > frameDiag,
+        )) {
           continue;
         }
         double len(ui.Offset a, ui.Offset b) => math.sqrt(
-            (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy));
+          (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy),
+        );
         final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
         final height = (len(pts[0], pts[3]) + len(pts[1], pts[2])) / 2;
         if (width < 200 || height < 200) continue;
@@ -1472,9 +1540,12 @@ class OMrScanner {
         }
         if (!markResFinite) continue;
         if (maxRes > 0) {
-          final scaleEst = len(pts[0], pts[2]) /
-              math.sqrt(OMrGeometry.pageW * OMrGeometry.pageW +
-                  OMrGeometry.pageH * OMrGeometry.pageH);
+          final scaleEst =
+              len(pts[0], pts[2]) /
+              math.sqrt(
+                OMrGeometry.pageW * OMrGeometry.pageW +
+                    OMrGeometry.pageH * OMrGeometry.pageH,
+              );
           if (maxRes > math.max(30.0, 0.012 * scaleEst * 2863)) continue;
         }
         var err = 0.0;
@@ -1482,7 +1553,9 @@ class OMrScanner {
         // Affine-ness: the projected page centre should sit near the
         // detected quadrilateral's diagonal crossing.
         final pc = applyHomography(
-            hHom, ui.Offset(OMrGeometry.pageW / 2, OMrGeometry.pageH / 2));
+          hHom,
+          ui.Offset(OMrGeometry.pageW / 2, OMrGeometry.pageH / 2),
+        );
         final icx = (qq[0].dx + qq[2].dx) / 2, icy = (qq[0].dy + qq[2].dy) / 2;
         final jcX = (qq[1].dx + qq[3].dx) / 2, jcY = (qq[1].dy + qq[3].dy) / 2;
         final ic = ui.Offset((icx + jcX) / 2, (icy + jcY) / 2);
@@ -1499,12 +1572,17 @@ class OMrScanner {
         if (luma != null && ink != null && w > 0 && h > 0) {
           final gridH = geo.perColumn * OMrGeometry.rowH;
           final halfGrid = gridH * 0.5;
-          final probeY = OMrGeometry.questionsTop +
+          final probeY =
+              OMrGeometry.questionsTop +
               (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
-          final top =
-              applyHomography(hHom, ui.Offset(OMrGeometry.pageW / 2, probeY));
+          final top = applyHomography(
+            hHom,
+            ui.Offset(OMrGeometry.pageW / 2, probeY),
+          );
           final bottom = applyHomography(
-              hHom, const ui.Offset(OMrGeometry.pageW / 2, 2189));
+            hHom,
+            const ui.Offset(OMrGeometry.pageW / 2, 2189),
+          );
           final topVar = _diskVariance(luma, w, h, top.dx, top.dy, 24);
           final botVar = _diskVariance(luma, w, h, bottom.dx, bottom.dy, 24);
           if (topVar < 100) {
@@ -1573,12 +1651,13 @@ class OMrScanner {
   /// sheet that reads 1-2 false marks and garbles the metadata boxes;
   /// two real marks are far harder to fool than a luma threshold.
   static List<double>? _marksSimilarityHomography(
-      OMrGeometry geo,
-      List<DetectedCorner?> marks,
-      Uint8List? ink,
-      Uint8List? luma,
-      int w,
-      int h) {
+    OMrGeometry geo,
+    List<DetectedCorner?> marks,
+    Uint8List? ink,
+    Uint8List? luma,
+    int w,
+    int h,
+  ) {
     // Longest detected pair = most accurate anchor (diagonal > side).
     var bi = -1, bj = -1, bestDist = 0.0;
     for (var i = 0; i < 4; i++) {
@@ -1587,8 +1666,9 @@ class OMrScanner {
         if (marks[j] == null) continue;
         final pi = OMrGeometry.markCenter(i);
         final pj = OMrGeometry.markCenter(j);
-        final d = math.sqrt((pi.dx - pj.dx) * (pi.dx - pj.dx) +
-            (pi.dy - pj.dy) * (pi.dy - pj.dy));
+        final d = math.sqrt(
+          (pi.dx - pj.dx) * (pi.dx - pj.dx) + (pi.dy - pj.dy) * (pi.dy - pj.dy),
+        );
         if (d > bestDist) {
           bestDist = d;
           bi = i;
@@ -1632,8 +1712,10 @@ class OMrScanner {
       final mk = marks[k];
       if (mk == null || k == bi || k == bj) continue;
       final p = applyHomography(hom, OMrGeometry.markCenter(k));
-      if (math.sqrt((p.dx - mk.point.dx) * (p.dx - mk.point.dx) +
-              (p.dy - mk.point.dy) * (p.dy - mk.point.dy)) >
+      if (math.sqrt(
+            (p.dx - mk.point.dx) * (p.dx - mk.point.dx) +
+                (p.dy - mk.point.dy) * (p.dy - mk.point.dy),
+          ) >
           tol) {
         return null;
       }
@@ -1646,7 +1728,9 @@ class OMrScanner {
     final tR = applyHomography(hom, const ui.Offset(OMrGeometry.pageW, 0));
     final bL = applyHomography(hom, const ui.Offset(0, OMrGeometry.pageH));
     final bR = applyHomography(
-        hom, const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH));
+      hom,
+      const ui.Offset(OMrGeometry.pageW, OMrGeometry.pageH),
+    );
     for (final p in [tL, tR]) {
       if (p.dy < -0.20 * h || p.dy > 0.35 * h) return null;
       if (p.dx < -0.30 * w || p.dx > 1.30 * w) return null;
@@ -1747,8 +1831,15 @@ class OMrScanner {
   /// Strongest upward (or downward) step of a smoothed profile inside
   /// [lo, hi] (fractions of the length), or null when no step reaches
   /// [minStep].
-  static double? _strongestStep(Float64List p, int n, int d, double minStep,
-      double lo, double hi, bool wantUp) {
+  static double? _strongestStep(
+    Float64List p,
+    int n,
+    int d,
+    double minStep,
+    double lo,
+    double hi,
+    bool wantUp,
+  ) {
     var loI = (n * lo).round();
     var hiI = (n * hi).round();
     if (loI < d) loI = d;
@@ -1822,8 +1913,13 @@ class OMrScanner {
   /// the longest mark-to-edge lever arm wins. Returns [scale, origin]
   /// or null when no mark is available or every mark sits too close to
   /// this edge to measure a scale from.
-  static List<double>? _edgeMarkAxis(List<DetectedCorner?> marks, List<int> ks,
-      double edgePhoto, double edgePage, bool horizontal) {
+  static List<double>? _edgeMarkAxis(
+    List<DetectedCorner?> marks,
+    List<int> ks,
+    double edgePhoto,
+    double edgePage,
+    bool horizontal,
+  ) {
     double? bestS;
     var bestO = 0.0;
     var bestLever = 0.0;
@@ -1850,13 +1946,14 @@ class OMrScanner {
   }
 
   static List<double>? _pageBoundsHomography(
-      OMrGeometry geo,
-      Uint8List? ink,
-      Uint8List? luma,
-      Uint8List paper,
-      int w,
-      int h,
-      List<DetectedCorner?> marks) {
+    OMrGeometry geo,
+    Uint8List? ink,
+    Uint8List? luma,
+    Uint8List paper,
+    int w,
+    int h,
+    List<DetectedCorner?> marks,
+  ) {
     final a4 = OMrGeometry.pageW / OMrGeometry.pageH;
     final actual = w / h;
     if (actual / a4 < 0.94 || actual / a4 > 1.06) return null;
@@ -1898,8 +1995,13 @@ class OMrScanner {
           sH = (x1 - x0) / OMrGeometry.pageW;
           sHExact = true;
         } else if (rightDet) {
-          final r =
-              _edgeMarkAxis(marks, const [0, 1], x1, OMrGeometry.pageW, true);
+          final r = _edgeMarkAxis(
+            marks,
+            const [0, 1],
+            x1,
+            OMrGeometry.pageW,
+            true,
+          );
           if (r != null) {
             sH = r[0];
             x0c = r[1];
@@ -1918,8 +2020,13 @@ class OMrScanner {
           sV = (y1 - y0) / OMrGeometry.pageH;
           sVExact = true;
         } else if (botDet) {
-          final r =
-              _edgeMarkAxis(marks, const [0, 2], y1, OMrGeometry.pageH, false);
+          final r = _edgeMarkAxis(
+            marks,
+            const [0, 2],
+            y1,
+            OMrGeometry.pageH,
+            false,
+          );
           if (r != null) {
             sV = r[0];
             y0c = r[1];
@@ -2102,12 +2209,17 @@ class OMrScanner {
       if (luma != null && ink != null) {
         final gridH = geo.perColumn * OMrGeometry.rowH;
         final halfGrid = gridH * 0.5;
-        final probeY = OMrGeometry.questionsTop +
+        final probeY =
+            OMrGeometry.questionsTop +
             (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
-        final top =
-            applyHomography(hHom, ui.Offset(OMrGeometry.pageW / 2, probeY));
-        final bottom =
-            applyHomography(hHom, const ui.Offset(OMrGeometry.pageW / 2, 2189));
+        final top = applyHomography(
+          hHom,
+          ui.Offset(OMrGeometry.pageW / 2, probeY),
+        );
+        final bottom = applyHomography(
+          hHom,
+          const ui.Offset(OMrGeometry.pageW / 2, 2189),
+        );
         final topVar = _diskVariance(luma, w, h, top.dx, top.dy, 24);
         final botVar = _diskVariance(luma, w, h, bottom.dx, bottom.dy, 24);
         if (topVar < 100) err += 0.35;
@@ -2169,7 +2281,7 @@ class OMrScanner {
   static List<double>? solveLinear(List<List<double>> a, List<double> b) {
     final n = b.length;
     final m = [
-      for (var i = 0; i < n; i++) [...a[i], b[i]]
+      for (var i = 0; i < n; i++) [...a[i], b[i]],
     ];
     for (var col = 0; col < n; col++) {
       var pivot = col;
@@ -2297,7 +2409,13 @@ class OMrScanner {
 
   /// Fraction of dark pixels inside a disc (0 outside the frame).
   static double _inkRatio(
-      Uint8List ink, int w, int h, double cx, double cy, double r) {
+    Uint8List ink,
+    int w,
+    int h,
+    double cx,
+    double cy,
+    double r,
+  ) {
     // Check in the double domain: rounding a non-finite or huge value
     // throws. Nothing beyond the frame (by a wide margin) is meaningful.
     if (!cx.isFinite || !cy.isFinite) return 0;
@@ -2325,7 +2443,13 @@ class OMrScanner {
   /// The question grid scores far higher than a blank margin or a
   /// smoothly shaded area.
   static double _diskVariance(
-      Uint8List luma, int w, int h, double cx, double cy, double r) {
+    Uint8List luma,
+    int w,
+    int h,
+    double cx,
+    double cy,
+    double r,
+  ) {
     if (!cx.isFinite || !cy.isFinite) return 0;
     if (cx < -1e4 || cx > 1e4 || cy < -1e4 || cy > 1e4) return 0;
     final cxI = cx.round(), cyI = cy.round();

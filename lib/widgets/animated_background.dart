@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 /// Compatibility wrapper: a quiet, static paper surface rather than a

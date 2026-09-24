@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../data/questions_data.dart';
 import '../models/paper_draft.dart';
 import '../screens/create_paper_screen.dart';
@@ -24,9 +25,10 @@ class AppRoutes {
       case createPaper:
         final a = route.arguments as CreatePaperArgs?;
         screen = CreatePaperScreen(
-            initialSubjectId: a?.subjectId,
-            initialFormat: a?.format,
-            initialQuestions: a?.questions);
+          initialSubjectId: a?.subjectId,
+          initialFormat: a?.format,
+          initialQuestions: a?.questions,
+        );
         break;
       case settings:
         screen = const SettingsScreen();

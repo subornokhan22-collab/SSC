@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import '../auth_service.dart';
 import '../supabase_config.dart';
 
@@ -11,25 +13,32 @@ class TeacherAiClient {
   TeacherAiClient({http.Client? client}) : _client = client ?? http.Client();
   void close() => _client.close();
   Future<Map<String, dynamic>> request(
-      Map<String, dynamic> payload, void Function(String) progress) async {
+    Map<String, dynamic> payload,
+    void Function(String) progress,
+  ) async {
     final token = AuthService.currentUserToken;
     if (token == null)
       throw StateError(
-          'Sign in to use AI Tools. Your offline papers are still available.');
-    final req = http.Request(
-        'POST', Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'))
-      ..headers.addAll({
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-        'apikey': SupabaseConfig.anonKey
-      })
-      ..body = jsonEncode(payload);
-    final response =
-        await _client.send(req).timeout(const Duration(seconds: 30));
+        'Sign in to use AI Tools. Your offline papers are still available.',
+      );
+    final req =
+        http.Request(
+            'POST',
+            Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
+          )
+          ..headers.addAll({
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+            'apikey': SupabaseConfig.anonKey,
+          })
+          ..body = jsonEncode(payload);
+    final response = await _client
+        .send(req)
+        .timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) {
-      final raw = await response.stream
-          .bytesToString()
-          .timeout(const Duration(seconds: 30));
+      final raw = await response.stream.bytesToString().timeout(
+        const Duration(seconds: 30),
+      );
       String message = 'AI server error (${response.statusCode}). Try again.';
       try {
         final j = jsonDecode(raw) as Map;
@@ -39,10 +48,11 @@ class TeacherAiClient {
     }
     Map<String, dynamic>? result;
     var event = '';
-    await for (final line in response.stream
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .timeout(const Duration(seconds: 100))) {
+    await for (final line
+        in response.stream
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .timeout(const Duration(seconds: 100))) {
       if (line.startsWith('event:')) {
         event = line.substring(6).trim();
         continue;
@@ -56,7 +66,8 @@ class TeacherAiClient {
     }
     if (result == null)
       throw StateError(
-          'The server returned no complete result. The teacher-tools function may need deployment.');
+        'The server returned no complete result. The teacher-tools function may need deployment.',
+      );
     return result;
   }
 }

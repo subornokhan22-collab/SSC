@@ -22,7 +22,7 @@ class ChapterCatalog {
     '৬': 6,
     '৭': 7,
     '৮': 8,
-    '৯': 9
+    '৯': 9,
   };
 
   /// Official Physics chapter sequence supplied from the current contents page.
@@ -49,15 +49,19 @@ class ChapterCatalog {
     if (v.contains(' ও ') ||
         v.contains('মিলিয়ে') ||
         lower.contains('mixed') ||
-        lower.contains('board-style')) return false;
-    return RegExp(r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+', caseSensitive: false)
-        .hasMatch(v);
+        lower.contains('board-style'))
+      return false;
+    return RegExp(
+      r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+',
+      caseSensitive: false,
+    ).hasMatch(v);
   }
 
   static int numberOf(String raw) {
-    final hit =
-        RegExp(r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)', caseSensitive: false)
-            .firstMatch(raw);
+    final hit = RegExp(
+      r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)',
+      caseSensitive: false,
+    ).firstMatch(raw);
     if (hit == null) return 9999;
     var value = 0;
     for (final c in hit.group(1)!.split('')) {
@@ -99,8 +103,11 @@ class ChapterCatalog {
       if (extra.isNotEmpty) return List<String>.from(extra);
     }
 
-    final clean =
-        values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
+    final clean = values
+        .map((e) => e.trim())
+        .where(isSingleChapter)
+        .toSet()
+        .toList();
     clean.sort((a, b) {
       final byNumber = numberOf(a).compareTo(numberOf(b));
       return byNumber != 0 ? byNumber : a.compareTo(b);

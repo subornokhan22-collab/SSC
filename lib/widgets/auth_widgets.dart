@@ -46,7 +46,10 @@ class AuthHero extends StatelessWidget {
               Text(
                 subtitle,
                 style: const TextStyle(
-                    fontSize: 12.8, height: 1.55, color: AppTheme.muted),
+                  fontSize: 12.8,
+                  height: 1.55,
+                  color: AppTheme.muted,
+                ),
               ),
             ],
           ),
@@ -85,7 +88,9 @@ class SubmitButton extends StatelessWidget {
                 width: 17,
                 height: 17,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2.2, color: Colors.white),
+                  strokeWidth: 2.2,
+                  color: Colors.white,
+                ),
               )
             : Icon(icon, size: 20),
         label: Text(busy ? 'Please wait...' : label),

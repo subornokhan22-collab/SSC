@@ -43,10 +43,7 @@ class _AppButtonState extends State<AppButton> {
           SizedBox(
             width: 18,
             height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: foreground,
-            ),
+            child: CircularProgressIndicator(strokeWidth: 2, color: foreground),
           )
         else if (widget.icon != null)
           Icon(widget.icon, size: 20, color: foreground),

@@ -94,44 +94,47 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
                           ),
                           boxShadow: [
                             BoxShadow(
-                                color: Color(0x33E5484D),
-                                blurRadius: 14,
-                                offset: Offset(0, 4)),
+                              color: Color(0x33E5484D),
+                              blurRadius: 14,
+                              offset: Offset(0, 4),
+                            ),
                           ],
                         ),
-                        child: Row(children: [
-                          const _PulsingOfflineIcon(),
-                          const SizedBox(width: 10),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Offline — no internet connection',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w800,
+                        child: Row(
+                          children: [
+                            const _PulsingOfflineIcon(),
+                            const SizedBox(width: 10),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Offline — no internet connection',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w800,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 1),
-                                Text(
-                                  'AI question generation unavailable — '
-                                  'everything else works',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: Color(0xE6FFE3E4),
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w600,
+                                  SizedBox(height: 1),
+                                  Text(
+                                    'AI question generation unavailable — '
+                                    'everything else works',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Color(0xE6FFE3E4),
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ]),
+                          ],
+                        ),
                       )
                     : const SizedBox(width: double.infinity),
               );
@@ -170,9 +173,13 @@ class _PulsingOfflineIconState extends State<_PulsingOfflineIcon>
     return AnimatedBuilder(
       animation: _c,
       builder: (context, _) => Transform.scale(
-          scale: 1 + .14 * _c.value,
-          child: const Icon(Icons.cloud_off_rounded,
-              color: Colors.white, size: 18)),
+        scale: 1 + .14 * _c.value,
+        child: const Icon(
+          Icons.cloud_off_rounded,
+          color: Colors.white,
+          size: 18,
+        ),
+      ),
     );
   }
 }

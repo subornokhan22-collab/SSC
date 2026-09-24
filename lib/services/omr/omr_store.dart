@@ -47,50 +47,50 @@ class OmScanRecord {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'date': date.toIso8601String(),
-        'paperTitle': paperTitle,
-        'subjectName': subjectName,
-        'roll': roll,
-        'registration': registration,
-        'subjectCode': subjectCode,
-        'setCode': setCode,
-        'total': total,
-        'score': score,
-        'correct': correct,
-        'wrong': wrong,
-        'blank': blank,
-        'ambiguous': ambiguous,
-        'answers': answers,
-        'correctedIndices': correctedIndices,
-        'key': key,
-        'durationMs': durationMs,
-      };
+    'id': id,
+    'date': date.toIso8601String(),
+    'paperTitle': paperTitle,
+    'subjectName': subjectName,
+    'roll': roll,
+    'registration': registration,
+    'subjectCode': subjectCode,
+    'setCode': setCode,
+    'total': total,
+    'score': score,
+    'correct': correct,
+    'wrong': wrong,
+    'blank': blank,
+    'ambiguous': ambiguous,
+    'answers': answers,
+    'correctedIndices': correctedIndices,
+    'key': key,
+    'durationMs': durationMs,
+  };
 
   static OmScanRecord fromJson(Map<String, dynamic> m) => OmScanRecord(
-        id: m['id'] as String,
-        date: DateTime.tryParse(m['date'] as String? ?? '') ?? DateTime.now(),
-        paperTitle: m['paperTitle'] as String? ?? '',
-        subjectName: m['subjectName'] as String? ?? '',
-        roll: m['roll'] as String? ?? '',
-        registration: m['registration'] as String? ?? '',
-        subjectCode: m['subjectCode'] as String? ?? '',
-        setCode: m['setCode'] as String? ?? '—',
-        total: m['total'] as int? ?? 0,
-        score: m['score'] as int? ?? 0,
-        correct: m['correct'] as int? ?? 0,
-        wrong: m['wrong'] as int? ?? 0,
-        blank: m['blank'] as int? ?? 0,
-        ambiguous: m['ambiguous'] as int? ?? 0,
-        answers: (m['answers'] as List? ?? const [])
-            .map((e) => (e as num).toInt())
-            .toList(),
-        key: (m['key'] as List? ?? const [])
-            .map((e) => (e as num).toInt())
-            .toList(),
-        durationMs: (m['durationMs'] as num? ?? 0).toInt(),
-        correctedIndices: List<int>.from(m['correctedIndices'] as List? ?? []),
-      );
+    id: m['id'] as String,
+    date: DateTime.tryParse(m['date'] as String? ?? '') ?? DateTime.now(),
+    paperTitle: m['paperTitle'] as String? ?? '',
+    subjectName: m['subjectName'] as String? ?? '',
+    roll: m['roll'] as String? ?? '',
+    registration: m['registration'] as String? ?? '',
+    subjectCode: m['subjectCode'] as String? ?? '',
+    setCode: m['setCode'] as String? ?? '—',
+    total: m['total'] as int? ?? 0,
+    score: m['score'] as int? ?? 0,
+    correct: m['correct'] as int? ?? 0,
+    wrong: m['wrong'] as int? ?? 0,
+    blank: m['blank'] as int? ?? 0,
+    ambiguous: m['ambiguous'] as int? ?? 0,
+    answers: (m['answers'] as List? ?? const [])
+        .map((e) => (e as num).toInt())
+        .toList(),
+    key: (m['key'] as List? ?? const [])
+        .map((e) => (e as num).toInt())
+        .toList(),
+    durationMs: (m['durationMs'] as num? ?? 0).toInt(),
+    correctedIndices: List<int>.from(m['correctedIndices'] as List? ?? []),
+  );
 }
 
 /// An answer key saved so the tutor does not retype it for every student.
@@ -108,21 +108,20 @@ class OmKeyDraft {
   });
 
   Map<String, dynamic> toJson() => {
-        'paperTitle': paperTitle,
-        'total': total,
-        'key': key,
-        'savedAt': savedAt.toIso8601String(),
-      };
+    'paperTitle': paperTitle,
+    'total': total,
+    'key': key,
+    'savedAt': savedAt.toIso8601String(),
+  };
 
   static OmKeyDraft fromJson(Map<String, dynamic> m) => OmKeyDraft(
-        paperTitle: m['paperTitle'] as String? ?? '',
-        total: m['total'] as int? ?? 0,
-        key: (m['key'] as List? ?? const [])
-            .map((e) => (e as num).toInt())
-            .toList(),
-        savedAt:
-            DateTime.tryParse(m['savedAt'] as String? ?? '') ?? DateTime.now(),
-      );
+    paperTitle: m['paperTitle'] as String? ?? '',
+    total: m['total'] as int? ?? 0,
+    key: (m['key'] as List? ?? const [])
+        .map((e) => (e as num).toInt())
+        .toList(),
+    savedAt: DateTime.tryParse(m['savedAt'] as String? ?? '') ?? DateTime.now(),
+  );
 }
 
 class OmrStore {
@@ -150,10 +149,11 @@ class OmrStore {
     final prefs = await SharedPreferences.getInstance();
     final all = [
       record,
-      ...(await loadHistory()).where((r) => r.id != record.id)
+      ...(await loadHistory()).where((r) => r.id != record.id),
     ];
-    final trimmed =
-        all.length > _maxHistory ? all.sublist(0, _maxHistory) : all;
+    final trimmed = all.length > _maxHistory
+        ? all.sublist(0, _maxHistory)
+        : all;
     await prefs.setString(
       _historyKey,
       json.encode([for (final r in trimmed) r.toJson()]),
@@ -175,7 +175,8 @@ class OmrStore {
     if (raw == null || raw.isEmpty) return null;
     try {
       return OmKeyDraft.fromJson(
-          (json.decode(raw) as Map).cast<String, dynamic>());
+        (json.decode(raw) as Map).cast<String, dynamic>(),
+      );
     } catch (_) {
       return null;
     }

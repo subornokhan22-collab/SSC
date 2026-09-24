@@ -41,31 +41,32 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
         child: records == null
             ? const Center(child: CircularProgressIndicator())
             : records.isEmpty
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(
-                          'No scans yet. Grade OMR sheets from the OMR Scanner and their results will appear here.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: AppTheme.muted)),
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: _load,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 30),
-                      children: [
-                        _overview(records),
-                        const SizedBox(height: 12),
-                        _bySubject(records),
-                        const SizedBox(height: 12),
-                        _leaderboard(records),
-                        const SizedBox(height: 12),
-                        _mostMissed(records),
-                      ],
-                    ),
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text(
+                    'No scans yet. Grade OMR sheets from the OMR Scanner and their results will appear here.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppTheme.muted),
                   ),
+                ),
+              )
+            : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 30),
+                  children: [
+                    _overview(records),
+                    const SizedBox(height: 12),
+                    _bySubject(records),
+                    const SizedBox(height: 12),
+                    _leaderboard(records),
+                    const SizedBox(height: 12),
+                    _mostMissed(records),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -90,12 +91,15 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
         children: [
           _head('Overview', Icons.summarize_rounded),
           const SizedBox(height: 10),
-          Row(children: [
-            _stat('${r.length}', 'scans'),
-            _stat('${avgPct.toStringAsFixed(1)}%', 'avg score'),
-            _stat('${best.toStringAsFixed(0)}%', 'best'),
-            if (avgSec > 0) _stat('${avgSec.toStringAsFixed(1)}s', 'avg scan'),
-          ]),
+          Row(
+            children: [
+              _stat('${r.length}', 'scans'),
+              _stat('${avgPct.toStringAsFixed(1)}%', 'avg score'),
+              _stat('${best.toStringAsFixed(0)}%', 'best'),
+              if (avgSec > 0)
+                _stat('${avgSec.toStringAsFixed(1)}s', 'avg scan'),
+            ],
+          ),
         ],
       ),
     );
@@ -122,39 +126,53 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
           for (final e in rows)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Row(children: [
-                Expanded(
-                  flex: 3,
-                  child: Text(e.key,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      e.key,
                       style: const TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w700)),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text('${e.value.length} scans',
-                      style:
-                          const TextStyle(fontSize: 12, color: AppTheme.muted)),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    '${(_avgPct(e.value)).toStringAsFixed(1)}%',
-                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      '${e.value.length} scans',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.muted,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      '${(_avgPct(e.value)).toStringAsFixed(1)}%',
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         color: _avgPct(e.value) >= 50
                             ? AppTheme.success
-                            : AppTheme.warning),
+                            : AppTheme.warning,
+                      ),
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'best ${(_bestPct(e.value)).toStringAsFixed(0)}%',
-                    style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      'best ${(_bestPct(e.value)).toStringAsFixed(0)}%',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.muted,
+                      ),
+                    ),
                   ),
-                ),
-              ]),
+                ],
+              ),
             ),
         ],
       ),
@@ -178,8 +196,10 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
         children: [
           _head('Leaderboard', Icons.emoji_events_rounded),
           const SizedBox(height: 2),
-          const Text('Top 10 across all saved scans on this device',
-              style: TextStyle(fontSize: 11, color: AppTheme.muted)),
+          const Text(
+            'Top 10 across all saved scans on this device',
+            style: TextStyle(fontSize: 11, color: AppTheme.muted),
+          ),
           const SizedBox(height: 8),
           for (var i = 0; i < top.length; i++) _leaderRow(i + 1, top[i]),
         ],
@@ -192,7 +212,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
     final medals = {
       1: const Color(0xFFE8B93C),
       2: const Color(0xFFB8C2D2),
-      3: const Color(0xFFC98A4B)
+      3: const Color(0xFFC98A4B),
     };
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -202,52 +222,66 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppTheme.border),
       ),
-      child: Row(children: [
-        Container(
-          width: 26,
-          height: 26,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: medals[rank] ?? AppTheme.border,
-          ),
-          alignment: Alignment.center,
-          child: Text('$rank',
+      child: Row(
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: medals[rank] ?? AppTheme.border,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '$rank',
               style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white)),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(x.roll.isEmpty ? 'Roll —' : 'Roll ${x.roll}',
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  x.roll.isEmpty ? 'Roll —' : 'Roll ${x.roll}',
                   style: const TextStyle(
-                      fontSize: 12.5, fontWeight: FontWeight.w800)),
-              Text(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
                   '${x.paperTitle.isEmpty ? '—' : x.paperTitle}${x.subjectName.isEmpty ? '' : ' • ${x.subjectName}'}',
                   style: const TextStyle(fontSize: 10.5, color: AppTheme.muted),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis),
-            ],
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('${x.score}/${x.total}',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${x.score}/${x.total}',
                 style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w800,
-                    color: AppTheme.primary)),
-            Text(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.primary,
+                ),
+              ),
+              Text(
                 '${pct.toStringAsFixed(1)}%   '
                 'C${x.correct} W${x.wrong} B${x.blank}${x.ambiguous > 0 ? ' D${x.ambiguous}' : ''}',
-                style: const TextStyle(fontSize: 10, color: AppTheme.muted)),
-          ],
-        ),
-      ]),
+                style: const TextStyle(fontSize: 10, color: AppTheme.muted),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -273,8 +307,9 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
           _head('Most missed questions', Icons.help_outline_rounded),
           const SizedBox(height: 2),
           const Text(
-              'Questions with the lowest correct rate (needs at least 2 attempts).',
-              style: TextStyle(fontSize: 11, color: AppTheme.muted)),
+            'Questions with the lowest correct rate (needs at least 2 attempts).',
+            style: TextStyle(fontSize: 11, color: AppTheme.muted),
+          ),
           const SizedBox(height: 8),
           for (final e in shown) _missedBlock(e.key, e.value),
         ],
@@ -309,32 +344,45 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(paper,
-              style:
-                  const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800)),
+          Text(
+            paper,
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 4),
-          Wrap(spacing: 6, runSpacing: 6, children: [
-            for (final m in top)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color:
-                      m.$2 == 0 ? const Color(0x22E5484D) : AppTheme.surfaceAlt,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final m in top)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: m.$2 == 0
+                        ? const Color(0x22E5484D)
+                        : AppTheme.surfaceAlt,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
                       color: m.$2 == 0
                           ? const Color(0xFFE5484D).withOpacity(.5)
-                          : AppTheme.border),
-                ),
-                child: Text('Q${m.$1}  ${m.$2}/${m.$3}',
+                          : AppTheme.border,
+                    ),
+                  ),
+                  child: Text(
+                    'Q${m.$1}  ${m.$2}/${m.$3}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: m.$2 == 0
-                            ? const Color(0xFFE5484D)
-                            : AppTheme.textDark)),
-              ),
-          ]),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: m.$2 == 0
+                          ? const Color(0xFFE5484D)
+                          : AppTheme.textDark,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -360,23 +408,32 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
     return best;
   }
 
-  Widget _head(String title, IconData icon) => Row(children: [
-        Icon(icon, size: 18, color: AppTheme.primary),
-        const SizedBox(width: 8),
-        Expanded(
-            child: Text(title,
-                style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w800))),
-      ]);
+  Widget _head(String title, IconData icon) => Row(
+    children: [
+      Icon(icon, size: 18, color: AppTheme.primary),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+        ),
+      ),
+    ],
+  );
 
   Widget _stat(String value, String label) => Expanded(
-        child: Column(children: [
-          Text(value,
-              style:
-                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 2),
-          Text(label,
-              style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
-        ]),
-      );
+    child: Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10.5, color: AppTheme.muted),
+        ),
+      ],
+    ),
+  );
 }

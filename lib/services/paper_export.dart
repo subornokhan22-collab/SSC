@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -19,18 +20,22 @@ class RenderedPaper {
 
 class PaperExport {
   static Future<RenderedPaper> render(
-      PaperDraft draft, ComposedPaper paper) async {
+    PaperDraft draft,
+    ComposedPaper paper,
+  ) async {
     final subject = subjectById(draft.subjectId);
     if (subject == null) throw StateError('Subject not found');
-    final title =
-        draft.title.trim().isEmpty ? 'মডেল পরীক্ষা — ২০২৭' : draft.title.trim();
+    final title = draft.title.trim().isEmpty
+        ? 'মডেল পরীক্ষা — ২০২৭'
+        : draft.title.trim();
     final pages = paper.english.isNotEmpty
         ? await PaperPdf.renderEnglishPages(
             paperTitle: title,
             subTitle:
                 '${subject.name} • ${PaperComposer.codes[draft.subjectId] ?? ''}',
             sections: paper.english,
-            setCode: draft.setCode)
+            setCode: draft.setCode,
+          )
         : await PaperPdf.renderPages(
             title: title,
             headerLine1: title,
@@ -45,14 +50,15 @@ class PaperExport {
             saqs: [
               for (final q in paper.saqs)
                 Question(
-                    id: q.id,
-                    subjectId: q.subjectId,
-                    chapter: q.chapter,
-                    questionText: q.questionText,
-                    options: const [],
-                    correctIndex: 0,
-                    explanation: q.answer,
-                    figure: q.figure)
+                  id: q.id,
+                  subjectId: q.subjectId,
+                  chapter: q.chapter,
+                  questionText: q.questionText,
+                  options: const [],
+                  correctIndex: 0,
+                  explanation: q.answer,
+                  figure: q.figure,
+                ),
             ],
             literatureQuestions: paper.literature,
             bangla2WrittenQuestions: paper.written,
@@ -68,40 +74,52 @@ class PaperExport {
             mcqTime: '${paper.mcqs.length} মিনিট',
             writtenMarks: '${paper.marks - paper.mcqs.length}',
             writtenTime: '${paper.minutes - paper.mcqs.length} মিনিট',
-            mathCqThreePart: draft.subjectId == 'general_math' ||
-                draft.subjectId == 'higher_math');
+            mathCqThreePart:
+                draft.subjectId == 'general_math' ||
+                draft.subjectId == 'higher_math',
+          );
     final images = List<Uint8List>.of(pages);
     if (draft.answerKey && paper.mcqs.isNotEmpty)
       images.add(await _answerPage(title, draft, paper));
     if (images.isEmpty) throw StateError('The paper has no printable pages.');
     final doc = pw.Document();
     for (final png in images) {
-      doc.addPage(pw.Page(
+      doc.addPage(
+        pw.Page(
           pageFormat: PdfPageFormat.a4,
           margin: pw.EdgeInsets.zero,
-          build: (_) => pw.Image(pw.MemoryImage(png),
-              width: PdfPageFormat.a4.width,
-              height: PdfPageFormat.a4.height,
-              fit: pw.BoxFit.fill)));
+          build: (_) => pw.Image(
+            pw.MemoryImage(png),
+            width: PdfPageFormat.a4.width,
+            height: PdfPageFormat.a4.height,
+            fit: pw.BoxFit.fill,
+          ),
+        ),
+      );
     }
     return RenderedPaper(List.unmodifiable(images), await doc.save());
   }
 
   static Future<Uint8List> _answerPage(
-      String title, PaperDraft draft, ComposedPaper paper) async {
+    String title,
+    PaperDraft draft,
+    ComposedPaper paper,
+  ) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     canvas.drawColor(Colors.white, BlendMode.src);
     void text(String value, double x, double y, double size) {
       final painter = TextPainter(
-          text: TextSpan(
-              text: value,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: AppTypography.uiFont,
-                  fontSize: size)),
-          textDirection: TextDirection.ltr)
-        ..layout(maxWidth: 1400);
+        text: TextSpan(
+          text: value,
+          style: TextStyle(
+            color: Colors.black,
+            fontFamily: AppTypography.uiFont,
+            fontSize: size,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: 1400);
       painter.paint(canvas, Offset(x, y));
       painter.dispose();
     }
@@ -110,8 +128,12 @@ class PaperExport {
     text('Answer Key • উত্তরমালা • সেট ${draft.setCode}', 110, 160, 34);
     const letters = ['ক', 'খ', 'গ', 'ঘ'];
     for (var i = 0; i < paper.mcqs.length; i++) {
-      text('${i + 1}.  ${letters[paper.mcqs[i].correctIndex]}',
-          110 + (i ~/ 25) * 360.0, 250 + (i % 25) * 72.0, 32);
+      text(
+        '${i + 1}.  ${letters[paper.mcqs[i].correctIndex]}',
+        110 + (i ~/ 25) * 360.0,
+        250 + (i % 25) * 72.0,
+        32,
+      );
     }
     final picture = recorder.endRecording();
     final image = await picture.toImage(1654, 2339);

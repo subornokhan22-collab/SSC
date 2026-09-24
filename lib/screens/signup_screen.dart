@@ -128,9 +128,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       await AuthService.resendSignUpCode(_emailCtrl.text);
       if (!mounted) return;
-      setState(() => _msg =
-          'Code sent again. If nothing arrives, check spam — the free mail '
-              'service only allows a few messages an hour.');
+      setState(
+        () => _msg =
+            'Code sent again. If nothing arrives, check spam — the free mail '
+            'service only allows a few messages an hour.',
+      );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
@@ -191,9 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   : 'Choose a password you will use to sign in. We email a code once, just to confirm this address.',
             ),
             const SizedBox(height: 18),
-            SoftSwitcher(
-              child: _otpSent ? _codeCard() : _detailsCard(),
-            ),
+            SoftSwitcher(child: _otpSent ? _codeCard() : _detailsCard()),
             if (_msg != null) ...[
               const SizedBox(height: 14),
               InfoBanner.success(_msg!),
@@ -245,7 +245,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               prefixIcon: Icon(Icons.phone_iphone_rounded),
               prefixText: '+880  ',
               prefixStyle: TextStyle(
-                  fontWeight: FontWeight.bold, color: AppTheme.primary),
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primary,
+              ),
             ),
           ),
           const SizedBox(height: 14),
@@ -280,9 +282,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(_obscure
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded),
+                icon: Icon(
+                  _obscure
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_rounded,
+                ),
               ),
             ),
           ),
@@ -357,11 +361,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: _busy
                   ? null
                   : () => setState(() {
-                        _otpSent = false;
-                        _err = null;
-                        _msg = null;
-                        _codeCtrl.clear();
-                      }),
+                      _otpSent = false;
+                      _err = null;
+                      _msg = null;
+                      _codeCtrl.clear();
+                    }),
               child: const Text('Edit details'),
             ),
           ),

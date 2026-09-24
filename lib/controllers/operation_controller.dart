@@ -23,8 +23,10 @@ class OperationController extends ChangeNotifier {
       return !_disposed;
     } catch (e) {
       if (!_disposed)
-        error =
-            e.toString().replaceFirst(RegExp(r'^(Exception|Bad state): '), '');
+        error = e.toString().replaceFirst(
+          RegExp(r'^(Exception|Bad state): '),
+          '',
+        );
       return false;
     } finally {
       busy = false;

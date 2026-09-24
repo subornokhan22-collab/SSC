@@ -19,8 +19,12 @@ class AppLogo extends StatelessWidget {
   /// Ring / glow colour. Defaults to the brand primary.
   final Color? ringColor;
 
-  const AppLogo(
-      {super.key, this.size = 44, this.framed = true, this.ringColor});
+  const AppLogo({
+    super.key,
+    this.size = 44,
+    this.framed = true,
+    this.ringColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +77,7 @@ class AppLogo extends StatelessWidget {
         ],
       ),
       // Inset a hair so the artwork does not touch the ring.
-      child: Padding(
-        padding: EdgeInsets.all(size * .04),
-        child: image,
-      ),
+      child: Padding(padding: EdgeInsets.all(size * .04), child: image),
     );
   }
 }

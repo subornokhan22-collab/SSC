@@ -99,7 +99,8 @@ class AuthService {
     final e = _validEmail(email);
     if (password.length < minPasswordLength) {
       throw AuthException(
-          'Password must be at least $minPasswordLength characters');
+        'Password must be at least $minPasswordLength characters',
+      );
     }
     final res = await _c.auth.signUp(email: e, password: password);
     // When email confirmation is disabled in the Supabase project the session
@@ -152,7 +153,8 @@ class AuthService {
     _requireReady();
     if (password.length < minPasswordLength) {
       throw AuthException(
-          'Password must be at least $minPasswordLength characters');
+        'Password must be at least $minPasswordLength characters',
+      );
     }
     await _c.auth.updateUser(UserAttributes(password: password));
   }
@@ -168,7 +170,8 @@ class AuthService {
       await setPassword(password);
     } on AuthException catch (e) {
       final m = e.message.toLowerCase();
-      final alreadySet = m.contains('should be different') ||
+      final alreadySet =
+          m.contains('should be different') ||
           m.contains('different from the old password') ||
           m.contains('same as the old password') ||
           m.contains('same_password');
@@ -193,8 +196,9 @@ class AuthService {
   }
 
   // ── Reading the profile ───────────────────────────────────────────
-  static Future<Map<String, dynamic>?> fetchProfile(
-      {bool refresh = true}) async {
+  static Future<Map<String, dynamic>?> fetchProfile({
+    bool refresh = true,
+  }) async {
     if (!isLoggedIn) return null;
     if (!refresh && _profileCache != null) return _profileCache;
     final u = _c.auth.currentUser;
@@ -224,13 +228,16 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c.from('profiles').insert({
-          'id': u.id,
-          'email': u.email ?? '',
-          'role': teacherRole,
-          'name': name,
-          'phone': phone,
-        }).timeout(const Duration(seconds: 6));
+        await _c
+            .from('profiles')
+            .insert({
+              'id': u.id,
+              'email': u.email ?? '',
+              'role': teacherRole,
+              'name': name,
+              'phone': phone,
+            })
+            .timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -253,7 +260,8 @@ class AuthService {
     } catch (_) {
       // Offline / RLS issue — fall through to whatever we can read back.
     }
-    final p = await fetchProfile() ??
+    final p =
+        await fetchProfile() ??
         <String, dynamic>{
           'email': u.email ?? '',
           'role': teacherRole,
@@ -308,7 +316,8 @@ class AuthService {
   static void _requireReady() {
     if (!ready) {
       throw const AuthException(
-          'Sign-in is not configured yet — offline features still work');
+        'Sign-in is not configured yet — offline features still work',
+      );
     }
   }
 

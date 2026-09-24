@@ -151,12 +151,13 @@ class OmQuality {
       marks = found.where((f) => f != null).length;
     }
     return OmFrameQuality(
-        sharpness: sharp,
-        paperFrac: sheetFrac,
-        marks: marks,
-        quad: quad,
-        frameW: fw,
-        frameH: fh);
+      sharpness: sharp,
+      paperFrac: sheetFrac,
+      marks: marks,
+      quad: quad,
+      frameW: fw,
+      frameH: fh,
+    );
   }
 
   /// The four extreme corners (TL, TR, BR, BL) of the largest paper
@@ -167,7 +168,13 @@ class OmQuality {
   /// region must be large, sheet-shaped (not an L-shaped blob), and its
   /// four corners must be well spread out.
   static (double, List<Offset>?) _sheetQuad(
-      Uint8List g, int w, int h, int nativeW, int nativeH, int otsuT) {
+    Uint8List g,
+    int w,
+    int h,
+    int nativeW,
+    int nativeH,
+    int otsuT,
+  ) {
     final total = w * h;
     final label = Int32List(total); // 0 = not part of any paper component
     final sizes = <int>[0];
@@ -286,12 +293,7 @@ class OmQuality {
 
     final sx = nativeW / w.toDouble();
     final sy = nativeH / h.toDouble();
-    return (
-      frac,
-      [
-        for (final p in pts) Offset(p.dx * sx, p.dy * sy),
-      ]
-    );
+    return (frac, [for (final p in pts) Offset(p.dx * sx, p.dy * sy)]);
   }
 
   static List<int>? _parallelogram(int missing, List<List<int>?> f) {
@@ -325,7 +327,12 @@ class OmQuality {
   /// registration square (same idea as the scanner's dark-mask detector,
   /// on the small preview); null when no blob passes the gates.
   static List<int>? _findMarkCenter(
-      Uint8List g, int w, int h, int corner, int darkT) {
+    Uint8List g,
+    int w,
+    int h,
+    int corner,
+    int darkT,
+  ) {
     const s = 0.45;
     final x0 = [0, (w * (1 - s)).round(), 0, (w * (1 - s)).round()][corner];
     final x1 = [(w * s).round(), w, (w * s).round(), w][corner];
@@ -406,12 +413,13 @@ class OmQuality {
     for (var y = 1; y < h - 1; y++) {
       final row = y * w;
       for (var x = 1; x < w - 1; x++) {
-        final v = (g[row + x - 1] +
-                g[row + x + 1] +
-                g[row - w + x] +
-                g[row + w + x] -
-                4 * g[row + x])
-            .toDouble();
+        final v =
+            (g[row + x - 1] +
+                    g[row + x + 1] +
+                    g[row - w + x] +
+                    g[row + w + x] -
+                    4 * g[row + x])
+                .toDouble();
         sum += v;
         sum2 += v * v;
         n++;

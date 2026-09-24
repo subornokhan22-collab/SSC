@@ -30,8 +30,11 @@ void main() {
 
     test('every student-only screen is gone', () {
       for (final path in removedScreens) {
-        expect(File(path).existsSync(), isFalse,
-            reason: '$path belongs to the removed student portal');
+        expect(
+          File(path).existsSync(),
+          isFalse,
+          reason: '$path belongs to the removed student portal',
+        );
       }
     });
 
@@ -44,8 +47,9 @@ void main() {
           final name = removed.split('/').last;
           // Match a real import of that exact file, not a substring of
           // another name (e.g. home_screen.dart vs teacher_home_screen.dart).
-          final pattern =
-              RegExp("import\\s+'[^']*(?<![\\w])" + RegExp.escape(name) + "'");
+          final pattern = RegExp(
+            "import\\s+'[^']*(?<![\\w])" + RegExp.escape(name) + "'",
+          );
           if (pattern.hasMatch(source)) {
             offenders.add('${entity.path} -> $name');
           }
@@ -66,8 +70,11 @@ void main() {
       expect(File('lib/models/subject_info.dart').existsSync(), isTrue);
       expect(allSubjects, isNotEmpty);
       final ids = allSubjects.map((s) => s.id).toList();
-      expect(ids.toSet().length, ids.length,
-          reason: 'subject ids must be unique');
+      expect(
+        ids.toSet().length,
+        ids.length,
+        reason: 'subject ids must be unique',
+      );
       // The full catalogue stays available even where a subject has no
       // questions yet; the bank is what was trimmed, not the subject list.
       for (final wanted in [
@@ -99,13 +106,18 @@ void main() {
 
     test('index wrapping never throws', () {
       expect(
-          () => AppStyle.colors[99 % AppStyle.colors.length], returnsNormally);
+        () => AppStyle.colors[99 % AppStyle.colors.length],
+        returnsNormally,
+      );
     });
 
     test('every backdrop preset is light', () {
       for (var i = 0; i < AppStyle.colors.length; i++) {
-        expect(AppStyle.colors[i].computeLuminance(), greaterThan(0.8),
-            reason: '${AppStyle.labels[i]} must be a light backdrop');
+        expect(
+          AppStyle.colors[i].computeLuminance(),
+          greaterThan(0.8),
+          reason: '${AppStyle.labels[i]} must be a light backdrop',
+        );
       }
     });
 
@@ -144,8 +156,11 @@ void main() {
 
     test('AuthService no longer exposes a passwordless sign-in', () {
       final src = File('lib/services/auth_service.dart').readAsStringSync();
-      expect(src.contains('signInWithOtp'), isFalse,
-          reason: 'sign-in must never trigger a magic-link/OTP email');
+      expect(
+        src.contains('signInWithOtp'),
+        isFalse,
+        reason: 'sign-in must never trigger a magic-link/OTP email',
+      );
       expect(src.contains('signInWithPassword'), isTrue);
       expect(AuthService.minPasswordLength, greaterThanOrEqualTo(8));
     });
@@ -156,8 +171,8 @@ void main() {
       final pubspec = File('pubspec.yaml').readAsStringSync();
       expect(pubspec.contains('name: tutors_desk'), isTrue);
       expect(pubspec.contains('a_learning'), isFalse);
-      final manifest =
-          File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
+      final manifest = File('android/app/src/main/AndroidManifest.xml')
+          .readAsStringSync();
       expect(manifest.contains("Tutor\'s Desk"), isTrue);
       expect(manifest.contains('ssc_prep_app'), isFalse);
     });
@@ -170,8 +185,11 @@ void main() {
           offenders.add(entity.path);
         }
       }
-      expect(offenders, isEmpty,
-          reason: 'use AppLogo (the real app icon) instead');
+      expect(
+        offenders,
+        isEmpty,
+        reason: 'use AppLogo (the real app icon) instead',
+      );
     });
 
     test('the logo widget points at the real launcher asset', () {

@@ -46,8 +46,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppTheme.textDark),
@@ -61,7 +63,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onRefresh: _persistName,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
+                parent: BouncingScrollPhysics(),
+              ),
               padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
               children: [
                 _section(
@@ -69,42 +72,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.person_rounded,
                   child: GlassCard(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const ProfileScreen())),
-                    child: Row(children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primary.withOpacity(.10),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: AppTheme.primary.withOpacity(.35)),
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withOpacity(.10),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppTheme.primary.withOpacity(.35),
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.person_rounded,
+                            color: AppTheme.primary,
+                            size: 22,
+                          ),
                         ),
-                        child: const Icon(Icons.person_rounded,
-                            color: AppTheme.primary, size: 22),
-                      ),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Profile & account',
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Profile & account',
                                 style: TextStyle(
-                                    fontSize: 14.5,
-                                    fontWeight: FontWeight.w800)),
-                            SizedBox(height: 2),
-                            Text('Details, workspace theme, Pro sync, sign out',
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Details, workspace theme, Pro sync, sign out',
                                 style: TextStyle(
-                                    fontSize: 11.5, color: AppTheme.muted)),
-                          ],
+                                  fontSize: 11.5,
+                                  color: AppTheme.muted,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
-                    ]),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppTheme.muted,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 _section(
@@ -114,45 +135,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: const EdgeInsets.all(14),
                     child: ValueListenableBuilder<bool>(
                       valueListenable: AppSettings.omrPrefillCodes,
-                      builder: (context, on, _) => Row(children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppTheme.secondary.withOpacity(.10),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: AppTheme.secondary.withOpacity(.35)),
-                          ),
-                          child: const Icon(Icons.table_view_rounded,
-                              color: AppTheme.secondary, size: 22),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Prefill set & subject code in OMR',
-                                  style: TextStyle(
-                                      fontSize: 14.5,
-                                      fontWeight: FontWeight.w800)),
-                              const SizedBox(height: 2),
-                              Text(
-                                on
-                                    ? 'OMR sheets print the set & subject code already filled, and scan results show them'
-                                    : 'OMR sheets print the set & subject code blank (students fill it in) and scan results leave it blank',
-                                style: const TextStyle(
-                                    fontSize: 11.5, color: AppTheme.muted),
+                      builder: (context, on, _) => Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: AppTheme.secondary.withOpacity(.10),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppTheme.secondary.withOpacity(.35),
                               ),
-                            ],
+                            ),
+                            child: const Icon(
+                              Icons.table_view_rounded,
+                              color: AppTheme.secondary,
+                              size: 22,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Switch(
-                          value: on,
-                          onChanged: (v) => AppSettings.setOmriPrefill(v),
-                        ),
-                      ]),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Prefill set & subject code in OMR',
+                                  style: TextStyle(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  on
+                                      ? 'OMR sheets print the set & subject code already filled, and scan results show them'
+                                      : 'OMR sheets print the set & subject code blank (students fill it in) and scan results leave it blank',
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    color: AppTheme.muted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Switch(
+                            value: on,
+                            onChanged: (v) => AppSettings.setOmriPrefill(v),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -162,48 +194,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: GlassCard(
                     padding: const EdgeInsets.all(16),
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                              'Used as the default title for new question papers and OMR tests',
-                              style: TextStyle(
-                                  fontSize: 11.5,
-                                  color: AppTheme.muted,
-                                  height: 1.4)),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _nameCtrl,
-                            style: const TextStyle(
-                                fontSize: 14.5, fontWeight: FontWeight.w700),
-                            onSubmitted: (_) => _persistName(),
-                            onEditingComplete: _persistName,
-                            decoration: InputDecoration(
-                              hintText: 'e.g. Model Test — First Phase',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: AppTheme.border),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Used as the default title for new question papers and OMR tests',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: AppTheme.muted,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _nameCtrl,
+                          style: const TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          onSubmitted: (_) => _persistName(),
+                          onEditingComplete: _persistName,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. Model Test — First Phase',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppTheme.border,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: AppTheme.border),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppTheme.border,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                    color: AppTheme.primary, width: 1.4),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppTheme.primary,
+                                width: 1.4,
                               ),
                             ),
                           ),
-                          if (_savedMsg != null)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 8),
-                              child: Text('Saved ✓',
-                                  style: TextStyle(
-                                      fontSize: 11.5, color: AppTheme.success)),
+                        ),
+                        if (_savedMsg != null)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              'Saved ✓',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: AppTheme.success,
+                              ),
                             ),
-                        ]),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -214,22 +259,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _section(String title,
-      {required IconData icon, required Widget child}) {
+  Widget _section(
+    String title, {
+    required IconData icon,
+    required Widget child,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
-          child: Row(children: [
-            Icon(icon, size: 18, color: AppTheme.primary),
-            const SizedBox(width: 8),
-            Text(title,
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: AppTheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                title,
                 style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w900,
-                    color: AppTheme.textDark)),
-          ]),
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.textDark,
+                ),
+              ),
+            ],
+          ),
         ),
         child,
       ],

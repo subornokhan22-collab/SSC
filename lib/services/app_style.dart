@@ -37,14 +37,10 @@ class AppStyle {
 
   /// Soft vertical gradient for screen backdrops.
   static LinearGradient get gradient => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          bg,
-          Color.alphaBlend(accent.withOpacity(.06), bg),
-          bg,
-        ],
-      );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [bg, Color.alphaBlend(accent.withOpacity(.06), bg), bg],
+  );
 
   static Future<void> load() async {
     try {

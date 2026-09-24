@@ -59,8 +59,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _problem(String title, String message, {String? detail}) =>
-      showProblemDialog(context,
-          title: title, message: message, detail: detail);
+      showProblemDialog(
+        context,
+        title: title,
+        message: message,
+        detail: detail,
+      );
 
   // ── bKash flow ───────────────────────────────────────────────────
 
@@ -76,8 +80,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
     // Confirm the bKash number that will receive the payment.
     final profile = await AuthService.fetchProfile(refresh: false);
-    var phone =
-        (profile?['phone']?.toString() ?? '').replaceAll(RegExp(r'[^\d]'), '');
+    var phone = (profile?['phone']?.toString() ?? '').replaceAll(
+      RegExp(r'[^\d]'),
+      '',
+    );
     if (phone.startsWith('880')) phone = phone.substring(3);
     if (phone.startsWith('0')) phone = phone.substring(1);
     final ctrl = TextEditingController(text: phone);
@@ -113,22 +119,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
               if (err != null) ...[
                 const SizedBox(height: 10),
-                Text(err!,
-                    style: const TextStyle(
-                        color: AppTheme.danger, fontSize: 12.5)),
+                Text(
+                  err!,
+                  style: const TextStyle(
+                    color: AppTheme.danger,
+                    fontSize: 12.5,
+                  ),
+                ),
               ],
             ],
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(c, false),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
               onPressed: () {
                 final p = ctrl.text.trim();
                 if (!RegExp(r'^01\d{9}$').hasMatch(p)) {
-                  setD(() =>
-                      err = 'Enter a valid bKash number, e.g. 01712345678.');
+                  setD(
+                    () => err = 'Enter a valid bKash number, e.g. 01712345678.',
+                  );
                   return;
                 }
                 Navigator.pop(c, true);
@@ -157,8 +169,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       final opened = await BkashService.openCheckout(url);
       if (!mounted) return;
       if (!opened) {
-        await _problem('Could not open bKash',
-            'bKash did not open. Install the bKash app or check your browser, then tap the plan again.');
+        await _problem(
+          'Could not open bKash',
+          'bKash did not open. Install the bKash app or check your browser, then tap the plan again.',
+        );
         return;
       }
       _showWaiting(trxId);
@@ -166,9 +180,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       if (mounted) await _problem('Payment could not be started', e.message);
     } catch (e) {
       if (mounted) {
-        await _problem('Payment could not be started',
-            'Something went wrong talking to the payment server.',
-            detail: '$e');
+        await _problem(
+          'Payment could not be started',
+          'Something went wrong talking to the payment server.',
+          detail: '$e',
+        );
       }
     } finally {
       if (mounted) setState(() => _buying = false);
@@ -227,16 +243,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                const SizedBox(
+              Row(
+                children: [
+                  const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.2)),
-                const SizedBox(width: 12),
-                const Expanded(
+                    child: CircularProgressIndicator(strokeWidth: 2.2),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
                     child: Text(
-                        'Complete the payment in bKash, then come back here — the app activates Pro by itself.')),
-              ]),
+                      'Complete the payment in bKash, then come back here — the app activates Pro by itself.',
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 14),
               Text(
                 'Payment reference: $trxId',
@@ -267,8 +288,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       if (status == 'active') {
         await _activate();
       } else if (status == 'failed') {
-        await _problem('This bKash payment failed',
-            'bKash rejected this payment — no money left your account.');
+        await _problem(
+          'This bKash payment failed',
+          'bKash rejected this payment — no money left your account.',
+        );
       } else {
         await _problem(
           'Still waiting',
@@ -295,12 +318,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('🎉 Pro is active!'),
-        content: const Text('Thank you for supporting Tutor\'s Desk.\n\n'
-            'Full papers, no watermark, PDF and printing — every feature '
-            'is unlocked.'),
+        content: const Text(
+          'Thank you for supporting Tutor\'s Desk.\n\n'
+          'Full papers, no watermark, PDF and printing — every feature '
+          'is unlocked.',
+        ),
         actions: [
           FilledButton(
-              onPressed: () => Navigator.pop(c), child: const Text('Great!')),
+            onPressed: () => Navigator.pop(c),
+            child: const Text('Great!'),
+          ),
         ],
       ),
     );
@@ -310,13 +337,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: Text(_isPro ? "Tutor's Desk Pro" : 'Upgrade to Pro')),
+      appBar: AppBar(
+        title: Text(_isPro ? "Tutor's Desk Pro" : 'Upgrade to Pro'),
+      ),
       body: SafeArea(
         child: SoftSwitcher(
           child: _loading
               ? const BusyIndicator(
-                  key: ValueKey('loading'), message: 'Checking your licence...')
+                  key: ValueKey('loading'),
+                  message: 'Checking your licence...',
+                )
               : (_isPro ? _proBody() : _buyBody()),
         ),
       ),
@@ -353,11 +383,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             shape: BoxShape.circle,
                             color: AppTheme.primary.withOpacity(.12),
                             border: Border.all(
-                                color: AppTheme.primary.withOpacity(.5),
-                                width: 1.4),
+                              color: AppTheme.primary.withOpacity(.5),
+                              width: 1.4,
+                            ),
                           ),
-                          child: const Icon(Icons.verified_rounded,
-                              color: AppTheme.accent, size: 44),
+                          child: const Icon(
+                            Icons.verified_rounded,
+                            color: AppTheme.accent,
+                            size: 44,
+                          ),
                         ),
                       ),
                     ],
@@ -379,7 +413,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   'Full papers, no watermark, unlimited PDF export and printing — every feature is unlocked. Thank you!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: AppTheme.muted, fontSize: 13.5, height: 1.7),
+                    color: AppTheme.muted,
+                    fontSize: 13.5,
+                    height: 1.7,
+                  ),
                 ),
               ],
             ),
@@ -395,22 +432,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       (
         Icons.description_rounded,
         'Full question papers',
-        'Every banked question, no demo cut-off'
+        'Every banked question, no demo cut-off',
       ),
       (
         Icons.picture_as_pdf_rounded,
         'PDF export & printing',
-        'Share or print straight from your phone'
+        'Share or print straight from your phone',
       ),
       (
         Icons.water_drop_outlined,
         'No watermark',
-        'Clean, classroom-ready papers'
+        'Clean, classroom-ready papers',
       ),
       (
         Icons.rocket_launch_rounded,
         'New features first',
-        'Get every improvement as it ships'
+        'Get every improvement as it ships',
       ),
     ];
 
@@ -430,8 +467,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     min: .95,
                     max: 1.06,
                     period: const Duration(milliseconds: 2100),
-                    child: const Icon(Icons.workspace_premium_rounded,
-                        color: AppTheme.accent, size: 32),
+                    child: const Icon(
+                      Icons.workspace_premium_rounded,
+                      color: AppTheme.accent,
+                      size: 32,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
@@ -476,8 +516,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppTheme.primary.withOpacity(.12),
-                      border:
-                          Border.all(color: AppTheme.primary.withOpacity(.32)),
+                      border: Border.all(
+                        color: AppTheme.primary.withOpacity(.32),
+                      ),
                     ),
                     child: Icon(perk.$1, color: AppTheme.accent, size: 19),
                   ),
@@ -498,9 +539,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         Text(
                           perk.$3,
                           style: TextStyle(
-                              color: AppTheme.muted,
-                              fontSize: 11.8,
-                              height: 1.4),
+                            color: AppTheme.muted,
+                            fontSize: 11.8,
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ),
@@ -528,9 +570,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                    color: AppTheme.primary.withOpacity(.35),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6)),
+                  color: AppTheme.primary.withOpacity(.35),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
               ],
             ),
             child: Row(
@@ -538,22 +581,29 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               children: [
                 if (_buying)
                   const SizedBox(
-                      width: 17,
-                      height: 17,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white))
+                    width: 17,
+                    height: 17,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 else
-                  const Icon(Icons.account_balance_wallet_rounded,
-                      color: Colors.white, size: 20),
+                  const Icon(
+                    Icons.account_balance_wallet_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 const SizedBox(width: 10),
                 Text(
                   _buying
                       ? 'Starting bKash payment…'
                       : 'Pay ${_plan.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} with bKash',
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w800),
+                    color: Colors.white,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ],
             ),
@@ -582,30 +632,40 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 'Never share your bKash PIN or payment credentials inside '
                 'the app.',
                 style: TextStyle(
-                    fontSize: 12.5, height: 1.6, color: AppTheme.muted),
+                  fontSize: 12.5,
+                  height: 1.6,
+                  color: AppTheme.muted,
+                ),
               ),
               const SizedBox(height: 14),
               PressableScale(
                 onTap: () {
                   Clipboard.setData(
-                      const ClipboardData(text: SubscriptionScreen.hotline));
+                    const ClipboardData(text: SubscriptionScreen.hotline),
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Support number copied')),
                   );
                 },
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 13,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
                     color: AppTheme.primary.withOpacity(.10),
-                    border:
-                        Border.all(color: AppTheme.primary.withOpacity(.35)),
+                    border: Border.all(
+                      color: AppTheme.primary.withOpacity(.35),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.support_agent_rounded,
-                          color: AppTheme.accent, size: 20),
+                      const Icon(
+                        Icons.support_agent_rounded,
+                        color: AppTheme.accent,
+                        size: 20,
+                      ),
                       const SizedBox(width: 11),
                       const Expanded(
                         child: Text(
@@ -618,8 +678,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           ),
                         ),
                       ),
-                      const Icon(Icons.copy_rounded,
-                          color: AppTheme.muted, size: 17),
+                      const Icon(
+                        Icons.copy_rounded,
+                        color: AppTheme.muted,
+                        size: 17,
+                      ),
                     ],
                   ),
                 ),
@@ -644,14 +707,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             borderRadius: BorderRadius.circular(16),
             color: selected ? AppTheme.primary.withOpacity(.08) : AppTheme.card,
             border: Border.all(
-                color: selected ? AppTheme.primary : AppTheme.border,
-                width: selected ? 1.6 : 1),
+              color: selected ? AppTheme.primary : AppTheme.border,
+              width: selected ? 1.6 : 1,
+            ),
             boxShadow: selected
                 ? [
                     BoxShadow(
-                        color: AppTheme.primary.withOpacity(.18),
-                        blurRadius: 14,
-                        offset: const Offset(0, 4))
+                      color: AppTheme.primary.withOpacity(.18),
+                      blurRadius: 14,
+                      offset: const Offset(0, 4),
+                    ),
                   ]
                 : null,
           ),
@@ -664,8 +729,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: selected ? AppTheme.primary : AppTheme.border,
-                      width: 2),
+                    color: selected ? AppTheme.primary : AppTheme.border,
+                    width: 2,
+                  ),
                 ),
                 child: selected
                     ? Center(
@@ -673,7 +739,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           width: 12,
                           height: 12,
                           decoration: const BoxDecoration(
-                              shape: BoxShape.circle, color: AppTheme.primary),
+                            shape: BoxShape.circle,
+                            color: AppTheme.primary,
+                          ),
                         ),
                       )
                     : null,
@@ -683,15 +751,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(plan.label,
-                        style: const TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.textDark)),
+                    Text(
+                      plan.label,
+                      style: const TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textDark,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(plan.periodText,
-                        style: const TextStyle(
-                            fontSize: 12, color: AppTheme.muted)),
+                    Text(
+                      plan.periodText,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.muted,
+                      ),
+                    ),
                   ],
                 ),
               ),

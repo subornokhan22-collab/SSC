@@ -33,8 +33,11 @@ void main() {
         final file = File('assets/questions/$name');
         expect(file.existsSync(), isTrue, reason: '$name is missing');
         final rows = json.decode(file.readAsStringSync()) as List;
-        expect(rows.length, manifest['counts'][name],
-            reason: '$name count disagrees with the manifest');
+        expect(
+          rows.length,
+          manifest['counts'][name],
+          reason: '$name count disagrees with the manifest',
+        );
         counted += rows.length;
       }
       expect(counted, manifest['total']);
@@ -85,8 +88,11 @@ void main() {
       final schemes = allCQs.map((q) => q.marks.join('/')).toSet();
       expect(schemes, contains('1/2/3/4'));
       expect(schemes, contains('2/4/4'));
-      expect(allCQs.where((q) => q.marks.join('/') == '2/4/4').length, 170,
-          reason: 'the general_math CQ mark scheme changed');
+      expect(
+        allCQs.where((q) => q.marks.join('/') == '2/4/4').length,
+        170,
+        reason: 'the general_math CQ mark scheme changed',
+      );
       for (final q in allCQs) {
         expect(q.marks, isNotEmpty, reason: q.id);
       }
@@ -109,17 +115,22 @@ void main() {
     test('sources are preserved, not flattened to the default', () {
       final sources = allMCQs.map((q) => q.source).toSet();
       expect(sources, contains(QuestionSource.board));
-      expect(sources.length, greaterThan(1),
-          reason: 'every question came back as the same source');
+      expect(
+        sources.length,
+        greaterThan(1),
+        reason: 'every question came back as the same source',
+      );
       expect(allMCQs.where((q) => q.sourceLabel != null), isNotEmpty);
     });
 
     test('Bengali text is intact, not mojibake', () {
       final bengali = RegExp(r'[\u0980-\u09FF]');
       final sample = allMCQs.take(500);
-      expect(sample.where((q) => bengali.hasMatch(q.questionText)).length,
-          greaterThan(400),
-          reason: 'Bengali characters did not survive the export');
+      expect(
+        sample.where((q) => bengali.hasMatch(q.questionText)).length,
+        greaterThan(400),
+        reason: 'Bengali characters did not survive the export',
+      );
       for (final q in allMCQs.take(2000)) {
         expect(q.questionText.contains('\uFFFD'), isFalse, reason: q.id);
       }
@@ -139,16 +150,23 @@ void main() {
         'lib/data/bgs/bgs_mcqs.dart',
       ];
       for (final path in removed) {
-        expect(File(path).existsSync(), isFalse,
-            reason: '$path should have been migrated to JSON');
+        expect(
+          File(path).existsSync(),
+          isFalse,
+          reason: '$path should have been migrated to JSON',
+        );
       }
     });
 
     test('questions_data.dart is now small', () {
-      final lines =
-          File('lib/data/questions_data.dart').readAsLinesSync().length;
-      expect(lines, lessThan(200),
-          reason: 'it used to be 7,108 lines; the bank should be in JSON');
+      final lines = File('lib/data/questions_data.dart')
+          .readAsLinesSync()
+          .length;
+      expect(
+        lines,
+        lessThan(200),
+        reason: 'it used to be 7,108 lines; the bank should be in JSON',
+      );
     });
   });
 }

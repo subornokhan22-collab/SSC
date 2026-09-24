@@ -41,8 +41,11 @@ class DuplicateDetector {
   /// the topic's vocabulary.
   static const double defaultThreshold = 0.75;
 
-  static bool isDuplicate(String a, String b,
-      {double threshold = defaultThreshold}) {
+  static bool isDuplicate(
+    String a,
+    String b, {
+    double threshold = defaultThreshold,
+  }) {
     final na = _norm(a);
     final nb = _norm(b);
     if (na.isEmpty) return false;

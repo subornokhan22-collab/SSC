@@ -33,19 +33,29 @@ class EnglishPaperAdapter {
   static List<EnglishSection> second(EnglishBoardSet s) {
     String strip(String t) => t.replaceAll('{', '').replaceAll('}', '');
     final q2Rows = [
-      for (final r in s.q2) [r.a, r.b, r.c]
+      for (final r in s.q2) [r.a, r.b, r.c],
     ];
     final q2Empty = _emptyTable(q2Rows);
     return [
       const EnglishSection(ebPartAHeader, []),
       const EnglishSection(ebBengaliNote, []),
-      EnglishSection('1. $ebInstrQ1   —   [1 × 10 = 10]', ['', s.q1Passage],
-          table: [s.q1Box], centerTable: true),
-      EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]',
-          q2Empty ? const ['⧉ v22-check: Q2 টেবিল-ডেটা ফাঁকা!'] : const [],
-          table: q2Empty ? null : q2Rows),
-      EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]', ['', s.q3Passage],
-          table: [s.q3Box], centerTable: true),
+      EnglishSection(
+        '1. $ebInstrQ1   —   [1 × 10 = 10]',
+        ['', s.q1Passage],
+        table: [s.q1Box],
+        centerTable: true,
+      ),
+      EnglishSection(
+        '2. $ebInstrQ2   —   [1 × 5 = 5]',
+        q2Empty ? const ['⧉ v22-check: Q2 টেবিল-ডেটা ফাঁকা!'] : const [],
+        table: q2Empty ? null : q2Rows,
+      ),
+      EnglishSection(
+        '3. $ebInstrQ3   —   [1 × 10 = 10]',
+        ['', s.q3Passage],
+        table: [s.q3Box],
+        centerTable: true,
+      ),
       EnglishSection('4. $ebInstrQ4   —   [1 × 10 = 10]', [
         for (var i = 0; i < s.q4.length; i++)
           '${i + 1}. ${s.q4[i].sentence}   (${s.q4[i].direction})',
@@ -89,13 +99,17 @@ class EnglishPaperAdapter {
         s.q3Cloze,
       ]),
       EnglishSection(s.passage2Intro, [s.passage2]),
-      EnglishSection('4. ${s.q4Instr}   —   [1 × 5 = 5]',
-          q4Empty ? const ['⧉ v22-check: Q4 টেবিল-ডেটা ফাঁকা!'] : const [],
-          table: q4Empty ? null : s.q4Table),
+      EnglishSection(
+        '4. ${s.q4Instr}   —   [1 × 5 = 5]',
+        q4Empty ? const ['⧉ v22-check: Q4 টেবিল-ডেটা ফাঁকা!'] : const [],
+        table: q4Empty ? null : s.q4Table,
+      ),
       const EnglishSection('5. $ef1Q5Instr   —   [10]', [' ']),
-      EnglishSection('6. $ef1Q6Instr   —   [1 × 5 = 5]',
-          q6Empty ? const ['⧉ v22-check: Q6 টেবিল-ডেটা ফাঁকা!'] : const [],
-          table: q6Empty ? null : _matchTable(s.q6A, s.q6B, s.q6C)),
+      EnglishSection(
+        '6. $ef1Q6Instr   —   [1 × 5 = 5]',
+        q6Empty ? const ['⧉ v22-check: Q6 টেবিল-ডেটা ফাঁকা!'] : const [],
+        table: q6Empty ? null : _matchTable(s.q6A, s.q6B, s.q6C),
+      ),
       EnglishSection('7. $ef1Q7Instr   —   [1 × 8 = 8]', [
         for (var i = 0; i < s.q7.length; i++) '${_ltr[i]}) ${s.q7[i]}',
       ]),
@@ -109,7 +123,10 @@ class EnglishPaperAdapter {
 
   /// তিন কলামের ম্যাচিং-টেবিল (হেডার A | B | C)।
   static List<List<String>> _matchTable(
-      List<String> a, List<String> b, List<String> c) {
+    List<String> a,
+    List<String> b,
+    List<String> c,
+  ) {
     var n = a.length;
     if (b.length > n) n = b.length;
     if (c.length > n) n = c.length;

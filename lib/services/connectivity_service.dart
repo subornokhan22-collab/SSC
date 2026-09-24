@@ -43,7 +43,8 @@ class ConnectivityService {
     try {
       final results = await _connectivity.checkConnectivity();
       final hasNetwork = results.any(
-          (r) => r != ConnectivityResult.none && r != ConnectivityResult.vpn);
+        (r) => r != ConnectivityResult.none && r != ConnectivityResult.vpn,
+      );
       final reallyOnline = hasNetwork ? await _canReachInternet() : false;
       _setOnline(reallyOnline);
     } catch (_) {

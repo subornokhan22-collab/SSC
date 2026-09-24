@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/paper_draft.dart';
 import 'create_paper_screen.dart';
 
@@ -8,5 +9,6 @@ class CustomPaperScreen extends StatelessWidget {
   const CustomPaperScreen({super.key, this.mcqOnly = false});
   @override
   Widget build(BuildContext context) => CreatePaperScreen(
-      initialFormat: mcqOnly ? PaperFormat.mcq : PaperFormat.custom);
+    initialFormat: mcqOnly ? PaperFormat.mcq : PaperFormat.custom,
+  );
 }

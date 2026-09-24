@@ -14,9 +14,9 @@ class QuestionValidation {
 
   /// Merges another validation into a new one.
   QuestionValidation merged(QuestionValidation other) => QuestionValidation(
-        errors: [...errors, ...other.errors],
-        warnings: [...warnings, ...other.warnings],
-      );
+    errors: [...errors, ...other.errors],
+    warnings: [...warnings, ...other.warnings],
+  );
 }
 
 /// Structural + content validation for AI-generated MCQs (review items
@@ -48,9 +48,7 @@ class QuestionSchemaValidator {
     if (q.options.length != 4) {
       errors.add('has ${q.options.length} options, expected 4');
     }
-    final normOpts = [
-      for (final o in q.options) _norm(o),
-    ];
+    final normOpts = [for (final o in q.options) _norm(o)];
     if (normOpts.toSet().length != normOpts.length) {
       errors.add('options are not distinct');
     }
@@ -67,7 +65,8 @@ class QuestionSchemaValidator {
     for (final text in [q.questionText, q.explanation, ...q.options]) {
       if (_banned.hasMatch(text)) {
         errors.add(
-            'banned content (LaTeX/placeholder): ${text.trim().substring(0, text.trim().length > 40 ? 40 : text.trim().length)}…');
+          'banned content (LaTeX/placeholder): ${text.trim().substring(0, text.trim().length > 40 ? 40 : text.trim().length)}…',
+        );
         break;
       }
     }
@@ -93,7 +92,8 @@ class QuestionSchemaValidator {
       }
       if (mentionedWrong != null && !mentionsCorrect) {
         warnings.add(
-            'explanation appears to reference option "${mentionedWrong.length > 40 ? '${mentionedWrong.substring(0, 40)}…' : mentionedWrong}" instead of the stored key');
+          'explanation appears to reference option "${mentionedWrong.length > 40 ? '${mentionedWrong.substring(0, 40)}…' : mentionedWrong}" instead of the stored key',
+        );
       }
     }
     return QuestionValidation(errors: errors, warnings: warnings);
@@ -101,14 +101,20 @@ class QuestionSchemaValidator {
 
   /// Validates a batch: per-question checks plus batch-level rules
   /// (requested count, in-batch duplicates).
-  static List<QuestionValidation> validateBatch(List<Question> questions,
-      {int expectedCount = -1}) {
+  static List<QuestionValidation> validateBatch(
+    List<Question> questions, {
+    int expectedCount = -1,
+  }) {
     final out = [for (final q in questions) validateMcq(q)];
     if (expectedCount > 0 && questions.length != expectedCount) {
       for (var i = 0; i < out.length; i++) {
-        out[i] = out[i].merged(QuestionValidation(errors: [
-          'batch has ${questions.length} questions, expected $expectedCount'
-        ]));
+        out[i] = out[i].merged(
+          QuestionValidation(
+            errors: [
+              'batch has ${questions.length} questions, expected $expectedCount',
+            ],
+          ),
+        );
       }
     }
     final seen = <String, int>{};
@@ -116,8 +122,11 @@ class QuestionSchemaValidator {
       final key = _norm(questions[i].questionText);
       final first = seen[key];
       if (first != null) {
-        out[i] = out[i].merged(QuestionValidation(
-            errors: ['duplicate of question #${first + 1} in the same batch']));
+        out[i] = out[i].merged(
+          QuestionValidation(
+            errors: ['duplicate of question #${first + 1} in the same batch'],
+          ),
+        );
       } else {
         seen[key] = i;
       }

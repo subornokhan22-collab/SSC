@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 /// Animated pastel-ribbon background for the welcome / sign-in choice page.
@@ -35,13 +36,11 @@ class _AuroraRibbonsState extends State<AuroraRibbons>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _controller,
-        child: widget.child,
-        builder: (_, child) => CustomPaint(
-          painter: _AuroraPainter(_controller.value),
-          child: child,
-        ),
-      );
+    animation: _controller,
+    child: widget.child,
+    builder: (_, child) =>
+        CustomPaint(painter: _AuroraPainter(_controller.value), child: child),
+  );
 }
 
 class _AuroraPainter extends CustomPainter {
@@ -51,7 +50,9 @@ class _AuroraPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(
-        Offset.zero & size, Paint()..color = const Color(0xFFF7F9FE));
+      Offset.zero & size,
+      Paint()..color = const Color(0xFFF7F9FE),
+    );
     final w = size.width;
     final h = size.height;
     final time = t * pi * 2;
@@ -74,7 +75,8 @@ class _AuroraPainter extends CustomPainter {
 
       for (double x = -18; x <= w + 18; x += 4) {
         final nx = x / w;
-        final wave = sin(nx * pi * 2.5 + time * speed + phase) * 34 +
+        final wave =
+            sin(nx * pi * 2.5 + time * speed + phase) * 34 +
             sin(nx * pi * 4 + time * speed * 1.3 + phase) * 15 +
             cos(nx * pi * 1.5 + time * speed * .7) * 11;
         upper.add(Offset(x, baseY + wave - thickness / 2));
@@ -106,7 +108,9 @@ class _AuroraPainter extends CustomPainter {
       final highlight = Path();
       for (var i = 0; i < upper.length; i++) {
         final p = Offset(
-            (upper[i].dx + lower[i].dx) / 2, (upper[i].dy + lower[i].dy) / 2);
+          (upper[i].dx + lower[i].dx) / 2,
+          (upper[i].dy + lower[i].dy) / 2,
+        );
         if (i == 0) {
           highlight.moveTo(p.dx, p.dy);
         } else {
@@ -114,18 +118,20 @@ class _AuroraPainter extends CustomPainter {
         }
       }
       canvas.drawPath(
-          highlight,
-          Paint()
-            ..color = Colors.white.withOpacity(.55)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 3
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5));
+        highlight,
+        Paint()
+          ..color = Colors.white.withOpacity(.55)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+      );
       canvas.drawPath(
-          highlight,
-          Paint()
-            ..color = band[1].withOpacity(.35)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 1.15);
+        highlight,
+        Paint()
+          ..color = band[1].withOpacity(.35)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.15,
+      );
     }
   }
 

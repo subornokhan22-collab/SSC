@@ -42,8 +42,9 @@ class QuestionBank {
   static Future<void> load() async {
     if (_loaded) return;
 
-    final manifestRaw =
-        await rootBundle.loadString('assets/questions/manifest.json');
+    final manifestRaw = await rootBundle.loadString(
+      'assets/questions/manifest.json',
+    );
     final manifest = json.decode(manifestRaw) as Map<String, dynamic>;
     final files = (manifest['files'] as List).cast<String>();
 
@@ -94,17 +95,20 @@ class QuestionBank {
     }
 
     _mcqs = merge(
-        _mcqs,
-        mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
-        (q) => q.id);
+      _mcqs,
+      mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      (q) => q.id,
+    );
     _saqs = merge(
-        _saqs,
-        saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
-        (q) => q.id);
+      _saqs,
+      saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      (q) => q.id,
+    );
     _cqs = merge(
-        _cqs,
-        cqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
-        (q) => q.id);
+      _cqs,
+      cqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      (q) => q.id,
+    );
   }
 
   /// Test seam — lets widget tests install a small bank without touching
@@ -162,17 +166,18 @@ _Decoded _decodeAll(List<String> sources) {
     }
   }
   return _Decoded(
-      mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
-      saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
-      cqs.where((q) => QuestionValidationService.validate(q).valid).toList());
+    mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+    saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+    cqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+  );
 }
 
 QuestionSource _sourceFrom(Object? v) => switch (v) {
-      'board' => QuestionSource.board,
-      'original' => QuestionSource.original,
-      'internet' => QuestionSource.internet,
-      _ => QuestionSource.ai,
-    };
+  'board' => QuestionSource.board,
+  'original' => QuestionSource.original,
+  'internet' => QuestionSource.internet,
+  _ => QuestionSource.ai,
+};
 
 QuestionFigure? _figureFrom(Object? v) {
   if (v == null) return null;

@@ -28,8 +28,9 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border =
-        highlighted ? AppTheme.primary.withOpacity(.45) : AppTheme.border;
+    final border = highlighted
+        ? AppTheme.primary.withOpacity(.45)
+        : AppTheme.border;
     // No BackdropFilter here on purpose. The card fill is 88-94% opaque, so
     // the blur behind it was barely visible, but it is one of the most
     // expensive things Flutter can draw — and during a page transition two
@@ -53,10 +54,7 @@ class GlassCard extends StatelessWidget {
       ),
     );
 
-    final wrapped = Padding(
-      padding: margin ?? EdgeInsets.zero,
-      child: body,
-    );
+    final wrapped = Padding(padding: margin ?? EdgeInsets.zero, child: body);
     if (onTap == null) return wrapped;
     return PressableScale(onTap: onTap, child: wrapped);
   }
@@ -68,8 +66,12 @@ class SectionTitle extends StatelessWidget {
   final String? subtitle;
   final IconData? icon;
 
-  const SectionTitle(
-      {super.key, required this.title, this.subtitle, this.icon});
+  const SectionTitle({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +121,10 @@ class SectionTitle extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: const TextStyle(
-                        fontSize: 12.5, height: 1.45, color: AppTheme.muted),
+                      fontSize: 12.5,
+                      height: 1.45,
+                      color: AppTheme.muted,
+                    ),
                   ),
                 ],
               ],
@@ -164,7 +169,10 @@ class StatusPill extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-                fontSize: 11.5, color: color, fontWeight: FontWeight.w700),
+              fontSize: 11.5,
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -186,16 +194,16 @@ class InfoBanner extends StatelessWidget {
   });
 
   factory InfoBanner.success(String text) => InfoBanner(
-        text: text,
-        color: AppTheme.success,
-        icon: Icons.check_circle_outline_rounded,
-      );
+    text: text,
+    color: AppTheme.success,
+    icon: Icons.check_circle_outline_rounded,
+  );
 
   factory InfoBanner.error(String text) => InfoBanner(
-        text: text,
-        color: AppTheme.danger,
-        icon: Icons.error_outline_rounded,
-      );
+    text: text,
+    color: AppTheme.danger,
+    icon: Icons.error_outline_rounded,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -267,9 +275,10 @@ class EmptyState extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.w800,
-                  color: AppTheme.textDark),
+                fontSize: 15.5,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textDark,
+              ),
             ),
             if (message != null) ...[
               const SizedBox(height: 7),
@@ -277,7 +286,10 @@ class EmptyState extends StatelessWidget {
                 message!,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    fontSize: 12.8, height: 1.55, color: AppTheme.muted),
+                  fontSize: 12.8,
+                  height: 1.55,
+                  color: AppTheme.muted,
+                ),
               ),
             ],
           ],
@@ -311,8 +323,11 @@ class BusyIndicator extends StatelessWidget {
                     min: .88,
                     max: 1.06,
                     period: const Duration(milliseconds: 1100),
-                    child: const Icon(Icons.auto_awesome_rounded,
-                        color: AppTheme.primary, size: 26),
+                    child: const Icon(
+                      Icons.auto_awesome_rounded,
+                      color: AppTheme.primary,
+                      size: 26,
+                    ),
                   ),
                 ],
               ),
@@ -322,7 +337,10 @@ class BusyIndicator extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 13.2, height: 1.5, color: AppTheme.muted),
+                fontSize: 13.2,
+                height: 1.5,
+                color: AppTheme.muted,
+              ),
             ),
           ],
         ),

@@ -33,8 +33,10 @@ class FadeSlideIn extends StatelessWidget {
       duration: Duration(milliseconds: total),
       curve: Curves.linear,
       builder: (context, value, child) {
-        final raw =
-            ((value * total - delay.inMilliseconds) / span).clamp(0.0, 1.0);
+        final raw = ((value * total - delay.inMilliseconds) / span).clamp(
+          0.0,
+          1.0,
+        );
         final t = curve.transform(raw);
         return Opacity(
           opacity: t,
@@ -270,8 +272,9 @@ class _ShimmerBoxState extends State<ShimmerBox>
   void initState() {
     super.initState();
     _c = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1400))
-      ..repeat();
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat();
   }
 
   @override
@@ -497,8 +500,10 @@ class SoftSwitcher extends StatelessWidget {
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
         child: SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0, .05), end: Offset.zero)
-              .animate(animation),
+          position: Tween<Offset>(
+            begin: const Offset(0, .05),
+            end: Offset.zero,
+          ).animate(animation),
           child: child,
         ),
       ),
