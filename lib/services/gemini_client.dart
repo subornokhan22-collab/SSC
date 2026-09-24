@@ -284,7 +284,7 @@ class GeminiClient {
   }) {
     final raw = attachments.fold<int>(0, (s, a) => s + a.data.length);
     final encoded = raw * 4 ~/ 3 + 4;
-    return encoded + userText.length + 1024 < 5_000_000;
+    return encoded + userText.length + 1024 < 5000000;
   }
 
   /// Server path — talks to the `mimi` edge function, which carries the
