@@ -2,6 +2,8 @@ name: Build APK
 
 on:
   push:
+    branches: ['**']
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -44,6 +46,28 @@ jobs:
           set -o pipefail
           flutter test 2>&1 | tee test.log
 
+      - name: Format check (report — becomes a hard gate once the repo is formatted)
+        # First run of this step reports every unformatted file. Once a
+        # "dart format ." pass lands (Phase 2), remove the `|| true` so
+        # unformatted code fails the build.
+        run: |
+          dart format --output=none --set-exit-if-changed lib test tool 2>&1 | tee format.log \
+            || (echo "::warning::$(grep -c . format.log) unformatted files — run 'dart format .' locally"; true)
+
+      - name: Question bank health (review item #35)
+        # Warnings (duplicate stems etc.) are reported but do not block;
+        # hard problems (bad keys, dup ids, empty options) fail the build.
+        run: |
+          python3 tool/bank_health.py | tee bank-health.txt
+
+      - name: Upload bank health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bank-health
+          path: bank-health.txt
+          retention-days: 30
+
       - name: Restore release keystore (from GitHub Secrets)
         if: ${{ env.HAS_RELEASE_KEYSTORE == 'true' }}
         run: |
@@ -62,10 +86,8 @@ jobs:
           set -o pipefail
           flutter build apk --release --split-per-abi --dart-define=BUILD_NUMBER=${{ github.run_number }} 2>&1 | tee flutter-build.log
 
-      - name: Post build log (TEMP diagnostic)
+      - name: Post build log (diagnostic — as artifact, not release)
         if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           {
             echo "===== ANALYZE ====="
@@ -76,23 +98,42 @@ jobs:
             echo ""
             echo "===== BUILD ====="
             tail -c 30000 flutter-build.log 2>/dev/null || echo "(no flutter-build.log)"
-          } > /tmp/log-tail.txt
-          gh release create "ci-diag-${{ github.run_id }}" \
-            --repo "${{ github.repository }}" \
-            --title "CI diagnostic log (temporary)" \
-            --notes-file /tmp/log-tail.txt \
-            --latest=false
+          } > ci-diag-${GITHUB_RUN_ID}.txt
 
-      - name: Upload APK to Releases (no storage quota!)
+      - name: Upload diagnostic log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diag-${{ github.run_id }}
+          path: ci-diag-${{ github.run_id }}.txt
+          retention-days: 30
+
+      # Review item #32: a release is a release. Branch builds upload an
+      # Actions artifact (Actions → run → Artifacts → download); a formal
+      # GitHub Release is only created from a version tag (git tag v1.0.0
+      # && git push origin v1.0.0) so the release list stops accumulating
+      # a build per push.
+      - name: Upload APK as artifact (branch build)
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          # mapping.txt (R8 symbol map) rides along so any minified-crash
+          # stack can be decoded against this exact build.
+          name: tutor-desk-apk-build-${{ github.run_number }}
+          path: |
+            build/app/outputs/flutter-apk/app-*-release.apk
+            build/app/outputs/mapping/release/mapping.txt
+          retention-days: 30
+
+      - name: Publish GitHub Release (version tags only)
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # mapping.txt (R8 symbol map) rides along as an asset so any
-          # minified-crash stack can be decoded against this exact build.
-          gh release create "apk-${{ github.run_id }}" \
+          gh release create "${GITHUB_REF_NAME}" \
             build/app/outputs/flutter-apk/app-*-release.apk \
             build/app/outputs/mapping/release/mapping.txt \
             --repo "${{ github.repository }}" \
-            --title "Tutor's Desk (build ${{ github.run_number }})" \
-            --notes "Tutor's Desk. Most phones need app-arm64-v8a-release.apk." \
+            --title "Tutor's Desk ${GITHUB_REF_NAME} (build ${{ github.run_number }})" \
+            --notes "Tutor's Desk ${GITHUB_REF_NAME}. Most phones need app-arm64-v8a-release.apk." \
             --latest

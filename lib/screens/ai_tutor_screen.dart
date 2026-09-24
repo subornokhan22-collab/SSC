@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart' as md;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/auth_service.dart';
 import '../services/gemini_client.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
@@ -280,6 +281,23 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     setState(() => _key = k.isEmpty ? null : k);
   }
 
+  /// ⚙ Advanced: store a device Gemini key (fallback for when the
+  /// server key is unavailable). Not required for everyday use.
+  void _openKeyDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (c) => PopScope(
+        canPop: true,
+        child: AlertDialog(
+          backgroundColor: _mimiBg,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          contentPadding: EdgeInsets.zero,
+          content: _SetupCard(onKeySaved: _reloadKey, compact: true),
+        ),
+      ),
+    );
+  }
+
   // ── attachments ──────────────────────────────────────────────────
 
   Future<void> _openAttachSheet() async {
@@ -413,6 +431,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             'This audio is ${_fmtBytes(bytes.length)} — the limit is 5 MB (roughly one minute) so MiMi can listen and answer.');
         return;
       }
+      if (!mounted) return; // picker + file read can outlive the screen
       setState(() => _pending
           .add(_Pending('audio', f.name, mime, bytes)));
     } catch (e) {
@@ -432,6 +451,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
             'This PDF is ${_fmtBytes(bytes.length)} — the limit is 10 MB. Export only the pages you need.');
         return;
       }
+      if (!mounted) return; // picker + file read can outlive the screen
       setState(() => _pending
           .add(_Pending('pdf', f.name, 'application/pdf', bytes)));
     } catch (e) {
@@ -484,18 +504,14 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       return;
     }
     if (text.isEmpty && _pending.isEmpty) return;
-    final key = _key;
-    if (key == null) {
-      await _problem('Set the Gemini key first',
-          'MiMi needs a free Gemini API key to answer. Open the setup card below and paste your key — it takes a minute.',
-          );
-      return;
-    }
+    // No key gate (review item #1): the server carries the Gemini key;
+    // a device key, if stored, is only a fallback (_answer routes it).
     final atts = List<_Pending>.of(_pending);
     final attMeta = [
       for (final a in atts)
         _AttMeta(a.kind, a.label, _fmtBytes(a.bytes.length)),
     ];
+    final attachments = [for (final a in atts) GeminiAttachment(a.mime, a.bytes)];
     setState(() {
       _ctrl.clear();
       _pending.clear();
@@ -525,20 +541,12 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     // (slow) network work starts.
     await SchedulerBinding.instance.endOfFrame;
     try {
-      final answer = await GeminiClient.chat(
-        apiKey: key,
-        systemPrompt: kMimiSystemPrompt,
-        history: history,
-        userText: text,
-        attachments: [
-          for (final a in atts) GeminiAttachment(a.mime, a.bytes),
-        ],
-        onChunk: (chunk) {
-          if (!mounted) return;
-          setState(() => _streaming = (_streaming ?? '') + chunk);
-          _scrollToEnd();
-        },
-      );
+      final onChunk = (String chunk) {
+        if (!mounted) return;
+        setState(() => _streaming = (_streaming ?? '') + chunk);
+        _scrollToEnd();
+      };
+      final answer = await _answer(text, history, attachments, onChunk);
       if (!mounted) return;
       setState(() {
         _msgs.add(_ChatMsg(isUser: false, text: answer));
@@ -565,6 +573,74 @@ class _AiTutorScreenState extends State<AiTutorScreen>
       _fx.stop();
       await _problem('Something went wrong', '$e');
     }
+  }
+
+  /// Server-first routing (review item #1):
+  ///   1. signed in + payload fits the edge function → server key
+  ///   2. server not configured / signed out / payload too large +
+  ///      a device key is stored → device key
+  ///   3. otherwise → an actionable error (sign in, or add a device key
+  ///      via the ⚙ button in the app bar)
+  Future<String> _answer(
+    String userText,
+    List<Map<String, String>> history,
+    List<GeminiAttachment> attachments,
+    void Function(String chunk) onChunk,
+  ) async {
+    final token = AuthService.currentUserToken;
+    final fits =
+        GeminiClient.fitsServerPath(userText: userText, attachments: attachments);
+    if (token != null && fits) {
+      try {
+        return await GeminiClient.chatViaServer(
+          accessToken: token,
+          systemPrompt: kMimiSystemPrompt,
+          history: history,
+          userText: userText,
+          attachments: attachments,
+          onChunk: onChunk,
+        );
+      } on GeminiException catch (e) {
+        final key = _key;
+        if (key == null) {
+          if (e.code == 'NOT_CONFIGURED') {
+            throw const GeminiException(
+                'MiMi is not set up yet — the server AI key (GEMINI_API_KEY) is missing, and no device key is stored. Ask the app owner to set it in Supabase, or add a device key via the ⚙ button above.');
+          }
+          rethrow;
+        }
+        // Server hiccup (quota, network, not configured) — the stored
+        // device key keeps MiMi working.
+        if (!(e.code == 'NOT_CONFIGURED' ||
+            e.code == 'UNAUTHORIZED' ||
+            e.code == 'QUOTA' ||
+            e.code == 'KEY_INVALID' ||
+            e.code == 'GEMINI_ERROR')) {
+          rethrow; // e.g. safety block — same result on the device key
+        }
+      }
+    }
+    final key = _key;
+    if (key == null) {
+      if (!fits) {
+        throw const GeminiException(
+            'This attachment is too large for the server AI. Use a smaller file, or add a device key via the ⚙ button above.');
+      }
+      if (token == null) {
+        throw const GeminiException(
+            'Sign in with your Tutor\u2019s Desk account to use MiMi — or add a device key via the ⚙ button above.');
+      }
+      throw const GeminiException(
+          'The server AI key is not configured yet. Ask the app owner to set GEMINI_API_KEY in Supabase — or add a device key via the ⚙ button above.');
+    }
+    return GeminiClient.chat(
+      apiKey: key,
+      systemPrompt: kMimiSystemPrompt,
+      history: history,
+      userText: userText,
+      attachments: attachments,
+      onChunk: onChunk,
+    );
   }
 
   void _scrollToEnd() {
@@ -651,6 +727,11 @@ class _AiTutorScreenState extends State<AiTutorScreen>
               onPressed: _busy ? null : _clearChat,
               icon: const Icon(Icons.delete_sweep_rounded),
             ),
+          IconButton(
+            tooltip: 'Advanced — device AI key (fallback)',
+            onPressed: _openKeyDialog,
+            icon: const Icon(Icons.tune_rounded, size: 20),
+          ),
         ],
       ),
       body: Stack(children: [
@@ -672,31 +753,27 @@ class _AiTutorScreenState extends State<AiTutorScreen>
               ),
             ),
             Expanded(
+              // No key gate (review item #1) — the chat is always
+              // available; the server carries the Gemini key and a
+              // device key (⚙ button) is only a fallback.
               child: !_ready
                   ? _bootState()
-                  : (_key == null
-                      ? ListView(
-                          padding: const EdgeInsets.all(18),
-                          children: [
-                            _SetupCard(onKeySaved: _reloadKey),
-                          ],
-                        )
-                      : ListView(
-                          controller: _scroll,
-                          padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
-                          children: [
-                            if (_msgs.isEmpty) _emptyState(),
-                            for (var i = 0; i < _msgs.length; i++)
-                              FadeSlideIn(
-                                delay:
-                                    Duration(milliseconds: (i * 45).clamp(0, 360)),
-                                child: _bubble(_msgs[i]),
-                              ),
-                            if (_busy && _streaming != null)
-                              _streamingBubble(),
-                            const SizedBox(height: 8),
-                          ],
-                        )),
+                  : ListView(
+                      controller: _scroll,
+                      padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
+                      children: [
+                        if (_msgs.isEmpty) _emptyState(),
+                        for (var i = 0; i < _msgs.length; i++)
+                          FadeSlideIn(
+                            delay:
+                                Duration(milliseconds: (i * 45).clamp(0, 360)),
+                            child: _bubble(_msgs[i]),
+                          ),
+                        if (_busy && _streaming != null)
+                          _streamingBubble(),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
             ),
             if (_pending.isNotEmpty)
               Container(
@@ -871,6 +948,29 @@ class _AiTutorScreenState extends State<AiTutorScreen>
         ),
       ),
       const SizedBox(height: 20),
+      // Review item #1: no key entry here — tell them how it activates.
+      if (!AuthService.isLoggedIn && _key == null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(.05),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppTheme.primary.withOpacity(.35)),
+            ),
+            child: Row(children: [
+              const Icon(Icons.cloud_off_rounded, size: 16, color: _mimiTeal),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Sign in with your Tutor\u2019s Desk account to activate MiMi.',
+                  style: TextStyle(fontSize: 11.5, color: Colors.white70),
+                ),
+              ),
+            ]),
+          ),
+        ),
       Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -1444,7 +1544,12 @@ class _GlowBorderPainter extends CustomPainter {
 class _SetupCard extends StatelessWidget {
   final VoidCallback onKeySaved;
 
-  const _SetupCard({required this.onKeySaved});
+  /// false = first-run "Meet MiMi" card; true = compact device-key
+  /// form shown from the ⚙ app-bar button (server key is the primary
+  /// path now — review item #1).
+  final bool compact;
+
+  const _SetupCard({required this.onKeySaved, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
@@ -1464,6 +1569,19 @@ class _SetupCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (compact) ...[
+            const Text('Device key (fallback)',
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white)),
+            const SizedBox(height: 6),
+            const Text(
+                'MiMi normally uses the server AI key. This optional key, stored on this phone only, is used when the server key is unavailable or you are signed out.',
+                style: TextStyle(
+                    fontSize: 12.5, height: 1.55, color: Colors.white70)),
+            const SizedBox(height: 14),
+          ] else ...[
           Row(children: [
             _orbWidget(),
             const SizedBox(width: 12),
@@ -1499,6 +1617,7 @@ class _SetupCard extends StatelessWidget {
           const _Step(n: 2, text: 'Tap "Get API key" → "Create API key" and copy it.'),
           const _Step(n: 3, text: 'Paste the key below — it is stored on this phone only.'),
           const SizedBox(height: 12),
+          ],
           _KeyField(onSaved: onKeySaved),
         ],
       ),

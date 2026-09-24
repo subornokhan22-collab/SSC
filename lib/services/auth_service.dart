@@ -52,6 +52,17 @@ class AuthService {
 
   static String? get email => isLoggedIn ? _c.auth.currentUser?.email : null;
 
+  /// The signed-in user's Supabase JWT — what the `mimi` edge function
+  /// (server-side AI) needs to identify the caller. Null when signed out.
+  static String? get currentUserToken {
+    if (!isLoggedIn) return null;
+    try {
+      return _c.auth.currentUser?.accessToken;
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Map<String, dynamic>? _profileCache;
 
   /// Cached profile, if one has already been fetched this session.

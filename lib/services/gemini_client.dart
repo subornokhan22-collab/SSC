@@ -6,6 +6,8 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'supabase_config.dart';
+
 /// Direct Gemini API client (REST, v1beta).
 ///
 /// One call takes the conversation history (text), the new user text and
@@ -23,7 +25,12 @@ class GeminiException implements Exception {
   /// safety block, network). Non-fatal errors (unknown model) trigger the
   /// internal model fallback.
   final bool fatal;
-  const GeminiException(this.message, {this.fatal = true});
+  /// Machine-readable code from the server path (see the `mimi` edge
+  /// function): NOT_CONFIGURED, UNAUTHORIZED, QUOTA, KEY_INVALID,
+  /// PAYLOAD_TOO_LARGE, MODEL_UNAVAILABLE, GEMINI_ERROR. Null on the
+  /// device-key path.
+  final String? code;
+  const GeminiException(this.message, {this.fatal = true, this.code});
 
   @override
   String toString() => message;
@@ -210,44 +217,7 @@ class GeminiClient {
       if (resp.statusCode != 200) {
         throw await _errorOf(resp, model);
       }
-      final out = StringBuffer();
-      var gotAny = false;
-      await for (final line
-          in resp.stream.transform(utf8.decoder).transform(const LineSplitter())) {
-        if (!line.startsWith('data:')) continue;
-        final payload = line.substring(5).trim();
-        if (payload.isEmpty || payload == '[DONE]') continue;
-        final Map<String, dynamic> j;
-        try {
-          j = jsonDecode(payload) as Map<String, dynamic>;
-        } catch (_) {
-          continue; // partial/garbled keep-alive line
-        }
-        final pf = j['promptFeedback'];
-        if (pf is Map && (pf['blockReason'] as String?)?.isNotEmpty == true) {
-          throw const GeminiException(
-              'Google\'s safety filter blocked this question — rephrase it and try again.');
-        }
-        final candidates = j['candidates'];
-        if (candidates is List && candidates.isNotEmpty) {
-          final content = (candidates.first as Map<String, dynamic>)['content'];
-          final ps = (content is Map<String, dynamic>) ? content['parts'] : null;
-          if (ps is List) {
-            for (final p in ps) {
-              if (p is Map<String, dynamic> && p['text'] is String) {
-                gotAny = true;
-                out.write(p['text']);
-                onChunk?.call(p['text'] as String);
-              }
-            }
-          }
-        }
-      }
-      if (!gotAny) {
-        throw const GeminiException(
-            'Gemini returned an empty answer — try once more.');
-      }
-      return out.toString();
+      return await _readSse(resp, onChunk);
     } on http.ClientException catch (e) {
       throw GeminiException('Network error while contacting Gemini: ${e.message}');
     } on SocketException catch (e) {
@@ -258,6 +228,144 @@ class GeminiClient {
     } finally {
       client.close();
     }
+  }
+
+  /// Reads a Gemini alt=sse stream to completion, forwarding each text
+  /// chunk to [onChunk] and returning the full answer. Shared by the
+  /// device-key path and the server (edge function) path — both speak
+  /// the identical wire format.
+  static Future<String> _readSse(
+      http.StreamedResponse resp, void Function(String chunk)? onChunk) async {
+    final out = StringBuffer();
+    var gotAny = false;
+    await for (final line
+        in resp.stream.transform(utf8.decoder).transform(const LineSplitter())) {
+      if (!line.startsWith('data:')) continue;
+      final payload = line.substring(5).trim();
+      if (payload.isEmpty || payload == '[DONE]') continue;
+      final Map<String, dynamic> j;
+      try {
+        j = jsonDecode(payload) as Map<String, dynamic>;
+      } catch (_) {
+        continue; // partial/garbled keep-alive line
+      }
+      final pf = j['promptFeedback'];
+      if (pf is Map && (pf['blockReason'] as String?)?.isNotEmpty == true) {
+        throw const GeminiException(
+            'Google\'s safety filter blocked this question — rephrase it and try again.');
+      }
+      final candidates = j['candidates'];
+      if (candidates is List && candidates.isNotEmpty) {
+        final content = (candidates.first as Map<String, dynamic>)['content'];
+        final ps = (content is Map<String, dynamic>) ? content['parts'] : null;
+        if (ps is List) {
+          for (final p in ps) {
+            if (p is Map<String, dynamic> && p['text'] is String) {
+              gotAny = true;
+              out.write(p['text']);
+              onChunk?.call(p['text'] as String);
+            }
+          }
+        }
+      }
+    }
+    if (!gotAny) {
+      throw const GeminiException(
+          'Gemini returned an empty answer — try once more.');
+    }
+    return out.toString();
+  }
+
+  /// The edge function rejects bodies above 5.5 MB. Base64 inflates
+  /// binary by 4/3, so estimate the encoded size before sending.
+  static bool fitsServerPath({
+    required String userText,
+    required List<GeminiAttachment> attachments,
+  }) {
+    final raw = attachments.fold<int>(0, (s, a) => s + a.data.length);
+    final encoded = raw * 4 ~/ 3 + 4;
+    return encoded + userText.length + 1024 < 5_000_000;
+  }
+
+  /// Server path — talks to the `mimi` edge function, which carries the
+  /// GEMINI_API_KEY server-side (review item #1: no per-device key for
+  /// everyday use). [accessToken] is the signed-in user's Supabase JWT;
+  /// the function refuses anonymous callers.
+  ///
+  /// Throws [GeminiException] with [GeminiException.code] set so the
+  /// caller can route fallbacks (NOT_CONFIGURED / UNAUTHORIZED → device
+  /// key, when one is stored).
+  static Future<String> chatViaServer({
+    required String accessToken,
+    required String systemPrompt,
+    List<Map<String, String>> history = const [],
+    required String userText,
+    List<GeminiAttachment> attachments = const [],
+    void Function(String chunk)? onChunk,
+    Duration timeout = const Duration(seconds: 180),
+  }) async {
+    if (attachments.isEmpty && userText.isEmpty) {
+      throw const GeminiException('Add a question or an attachment first.');
+    }
+    final body = <String, dynamic>{
+      'action': 'chat',
+      'system': systemPrompt,
+      'text': userText,
+      'attachments': [
+        for (final a in attachments)
+          {'mime': a.mimeType, 'data': base64Encode(a.data)}
+      ],
+      'history': [
+        for (final h in history)
+          {'role': h['role'], 'text': (h['text'] ?? '').isEmpty ? ' ' : h['text']}
+      ],
+    };
+    final req = http.Request(
+        'POST', Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'))
+      ..headers['Content-Type'] = 'application/json'
+      ..headers['Authorization'] = 'Bearer $accessToken'
+      ..headers['apikey'] = SupabaseConfig.anonKey
+      ..body = jsonEncode(body);
+    final client = http.Client();
+    try {
+      final resp = await client.send(req).timeout(timeout);
+      if (resp.statusCode != 200) {
+        throw await _serverErrorOf(resp);
+      }
+      return await _readSse(resp, onChunk);
+    } on http.ClientException catch (e) {
+      throw GeminiException('Network error while contacting the AI server: ${e.message}');
+    } on SocketException catch (e) {
+      throw GeminiException('Network error: ${e.message}');
+    } on TimeoutException {
+      throw const GeminiException(
+          'The AI server took too long to answer. Try a shorter question or a smaller attachment.');
+    } finally {
+      client.close();
+    }
+  }
+
+  /// Maps a non-2xx reply from the `mimi` edge function to a
+  /// [GeminiException] carrying its machine-readable [GeminiException.code].
+  static Future<GeminiException> _serverErrorOf(http.StreamedResponse resp) async {
+    String text;
+    try {
+      text = await utf8.decodeStream(resp.stream);
+    } catch (_) {
+      text = '';
+    }
+    String msg = 'AI server error (code ${resp.statusCode}).';
+    String? code;
+    try {
+      final j = jsonDecode(text) as Map<String, dynamic>;
+      if (j['error'] is String) msg = (j['error'] as String).split('\n').first.trim();
+      code = (j['code'] is String) ? j['code'] as String : null;
+    } catch (_) {}
+    if (resp.statusCode == 503 && (code == null || code == 'NOT_CONFIGURED')) {
+      code = 'NOT_CONFIGURED';
+    }
+    if (resp.statusCode == 401 && code == null) code = 'UNAUTHORIZED';
+    return GeminiException(msg, code: code ?? 'GEMINI_ERROR');
   }
 
   /// Maps a non-2xx reply to a user-facing [GeminiException].

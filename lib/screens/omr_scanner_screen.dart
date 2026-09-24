@@ -127,6 +127,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final bytes = await xfile.readAsBytes();
       final codec = await ui.instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
+      if (!mounted) return; // picker + decode can outlive the screen
       setState(() {
         _photoBytes = bytes;
         _photoImage = frame.image;
@@ -715,6 +716,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       key: _key,
       savedAt: DateTime.now(),
     ));
+    if (!mounted) return; // the save can outlive the screen
     _snack('Answer key saved.');
   }
 
@@ -1428,6 +1430,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       ),
     );
     if (p == null) return;
+    if (!mounted) return; // loading + dialog can outlive the screen
     setState(() {
       _total = p.total;
       _key = List<int>.of(p.key);
@@ -1644,6 +1647,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       await _problem('No saved key', 'No saved key found.');
       return;
     }
+    if (!mounted) return; // the load can outlive the screen
     setState(() {
       _total = draft.total;
       _key = List<int>.filled(draft.total, -1);
