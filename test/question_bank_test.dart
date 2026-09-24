@@ -159,9 +159,8 @@ void main() {
     });
 
     test('questions_data.dart is now small', () {
-      final lines = File('lib/data/questions_data.dart')
-          .readAsLinesSync()
-          .length;
+      final lines =
+          File('lib/data/questions_data.dart').readAsLinesSync().length;
       expect(
         lines,
         lessThan(200),

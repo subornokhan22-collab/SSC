@@ -171,8 +171,8 @@ void main() {
       final pubspec = File('pubspec.yaml').readAsStringSync();
       expect(pubspec.contains('name: tutors_desk'), isTrue);
       expect(pubspec.contains('a_learning'), isFalse);
-      final manifest = File('android/app/src/main/AndroidManifest.xml')
-          .readAsStringSync();
+      final manifest =
+          File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
       expect(manifest.contains("Tutor\'s Desk"), isTrue);
       expect(manifest.contains('ssc_prep_app'), isFalse);
     });

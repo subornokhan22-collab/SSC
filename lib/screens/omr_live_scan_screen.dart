@@ -118,7 +118,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            msg = 'Camera permission is off. Allow it in settings, or use the system camera.';
+            msg =
+                'Camera permission is off. Allow it in settings, or use the system camera.';
           case 'CameraUnavailable':
             msg = 'No camera found on this device.';
           default:
@@ -161,11 +162,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     _quality = q;
     _confidence = q.ready
         ? (_confidence + 1 > _confidenceTarget
-              ? _confidenceTarget
-              : _confidence + 1)
+            ? _confidenceTarget
+            : _confidence + 1)
         : (_confidence - _confidenceLoss < 0
-              ? 0
-              : _confidence - _confidenceLoss);
+            ? 0
+            : _confidence - _confidenceLoss);
     if (_autoCapture && _confidence >= _confidenceTarget && !_capturing) {
       _confidence = 0;
       _capture();
@@ -173,8 +174,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     }
     // Rebuild only when the guidance visibly changes, or at most every
     // ~0.4 s while the metrics keep moving.
-    final changed =
-        prev == null ||
+    final changed = prev == null ||
         prev.ready != q.ready ||
         prev.marks != q.marks ||
         (prev.quad == null) != (q.quad == null) ||
@@ -379,9 +379,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                           vertical: 11,
                         ),
                         decoration: BoxDecoration(
-                          color: _autoCapture
-                              ? AppTheme.primary
-                              : Colors.black54,
+                          color:
+                              _autoCapture ? AppTheme.primary : Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: _autoCapture
@@ -415,17 +414,17 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   }
 
   Widget _round(IconData icon, VoidCallback onTap) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 40,
-      height: 40,
-      decoration: const BoxDecoration(
-        color: Colors.black54,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: Colors.white, size: 22),
-    ),
-  );
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: const BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
+        ),
+      );
 }
 
 /// Draws the dimmed area outside the centred A4 guide, the guide frame with
@@ -470,9 +469,8 @@ class _GuidePainter extends CustomPainter {
       canvas.drawPath(path, Paint()..color = const Color(0x73000000));
       // Green = a real OMR sheet is detected, red = it isn't. That's the
       // whole rule.
-      final color = q!.ready
-          ? const Color(0xFF57D9A3)
-          : const Color(0xFFFF5252);
+      final color =
+          q!.ready ? const Color(0xFF57D9A3) : const Color(0xFFFF5252);
       final edge = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
@@ -554,7 +552,8 @@ class _GuidePainter extends CustomPainter {
         // it and fall back to manual framing with the static guide.
         final tp = TextPainter(
           text: const TextSpan(
-            text: 'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
+            text:
+                'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
             style: TextStyle(color: Colors.white, fontSize: 12.5, height: 1.35),
           ),
           textDirection: TextDirection.ltr,

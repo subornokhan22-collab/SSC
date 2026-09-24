@@ -12,46 +12,46 @@ class WorkflowProgress extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Step ${current + 1} of ${steps.length}: ${steps[current]}',
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        label: 'Step ${current + 1} of ${steps.length}: ${steps[current]}',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var i = 0; i < steps.length; i++)
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: i == steps.length - 1 ? 0 : 4,
-                    ),
-                    child: Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: i <= current
-                            ? AppTheme.primary
-                            : AppTheme.border,
-                        borderRadius: BorderRadius.circular(2),
+              Row(
+                children: [
+                  for (var i = 0; i < steps.length; i++)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: i == steps.length - 1 ? 0 : 4,
+                        ),
+                        child: Container(
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: i <= current
+                                ? AppTheme.primary
+                                : AppTheme.border,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${current + 1} / ${steps.length}  •  ${steps[current]}',
+                style: const TextStyle(
+                  color: AppTheme.muted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            '${current + 1} / ${steps.length}  •  ${steps[current]}',
-            style: const TextStyle(
-              color: AppTheme.muted,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class OperationNotice extends StatelessWidget {

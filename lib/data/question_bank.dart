@@ -173,11 +173,11 @@ _Decoded _decodeAll(List<String> sources) {
 }
 
 QuestionSource _sourceFrom(Object? v) => switch (v) {
-  'board' => QuestionSource.board,
-  'original' => QuestionSource.original,
-  'internet' => QuestionSource.internet,
-  _ => QuestionSource.ai,
-};
+      'board' => QuestionSource.board,
+      'original' => QuestionSource.original,
+      'internet' => QuestionSource.internet,
+      _ => QuestionSource.ai,
+    };
 
 QuestionFigure? _figureFrom(Object? v) {
   if (v == null) return null;

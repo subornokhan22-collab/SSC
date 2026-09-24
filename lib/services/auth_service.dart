@@ -170,8 +170,7 @@ class AuthService {
       await setPassword(password);
     } on AuthException catch (e) {
       final m = e.message.toLowerCase();
-      final alreadySet =
-          m.contains('should be different') ||
+      final alreadySet = m.contains('should be different') ||
           m.contains('different from the old password') ||
           m.contains('same as the old password') ||
           m.contains('same_password');
@@ -228,16 +227,13 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c
-            .from('profiles')
-            .insert({
-              'id': u.id,
-              'email': u.email ?? '',
-              'role': teacherRole,
-              'name': name,
-              'phone': phone,
-            })
-            .timeout(const Duration(seconds: 6));
+        await _c.from('profiles').insert({
+          'id': u.id,
+          'email': u.email ?? '',
+          'role': teacherRole,
+          'name': name,
+          'phone': phone,
+        }).timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -260,8 +256,7 @@ class AuthService {
     } catch (_) {
       // Offline / RLS issue — fall through to whatever we can read back.
     }
-    final p =
-        await fetchProfile() ??
+    final p = await fetchProfile() ??
         <String, dynamic>{
           'email': u.email ?? '',
           'role': teacherRole,

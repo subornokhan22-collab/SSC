@@ -81,22 +81,22 @@ class _BootSplash extends StatelessWidget {
   const _BootSplash();
   @override
   Widget build(BuildContext context) => const Scaffold(
-    body: Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AppLogo(size: 64),
-          SizedBox(height: 24),
-          Text(
-            "Tutor’s Desk",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppLogo(size: 64),
+              SizedBox(height: 24),
+              Text(
+                "Tutor’s Desk",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+              ),
+              SizedBox(height: 20),
+              CircularProgressIndicator(),
+              SizedBox(height: 12),
+              Text('Opening your workspace…'),
+            ],
           ),
-          SizedBox(height: 20),
-          CircularProgressIndicator(),
-          SizedBox(height: 12),
-          Text('Opening your workspace…'),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }

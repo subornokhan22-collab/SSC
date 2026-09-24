@@ -49,8 +49,7 @@ class ChapterCatalog {
     if (v.contains(' ও ') ||
         v.contains('মিলিয়ে') ||
         lower.contains('mixed') ||
-        lower.contains('board-style'))
-      return false;
+        lower.contains('board-style')) return false;
     return RegExp(
       r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+',
       caseSensitive: false,
@@ -103,11 +102,8 @@ class ChapterCatalog {
       if (extra.isNotEmpty) return List<String>.from(extra);
     }
 
-    final clean = values
-        .map((e) => e.trim())
-        .where(isSingleChapter)
-        .toSet()
-        .toList();
+    final clean =
+        values.map((e) => e.trim()).where(isSingleChapter).toSet().toList();
     clean.sort((a, b) {
       final byNumber = numberOf(a).compareTo(numberOf(b));
       return byNumber != 0 ? byNumber : a.compareTo(b);

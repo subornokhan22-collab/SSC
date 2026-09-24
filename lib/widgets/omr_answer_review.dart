@@ -14,44 +14,45 @@ class OmrAnswerReview extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Review the detected answers',
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      const SizedBox(height: 8),
-      const Text(
-        'Compare with the photo. Amber rows need attention. Tap an option to correct a reading; leave real double marks as Double.',
-      ),
-      const SizedBox(height: 14),
-      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextFormField(
-              initialValue: result.roll,
-              decoration: const InputDecoration(labelText: 'Roll'),
-              onChanged: (v) => onChanged(result.corrected(roll: v)),
-            ),
+          Text(
+            'Review the detected answers',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextFormField(
-              initialValue: result.registration,
-              decoration: const InputDecoration(labelText: 'Registration'),
-              onChanged: (v) => onChanged(result.corrected(registration: v)),
-            ),
+          const SizedBox(height: 8),
+          const Text(
+            'Compare with the photo. Amber rows need attention. Tap an option to correct a reading; leave real double marks as Double.',
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  initialValue: result.roll,
+                  decoration: const InputDecoration(labelText: 'Roll'),
+                  onChanged: (v) => onChanged(result.corrected(roll: v)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextFormField(
+                  initialValue: result.registration,
+                  decoration: const InputDecoration(labelText: 'Registration'),
+                  onChanged: (v) =>
+                      onChanged(result.corrected(registration: v)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          for (var i = 0; i < result.total; i++) _row(i),
+          const Text(
+            'Ink gap is the darkest bubble minus the next darkest. It is a scan-quality signal, not a probability that the answer is correct.',
+            style: TextStyle(color: AppTheme.muted, fontSize: 12),
           ),
         ],
-      ),
-      const SizedBox(height: 12),
-      for (var i = 0; i < result.total; i++) _row(i),
-      const Text(
-        'Ink gap is the darkest bubble minus the next darkest. It is a scan-quality signal, not a probability that the answer is correct.',
-        style: TextStyle(color: AppTheme.muted, fontSize: 12),
-      ),
-    ],
-  );
+      );
   Widget _row(int i) {
     final inks = i < result.inks.length ? result.inks[i] : <double>[];
     final sorted = List<double>.of(inks)..sort((a, b) => b.compareTo(a));
@@ -76,14 +77,14 @@ class OmrAnswerReview extends StatelessWidget {
                   corrected
                       ? Icons.edit_outlined
                       : uncertain
-                      ? Icons.warning_amber_rounded
-                      : Icons.check_circle_outline,
+                          ? Icons.warning_amber_rounded
+                          : Icons.check_circle_outline,
                   size: 16,
                   color: corrected
                       ? AppTheme.primary
                       : uncertain
-                      ? AppTheme.warning
-                      : AppTheme.success,
+                          ? AppTheme.warning
+                          : AppTheme.success,
                 ),
               ],
             ),
@@ -91,13 +92,12 @@ class OmrAnswerReview extends StatelessWidget {
               corrected
                   ? 'Teacher corrected'
                   : uncertain
-                  ? 'Review needed · ink gap ${gap.toStringAsFixed(2)}'
-                  : 'Clear mark · ink gap ${gap.toStringAsFixed(2)}',
+                      ? 'Review needed · ink gap ${gap.toStringAsFixed(2)}'
+                      : 'Clear mark · ink gap ${gap.toStringAsFixed(2)}',
               style: TextStyle(
                 fontSize: 12,
-                color: uncertain && !corrected
-                    ? AppTheme.warning
-                    : AppTheme.muted,
+                color:
+                    uncertain && !corrected ? AppTheme.warning : AppTheme.muted,
               ),
             ),
             const SizedBox(height: 6),
@@ -110,8 +110,8 @@ class OmrAnswerReview extends StatelessWidget {
                       answer == -1
                           ? 'Blank'
                           : answer == -2
-                          ? 'Double'
-                          : ['ক', 'খ', 'গ', 'ঘ'][answer],
+                              ? 'Double'
+                              : ['ক', 'খ', 'গ', 'ঘ'][answer],
                     ),
                     selected: result.answers[i] == answer,
                     onSelected: (_) {
@@ -136,7 +136,12 @@ class OmrAnswerReview extends StatelessWidget {
                               minHeight: 3,
                             ),
                             Text(
-                              '${['ক', 'খ', 'গ', 'ঘ'][o]} ${(inks[o] * 100).round()}% ink',
+                              '${[
+                                'ক',
+                                'খ',
+                                'গ',
+                                'ঘ'
+                              ][o]} ${(inks[o] * 100).round()}% ink',
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: AppTheme.muted,
@@ -159,10 +164,11 @@ Future<OmScanResult?> reviewOmrSheet(
   BuildContext context,
   OmScanResult initial, {
   String title = 'Review OMR sheet',
-}) => Navigator.push<OmScanResult>(
-  context,
-  MaterialPageRoute(builder: (_) => _ReviewScreen(initial, title)),
-);
+}) =>
+    Navigator.push<OmScanResult>(
+      context,
+      MaterialPageRoute(builder: (_) => _ReviewScreen(initial, title)),
+    );
 
 class _ReviewScreen extends StatefulWidget {
   final OmScanResult initial;
@@ -176,32 +182,33 @@ class _ReviewScreenState extends State<_ReviewScreen> {
   late OmScanResult result = widget.initial;
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(widget.title)),
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        if (result.rectifiedJpeg != null)
-          SizedBox(
-            height: 300,
-            child: InteractiveViewer(
-              maxScale: 5,
-              child: Image.memory(result.rectifiedJpeg!, fit: BoxFit.contain),
+        appBar: AppBar(title: Text(widget.title)),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (result.rectifiedJpeg != null)
+              SizedBox(
+                height: 300,
+                child: InteractiveViewer(
+                  maxScale: 5,
+                  child:
+                      Image.memory(result.rectifiedJpeg!, fit: BoxFit.contain),
+                ),
+              ),
+            OmrAnswerReview(
+              result: result,
+              onChanged: (r) => setState(() => result = r),
+            ),
+          ],
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: FilledButton(
+              onPressed: () => Navigator.pop(context, result),
+              child: const Text('Confirm answers & grade'),
             ),
           ),
-        OmrAnswerReview(
-          result: result,
-          onChanged: (r) => setState(() => result = r),
         ),
-      ],
-    ),
-    bottomNavigationBar: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: FilledButton(
-          onPressed: () => Navigator.pop(context, result),
-          child: const Text('Confirm answers & grade'),
-        ),
-      ),
-    ),
-  );
+      );
 }

@@ -14,9 +14,8 @@ class QuestionPaperScreen extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => CreatePaperScreen(
-    initialSubjectId: initialSubjectId,
-    initialFormat: initialMode == 'chapter'
-        ? PaperFormat.chapter
-        : PaperFormat.board,
-  );
+        initialSubjectId: initialSubjectId,
+        initialFormat:
+            initialMode == 'chapter' ? PaperFormat.chapter : PaperFormat.board,
+      );
 }

@@ -44,7 +44,7 @@ class OmScanResult {
   final int total;
   final List<int> correctedIndices;
   final List<int>
-  answers; // per question: 0–3 option, -1 blank, -2 double-marked
+      answers; // per question: 0–3 option, -1 blank, -2 double-marked
   final List<List<double>> inks; // per question: 4 ink ratios
   final String roll;
   final String registration;
@@ -244,7 +244,9 @@ class OMrScanner {
     final srcH = decoded.height;
     final srcBytes = (await decoded.toByteData(
       format: ui.ImageByteFormat.rawRgba,
-    ))?.buffer.asUint8List();
+    ))
+        ?.buffer
+        .asUint8List();
     if (srcBytes == null) {
       return OmScanResult.failed(
         'Image could not be processed. Try a different photo.',
@@ -282,15 +284,13 @@ class OMrScanner {
     final dropout = Uint8List(w * h);
     for (var dy = 0; dy < h; dy++) {
       final sy0 = (dy * srcH / h).floor();
-      final sy1 = math
-          .max(sy0 + 1, ((dy + 1) * srcH / h).ceil())
-          .clamp(0, srcH);
+      final sy1 =
+          math.max(sy0 + 1, ((dy + 1) * srcH / h).ceil()).clamp(0, srcH);
       final orow = dy * w;
       for (var dx = 0; dx < w; dx++) {
         final sx0 = (dx * srcW / w).floor();
-        final sx1 = math
-            .max(sx0 + 1, ((dx + 1) * srcW / w).ceil())
-            .clamp(0, srcW);
+        final sx1 =
+            math.max(sx0 + 1, ((dx + 1) * srcW / w).ceil()).clamp(0, srcW);
         var sum = 0, n = 0;
         var sumR = 0, sumG = 0, sumB = 0;
         for (var sy = sy0; sy < sy1; sy++) {
@@ -299,8 +299,7 @@ class OMrScanner {
             final o = (srow + sx) * 4;
             // Luma (BT.601); the weighted sum is always within 0..65280,
             // so the >> 8 result is a valid 8-bit gray value.
-            sum +=
-                (srcBytes[o] * 77 +
+            sum += (srcBytes[o] * 77 +
                     srcBytes[o + 1] * 150 +
                     srcBytes[o + 2] * 29) >>
                 8;
@@ -421,9 +420,8 @@ class OMrScanner {
         // component is found (a null component let the corner fallback
         // search the whole frame and capture the bright background).
         final sp = _paperSeed(paper, w, h, seed.dx.round(), seed.dy.round());
-        sharedComp = sp == null
-            ? null
-            : _paperComponent(paper, w, h, sp.$1, sp.$2);
+        sharedComp =
+            sp == null ? null : _paperComponent(paper, w, h, sp.$1, sp.$2);
         sharedCompReady = true;
       }
       return sharedComp;
@@ -609,8 +607,7 @@ class OMrScanner {
         OMrGeometry.pageW * OMrGeometry.pageW +
             OMrGeometry.pageH * OMrGeometry.pageH,
       );
-      final sc =
-          math.sqrt(
+      final sc = math.sqrt(
             (br0.dx - tl0.dx) * (br0.dx - tl0.dx) +
                 (br0.dy - tl0.dy) * (br0.dy - tl0.dy),
           ) /
@@ -626,7 +623,8 @@ class OMrScanner {
         continue;
       }
       if (OMrGeometry.bubbleRadiusPx * sc < 4) {
-        failReason = 'The sheet is too small in the photo. Move closer and take the photo again.';
+        failReason =
+            'The sheet is too small in the photo. Move closer and take the photo again.';
         continue;
       }
       // Precision gate: every detected mark must reproject onto its own
@@ -648,7 +646,8 @@ class OMrScanner {
         );
         if (!res.isFinite || res > tol) {
           precise = false;
-          failReason = 'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.';
+          failReason =
+              'Could not align the sheet precisely (corner mismatch). Keep it flat, fill the frame with a small margin, and take the photo again.';
           break;
         }
       }
@@ -705,8 +704,7 @@ class OMrScanner {
       OMrGeometry.pageW * OMrGeometry.pageW +
           OMrGeometry.pageH * OMrGeometry.pageH,
     );
-    final scale =
-        math.sqrt(
+    final scale = math.sqrt(
           (br.dx - tl.dx) * (br.dx - tl.dx) + (br.dy - tl.dy) * (br.dy - tl.dy),
         ) /
         pageDiagonal;
@@ -1155,8 +1153,8 @@ class OMrScanner {
     var bad = !_isConvexQuadrilateral(q);
     if (!bad) {
       double len(ui.Offset a, ui.Offset b) => math.sqrt(
-        (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy),
-      );
+            (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy),
+          );
       final aW = (len(q[0], q[1]) + len(q[3], q[2])) / 2;
       final aH = (len(q[0], q[3]) + len(q[1], q[2])) / 2;
       final aspect = aW < aH ? aW / aH : aH / aW;
@@ -1176,9 +1174,8 @@ class OMrScanner {
         if (c.fromMark) c.blobDiag,
     ];
     final sorted = [...diags]..sort();
-    final median = (sorted[1] + sorted[2]) / 2 < 1
-        ? 1.0
-        : (sorted[1] + sorted[2]) / 2;
+    final median =
+        (sorted[1] + sorted[2]) / 2 < 1 ? 1.0 : (sorted[1] + sorted[2]) / 2;
     var worst = -1;
     var worstDev = -1.0;
     for (var i = 0; i < 4; i++) {
@@ -1497,8 +1494,8 @@ class OMrScanner {
           continue;
         }
         double len(ui.Offset a, ui.Offset b) => math.sqrt(
-          (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy),
-        );
+              (b.dx - a.dx) * (b.dx - a.dx) + (b.dy - a.dy) * (b.dy - a.dy),
+            );
         final width = (len(pts[0], pts[1]) + len(pts[3], pts[2])) / 2;
         final height = (len(pts[0], pts[3]) + len(pts[1], pts[2])) / 2;
         if (width < 200 || height < 200) continue;
@@ -1540,8 +1537,7 @@ class OMrScanner {
         }
         if (!markResFinite) continue;
         if (maxRes > 0) {
-          final scaleEst =
-              len(pts[0], pts[2]) /
+          final scaleEst = len(pts[0], pts[2]) /
               math.sqrt(
                 OMrGeometry.pageW * OMrGeometry.pageW +
                     OMrGeometry.pageH * OMrGeometry.pageH,
@@ -1572,8 +1568,7 @@ class OMrScanner {
         if (luma != null && ink != null && w > 0 && h > 0) {
           final gridH = geo.perColumn * OMrGeometry.rowH;
           final halfGrid = gridH * 0.5;
-          final probeY =
-              OMrGeometry.questionsTop +
+          final probeY = OMrGeometry.questionsTop +
               (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
           final top = applyHomography(
             hHom,
@@ -2209,8 +2204,7 @@ class OMrScanner {
       if (luma != null && ink != null) {
         final gridH = geo.perColumn * OMrGeometry.rowH;
         final halfGrid = gridH * 0.5;
-        final probeY =
-            OMrGeometry.questionsTop +
+        final probeY = OMrGeometry.questionsTop +
             (halfGrid < 60 ? 60 : (halfGrid > 240 ? 240 : halfGrid));
         final top = applyHomography(
           hHom,

@@ -18,11 +18,10 @@ import 'dart:ui' show Offset;
 /// rest of the print engine (1654 × 2339, margin 40 pt).
 class OMrGeometry {
   OMrGeometry(this.total)
-    : assert(total >= 1 && total <= 100, 'OMR supports 1–100 questions') {
+      : assert(total >= 1 && total <= 100, 'OMR supports 1–100 questions') {
     _columns = ((total + maxPerColumn - 1) ~/ maxPerColumn).clamp(1, 4).toInt();
-    perColumn = ((total + _columns - 1) ~/ _columns)
-        .clamp(1, maxPerColumn)
-        .toInt();
+    perColumn =
+        ((total + _columns - 1) ~/ _columns).clamp(1, maxPerColumn).toInt();
     questionGap = 8.0 * k;
     final rawW = (contentW - (_columns - 1) * questionGap) / _columns;
     questionWidth = rawW > naturalRowW ? naturalRowW : rawW;
@@ -99,8 +98,7 @@ class OMrGeometry {
   static const double rowH = 17.0 * k;
   static const double numberW = 26 * k;
   static const double maxBubbleStep = 25.0;
-  static final double naturalRowW =
-      26 * k +
+  static final double naturalRowW = 26 * k +
       bubbleR * k +
       2 * k +
       6 * k +

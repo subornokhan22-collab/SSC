@@ -250,11 +250,11 @@ img.Image _warp(img.Image page, List<double> h, int pw, int ph) {
 }
 
 List<Offset> _pageMarks() => [
-  OMrGeometry.markCenter(0),
-  OMrGeometry.markCenter(1),
-  OMrGeometry.markCenter(2),
-  OMrGeometry.markCenter(3),
-];
+      OMrGeometry.markCenter(0),
+      OMrGeometry.markCenter(1),
+      OMrGeometry.markCenter(2),
+      OMrGeometry.markCenter(3),
+    ];
 
 void main() {
   const total = 30;
@@ -357,6 +357,18 @@ void main() {
 
       final res = await OMrScanner.scan(bytes, total: total);
       expect(res.ok, isTrue, reason: res.error);
+      final correctedAnswers = List<int>.of(res.answers)..[4] = expectedKey[4];
+      final corrected =
+          res.corrected(answers: correctedAnswers, roll: '999999');
+      expect(corrected.answers[4], expectedKey[4]);
+      expect(res.answers[4], -1);
+      expect(corrected.correctedIndices, [4]);
+      expect(corrected.inks, res.inks);
+      expect(corrected.roll, '999999');
+      expect(OMrScanner.grade(corrected, expectedKey).score,
+          OMrScanner.grade(res, expectedKey).score + 1);
+      expect(() => res.corrected(answers: [0]), throwsArgumentError);
+
       expect(res.answers, answers);
       expect(res.roll, '001234');
       expect(res.subjectCode, '109');

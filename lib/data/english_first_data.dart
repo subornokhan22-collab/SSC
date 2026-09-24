@@ -29,11 +29,11 @@ class EnglishFirstSet {
   final String q3Unit; // '[Unit…]' or the Bengali bracket note
   final String q3Cloze; // paragraph with (a)–(e) gaps
   final String
-  passage2Intro; //'Read the following text ... questions no. 4 and 5 :'
+      passage2Intro; //'Read the following text ... questions no. 4 and 5 :'
   final String passage2;
   final String q4Instr; // 'Complete the table ...' variants
   final List<List<String>>
-  q4Table; // all grid rows (blanks as printed '(i) ——')
+      q4Table; // all grid rows (blanks as printed '(i) ——')
   final Set<int> q4BoldRows; // row indices rendered bold
   final List<String> q6A, q6B, q6C; // matching columns (a)e / (i)v / (i)v
   final List<String> q7; // (a)–(h) story parts
@@ -210,7 +210,8 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'that language. It helps to get good jobs and have better (d) ——. '
         'So, we should learn English properly as it helps (e) —— our '
         'unemployment problem.',
-    passage2Intro: 'Read the following text carefully and answer the questions no. 4 and 5 :',
+    passage2Intro:
+        'Read the following text carefully and answer the questions no. 4 and 5 :',
     passage2:
         'Captain Mohiuddin Jahangir was an officer in the Army during the '
         'Liberation War of 1971. He was born on 7 March, 1949 at Rahimganj '
@@ -302,15 +303,13 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'How do you evaluate the character of Shylock?\n'
           '(শাইলকের চরিত্রকে তুমি কিভাবে মূল্যায়ন করবে?)',
     ],
-    q10Instr:
-        'Read the beginning of a story below. It is not complete. Add at '
+    q10Instr: 'Read the beginning of a story below. It is not complete. Add at '
         'least ten new sentences to complete it. Give a suitable title to it :',
     q10Starter:
         'One day a school boy named Arif was returning home from school. On '
         'the way to his home, he saw an old woman who was begging. Arif asked '
         'the woman why she was begging. In reply, she told him that .........',
-    q11:
-        'Suppose, you are Tunan/Tanni. You have a friend named Milon/Mina. '
+    q11: 'Suppose, you are Tunan/Tanni. You have a friend named Milon/Mina. '
         'Your friend does not take physical exercise. But it is beneficial to '
         'health. Now, write a dialogue between you and your friend about the '
         'benefits of physical exercise.',
@@ -321,8 +320,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     board: 'Rajshahi Board–2024',
     passage1Intro: 'Read the passage and answer the questions 1 and 2.',
     passage1Unit: 'Unit–2; Lesson–1(A)',
-    passage1:
-        'Meherjan lives in a slum on the Sirajgonj Town Protection '
+    passage1: 'Meherjan lives in a slum on the Sirajgonj Town Protection '
         'Embankment. The whispering wind from the river Jamuna makes the '
         'fire unsteady. The dancing flames remind Meherjan of the turmoil '
         'in her life. Not long ago Meherjan had everything--- a family, '
@@ -406,8 +404,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'separated from another element, can be burned as a fuel to '
         'produce electricity.',
     q3Unit: '[Unit–14; Lesson–2(B)]',
-    q3Cloze:
-        'Scientists have (a) —— out that Hydrogen can be (b) —— as '
+    q3Cloze: 'Scientists have (a) —— out that Hydrogen can be (b) —— as '
         'renewable energy source. The nature is (c) —— with Hydrogen '
         '(d) —— it does not exist separately as gas. Hydrogen and Oxygen '
         '(e) —— water.',
@@ -512,15 +509,12 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'What was not mentioned in the bond?',
       'Why did Rosamond buy the jar without examining it properly?',
     ],
-    q10Instr:
-        'Read the beginning of a story. Now, complete it in your own '
+    q10Instr: 'Read the beginning of a story. Now, complete it in your own '
         'language. Give a suitable title to it :',
-    q10Starter:
-        'Once upon a time, there was a king called Midas. He was very '
+    q10Starter: 'Once upon a time, there was a king called Midas. He was very '
         'rich but he always longed for more riches. Moreover, he was fond '
         'of gold though he had a lot of it......',
-    q11:
-        'Suppose, you are Robin/Rubi and you have a friend named '
+    q11: 'Suppose, you are Robin/Rubi and you have a friend named '
         'Fardin/Fariha. Now, write a dialogue between you and your friend '
         'about Dengue fever and its remedies.',
   ),
@@ -531,8 +525,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     passage1Intro:
         'Read the following passage and answer the questions 1 and 2 :',
     passage1Unit: 'Unit–15; Lesson–2(B)',
-    passage1:
-        'The Internet technology has helped design a large number of web '
+    passage1: 'The Internet technology has helped design a large number of web '
         'sites to facilitate social relations among people around the '
         'world. These are known as social networking services or social '
         'networks or social media. At present, Facebook is the most '
@@ -614,11 +607,9 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'How do social networks work?',
       'Why are social networks expanding so fast?',
     ],
-    q3Instr:
-        'Read the following passage and fill in each gap with a suitable '
+    q3Instr: 'Read the following passage and fill in each gap with a suitable '
         'word based on the information of the text.',
-    q3Source:
-        'Fish population is in serious danger from global warming. '
+    q3Source: 'Fish population is in serious danger from global warming. '
         'Climate change is increasing the water temperature in rivers, '
         'lakes and sea. This means there is less food and oxygen '
         'available for fish. It also means the fish may not grow fully '
@@ -631,8 +622,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'increase the pressure on fish. As a result, people who depend on '
         'fish will suffer from hunger and poverty.',
     q3Unit: ef1OutsideNote,
-    q3Cloze:
-        'Global warming raises the stress on fish population. Fish '
+    q3Cloze: 'Global warming raises the stress on fish population. Fish '
         'population is severely affected (a) —— to global warming. For '
         'want of food and oxygen some (b) —— of fish may be (c) —— one '
         'day. To stop global warming, we have to convince people not to '
@@ -641,8 +631,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     passage2Intro:
         'Read the following passage carefully and answer the questions '
         '4 and 5 :',
-    passage2:
-        'Charles Babbage was an English mathematician. He was also a '
+    passage2: 'Charles Babbage was an English mathematician. He was also a '
         'mechanical engineer who is best known for originating the '
         'concept of computer. He was born on 26 December 1791 in London. '
         'He entered Trinity College in October 1810. He was transferred '
@@ -653,8 +642,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'University. Babbage is famous for inventing the first mechanical '
         'computer in 1822 that eventually led to today\u2019s computer. '
         'He died at his home in London on 18 October 1871.',
-    q4Instr:
-        'Complete the table below with the information from the above '
+    q4Instr: 'Complete the table below with the information from the above '
         'passage.',
     q4Table: const [
       ['Charles Babbage'],
@@ -735,17 +723,14 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
           'find a good husband for his daughter was successful? Why/ Why '
           'not?',
     ],
-    q10Instr:
-        'Read the beginning of a story. Write at least ten new sentences '
+    q10Instr: 'Read the beginning of a story. Write at least ten new sentences '
         'to complete the story :',
-    q10Starter:
-        'Once there lived a King in an island. There were green trees '
+    q10Starter: 'Once there lived a King in an island. There were green trees '
         'everywhere in the island. The King decided to build a '
         'magnificent palace in the island. So he ordered his men to cut '
         'down all the trees. Some opposed the King\u2019s idea but he did '
         'not pay ..........',
-    q11:
-        'Suppose, you are Sostika/Anu and your friend\u2019s name is '
+    q11: 'Suppose, you are Sostika/Anu and your friend\u2019s name is '
         'Tanzima/Khalid. Now, write a dialogue between you and your '
         'friend about the severe impact of dengue fever.',
   ),
@@ -755,8 +740,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     board: 'Cumilla Board–2024',
     passage1Intro: 'Read the passage and answer the questions no 1 and 2.',
     passage1Unit: 'Unit–4; Lesson–2(B)',
-    passage1:
-        'May Day or International Workers\u2019 Day is observed on May 1 '
+    passage1: 'May Day or International Workers\u2019 Day is observed on May 1 '
         'all over the world today to commemorate the historical struggle '
         'and sacrifices of the working people to establish an eight-hour '
         'workday. It is a public holiday in almost all the countries of '
@@ -830,8 +814,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'What happened when the policemen attacked the strikers?',
       'What inspired the workers joining the protest?',
     ],
-    q3Source:
-        'Fish population is in serious danger from global warming. '
+    q3Source: 'Fish population is in serious danger from global warming. '
         'Climate change is increasing the water temperature in rivers, '
         'lakes and seas. This means there is less food and oxygen '
         'available for fish. It also means the fish may not grow fully '
@@ -844,16 +827,14 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'emissions, we will increase the pressure on fish. As a result, '
         'people who depend on fish will suffer from hunger and poverty.',
     q3Unit: ef1OutsideNote,
-    q3Cloze:
-        'It is (a) —— from the passage that global warming is (b) —— a '
+    q3Cloze: 'It is (a) —— from the passage that global warming is (b) —— a '
         'great threat to fish population. (c) —— to global warming, food '
         'production and oxygen, (d) —— in water decrease. As a result, '
         'some fish may be extinct (e) ——.',
     passage2Intro:
         'Read the following passage on Jibanananda Das and then answer '
         'questions no. 4 and 5 :',
-    passage2:
-        'Jibanananda Das was born in a small town of Barishal in 1899. '
+    passage2: 'Jibanananda Das was born in a small town of Barishal in 1899. '
         'He took his Master\u2019s Degree in English at the age of 22. '
         'The next year, he started his teaching career as a Professor of '
         'English at the Kolkata City College. He lost the job in 1928 on '
@@ -942,16 +923,13 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'What did the letter of the wisest lawyer contain?',
       'How did Rosamond\u2019s mother teach her daughter a great lesson?',
     ],
-    q10Instr:
-        'Read the beginning of a story. Write at least ten new sentences '
+    q10Instr: 'Read the beginning of a story. Write at least ten new sentences '
         'to complete the story :',
-    q10Starter:
-        'Rahmat Mia is a poor rickshaw puller in Dhaka. He pulls '
+    q10Starter: 'Rahmat Mia is a poor rickshaw puller in Dhaka. He pulls '
         'rickshaw in different areas of the city. One day he saw some '
         'men selling lottery tickets. He felt tempted and bought a '
         'ticket......',
-    q11:
-        'Suppose, you are Karim/Karima and your younger brother is '
+    q11: 'Suppose, you are Karim/Karima and your younger brother is '
         'Muhib. Write a dialogue between you and your brother about the '
         'merits and demerits of using mobile phone.',
   ),
@@ -963,8 +941,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'Read the following text carefully. Then answer the questions '
         'no. 1 and 2.',
     passage1Unit: 'Unit–7; Lesson–3(B)',
-    passage1:
-        'It was late summer, 26 August 1910. A little girl was born to a '
+    passage1: 'It was late summer, 26 August 1910. A little girl was born to a '
         'rich Catholic merchant\u2019s family of Albanian descent in a '
         'small town called Skopje, Macedonia. She was the youngest of '
         'the three siblings and was named Agnes Gonxha Bojaxhiu. Who '
@@ -1044,8 +1021,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'What did Mother Teresa do in the first seventeen years in India?',
       'Why did she leave her parental home?',
     ],
-    q3Source:
-        'The Internet technology has helped design a large number of '
+    q3Source: 'The Internet technology has helped design a large number of '
         'websites to facilitate social relations among people around '
         'the world. These are known as social networking services or '
         'social networks or social media. At present, Facebook is the '
@@ -1060,8 +1036,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'make use of them free, paying a very little to your Internet '
         'services providers.',
     q3Unit: '[Unit–15; Lesson–2(B)]',
-    q3Cloze:
-        'With the development of Internet Technology a number of '
+    q3Cloze: 'With the development of Internet Technology a number of '
         'websites have been designed to promote the relations (a) —— '
         'the people of the world. By (b) —— these social media, we can '
         '(c) —— our ideas with each other and feel as the citizen of a '
@@ -1071,8 +1046,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     passage2Intro:
         'Read the passage carefully and answer the questions no. 4 and '
         '5 :',
-    passage2:
-        'William Wordsworth was a major English romantic poet. He was '
+    passage2: 'William Wordsworth was a major English romantic poet. He was '
         'born on April 7, 1770 in Cumberland, Lake District of England. '
         'His father was an attorney. In 1778 when he was only eight '
         'years old, his mother died, and in the same year he went to '
@@ -1179,16 +1153,13 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'Why did Bassanio go to Antonio?\n'
           '(তিনি কেন অ্যান্টনিওর কাছে গেলেন?)',
     ],
-    q10Instr:
-        'Read the beginning of a story below. Add at least ten new '
+    q10Instr: 'Read the beginning of a story below. Add at least ten new '
         'sentences to complete the story and. Give a suitable title to '
         'it :',
-    q10Starter:
-        'Rafi is a worker of a big factory in Dhaka. There are more '
+    q10Starter: 'Rafi is a worker of a big factory in Dhaka. There are more '
         'than 500 workers in the factory. One day while he was working, '
         'a loud sound was heard. Fire! Fire! Help! Help!......',
-    q11:
-        'Imagine, you are Abid/Abida and your friend, Ratul/Rita is not '
+    q11: 'Imagine, you are Abid/Abida and your friend, Ratul/Rita is not '
         'interested in physical exercise. Now, write a dialogue between '
         'you and your friend about the importance of taking physical '
         'exercise.',
@@ -1199,8 +1170,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     board: 'Sylhet Board–2024',
     passage1Intro: 'Read the passage. Then answer the questions below.',
     passage1Unit: 'Unit–15; Lesson–2(B)',
-    passage1:
-        'The Internet technology has helped design a large number of web '
+    passage1: 'The Internet technology has helped design a large number of web '
         'sites to facilitate social relations among people around the '
         'world. These are known as social networking services or social '
         'networks or social media. At present, Facebook is the most '
@@ -1276,8 +1246,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'Do you think that social networks like Facebook play a vital '
           'role to make the world a global village? Why?',
     ],
-    q3Source:
-        'Pritilata Waddedar was born in Chattogram on 5 May 1911. She '
+    q3Source: 'Pritilata Waddedar was born in Chattogram on 5 May 1911. She '
         'was a meritorious student at Dr. Khastagir Government Girls\u2019 '
         'School in Chattogram and Eden College, Dhaka. She graduated in '
         'Philosophy with distinction from Bethune College in Kolkata. In '
@@ -1298,8 +1267,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'failed to get out of the club. She committed suicide by taking '
         'potassium cyanide to avoid arrest.',
     q3Unit: '[Unit–10; Lesson–3(B)]',
-    q3Cloze:
-        'Pritilata was a famous face in the history of anti-British '
+    q3Cloze: 'Pritilata was a famous face in the history of anti-British '
         'movement. She was a brilliant student and completed her (a) —— '
         'in Philosophy from Bethune College in Kolkata. During her '
         'college days, she (b) —— part in the anti-British movement. She '
@@ -1313,8 +1281,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     passage2Intro:
         'Read the following text carefully and answer the questions no. '
         '4 and 5 :',
-    passage2:
-        'Sher-E-Bangla is one of the most popular leaders of '
+    passage2: 'Sher-E-Bangla is one of the most popular leaders of '
         'Bangladesh. He was born in 1873 at Chakhar in Barishal. His '
         'father Mohammad Wazed Ali was a famous lawyer. He passed the '
         'Entrance Examination and went to Calcutta for higher studies. '
@@ -1423,16 +1390,13 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
           '(শাইলক কেন অ্যান্টনিওর স্বাক্ষরিত চুক্তিপত্র গ্রহণ করেন?)',
       'How did Rosamond and her mother differ in their views?',
     ],
-    q10Instr:
-        'Read the beginning of a story and complete it in your own way. '
+    q10Instr: 'Read the beginning of a story and complete it in your own way. '
         'You should give a suitable title to it :',
-    q10Starter:
-        'Tamim, a student of class ten, was returning from school. On '
+    q10Starter: 'Tamim, a student of class ten, was returning from school. On '
         'the way, he saw some boys and girl bathing in the pond. '
         'Suddenly he heard a girl shouting "Help! Help! save me!" '
         'Tamim.......',
-    q11:
-        'Suppose, you are Nabil/Nabila. You read in Blue Bird School, '
+    q11: 'Suppose, you are Nabil/Nabila. You read in Blue Bird School, '
         'Sylhet. Now, write a dialogue between you and the librarian of '
         'your school about borrowing a book.',
   ),
@@ -1442,8 +1406,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     board: 'Barishal Board–2024',
     passage1Intro: 'Read the passage. Then answer the questions below.',
     passage1Unit: 'Unit–14; Lesson–2(B)',
-    passage1:
-        'Countries of the world rely heavily on petroleum, coal and '
+    passage1: 'Countries of the world rely heavily on petroleum, coal and '
         'natural gas for their energy sources. There are two major '
         'types of energy sources : renewable and non-renewable. '
         'Hydro-carbon or fossil fuels are non-renewable sources of '
@@ -1533,8 +1496,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       '"Reliance on them poses real big problems".—How? Explain it in '
           '2/3 sentences.',
     ],
-    q3Source:
-        '21 February is a memorable day in our national history. We '
+    q3Source: '21 February is a memorable day in our national history. We '
         'observe the day every year as International Mother Language '
         'Day. The day is a national holiday.\n'
         'On this day, we pay tribute to the martyrs who laid down '
@@ -1558,19 +1520,16 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'a state language. This kindled the sparks of independence '
         'movement of Bangladesh.',
     q3Unit: '[Unit–4; Lesson–3(B)]',
-    q3Cloze:
-        '21 February is an (a) —— day in our national history. We '
+    q3Cloze: '21 February is an (a) —— day in our national history. We '
         'observe the day with a view to (b) —— respect to the language '
         'martyrs. The heroic sons of the soil sacrificed their lives '
         'for the (c) —— of Bangla as one of the state languages of '
         'Pakistan. This sacrifice led the Bangalees to the (d) —— '
         'movement of Bangladesh. In other (e) ——, language movement '
         'worked as the inspiration of our freedom.',
-    passage2Intro:
-        'Read the following text carefully and answer the questions '
+    passage2Intro: 'Read the following text carefully and answer the questions '
         'no. 4 and 5 :',
-    passage2:
-        'William Wordsworth was born in 7 April 1770 at Cockermouth in '
+    passage2: 'William Wordsworth was born in 7 April 1770 at Cockermouth in '
         'England. He was sent to St. John\u2019s College, Cambridge in '
         '1789. Upon taking his Cambridge degree in 1791, he moved to '
         'France where he formed a passionate attachment to a French '
@@ -1668,18 +1627,15 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'Sketch the character of Antonio.\n'
           '(অ্যান্টনিওর চরিত্র বর্ণনা কর।)',
     ],
-    q10Instr:
-        'Read the beginning of a story below. It is not complete. Add '
+    q10Instr: 'Read the beginning of a story below. It is not complete. Add '
         'at least ten new sentences to complete it. Give a suitable '
         'title to it :',
-    q10Starter:
-        'Dilara is thirteen years old living in Swapnopur. Her poor '
+    q10Starter: 'Dilara is thirteen years old living in Swapnopur. Her poor '
         'parents have two other little children. It is hard for her '
         'illiterate parents to earn enough to run the family well. '
         'Dilara hopes to bring about a change to her family by '
         'receiving higher education. So she ......',
-    q11:
-        'A future plan of life helps one to reach one\u2019s goal. A '
+    q11: 'A future plan of life helps one to reach one\u2019s goal. A '
         'student must have a definite future plan in life. Now, write '
         'a dialogue between you and your friend Sadik/Sadika about '
         'your future plan of life.',
@@ -1690,8 +1646,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     board: 'Dinajpur Board–2024',
     passage1Intro: 'Read the passage. Then answer the questions below.',
     passage1Unit: 'Unit–4; Lesson–5(B)',
-    passage1:
-        '26 March, our Independence Day, is the biggest state festival. '
+    passage1: '26 March, our Independence Day, is the biggest state festival. '
         'The day is celebrated every year in the country with great '
         'enthusiasm and fervour. It is a national holiday. All offices, '
         'educational institutions, shops and factories remain closed on '
@@ -1777,8 +1732,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'How do you celebrate the Independence Day in your school?',
       'What are the main features of the day?',
     ],
-    q3Source:
-        'Fish population is in serious danger from global warming. '
+    q3Source: 'Fish population is in serious danger from global warming. '
         'Climate change is increasing the water temperature in rivers, '
         'lakes and seas. This means there is less food and oxygen '
         'available for fish. It also means the fish may not grow fully '
@@ -1792,17 +1746,14 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'result, people who depend on fish will suffer from hunger and '
         'poverty.',
     q3Unit: ef1OutsideNote,
-    q3Cloze:
-        'It is learnt from the passage (a) —— global warming is posing '
+    q3Cloze: 'It is learnt from the passage (a) —— global warming is posing '
         'a great (b) —— to fish population. Fish population is not '
         '(c) —— from the danger of climate change. It is (d) —— that '
         'some species of fishes will be extinct due (e) —— temperature '
         'rise in near future.',
-    passage2Intro:
-        'Read the following text carefully and answer the questions '
+    passage2Intro: 'Read the following text carefully and answer the questions '
         'no. 4 and 5 :',
-    passage2:
-        'John Milton was one of the famous poets in English '
+    passage2: 'John Milton was one of the famous poets in English '
         'literature. He was born on December 9, 1608 in London. At the '
         'age of 17, he went to Cambridge University for study and '
         'after seven years of study he took MA degree from that '
@@ -1895,17 +1846,14 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'Why do you think the prince of Spain failed to choose the '
           'right one?',
     ],
-    q10Instr:
-        'Read the beginning of a story below. It is not complete. Add '
+    q10Instr: 'Read the beginning of a story below. It is not complete. Add '
         'at least ten new sentences to complete it. Give a suitable '
         'title to it :',
-    q10Starter:
-        'Once there lived a poor rickshawpuller. He had to maintain '
+    q10Starter: 'Once there lived a poor rickshawpuller. He had to maintain '
         'his family consisting of eight members with great difficulty. '
         'One day while walking through the fields, he found a purse '
         'dropped by a passer-by. He.......',
-    q11:
-        'Suppose, you are Sumon/Sumona. You have a friend Rahim/Rahima. '
+    q11: 'Suppose, you are Sumon/Sumona. You have a friend Rahim/Rahima. '
         'You are very interested in games and sports. Now write a '
         'dialogue between you and your friend emphasizing the '
         'importance of games and sports in our life.',
@@ -1916,8 +1864,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
     board: 'Mymensingh Board–2024',
     passage1Intro: 'Read the passage. Then answer the questions below.',
     passage1Unit: 'Unit–12; Lesson–3(A)',
-    passage1:
-        'Michael Madhusudan Dutt was a celebrated 19th century '
+    passage1: 'Michael Madhusudan Dutt was a celebrated 19th century '
         'Bangalee poet and dramatist. He was born in Sagordari on the '
         'bank of the Kopotaksho River, a village in Keshabpur Upazila '
         'under Jashore district.\n'
@@ -2008,8 +1955,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
       'When did Michael compose Kopotaksho Nad?',
       'Why did Michael realize himself as a sojourner in Europe?',
     ],
-    q3Source:
-        'We have the ability to bring about a great change in our '
+    q3Source: 'We have the ability to bring about a great change in our '
         'social, national and international life. But we cannot change '
         'everything. For example, humans can neither change the '
         'sun\u2019s radiation nor the earth\u2019s orbit around the '
@@ -2030,8 +1976,7 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         'is burned, it releases carbon dioxide into the air. Thus, we '
         'are generating more and more greenhouse gases worldwide.',
     q3Unit: '[Unit–2; Lesson–3(A)]',
-    q3Cloze:
-        'It is true that most of the natural phenomena are beyond our '
+    q3Cloze: 'It is true that most of the natural phenomena are beyond our '
         'control, yet we can (a) —— some aspects like the greenhouse '
         'effect by our responsible activities. We are highly '
         'responsible for (b) —— radical climate change. Carbon dioxide '
@@ -2039,11 +1984,9 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
         '(d) —— in the atmosphere by the burning of fossil fuels. '
         'Moreover, mineral oil and natural gas are also used for '
         'various (e) ——.',
-    passage2Intro:
-        'Read the following text carefully and answer the questions '
+    passage2Intro: 'Read the following text carefully and answer the questions '
         'no. 4 and 5 :',
-    passage2:
-        'The great men were born in different places of the world but '
+    passage2: 'The great men were born in different places of the world but '
         'their activities make them familiar and closer to us. Dr. '
         'Muhammad Shahidullah was one of those who contributed a lot '
         'towards Bangla language and literature. He was one of the '
@@ -2138,16 +2081,13 @@ final List<EnglishFirstSet> englishFirstSets2024 = [
           'indicate?',
       'How could you say that Antonio was the best friend of Bassanio?',
     ],
-    q10Instr:
-        'Read the beginning of a story below. It is not complete. Add '
+    q10Instr: 'Read the beginning of a story below. It is not complete. Add '
         'at least ten new sentences to complete it. Give a suitable '
         'title to it :',
-    q10Starter:
-        'A long time ago, the town of Hamelin faced with a great '
+    q10Starter: 'A long time ago, the town of Hamelin faced with a great '
         'problem. It became full of rats. The situation became very '
         'unbearable .....',
-    q11:
-        'Suppose, you are Tanveer/Tanisa. You have a friend named '
+    q11: 'Suppose, you are Tanveer/Tanisa. You have a friend named '
         'Habib/Habiba who is fond of trees and nature. Now, write a '
         'dialogue between you and your friend about the importance of '
         'tree plantation.',

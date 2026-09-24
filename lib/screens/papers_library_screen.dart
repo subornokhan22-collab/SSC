@@ -187,11 +187,9 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                 if (p.questions.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const Divider(height: 16),
-                  for (
-                    var i = 0;
-                    i < p.questions.length && i < p.key.length;
-                    i++
-                  )
+                  for (var i = 0;
+                      i < p.questions.length && i < p.key.length;
+                      i++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Text(
@@ -467,8 +465,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                   title: titleCtrl.text.trim(),
                   subject: subject == other
                       ? (otherSubjectCtrl.text.trim().isEmpty
-                            ? 'অন্যান্য'
-                            : otherSubjectCtrl.text.trim())
+                          ? 'অন্যান্য'
+                          : otherSubjectCtrl.text.trim())
                       : subject,
                   year: yearCtrl.text.trim(),
                 );
@@ -484,8 +482,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                   title: titleCtrl.text.trim(),
                   subject: subject == other
                       ? (otherSubjectCtrl.text.trim().isEmpty
-                            ? 'অন্যান্য'
-                            : otherSubjectCtrl.text.trim())
+                          ? 'অন্যান্য'
+                          : otherSubjectCtrl.text.trim())
                       : subject,
                   year: yearCtrl.text.trim(),
                 );
@@ -678,15 +676,16 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                             ),
                           )
                         : _entries.isEmpty
-                        ? _empty()
-                        : ListView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(
-                              parent: BouncingScrollPhysics(),
-                            ),
-                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
-                            itemCount: _entries.length,
-                            itemBuilder: (context, i) => _card(_entries[i]),
-                          ),
+                            ? _empty()
+                            : ListView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(
+                                  parent: BouncingScrollPhysics(),
+                                ),
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 10, 16, 90),
+                                itemCount: _entries.length,
+                                itemBuilder: (context, i) => _card(_entries[i]),
+                              ),
                   ),
                 ],
               ),
@@ -817,38 +816,39 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   }
 
   Widget _pill(String text) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-    decoration: BoxDecoration(
-      color: AppTheme.primary.withOpacity(.08),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppTheme.primary.withOpacity(.25)),
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w700,
-        color: AppTheme.primaryDark,
-      ),
-    ),
-  );
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+        decoration: BoxDecoration(
+          color: AppTheme.primary.withOpacity(.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.primary.withOpacity(.25)),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.primaryDark,
+          ),
+        ),
+      );
 
   Widget _iconBtn(
     IconData icon,
     String label,
     VoidCallback onTap, {
     Color? color,
-  }) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 2),
-    child: Tooltip(
-      message: label,
-      child: IconButton(
-        visualDensity: VisualDensity.compact,
-        icon: Icon(icon, size: 19, color: color ?? AppTheme.primary),
-        onPressed: onTap,
-      ),
-    ),
-  );
+  }) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Tooltip(
+          message: label,
+          child: IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: Icon(icon, size: 19, color: color ?? AppTheme.primary),
+            onPressed: onTap,
+          ),
+        ),
+      );
 
   String _date(DateTime d) =>
       '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';

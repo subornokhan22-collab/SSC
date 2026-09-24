@@ -65,6 +65,9 @@ jobs:
         with:
           channel: stable
 
+      - name: Get packages
+        run: flutter pub get
+
       # Opt-in mechanical formatting for this Arena branch (no force push).
       # Needed because the editor sandbox has no Flutter/Dart SDK.
       - name: Format sources on request
@@ -82,9 +85,6 @@ jobs:
             git commit -m "Format Dart sources for the teacher workflow quality gate"
             git push origin HEAD:arena/01a0ce12-ssc
           fi
-
-      - name: Get packages
-        run: flutter pub get
 
       - name: Analyze (quality gate — blocks on Dart errors)
         # --no-fatal-warnings: existing warnings (unused vars, deprecated

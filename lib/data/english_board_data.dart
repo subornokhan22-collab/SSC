@@ -104,8 +104,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'hills',
       'nature',
     ],
-    q1Passage:
-        'The Kaptai Lake is located in the hilly district of Rangamati. '
+    q1Passage: 'The Kaptai Lake is located in the hilly district of Rangamati. '
         'This is the (a) ________ lake in Bangladesh. The (b) ________ beauty of '
         'this lake is well-known to all. This huge lake stretches for miles '
         'touching different parts (c) ________ Rangamati district. There are rows '
@@ -149,8 +148,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'take',
       'arrive',
     ],
-    q3Passage:
-        'A birthday party is arranged to celebrate the day when one was '
+    q3Passage: 'A birthday party is arranged to celebrate the day when one was '
         'born. It (a) ________ a happy occasion. Recently it (b) ________ a '
         'tradition to organize a birthday party. For organizing such a party, '
         'one (c) ________ to spend both time and money. He/she starts (d) '
@@ -199,8 +197,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'Money can hardly bring happiness,',
       'So, we should never have greed for money,',
     ],
-    q6Passage:
-        'Books are our best friends. They introduce us to the realm of '
+    q6Passage: 'Books are our best friends. They introduce us to the realm of '
         '(a) {limited} knowledge. The books of great writers contain noble '
         'thoughts and great ideas. We can (b) {rich} our mind by reading books. '
         'The reading of books brings perfection. No spiritual progress and '
@@ -230,8 +227,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'rahman do you know what fables are no replied abduallah well continued '
         'mr rahman fables are stories with a message or a moral',
     q10: "Write a paragraph on 'The Life of a Farmer'.",
-    q11:
-        'Suppose, you are Shuvo/Sova, a student of class IX. Your school is a '
+    q11: 'Suppose, you are Shuvo/Sova, a student of class IX. Your school is a '
         'reputed school but there is no canteen in your school. Now, write an '
         'application to the Headmaster of your school for setting up a canteen '
         'in your school.',
@@ -253,8 +249,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'deeds',
       'result',
     ],
-    q1Passage:
-        'Self purification means to keep the soul free (a) ________ all '
+    q1Passage: 'Self purification means to keep the soul free (a) ________ all '
         'kinds of sins as well as from (b) ________ deeds. This divine quality '
         'is (c) ________ must in our every day life. Only physical priority is '
         'not (d) ________, mental purity should be (e) ________ more priority. '
@@ -303,8 +298,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'originated',
       'pollute',
     ],
-    q3Passage:
-        'Rivers generally (a) ________ from a mountain or a lake. They '
+    q3Passage: 'Rivers generally (a) ________ from a mountain or a lake. They '
         '(b) ________ very much important for our existence and economy. But '
         'unfortunately we are (c) ________ our rivers by throwing industrial '
         'and domestic wastes. Most of the industries (d) ________ waste '
@@ -354,8 +348,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         '(c) {parallel} and unique. A child\u2019s relation with its mother is '
         '(d) {heaven} and spiritual. We can (e) {hard} see a mother '
         'indifferent to her children.',
-    q7Passage:
-        'The Padma multi-purpose bridge has started a new era (a) '
+    q7Passage: 'The Padma multi-purpose bridge has started a new era (a) '
         '________ the history of Bangladesh. This mega project has been '
         'implemented (b) ________ any foreign aid. The southern 21 districts '
         'were cut off from the main-land (c) ________ the mighty Padma river. '
@@ -366,8 +359,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'contributing much (e) ________ our economic growth and surely reduce '
         'the poverty of those districts. The construction of the bridge which '
         'was our long-cherished dream at last came true.',
-    q8Passage:
-        'Facebook is a social medium (a) ________ is very popular. (b) '
+    q8Passage: 'Facebook is a social medium (a) ________ is very popular. (b) '
         '________ it provides the users with various information, all do not '
         'use it for positive purposes. Many Facebook users (c) ________ some '
         'of the youngsters sometimes use it whimsically which creates (d) '
@@ -377,8 +369,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'do you know me yes i know you from my childhood, whats your name my '
         'name is sumon thank you a lot said mr Jamal.',
     q10: 'Write a paragraph on "Our National Flag".',
-    q11:
-        'Suppose, one of your friends borrowed one of your important books. '
+    q11: 'Suppose, one of your friends borrowed one of your important books. '
         'Your exam is near at hand now. So you need the book urgently. Now, '
         'write an email to your friend asking him to return the book in no '
         'time.',
@@ -400,8 +391,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'with',
       'them',
     ],
-    q1Passage:
-        'Language is the means (a) ________ which we share our thoughts '
+    q1Passage: 'Language is the means (a) ________ which we share our thoughts '
         'and ideas (b) ________ others. It is our primary (c) ________ of '
         'communication. There are thousands of (d) ________ in the world but it '
         'is (e) ________ for a person to learn (f) ________ all. English is '
@@ -440,8 +430,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'play',
       'be',
     ],
-    q3Passage:
-        'Text books are the rich sources of information and knowledge. '
+    q3Passage: 'Text books are the rich sources of information and knowledge. '
         'They (a) ________ a vital role in teaching-learning activities. If a '
         'student (b) ________ the text books thoroughly, he/she can get a clear '
         'idea about different topics. In the class room, teachers (c) ________ '
@@ -487,8 +476,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'What an outstanding quality it is!',
       "Let's be patriots,",
     ],
-    q6Passage:
-        'A computer consists of both hardwares and softwares. The (a) '
+    q6Passage: 'A computer consists of both hardwares and softwares. The (a) '
         '{touch} components are called hardwares. On the other hand the '
         'untouchable programmes are called softwares. Hardwares and softwares '
         'are interdependent. Without one, the other is (b) {value}. Software '
@@ -501,8 +489,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'already set up a number of high-tech parks. Our software engineers '
         'are working (e) {restless} to develop newer softwares to make our '
         'life easy and comfortable.   [JB \u201924]',
-    q7Passage:
-        'The earth is a vast planet. It is round in shape. One third of '
+    q7Passage: 'The earth is a vast planet. It is round in shape. One third of '
         'its total area is land while the other three portions are covered (a) '
         '________ water. The water areas are divided (b) ________ oceans, seas '
         'and rivers. The surface of the land area is full of variety. There '
@@ -519,8 +506,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'best friends (c) ________ we are not conscious of it. Time is coming '
         '(d) ________ there will be no tree left for us. (e) ________, we '
         'should plant more and more trees for our own sake.',
-    q9Text:
-        "won't you go to school today raju he said dad i feel feverish i "
+    q9Text: "won't you go to school today raju he said dad i feel feverish i "
         'dont want to go to school ok take rest now said he.',
     q10: 'Write a paragraph on "A School Magazine".',
     q11:
@@ -586,8 +572,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'execute',
       'end',
     ],
-    q3Passage:
-        'Proper time management makes it possible to complete any work '
+    q3Passage: 'Proper time management makes it possible to complete any work '
         'timely. If a person (a) ________ his works into smaller portions and '
         '(b) ________ them accordingly, the whole work will be (c) ________ in '
         'time. Time is not (d) ________ because of doing the work in a planned '
@@ -646,16 +631,14 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'Kindly do me a favour,',
       'I need not go there,',
     ],
-    q6Passage:
-        'The other name of water is life. Clean water is (a) {drink}. '
+    q6Passage: 'The other name of water is life. Clean water is (a) {drink}. '
         'Dirty water is unsafe. Clean water is (b) {contaminate} and suitable '
         'for drinking. Bangladesh is a (c) {river} country. But we get '
         'inadequate water for use. The water of most of our rivers is (d) '
         '{filth} and poisonous. We should keep surface water clean for our '
         'health and (e) {long}. The government should play an active role to '
         'keep water safe.',
-    q7Passage:
-        'Man is a social being. So he lives (a) ________ a society. '
+    q7Passage: 'Man is a social being. So he lives (a) ________ a society. '
         'Mutual understanding and cooperation are needed to ensure a peaceful '
         'society. To produce ideal members (b) ________ a society, an ideal '
         'family contributes a lot. A child\u2019s future behaviour is greatly '
@@ -663,20 +646,17 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'and brought (d) ________ in a rude and chaotic environment, he also '
         'becomes rude (e) ________ behaviour and creates chaos and '
         'indiscipline in the society.',
-    q8Passage:
-        'It is known to all (a) ________ about half of our population '
+    q8Passage: 'It is known to all (a) ________ about half of our population '
         'are women. They are entitled to equal rights and privileges (b) '
         '________ men enjoy. (c) ________ in reality, they do not get their '
         'dues. For the true development of our country, they should be given '
         'proper education and training. (d) ________ every woman is a '
         'potential mother and her influence on her children is very great. '
         '(e) ________, we should pay proper attention to our women folk.',
-    q9Text:
-        'how dare you wake me up the lion roared i shall kill you for that '
+    q9Text: 'how dare you wake me up the lion roared i shall kill you for that '
         'please let me go the mouse cried.',
     q10: 'Write a paragraph on "Environment Pollution" in about 250 words.',
-    q11:
-        'Suppose, you are Milon/Mili, a student of Pragati Bidya Niketon, '
+    q11: 'Suppose, you are Milon/Mili, a student of Pragati Bidya Niketon, '
         'Jhenidah. Your school needs a multimedia classroom with internet '
         'facilities, as technology is an integral part of modern education. '
         'Now, write an application to your Headmaster on behalf of all the '
@@ -701,8 +681,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'will',
       'light',
     ],
-    q1Passage:
-        'Education removes our ignorance and gives us the (a) ________ '
+    q1Passage: 'Education removes our ignorance and gives us the (a) ________ '
         'of knowledge. In respect (b) ________ imparting education, there '
         'should be (c) ________ discrimination (d) ________ man and woman. '
         'Education is one of the (e) ________ human rights. If we deprive '
@@ -729,8 +708,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'make',
       'exercise',
     ],
-    q3Passage:
-        'Most of the students of our country are expert in (a) ________ '
+    q3Passage: 'Most of the students of our country are expert in (a) ________ '
         'answers. They do not (b) ________ notes themselves. They get them (c) '
         '________ by their tutors. Their tutors (d) ________ their brain for '
         'the students. So, the (e) ________ power of the students does not (f) '
@@ -792,8 +770,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       "Don't disturb me,",
       "Let's be sincere in our life,",
     ],
-    q6Passage:
-        'Mobile phone is a great (a) {invent} of modern science. The '
+    q6Passage: 'Mobile phone is a great (a) {invent} of modern science. The '
         'consumption of mobile phone are increasing day by day. People are '
         'getting benefits. But it is (b) {fortunate} that mobile phone '
         'sometimes becomes a cause of health hazard, especially the (c) '
@@ -802,8 +779,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'diseases. They believe that visibly uncontrolled radioactivity of '
         'mobile phone causes (e) {repairable} damage to human body. They say '
         'that the government should control radioactive sources.',
-    q7Passage:
-        'Modern civilization is the gift of science. Science has worked '
+    q7Passage: 'Modern civilization is the gift of science. Science has worked '
         'like a magician in the world. We can\u2019t do even a single day (a) '
         '________ the help of science. Many quick means of communication like '
         'telephone, telex, fax, telegram, satellite etc. are the greatest '
@@ -813,21 +789,18 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'In the field of medical science blind has got eyes, lame has got '
         'legs, deaf has got hearing power. The diseases which were incurable '
         '(e) ________ the past are now easily curable.',
-    q8Passage:
-        'Morning walk is a good habit for all classes of people. (a) '
+    q8Passage: 'Morning walk is a good habit for all classes of people. (a) '
         '________ it is a simple exercise, it is good for health both '
         'physically (b) ________ mentally. (c) ________ the morning air is '
         'fresh and free from any kind of noise and pollutions, it keeps us '
         'sound and healthy. Morning walk costs nothing (d) ________ gives '
         'more. (e) ________ we should make the habit of morning walk.',
-    q9Text:
-        'the teacher said to the girl do you think that honesty is the '
+    q9Text: 'the teacher said to the girl do you think that honesty is the '
         'best policy yes sir i think so said the girl then learn to be honest '
         'from your childhood thank you sir said the girl may allah bless you '
         'said the teacher',
     q10: "Write a paragraph on 'The Life of a Farmer' in about 200 words.",
-    q11:
-        'Inform your mother through email how you physically feel after '
+    q11: 'Inform your mother through email how you physically feel after '
         'recovery from an ailment.',
     q12: "Write a composition on 'Your Favourite Game' in about 250 words.",
   ),
@@ -846,8 +819,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'leisure',
       'idle',
     ],
-    q1Passage:
-        'Leisure is the moment when a person is free (a) ________ his '
+    q1Passage: 'Leisure is the moment when a person is free (a) ________ his '
         'work as well as his worries and tensions. It is (b) ________ free '
         'time when we can enjoy ourselves (c) ________ doing something. So '
         'leisure is pleasure but it is not wasting time in (d) ________. In '
@@ -881,8 +853,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'be',
       'bring',
     ],
-    q3Passage:
-        'Science (a) ________ simply miracle. It (b) ________ about a '
+    q3Passage: 'Science (a) ________ simply miracle. It (b) ________ about a '
         'change over the face of the globe. It (c) ________ man to control '
         'the forces of Nature and employ them to his service. With the help '
         'of science we can now (d) ________ messages across the seas, fly in '
@@ -925,8 +896,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'It becomes very difficult for one to study,',
       'In the same room children are found reading, gossiping and sleeping,',
     ],
-    q6Passage:
-        'Child labour is considered a matter of (a) {grace} for a '
+    q6Passage: 'Child labour is considered a matter of (a) {grace} for a '
         'nation. Wherever children are employed either it is domestic work or '
         'factory work, either it is rickshaw pulling or working in a shop or '
         'hotel, they are mistreated. Their (b) {employ} don\u2019t give them '
@@ -936,8 +906,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         '(d) {risk} and dangerous work. Strict laws should be (e) {forced} '
         'against employing children in manual work. Their parents should be '
         'encouraged to send their children to school.',
-    q7Passage:
-        'You are the students of class ten. The highest class (a) '
+    q7Passage: 'You are the students of class ten. The highest class (a) '
         '________ the school. To come (b) ________ this class you had to '
         'undergo a lot of hardship and had to make effort. None of you can '
         'deny the fact (c) ________ getting help from many dedicated and '
@@ -946,8 +915,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'All these have been done to you to help you (e) ________ becoming a '
         'skilled person, having the ability and integrity attaining your own '
         'excellence.',
-    q8Passage:
-        'Almost all countries of the world suffer from the curse of '
+    q8Passage: 'Almost all countries of the world suffer from the curse of '
         'unemployment problem. (a) ________ nowhere in the world this problem '
         'is so acute as in our country. There are many reasons behind it. (b) '
         '________ our country is industrially backward. (c) ________ our '
@@ -955,13 +923,11 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'life. It has little provision for vocational training. (d) ________ '
         'our students and youths have a false sense of dignity. (e) ________ '
         'they run after jobs only.',
-    q9Text:
-        "why don't you attend classes regularly the teacher said to the "
+    q9Text: "why don't you attend classes regularly the teacher said to the "
         'boy you cannot expect good results unless you attend classes as i '
         'tell you i am sorry sir said the student',
     q10: 'Write a paragraph on "Our National Flag".',
-    q11:
-        'Suppose, you are Sohan/Sohana of 9, Mymensingh Road, Dhaka-1000. '
+    q11: 'Suppose, you are Sohan/Sohana of 9, Mymensingh Road, Dhaka-1000. '
         'Recently you have enjoyed a picnic. Your friend Nahid/Nahida of '
         '71/C, Broad Lane, Khulna wants to know about the picnic. Now, write '
         'a letter to your friend telling him/her how you have enjoyed the '
@@ -984,8 +950,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'breed',
       'a',
     ],
-    q1Passage:
-        'Dengue fever is (a) ________ tropical virus-infected disease. '
+    q1Passage: 'Dengue fever is (a) ________ tropical virus-infected disease. '
         'It is (b) ________ in more than 110 countries. It is (c) ________ by '
         'dengue virus. The fever is spread by (d) ________ Aedes mosquitoes. '
         'When the mosquito (e) ________ a man, the virus enters the blood '
@@ -1034,8 +999,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'originate',
       'pollute',
     ],
-    q3Passage:
-        'Rivers generally (a) ________ from a mountain or a lake. They '
+    q3Passage: 'Rivers generally (a) ________ from a mountain or a lake. They '
         '(b) ________ very much important for our existence and economy. But '
         'unfortunately we are (c) ________ our rivers by throwing industrial '
         'and domestic wastes. Most of the industries, (d) ________ waste '
@@ -1087,15 +1051,13 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'On the other hand, idleness is a curse,',
       'The idle seldom prosper,',
     ],
-    q6Passage:
-        'Everybody wants to be happy. But (a) {happy} is not attained '
+    q6Passage: 'Everybody wants to be happy. But (a) {happy} is not attained '
         'so easily. It is a relative term. A man with huge wealth may remain '
         '(b) {happy}. Whereas a day labourer may get ample happiness if he '
         'has (c) {satisfy} over the limited money he earns everyday. (c) '
         '{actual}, for being happy or unhappy, a man is Psychologically '
         'motivated. So, it (e) {full} depends on one\u2019s mentality.',
-    q7Passage:
-        'Our forests are a part of our environment. To maintain '
+    q7Passage: 'Our forests are a part of our environment. To maintain '
         'ecological balance, forests are necessary. But the amount (a) '
         '________ forests of the country is being shrunk day by day. Some '
         'people remain busy (b) ________ their personal benefits. They do not '
@@ -1108,28 +1070,23 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'destruction continues one day our country may turn (e) ________ a '
         'desert. We hope that they will ultimately realize the '
         'consequence(s).',
-    q8Passage:
-        'Facebook is a social medium (a) ________ is very popular. (b) '
+    q8Passage: 'Facebook is a social medium (a) ________ is very popular. (b) '
         '________ it provides the users with various information, all do not '
         'use it for positive purposes. Many facebook users (c) ________ some '
         'of the youngsters sometimes use it whimsically which creates (d) '
         '________ misunderstanding (e) ________ destroys the social peace.',
-    q9Text:
-        'the old woman said, can you give me some food i have been '
+    q9Text: 'the old woman said, can you give me some food i have been '
         'starving for three days the young man said why do you beg cant you '
         'work',
-    q10:
-        'Suppose, one day you visited a tea stall in your locality. You '
+    q10: 'Suppose, one day you visited a tea stall in your locality. You '
         'stayed there for about an hour and had some experiences about the '
         'stall. Now, write a paragraph on "A Tea Stall".',
-    q11:
-        'Suppose, you are Nabil/Nabila, a student of class 9 of Balaka Model '
+    q11: 'Suppose, you are Nabil/Nabila, a student of class 9 of Balaka Model '
         'High School, Rajshahi. Students of your school feel the necessity of '
         'opening a canteen in the school campus. Now, write an application to '
         'your Head Teacher, on behalf of the students of the whole school, '
         'praying for opening a canteen in the school campus.',
-    q12:
-        'Suppose, as a student you are sincere in study and alongside your '
+    q12: 'Suppose, as a student you are sincere in study and alongside your '
         'academic study, you read newspapers regularly. Now, write a '
         'composition on "The Importance of Reading Newspapers".',
   ),
@@ -1149,8 +1106,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'physically',
       'on',
     ],
-    q1Passage:
-        'Sports are very essential (a) ________ us. There are various '
+    q1Passage: 'Sports are very essential (a) ________ us. There are various '
         'types of sports. Among them cricket, football, swimming etc. are '
         'very (b) ________. All types of sports are (c) ________ to us. There '
         'is a relation (d) ________ the body and the mind. A sound mind lies '
@@ -1178,8 +1134,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'idle',
       'work',
     ],
-    q3Passage:
-        'Bangladesh is full of natural resources. The prosperity of the '
+    q3Passage: 'Bangladesh is full of natural resources. The prosperity of the '
         'country (a) ________ on the proper utilization of the resources. We '
         'should not (b) ________ lazy life. We should all (c) ________ up our '
         'country. For this reason, we have to (d) ________ hard. No nation '
@@ -1220,34 +1175,29 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'Telling lies is a great sin,',
       'How nice the bird is!',
     ],
-    q6Passage:
-        'Honey is (a) {nature} produced by honey bees through '
+    q6Passage: 'Honey is (a) {nature} produced by honey bees through '
         'collecting of nectar from (b) {differ} flowers and then store them '
         'in the hive. But now-a-days there are beekeepers who rear bees in '
         '(c) {wood} hives and produce honey commercially. This is (d) {full} '
         'chemical and hazard free activity. With the support of the govt. and '
         'non organizations (e) {approximate} 300 bee keepers have been '
         'trained for honey production.',
-    q7Passage:
-        'English is a widely used language. (a) ________ our country we '
+    q7Passage: 'English is a widely used language. (a) ________ our country we '
         'use it as a second language. It is not our mother tongue. Naturally, '
         'it is very hard to learn. We have a very poor base (b) ________ this '
         'language. As a result, we don\u2019t feel interest (c) ________ this '
         'language. (d) ________ all these reasons English is hard (e) '
         '________ us to learn.',
-    q8Passage:
-        'Trees are very important (a) ________. They produce oxygen (b) '
+    q8Passage: 'Trees are very important (a) ________. They produce oxygen (b) '
         '________ is a must for man and all living beings. We must realize '
         '(c) ________ they help us in many ways. (d) ________ trees are less '
         'in number, there will be an increased amount of carbon di-oxide in '
         'the atmosphere (e) ________ it will enhance greenhouse effect.',
-    q9Text:
-        'the man said to me where are you going i am going to Varsity '
+    q9Text: 'the man said to me where are you going i am going to Varsity '
         'said i did you go to Varsity yesterday no i replied why did you not '
         'go i was very busy said i.',
     q10: 'Write a paragraph on "A Winter Morning".',
-    q11:
-        'Send a letter of advice to your younger brother by using his email '
+    q11: 'Send a letter of advice to your younger brother by using his email '
         'address to be regular in his studies.',
     q12: 'Write a composition on "Your Favourite Hobby".',
   ),
@@ -1267,8 +1217,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'childhood',
       'at',
     ],
-    q1Passage:
-        'A man cannot remember everything that happened in his (a) '
+    q1Passage: 'A man cannot remember everything that happened in his (a) '
         '________. But certain events are vivid in his (b) ________ mind. '
         'They sometimes peep (c) ________ his mind\u2019s eye. Very simple and '
         'trifling things are the centre of (d) ________ to a child. When a '
@@ -1311,8 +1260,7 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'suffer',
       'take',
     ],
-    q3Passage:
-        'There are several reasons why friendship (a) ________ so '
+    q3Passage: 'There are several reasons why friendship (a) ________ so '
         'necessary in human life. A man without a friend feels like a man '
         '(b) ________ alone in an isolated place. Moreover, it (c) ________ '
         'him lead his life in a better way. By (d) ________ to a friend a man '
@@ -1359,15 +1307,13 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'Some people forget it,',
       'We hope that everybody will love his motherland,',
     ],
-    q6Passage:
-        'Life without leisure and (a) {relax} is dull. Life becomes '
+    q6Passage: 'Life without leisure and (a) {relax} is dull. Life becomes '
         'charmless if one does not have any time to enjoy the (b) {beauty} '
         'objects of nature. Monotonous work hinders the (c) {smooth} of '
         'work. Leisure enriches our spirit to work. Everybody knows that (d) '
         '{work} is harmful. Leisure does not mean (e) {idle}. It gives '
         'freshness by charging our energy.',
-    q7Passage:
-        'To earn fame (a) ________ life man has to possess some good '
+    q7Passage: 'To earn fame (a) ________ life man has to possess some good '
         'qualities. (b) ________ them honesty is the best. The man who '
         'possesses this quality is the happiest man in the earth. All the '
         'people respect him (c) ________ his honesty. On the other hand a '
@@ -1376,20 +1322,17 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'must be honest in our thoughts and deeds. Childhood is the best time '
         'to learn honesty. It is our moral duty to give our children proper '
         'idea (e) ________ what is right and what is wrong.',
-    q8Passage:
-        'We can\u2019t deny the importance of tree plantation. (a) '
+    q8Passage: 'We can\u2019t deny the importance of tree plantation. (a) '
         '________ our lives on earth directly or indirectly depend on it. '
         '(b) ________ it is a matter of sorrow that we are cutting down '
         'trees indiscriminately. (c) ________ trees are planted more and '
         'more, soon our country will turn into a desert. (d) ________, there '
         'will be a harmful change in the climate. (e) ________, we should '
         'plant more and more trees for our own sake.',
-    q9Text:
-        'hi Jhorna, Im coming to Bangladesh next month. Will you receive '
+    q9Text: 'hi Jhorna, Im coming to Bangladesh next month. Will you receive '
         'me at the airport said Meghla. Dont worry Ill be there Jhorna said.',
     q10: 'Write a paragraph in 250 words on Our National Flag.',
-    q11:
-        'Suppose, you are Sayem/Samia. You and your parents went to '
+    q11: 'Suppose, you are Sayem/Samia. You and your parents went to '
         'Chattogram by train a few days ago. You wish to share this new '
         'experience with your friend Abrar/Anika. Now, write a letter to '
         'your friend sharing the experience of the train journey that you '

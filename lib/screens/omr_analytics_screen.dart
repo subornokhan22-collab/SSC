@@ -41,32 +41,32 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
         child: records == null
             ? const Center(child: CircularProgressIndicator())
             : records.isEmpty
-            ? const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    'No scans yet. Grade OMR sheets from the OMR Scanner and their results will appear here.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: AppTheme.muted),
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(
+                        'No scans yet. Grade OMR sheets from the OMR Scanner and their results will appear here.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: AppTheme.muted),
+                      ),
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _load,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 30),
+                      children: [
+                        _overview(records),
+                        const SizedBox(height: 12),
+                        _bySubject(records),
+                        const SizedBox(height: 12),
+                        _leaderboard(records),
+                        const SizedBox(height: 12),
+                        _mostMissed(records),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            : RefreshIndicator(
-                onRefresh: _load,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 30),
-                  children: [
-                    _overview(records),
-                    const SizedBox(height: 12),
-                    _bySubject(records),
-                    const SizedBox(height: 12),
-                    _leaderboard(records),
-                    const SizedBox(height: 12),
-                    _mostMissed(records),
-                  ],
-                ),
-              ),
       ),
     );
   }
@@ -409,31 +409,31 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
   }
 
   Widget _head(String title, IconData icon) => Row(
-    children: [
-      Icon(icon, size: 18, color: AppTheme.primary),
-      const SizedBox(width: 8),
-      Expanded(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
-        ),
-      ),
-    ],
-  );
+        children: [
+          Icon(icon, size: 18, color: AppTheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      );
 
   Widget _stat(String value, String label) => Expanded(
-    child: Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10.5, color: AppTheme.muted),
+            ),
+          ],
         ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 10.5, color: AppTheme.muted),
-        ),
-      ],
-    ),
-  );
+      );
 }

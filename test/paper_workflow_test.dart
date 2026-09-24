@@ -11,17 +11,50 @@ import 'package:tutors_desk/services/paper_composer.dart';
 import 'package:tutors_desk/services/paper_snapshot.dart';
 
 import 'support/bank_fixture.dart';
+import 'package:tutors_desk/services/question_validation.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(BankFixture.ensureLoaded);
   setUp(() => SharedPreferences.setMockInitialValues({}));
   PaperComposer engine() => PaperComposer(
-    mcqBank: allMCQs,
-    saqBank: allSAQs,
-    cqBank: allCQs,
-    random: Random(7),
-  );
+        mcqBank: allMCQs,
+        saqBank: allSAQs,
+        cqBank: allCQs,
+        random: Random(7),
+      );
+  test(
+      'missing subject banks fail explicitly instead of inventing a full paper',
+      () {
+    for (final sid in ['ict', 'bangla_1st', 'bangla_2nd', 'higher_math']) {
+      expect(
+          () => engine().compose(PaperDraft(subjectId: sid)), throwsStateError,
+          reason: sid);
+    }
+  });
+  test('all shipped question types pass the shared load boundary', () {
+    for (final q in <Object>[...allMCQs, ...allSAQs, ...allCQs]) {
+      final v = QuestionValidationService.validate(q);
+      expect(v.errors, isEmpty, reason: q.toString());
+    }
+  });
+  test('written-question removal preserves marks and undo restores it',
+      () async {
+    final c = PaperController(
+        composer: engine(),
+        initial: const PaperDraft(
+            format: PaperFormat.custom, mcqCount: 0, saqCount: 2, cqCount: 1));
+    await c.initialize();
+    expect(await c.generate(), isTrue);
+    expect(c.paper!.marks, 14);
+    c.removeWritten(0, creative: true);
+    expect(c.paper!.marks, 4);
+    expect(c.paper!.cqs, isEmpty);
+    c.undo();
+    expect(c.paper!.marks, 14);
+    expect(c.paper!.cqs.length, 1);
+    c.dispose();
+  });
   test(
     'subject-specific board distributions preserve marks and question counts',
     () {
@@ -30,9 +63,6 @@ void main() {
         'chemistry',
         'biology',
         'general_math',
-        'ict',
-        'bangla_1st',
-        'bangla_2nd',
         'english_1st',
         'english_2nd',
       ]) {
@@ -42,8 +72,8 @@ void main() {
           sid == 'ict'
               ? 25
               : PaperComposer.science.contains(sid)
-              ? 75
-              : 100,
+                  ? 75
+                  : 100,
           reason: sid,
         );
         if (sid == 'general_math') {
@@ -117,8 +147,6 @@ void main() {
     () {
       for (final sid in [
         'general_math',
-        'bangla_1st',
-        'bangla_2nd',
         'english_1st',
         'english_2nd',
       ]) {

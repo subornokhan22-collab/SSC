@@ -28,9 +28,8 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = highlighted
-        ? AppTheme.primary.withOpacity(.45)
-        : AppTheme.border;
+    final border =
+        highlighted ? AppTheme.primary.withOpacity(.45) : AppTheme.border;
     // No BackdropFilter here on purpose. The card fill is 88-94% opaque, so
     // the blur behind it was barely visible, but it is one of the most
     // expensive things Flutter can draw — and during a page transition two
@@ -194,16 +193,16 @@ class InfoBanner extends StatelessWidget {
   });
 
   factory InfoBanner.success(String text) => InfoBanner(
-    text: text,
-    color: AppTheme.success,
-    icon: Icons.check_circle_outline_rounded,
-  );
+        text: text,
+        color: AppTheme.success,
+        icon: Icons.check_circle_outline_rounded,
+      );
 
   factory InfoBanner.error(String text) => InfoBanner(
-    text: text,
-    color: AppTheme.danger,
-    icon: Icons.error_outline_rounded,
-  );
+        text: text,
+        color: AppTheme.danger,
+        icon: Icons.error_outline_rounded,
+      );
 
   @override
   Widget build(BuildContext context) {

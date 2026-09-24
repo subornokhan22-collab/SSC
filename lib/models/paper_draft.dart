@@ -34,44 +34,46 @@ class PaperDraft {
     int? cqCount,
     String? setCode,
     bool? answerKey,
-  }) => PaperDraft(
-    subjectId: subjectId ?? this.subjectId,
-    title: title ?? this.title,
-    format: format ?? this.format,
-    chapters: List.unmodifiable(chapters ?? this.chapters),
-    mcqCount: mcqCount ?? this.mcqCount,
-    saqCount: saqCount ?? this.saqCount,
-    cqCount: cqCount ?? this.cqCount,
-    setCode: setCode ?? this.setCode,
-    answerKey: answerKey ?? this.answerKey,
-  );
+  }) =>
+      PaperDraft(
+        subjectId: subjectId ?? this.subjectId,
+        title: title ?? this.title,
+        format: format ?? this.format,
+        chapters: List.unmodifiable(chapters ?? this.chapters),
+        mcqCount: mcqCount ?? this.mcqCount,
+        saqCount: saqCount ?? this.saqCount,
+        cqCount: cqCount ?? this.cqCount,
+        setCode: setCode ?? this.setCode,
+        answerKey: answerKey ?? this.answerKey,
+      );
 
   Map<String, dynamic> toJson() => {
-    'subjectId': subjectId,
-    'title': title,
-    'format': format.name,
-    'chapters': chapters,
-    'mcqCount': mcqCount,
-    'saqCount': saqCount,
-    'cqCount': cqCount,
-    'setCode': setCode,
-    'answerKey': answerKey,
-  };
+        'subjectId': subjectId,
+        'title': title,
+        'format': format.name,
+        'chapters': chapters,
+        'mcqCount': mcqCount,
+        'saqCount': saqCount,
+        'cqCount': cqCount,
+        'setCode': setCode,
+        'answerKey': answerKey,
+      };
 
   factory PaperDraft.fromJson(Map<String, dynamic> j) => PaperDraft(
-    subjectId: j['subjectId'] as String? ?? 'physics',
-    title: j['title'] as String? ?? '',
-    format: PaperFormat.values.firstWhere(
-      (f) => f.name == j['format'],
-      orElse: () => PaperFormat.custom,
-    ),
-    chapters: List<String>.from(j['chapters'] as List? ?? []),
-    mcqCount: ((j['mcqCount'] as num?)?.toInt() ?? 25).clamp(0, 100).toInt(),
-    saqCount: ((j['saqCount'] as num?)?.toInt() ?? 7).clamp(0, 30).toInt(),
-    cqCount: ((j['cqCount'] as num?)?.toInt() ?? 7).clamp(0, 15).toInt(),
-    setCode: const ['ক', 'খ', 'গ', 'ঘ'].contains(j['setCode'])
-        ? j['setCode'] as String
-        : 'ক',
-    answerKey: j['answerKey'] == true,
-  );
+        subjectId: j['subjectId'] as String? ?? 'physics',
+        title: j['title'] as String? ?? '',
+        format: PaperFormat.values.firstWhere(
+          (f) => f.name == j['format'],
+          orElse: () => PaperFormat.custom,
+        ),
+        chapters: List<String>.from(j['chapters'] as List? ?? []),
+        mcqCount:
+            ((j['mcqCount'] as num?)?.toInt() ?? 25).clamp(0, 100).toInt(),
+        saqCount: ((j['saqCount'] as num?)?.toInt() ?? 7).clamp(0, 30).toInt(),
+        cqCount: ((j['cqCount'] as num?)?.toInt() ?? 7).clamp(0, 15).toInt(),
+        setCode: const ['ক', 'খ', 'গ', 'ঘ'].contains(j['setCode'])
+            ? j['setCode'] as String
+            : 'ক',
+        answerKey: j['answerKey'] == true,
+      );
 }

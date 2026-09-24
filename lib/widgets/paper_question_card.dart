@@ -21,99 +21,101 @@ class PaperQuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'MCQ $number  ·  1 mark',
-            style: const TextStyle(color: AppTheme.muted, fontSize: 12),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            question.questionText,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          if (question.figure != null)
-            const Padding(
-              padding: EdgeInsets.only(top: 4),
-              child: Text(
-                'Includes a figure — visible in the paper preview.',
-                style: TextStyle(color: AppTheme.muted, fontSize: 12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'MCQ $number  ·  1 mark',
+                style: const TextStyle(color: AppTheme.muted, fontSize: 12),
               ),
-            ),
-          const SizedBox(height: 10),
-          for (var i = 0; i < question.options.length; i++)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    i == question.correctIndex
-                        ? Icons.check_circle_outline
-                        : Icons.radio_button_unchecked,
-                    size: 17,
-                    color: i == question.correctIndex
-                        ? AppTheme.success
-                        : AppTheme.muted,
+              const SizedBox(height: 8),
+              Text(
+                question.questionText,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              if (question.figure != null)
+                const Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    'Includes a figure — visible in the paper preview.',
+                    style: TextStyle(color: AppTheme.muted, fontSize: 12),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '${['ক', 'খ', 'গ', 'ঘ'][i]}. ${question.options[i]}',
+                ),
+              const SizedBox(height: 10),
+              for (var i = 0; i < question.options.length; i++)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        i == question.correctIndex
+                            ? Icons.check_circle_outline
+                            : Icons.radio_button_unchecked,
+                        size: 17,
+                        color: i == question.correctIndex
+                            ? AppTheme.success
+                            : AppTheme.muted,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${['ক', 'খ', 'গ', 'ঘ'][i]}. ${question.options[i]}',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title:
+                    const Text('Explanation', style: TextStyle(fontSize: 13)),
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(question.explanation),
                     ),
                   ),
                 ],
               ),
-            ),
-          ExpansionTile(
-            tilePadding: EdgeInsets.zero,
-            title: const Text('Explanation', style: TextStyle(fontSize: 13)),
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Text(question.explanation),
-                ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  if (onEdit != null)
+                    TextButton.icon(
+                      onPressed: () async {
+                        final changed = await showDialog<Question>(
+                          context: context,
+                          builder: (_) => _QuestionEditor(question),
+                        );
+                        if (changed != null) onEdit!(changed);
+                      },
+                      icon: const Icon(Icons.edit_outlined, size: 17),
+                      label: const Text('Edit / answer key'),
+                    ),
+                  if (onReplace != null)
+                    TextButton.icon(
+                      onPressed: onReplace,
+                      icon: const Icon(Icons.swap_horiz, size: 17),
+                      label: const Text('Replace'),
+                    ),
+                  if (onDelete != null)
+                    IconButton(
+                      tooltip: 'Remove question',
+                      onPressed: onDelete,
+                      icon: const Icon(Icons.delete_outline, size: 19),
+                    ),
+                ],
               ),
             ],
           ),
-          Wrap(
-            spacing: 8,
-            children: [
-              if (onEdit != null)
-                TextButton.icon(
-                  onPressed: () async {
-                    final changed = await showDialog<Question>(
-                      context: context,
-                      builder: (_) => _QuestionEditor(question),
-                    );
-                    if (changed != null) onEdit!(changed);
-                  },
-                  icon: const Icon(Icons.edit_outlined, size: 17),
-                  label: const Text('Edit / answer key'),
-                ),
-              if (onReplace != null)
-                TextButton.icon(
-                  onPressed: onReplace,
-                  icon: const Icon(Icons.swap_horiz, size: 17),
-                  label: const Text('Replace'),
-                ),
-              if (onDelete != null)
-                IconButton(
-                  tooltip: 'Remove question',
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline, size: 19),
-                ),
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class _QuestionEditor extends StatefulWidget {
@@ -169,53 +171,54 @@ class _QuestionEditorState extends State<_QuestionEditor> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Review question'),
-    content: SizedBox(
-      width: 500,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = 0; i < fields.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: TextField(
-                  controller: fields[i],
-                  minLines: i == 0 || i == 5 ? 2 : 1,
-                  maxLines: 6,
-                  decoration: InputDecoration(
-                    labelText: i == 0
-                        ? 'Question'
-                        : i == 5
-                        ? 'Explanation'
-                        : 'Option ${['ক', 'খ', 'গ', 'ঘ'][i - 1]}',
+        title: const Text('Review question'),
+        content: SizedBox(
+          width: 500,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < fields.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: TextField(
+                      controller: fields[i],
+                      minLines: i == 0 || i == 5 ? 2 : 1,
+                      maxLines: 6,
+                      decoration: InputDecoration(
+                        labelText: i == 0
+                            ? 'Question'
+                            : i == 5
+                                ? 'Explanation'
+                                : 'Option ${['ক', 'খ', 'গ', 'ঘ'][i - 1]}',
+                      ),
+                    ),
                   ),
+                DropdownButtonFormField<int>(
+                  value: answer,
+                  decoration:
+                      const InputDecoration(labelText: 'Correct answer'),
+                  items: [
+                    for (var i = 0; i < 4; i++)
+                      DropdownMenuItem(
+                        value: i,
+                        child: Text(['ক', 'খ', 'গ', 'ঘ'][i]),
+                      ),
+                  ],
+                  onChanged: (i) => setState(() => answer = i!),
                 ),
-              ),
-            DropdownButtonFormField<int>(
-              value: answer,
-              decoration: const InputDecoration(labelText: 'Correct answer'),
-              items: [
-                for (var i = 0; i < 4; i++)
-                  DropdownMenuItem(
-                    value: i,
-                    child: Text(['ক', 'খ', 'গ', 'ঘ'][i]),
-                  ),
+                if (error != null)
+                  Text(error!, style: const TextStyle(color: AppTheme.danger)),
               ],
-              onChanged: (i) => setState(() => answer = i!),
             ),
-            if (error != null)
-              Text(error!, style: const TextStyle(color: AppTheme.danger)),
-          ],
+          ),
         ),
-      ),
-    ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
-      ),
-      FilledButton(onPressed: save, child: const Text('Save changes')),
-    ],
-  );
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(onPressed: save, child: const Text('Save changes')),
+        ],
+      );
 }

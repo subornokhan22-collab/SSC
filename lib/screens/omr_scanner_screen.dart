@@ -595,8 +595,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     if (img == null) {
       if (photoBytes != null) {
         try {
-          final frame = await (await ui.instantiateImageCodec(photoBytes))
-              .getNextFrame();
+          final frame =
+              await (await ui.instantiateImageCodec(photoBytes)).getNextFrame();
           img = frame.image;
         } catch (_) {
           img = null;
@@ -613,9 +613,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final h = (img.height * s).round();
       // Cropped image is A4-proportioned (page space); the original
       // photo is the work grid — the two need different display factors.
-      final k = cropped
-          ? (w / OMrGeometry.pageW)
-          : (w / res.workWidth.toDouble());
+      final k =
+          cropped ? (w / OMrGeometry.pageW) : (w / res.workWidth.toDouble());
       final geo = OMrGeometry(_total);
       // Marker placement: cropped mode maps page points straight to the
       // display; photo mode runs them through the scan's homography.
@@ -736,8 +735,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       await PaperPdf.printOmScorecard(
         title: _titleCtrl.text.trim().isEmpty
             ? (AppSettings.defaultName.isNotEmpty
-                  ? AppSettings.defaultName
-                  : 'OMR Test')
+                ? AppSettings.defaultName
+                : 'OMR Test')
             : _titleCtrl.text.trim(),
         subject: _subjectCtrl.text.trim(),
         roll: res.roll,
@@ -953,9 +952,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         ),
                         const SizedBox(width: 12),
                         IconButton(
-                          onPressed: _total > 5
-                              ? () => _setTotal(_total - 5)
-                              : null,
+                          onPressed:
+                              _total > 5 ? () => _setTotal(_total - 5) : null,
                           icon: const Icon(Icons.remove_circle_outline),
                         ),
                         SizedBox(
@@ -971,9 +969,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           ),
                         ),
                         IconButton(
-                          onPressed: _total < 100
-                              ? () => _setTotal(_total + 5)
-                              : null,
+                          onPressed:
+                              _total < 100 ? () => _setTotal(_total + 5) : null,
                           icon: const Icon(Icons.add_circle_outline),
                         ),
                         const Spacer(),
@@ -1373,8 +1370,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         radius: 16,
                         backgroundColor:
                             r.score * 100 ~/ math.max(1, r.total) >= 50
-                            ? AppTheme.success
-                            : AppTheme.warning,
+                                ? AppTheme.success
+                                : AppTheme.warning,
                         child: Text(
                           '${r.score}/${r.total}',
                           style: const TextStyle(
@@ -1441,17 +1438,18 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')} ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 
   Widget _chip(String label, Color color) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-    decoration: BoxDecoration(
-      color: color.withOpacity(.12),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: color.withOpacity(.5)),
-    ),
-    child: Text(
-      label,
-      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
-    ),
-  );
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withOpacity(.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(.5)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+              fontSize: 11, fontWeight: FontWeight.w700, color: color),
+        ),
+      );
 
   // ── batch results helpers ──
 
@@ -1674,11 +1672,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     onTap: _busy
                         ? null
                         : () => setState(() {
-                            _key[i] = o;
-                            _result = null;
-                            _graded = null;
-                            _activeRecordId = null;
-                          }),
+                              _key[i] = o;
+                              _result = null;
+                              _graded = null;
+                              _activeRecordId = null;
+                            }),
                     child: Center(
                       child: Container(
                         width: 26,
@@ -1905,10 +1903,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       await showProblemDialog(
         context,
         title: 'No sheet could be read',
-        message:
-            'None of the selected photos could be aligned to the OMR '
+        message: 'None of the selected photos could be aligned to the OMR '
             'grid.',
-        detail: 'Check that each sheet is flat, fills the frame with a small margin, and the bubbles are clearly filled — then try again.',
+        detail:
+            'Check that each sheet is flat, fills the frame with a small margin, and the bubbles are clearly filled — then try again.',
       );
     }
   }
@@ -1975,8 +1973,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   String _choiceLetter(int i, OmGraded g) =>
       i < g.answers.length && g.answers[i] >= 0
-      ? _letters[g.answers[i]]
-      : (i < g.answers.length && g.answers[i] == -2 ? '?' : '—');
+          ? _letters[g.answers[i]]
+          : (i < g.answers.length && g.answers[i] == -2 ? '?' : '—');
 
   String _glyph(int status) =>
       status == 0 ? '✓' : (status == 1 ? '✗' : (status == 2 ? '·' : '?'));

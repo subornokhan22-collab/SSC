@@ -21,24 +21,22 @@ class TeacherAiClient {
       throw StateError(
         'Sign in to use AI Tools. Your offline papers are still available.',
       );
-    final req =
-        http.Request(
-            'POST',
-            Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
-          )
-          ..headers.addAll({
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-            'apikey': SupabaseConfig.anonKey,
-          })
-          ..body = jsonEncode(payload);
-    final response = await _client
-        .send(req)
-        .timeout(const Duration(seconds: 30));
+    final req = http.Request(
+      'POST',
+      Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
+    )
+      ..headers.addAll({
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'apikey': SupabaseConfig.anonKey,
+      })
+      ..body = jsonEncode(payload);
+    final response =
+        await _client.send(req).timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) {
       final raw = await response.stream.bytesToString().timeout(
-        const Duration(seconds: 30),
-      );
+            const Duration(seconds: 30),
+          );
       String message = 'AI server error (${response.statusCode}). Try again.';
       try {
         final j = jsonDecode(raw) as Map;
@@ -48,11 +46,10 @@ class TeacherAiClient {
     }
     Map<String, dynamic>? result;
     var event = '';
-    await for (final line
-        in response.stream
-            .transform(utf8.decoder)
-            .transform(const LineSplitter())
-            .timeout(const Duration(seconds: 100))) {
+    await for (final line in response.stream
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .timeout(const Duration(seconds: 100))) {
       if (line.startsWith('event:')) {
         event = line.substring(6).trim();
         continue;

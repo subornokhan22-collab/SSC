@@ -14,9 +14,9 @@ class QuestionValidation {
 
   /// Merges another validation into a new one.
   QuestionValidation merged(QuestionValidation other) => QuestionValidation(
-    errors: [...errors, ...other.errors],
-    warnings: [...warnings, ...other.warnings],
-  );
+        errors: [...errors, ...other.errors],
+        warnings: [...warnings, ...other.warnings],
+      );
 }
 
 /// Structural + content validation for AI-generated MCQs (review items

@@ -212,15 +212,14 @@ class GeminiClient {
     void Function(String chunk)? onChunk,
     Duration timeout,
   ) async {
-    final req =
-        http.Request(
-            'POST',
-            Uri.parse(
-              '$_apiBase/models/$model:streamGenerateContent?alt=sse&key=$apiKey',
-            ),
-          )
-          ..headers['Content-Type'] = 'application/json'
-          ..body = bodyJson;
+    final req = http.Request(
+      'POST',
+      Uri.parse(
+        '$_apiBase/models/$model:streamGenerateContent?alt=sse&key=$apiKey',
+      ),
+    )
+      ..headers['Content-Type'] = 'application/json'
+      ..body = bodyJson;
     final client = http.Client();
     try {
       final resp = await client.send(req).timeout(timeout);
@@ -253,10 +252,9 @@ class GeminiClient {
   ) async {
     final out = StringBuffer();
     var gotAny = false;
-    await for (final line
-        in resp.stream
-            .transform(utf8.decoder)
-            .transform(const LineSplitter())) {
+    await for (final line in resp.stream
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())) {
       if (!line.startsWith('data:')) continue;
       final payload = line.substring(5).trim();
       if (payload.isEmpty || payload == '[DONE]') continue;
@@ -342,15 +340,14 @@ class GeminiClient {
           },
       ],
     };
-    final req =
-        http.Request(
-            'POST',
-            Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
-          )
-          ..headers['Content-Type'] = 'application/json'
-          ..headers['Authorization'] = 'Bearer $accessToken'
-          ..headers['apikey'] = SupabaseConfig.anonKey
-          ..body = jsonEncode(body);
+    final req = http.Request(
+      'POST',
+      Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
+    )
+      ..headers['Content-Type'] = 'application/json'
+      ..headers['Authorization'] = 'Bearer $accessToken'
+      ..headers['apikey'] = SupabaseConfig.anonKey
+      ..body = jsonEncode(body);
     final client = http.Client();
     try {
       final resp = await client.send(req).timeout(timeout);

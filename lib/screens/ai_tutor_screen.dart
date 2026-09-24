@@ -1299,8 +1299,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     final icon = a.kind == 'photo'
         ? Icons.photo_library_rounded
         : (a.kind == 'audio'
-              ? Icons.record_voice_over_rounded
-              : Icons.picture_as_pdf_rounded);
+            ? Icons.record_voice_over_rounded
+            : Icons.picture_as_pdf_rounded);
     final c = iconColor ?? _mimiTeal;
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -1343,9 +1343,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: isU
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isU ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isU) ...[
@@ -1375,9 +1374,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                 ],
               ),
               child: Column(
-                crossAxisAlignment: isU
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isU ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   for (final a in m.atts)
                     _attChip(a, iconColor: isU ? null : _mimiTeal),
@@ -1540,8 +1538,7 @@ class _AiTutorScreenState extends State<AiTutorScreen>
                   padding: const EdgeInsets.only(right: 2.5),
                   child: Container(
                     width: 3,
-                    height:
-                        4 +
+                    height: 4 +
                         9 * math.sin(2 * math.pi * (t * 2.1 + i * .23)).abs(),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
@@ -1564,8 +1561,8 @@ class _AiTutorScreenState extends State<AiTutorScreen>
     final icon = a.kind == 'photo'
         ? Icons.photo_library_rounded
         : (a.kind == 'audio'
-              ? Icons.record_voice_over_rounded
-              : Icons.picture_as_pdf_rounded);
+            ? Icons.record_voice_over_rounded
+            : Icons.picture_as_pdf_rounded);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
@@ -2030,7 +2027,8 @@ class _SetupCard extends StatelessWidget {
             const SizedBox(height: 10),
             const _Step(
               n: 1,
-              text: 'Open aistudio.google.com in your phone browser (free Google account).',
+              text:
+                  'Open aistudio.google.com in your phone browser (free Google account).',
             ),
             const _Step(
               n: 2,
@@ -2141,7 +2139,8 @@ class _KeyFieldState extends State<_KeyField> {
       await showProblemDialog(
         context,
         title: 'That key does not look right',
-        message: 'A Gemini API key starts with "AIza" or "AQ" — usually about 39 characters.',
+        message:
+            'A Gemini API key starts with "AIza" or "AQ" — usually about 39 characters.',
       );
       return;
     }

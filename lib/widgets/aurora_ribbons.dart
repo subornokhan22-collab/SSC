@@ -36,11 +36,11 @@ class _AuroraRibbonsState extends State<AuroraRibbons>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _controller,
-    child: widget.child,
-    builder: (_, child) =>
-        CustomPaint(painter: _AuroraPainter(_controller.value), child: child),
-  );
+        animation: _controller,
+        child: widget.child,
+        builder: (_, child) => CustomPaint(
+            painter: _AuroraPainter(_controller.value), child: child),
+      );
 }
 
 class _AuroraPainter extends CustomPainter {
@@ -75,8 +75,7 @@ class _AuroraPainter extends CustomPainter {
 
       for (double x = -18; x <= w + 18; x += 4) {
         final nx = x / w;
-        final wave =
-            sin(nx * pi * 2.5 + time * speed + phase) * 34 +
+        final wave = sin(nx * pi * 2.5 + time * speed + phase) * 34 +
             sin(nx * pi * 4 + time * speed * 1.3 + phase) * 15 +
             cos(nx * pi * 1.5 + time * speed * .7) * 11;
         upper.add(Offset(x, baseY + wave - thickness / 2));

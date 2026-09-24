@@ -290,7 +290,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const EmptyState(
                   icon: Icons.cloud_off_rounded,
                   title: 'Sign-in is not configured',
-                  message: 'Every offline feature keeps working — papers, PDFs and printing are all available.',
+                  message:
+                      'Every offline feature keeps working — papers, PDFs and printing are all available.',
                 )
               else if (AuthService.isLoggedIn)
                 _accountCard()
@@ -329,7 +330,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           const SectionTitle(
             title: 'Sign in',
-            subtitle: 'Use the email and password from your tutor account. Codes are only used when you first sign up.',
+            subtitle:
+                'Use the email and password from your tutor account. Codes are only used when you first sign up.',
             icon: Icons.login_rounded,
           ),
           TextField(
@@ -391,12 +393,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final puRaw = _profile?['pro_until']?.toString() ?? '';
     if (puRaw.isNotEmpty)
       pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
-    final serverPro =
-        _profile?['is_pro'] == true &&
+    final serverPro = _profile?['is_pro'] == true &&
         (pu == null || pu.isAfter(DateTime.now()));
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
-    final initial = (source.isEmpty ? 'T' : source.substring(0, 1))
-        .toUpperCase();
+    final initial =
+        (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
 
     return GlassCard(
       child: Column(
