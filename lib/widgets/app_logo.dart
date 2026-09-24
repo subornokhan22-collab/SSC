@@ -19,7 +19,8 @@ class AppLogo extends StatelessWidget {
   /// Ring / glow colour. Defaults to the brand primary.
   final Color? ringColor;
 
-  const AppLogo({super.key, this.size = 44, this.framed = true, this.ringColor});
+  const AppLogo(
+      {super.key, this.size = 44, this.framed = true, this.ringColor});
 
   @override
   Widget build(BuildContext context) {

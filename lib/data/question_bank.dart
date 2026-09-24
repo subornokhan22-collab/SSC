@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'question_figure.dart' show QuestionFigure;
 import 'questions_data.dart';
+import '../services/question_validation.dart';
 
 /// Loads the question bank from the JSON assets in `assets/questions/`.
 ///
@@ -92,9 +93,18 @@ class QuestionBank {
       ]);
     }
 
-    _mcqs = merge(_mcqs, mcqs, (q) => q.id);
-    _saqs = merge(_saqs, saqs, (q) => q.id);
-    _cqs = merge(_cqs, cqs, (q) => q.id);
+    _mcqs = merge(
+        _mcqs,
+        mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+        (q) => q.id);
+    _saqs = merge(
+        _saqs,
+        saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+        (q) => q.id);
+    _cqs = merge(
+        _cqs,
+        cqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+        (q) => q.id);
   }
 
   /// Test seam — lets widget tests install a small bank without touching
@@ -151,7 +161,10 @@ _Decoded _decodeAll(List<String> sources) {
       }
     }
   }
-  return _Decoded(mcqs, saqs, cqs);
+  return _Decoded(
+      mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      cqs.where((q) => QuestionValidationService.validate(q).valid).toList());
 }
 
 QuestionSource _sourceFrom(Object? v) => switch (v) {

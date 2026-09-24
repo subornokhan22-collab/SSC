@@ -59,7 +59,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _problem(String title, String message, {String? detail}) =>
-      showProblemDialog(context, title: title, message: message, detail: detail);
+      showProblemDialog(context,
+          title: title, message: message, detail: detail);
 
   // ── bKash flow ───────────────────────────────────────────────────
 
@@ -75,8 +76,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
     // Confirm the bKash number that will receive the payment.
     final profile = await AuthService.fetchProfile(refresh: false);
-    var phone = (profile?['phone']?.toString() ?? '')
-        .replaceAll(RegExp(r'[^\d]'), '');
+    var phone =
+        (profile?['phone']?.toString() ?? '').replaceAll(RegExp(r'[^\d]'), '');
     if (phone.startsWith('880')) phone = phone.substring(3);
     if (phone.startsWith('0')) phone = phone.substring(1);
     final ctrl = TextEditingController(text: phone);
@@ -113,8 +114,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               if (err != null) ...[
                 const SizedBox(height: 10),
                 Text(err!,
-                    style:
-                        const TextStyle(color: AppTheme.danger, fontSize: 12.5)),
+                    style: const TextStyle(
+                        color: AppTheme.danger, fontSize: 12.5)),
               ],
             ],
           ),
@@ -126,7 +127,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               onPressed: () {
                 final p = ctrl.text.trim();
                 if (!RegExp(r'^01\d{9}$').hasMatch(p)) {
-                  setD(() => err = 'Enter a valid bKash number, e.g. 01712345678.');
+                  setD(() =>
+                      err = 'Enter a valid bKash number, e.g. 01712345678.');
                   return;
                 }
                 Navigator.pop(c, true);
@@ -165,7 +167,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     } catch (e) {
       if (mounted) {
         await _problem('Payment could not be started',
-            'Something went wrong talking to the payment server.', detail: '$e');
+            'Something went wrong talking to the payment server.',
+            detail: '$e');
       }
     } finally {
       if (mounted) setState(() => _buying = false);
@@ -228,8 +231,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 const SizedBox(
                     width: 20,
                     height: 20,
-                    child:
-                        CircularProgressIndicator(strokeWidth: 2.2)),
+                    child: CircularProgressIndicator(strokeWidth: 2.2)),
                 const SizedBox(width: 12),
                 const Expanded(
                     child: Text(
@@ -293,8 +295,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('🎉 Pro is active!'),
-        content: const Text(
-            'Thank you for supporting Tutor\'s Desk.\n\n'
+        content: const Text('Thank you for supporting Tutor\'s Desk.\n\n'
             'Full papers, no watermark, PDF and printing — every feature '
             'is unlocked.'),
         actions: [
@@ -309,8 +310,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(_isPro ? "Tutor's Desk Pro" : 'Upgrade to Pro')),
+      appBar:
+          AppBar(title: Text(_isPro ? "Tutor's Desk Pro" : 'Upgrade to Pro')),
       body: SafeArea(
         child: SoftSwitcher(
           child: _loading
@@ -391,14 +392,26 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   // ══ Free tutors ═════════════════════════════════════════════════
   Widget _buyBody() {
     const perks = [
-      (Icons.description_rounded, 'Full question papers',
-          'Every banked question, no demo cut-off'),
-      (Icons.picture_as_pdf_rounded, 'PDF export & printing',
-          'Share or print straight from your phone'),
-      (Icons.water_drop_outlined, 'No watermark',
-          'Clean, classroom-ready papers'),
-      (Icons.rocket_launch_rounded, 'New features first',
-          'Get every improvement as it ships'),
+      (
+        Icons.description_rounded,
+        'Full question papers',
+        'Every banked question, no demo cut-off'
+      ),
+      (
+        Icons.picture_as_pdf_rounded,
+        'PDF export & printing',
+        'Share or print straight from your phone'
+      ),
+      (
+        Icons.water_drop_outlined,
+        'No watermark',
+        'Clean, classroom-ready papers'
+      ),
+      (
+        Icons.rocket_launch_rounded,
+        'New features first',
+        'Get every improvement as it ships'
+      ),
     ];
 
     return ListView(
@@ -501,8 +514,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           title: 'Choose a plan',
           icon: Icons.receipt_long_rounded,
         ),
-        for (final plan in BkashService.plans)
-          _planCard(plan),
+        for (final plan in BkashService.plans) _planCard(plan),
         const SizedBox(height: 16),
         PressableScale(
           onTap: _buying ? null : _buy,
@@ -569,8 +581,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 'Payment problems, refunds or questions — contact support. '
                 'Never share your bKash PIN or payment credentials inside '
                 'the app.',
-                style:
-                    TextStyle(fontSize: 12.5, height: 1.6, color: AppTheme.muted),
+                style: TextStyle(
+                    fontSize: 12.5, height: 1.6, color: AppTheme.muted),
               ),
               const SizedBox(height: 14),
               PressableScale(
@@ -582,12 +594,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 13),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
                     color: AppTheme.primary.withOpacity(.10),
-                    border: Border.all(color: AppTheme.primary.withOpacity(.35)),
+                    border:
+                        Border.all(color: AppTheme.primary.withOpacity(.35)),
                   ),
                   child: Row(
                     children: [
@@ -629,9 +642,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: selected
-                ? AppTheme.primary.withOpacity(.08)
-                : AppTheme.card,
+            color: selected ? AppTheme.primary.withOpacity(.08) : AppTheme.card,
             border: Border.all(
                 color: selected ? AppTheme.primary : AppTheme.border,
                 width: selected ? 1.6 : 1),
@@ -662,8 +673,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           width: 12,
                           height: 12,
                           decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppTheme.primary),
+                              shape: BoxShape.circle, color: AppTheme.primary),
                         ),
                       )
                     : null,
@@ -685,8 +695,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
-                  color: AppTheme.muted),
+              const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
             ],
           ),
         ),

@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///  • [omrPrefillCodes] — whether generated OMR sheets print the set &
 ///    subject code pre-filled (and whether scan results use the codes
 ///    read from the sheet) (default ON).
-  ///  • [defaultPaperName] — default title for generated question papers and
-  ///    OMR tests (empty = the built-in defaults).
+///  • [defaultPaperName] — default title for generated question papers and
+///    OMR tests (empty = the built-in defaults).
 class AppSettings {
   AppSettings._();
 
@@ -15,8 +15,7 @@ class AppSettings {
   static const _kName = 'default_paper_name';
 
   /// Live notifier so the Settings switch repaints instantly.
-  static final ValueNotifier<bool> omrPrefillCodes =
-      ValueNotifier<bool>(true);
+  static final ValueNotifier<bool> omrPrefillCodes = ValueNotifier<bool>(true);
 
   /// Live notifier for the default name field.
   static final ValueNotifier<String> defaultPaperName =

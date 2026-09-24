@@ -79,8 +79,7 @@ class _OfflineCardState extends State<_OfflineCard>
   @override
   Widget build(BuildContext context) {
     // Damped horizontal shake after a failed connection check.
-    final dx =
-        (1 - _shake.value) * 9 * math.sin(_shake.value * 4 * math.pi);
+    final dx = (1 - _shake.value) * 9 * math.sin(_shake.value * 4 * math.pi);
 
     return Center(
       child: Padding(
@@ -94,7 +93,8 @@ class _OfflineCardState extends State<_OfflineCard>
               decoration: BoxDecoration(
                 color: const Color(0xFF0E1830),
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: AppTheme.danger.withOpacity(.8), width: 1.6),
+                border: Border.all(
+                    color: AppTheme.danger.withOpacity(.8), width: 1.6),
                 boxShadow: [
                   BoxShadow(
                       color: AppTheme.danger.withOpacity(.35),
@@ -120,7 +120,8 @@ class _OfflineCardState extends State<_OfflineCard>
                         children: [
                           for (var i = 0; i < 2; i++)
                             Builder(builder: (c) {
-                              final v = (_pulse.value - i * 0.45).clamp(0.0, 1.0);
+                              final v =
+                                  (_pulse.value - i * 0.45).clamp(0.0, 1.0);
                               if (v <= 0) return const SizedBox.shrink();
                               return Transform.scale(
                                 scale: 0.55 + 0.8 * v,
@@ -177,9 +178,7 @@ class _OfflineCardState extends State<_OfflineCard>
                   'AI question generation needs internet.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 12.5,
-                      height: 1.5,
-                      color: Color(0xFF9AA7C7)),
+                      fontSize: 12.5, height: 1.5, color: Color(0xFF9AA7C7)),
                 ),
                 if (_status != null) ...[
                   const SizedBox(height: 10),
@@ -210,8 +209,7 @@ class _OfflineCardState extends State<_OfflineCard>
                               height: 14,
                               child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.wifi_tethering_rounded, size: 17),
-                      label: Text(
-                          _checking ? 'Checking…' : 'Check connection',
+                      label: Text(_checking ? 'Checking…' : 'Check connection',
                           style: const TextStyle(
                               fontSize: 13.5, fontWeight: FontWeight.w800)),
                     ),

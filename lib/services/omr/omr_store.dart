@@ -43,7 +43,7 @@ class OmScanRecord {
     required this.answers,
     required this.key,
     this.durationMs = 0,
-    this.correctedIndices=const [],
+    this.correctedIndices = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -62,15 +62,14 @@ class OmScanRecord {
         'blank': blank,
         'ambiguous': ambiguous,
         'answers': answers,
-        'correctedIndices':correctedIndices,
+        'correctedIndices': correctedIndices,
         'key': key,
         'durationMs': durationMs,
       };
 
   static OmScanRecord fromJson(Map<String, dynamic> m) => OmScanRecord(
         id: m['id'] as String,
-        date: DateTime.tryParse(m['date'] as String? ?? '') ??
-            DateTime.now(),
+        date: DateTime.tryParse(m['date'] as String? ?? '') ?? DateTime.now(),
         paperTitle: m['paperTitle'] as String? ?? '',
         subjectName: m['subjectName'] as String? ?? '',
         roll: m['roll'] as String? ?? '',
@@ -90,7 +89,7 @@ class OmScanRecord {
             .map((e) => (e as num).toInt())
             .toList(),
         durationMs: (m['durationMs'] as num? ?? 0).toInt(),
-        correctedIndices:List<int>.from(m['correctedIndices'] as List? ?? []),
+        correctedIndices: List<int>.from(m['correctedIndices'] as List? ?? []),
       );
 }
 
@@ -121,8 +120,8 @@ class OmKeyDraft {
         key: (m['key'] as List? ?? const [])
             .map((e) => (e as num).toInt())
             .toList(),
-        savedAt: DateTime.tryParse(m['savedAt'] as String? ?? '') ??
-            DateTime.now(),
+        savedAt:
+            DateTime.tryParse(m['savedAt'] as String? ?? '') ?? DateTime.now(),
       );
 }
 
@@ -149,10 +148,12 @@ class OmrStore {
 
   static Future<void> addRecord(OmScanRecord record) async {
     final prefs = await SharedPreferences.getInstance();
-    final all = [record, ...(await loadHistory()).where((r)=>r.id!=record.id)];
-    final trimmed = all.length > _maxHistory
-        ? all.sublist(0, _maxHistory)
-        : all;
+    final all = [
+      record,
+      ...(await loadHistory()).where((r) => r.id != record.id)
+    ];
+    final trimmed =
+        all.length > _maxHistory ? all.sublist(0, _maxHistory) : all;
     await prefs.setString(
       _historyKey,
       json.encode([for (final r in trimmed) r.toJson()]),
@@ -173,7 +174,8 @@ class OmrStore {
     final raw = prefs.getString(_keyDraftKey);
     if (raw == null || raw.isEmpty) return null;
     try {
-      return OmKeyDraft.fromJson((json.decode(raw) as Map).cast<String, dynamic>());
+      return OmKeyDraft.fromJson(
+          (json.decode(raw) as Map).cast<String, dynamic>());
     } catch (_) {
       return null;
     }

@@ -94,7 +94,15 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'Full Marks : 100          Time : 3 hours',
     ],
     q1Box: const [
-      'gentle', 'by', 'the', 'big', 'way', 'of', 'visit', 'hills', 'nature'
+      'gentle',
+      'by',
+      'the',
+      'big',
+      'way',
+      'of',
+      'visit',
+      'hills',
+      'nature'
     ],
     q1Passage: 'The Kaptai Lake is located in the hilly district of Rangamati. '
         'This is the (a) ________ lake in Bangladesh. The (b) ________ beauty of '
@@ -112,16 +120,24 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     q2: const [
       EBMatchRow('(a)  Good health', 'does not mean',
           'a vital role in attaining this wealth.'),
-      EBMatchRow('(b)  Bulky body', 'makes',
-          'the soundness of both body and mind.'),
+      EBMatchRow(
+          '(b)  Bulky body', 'makes', 'the soundness of both body and mind.'),
       EBMatchRow('(c)  To be a healthy men one', 'leads',
           'our life happy and enjoyable'),
       EBMatchRow('(d)  Food habit', 'should have', 'an unhappy life.'),
       EBMatchRow('(e)  An unhealthy man', 'plays', 'good health.'),
     ],
     q3Box: const [
-      'entertain', 'make', 'order', 'want', 'need',
-      'wish', 'become', 'be', 'take', 'arrive'
+      'entertain',
+      'make',
+      'order',
+      'want',
+      'need',
+      'wish',
+      'become',
+      'be',
+      'take',
+      'arrive'
     ],
     q3Passage: 'A birthday party is arranged to celebrate the day when one was '
         'born. It (a) ________ a happy occasion. Recently it (b) ________ a '
@@ -148,13 +164,13 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBTransformItem('Everybody likes a moonlit night.', 'Interrogative'),
       EBTransformItem(
           'Though the moon gives us light, it does not have the light of its '
-          'own.',
+              'own.',
           'Compound'),
       EBTransformItem(
           "Doesn't the moon borrow light from the sun?", 'Assertive'),
       EBTransformItem(
           'Unless one enjoys the beauty of a moonlit night, one cannot explain '
-          'it properly.',
+              'it properly.',
           'Simple'),
       EBTransformItem('In fact, a moonlit night is very pleasant.', 'Negative'),
     ],
@@ -173,7 +189,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         '{true} speaking, reading books is such a thing which has no '
         'alternative. So, we should read books on (e) {vary} topics so that we '
         'may bring proper development of our spirit.',
-    q7Passage: "Students teachers' relationship is regarded as the relationship "
+    q7Passage:
+        "Students teachers' relationship is regarded as the relationship "
         '(a) ________ parents and children. A teacher is next (b) ________ '
         'parents. Parents bring up children. On the other hand, a teacher '
         'guides the students to materialize their dreams. A teacher spreads the '
@@ -181,7 +198,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'a result, a student can see the path of prosperity. Thus a teacher '
         'helps build (d) ________ a civilized nation. So he is really called '
         'the architect (e) ________ a nation.',
-    q8Passage: 'It is known to all (a) ________ gold is a valuable metal. There '
+    q8Passage:
+        'It is known to all (a) ________ gold is a valuable metal. There '
         'are many metals cheaper than gold though they look like it. (b) '
         '________ they glitter for sometimes, they fade away in the long run. '
         'In our society there are also many people (c) ________ are outwardly '
@@ -204,8 +222,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 52,
     board: 'Rajshahi Board–2024',
     q1Box: const [
-      'give', 'a', 'evil', 'contrary', 'from',
-      'enough', 'justice', 'ensure', 'deeds', 'result'
+      'give',
+      'a',
+      'evil',
+      'contrary',
+      'from',
+      'enough',
+      'justice',
+      'ensure',
+      'deeds',
+      'result'
     ],
     q1Passage: 'Self purification means to keep the soul free (a) ________ all '
         'kinds of sins as well as from (b) ________ deeds. This divine quality '
@@ -218,7 +244,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'self purification is undeniable for (j) ________ peace and harmony in '
         'the society.',
     q2: const [
-      EBMatchRow('(a)  Global warming', 'is rising', 'mainly responsible for it.'),
+      EBMatchRow(
+          '(a)  Global warming', 'is rising', 'mainly responsible for it.'),
       EBMatchRow('(b)  Irresponsible activities of human beings', 'refers',
           'due to global warming.'),
       EBMatchRow('(c)  Sea level', 'is',
@@ -229,8 +256,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
           'temperature rise to a great extent.'),
     ],
     q3Box: const [
-      'throw', 'kill', 'work', 'have', 'release',
-      'ensure', 'be', 'live', 'originated', 'pollute'
+      'throw',
+      'kill',
+      'work',
+      'have',
+      'release',
+      'ensure',
+      'be',
+      'live',
+      'originated',
+      'pollute'
     ],
     q3Passage: 'Rivers generally (a) ________ from a mountain or a lake. They '
         '(b) ________ very much important for our existence and economy. But '
@@ -245,8 +280,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'Otherwise a happy, prosperous and pollution free environment can\u2019t '
         'be (j) ________ for the next generation.',
     q4: const [
-      EBTransformItem('Nothing is more useful in nature than water.',
-          'Affirmative'),
+      EBTransformItem(
+          'Nothing is more useful in nature than water.', 'Affirmative'),
       EBTransformItem('It is a very important asset.', 'Exclamatory'),
       EBTransformItem(
           'We cannot pass a single day without water.', 'Interrogative'),
@@ -269,7 +304,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       'I am proud to be a citizen of this country,',
       'Let us work together to build up our country,',
     ],
-    q6Passage: "The nature of mother's love is the same in all countries. It is "
+    q6Passage:
+        "The nature of mother's love is the same in all countries. It is "
         '(a) {universe}. For our existence on earth, we (b) {great} owe to our '
         'father and mother, specially to our mother. A mother\u2019s love is '
         '(c) {parallel} and unique. A child\u2019s relation with its mother is '
@@ -307,8 +343,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 53,
     board: 'Jashore Board–2024',
     q1Box: const [
-      'common', 'the', 'possible', 'of', 'by',
-      'language', 'in', 'medium', 'with', 'them'
+      'common',
+      'the',
+      'possible',
+      'of',
+      'by',
+      'language',
+      'in',
+      'medium',
+      'with',
+      'them'
     ],
     q1Passage: 'Language is the means (a) ________ which we share our thoughts '
         'and ideas (b) ________ others. It is our primary (c) ________ of '
@@ -322,15 +366,23 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBMatchRow('(a)  A man without an aim', 'be', 'a definite aim.'),
       EBMatchRow('(b)  So, everybody', 'becomes',
           'more difficult than the choice of a profession.'),
-      EBMatchRow('(c)  But nothing', 'should have',
-          'like a ship without a rudder.'),
+      EBMatchRow(
+          '(c)  But nothing', 'should have', 'like a ship without a rudder.'),
       EBMatchRow('(d)  Because there', '', 'very difficult for a student.'),
       EBMatchRow('(e)  That is why, to choose a profession', '',
           'many paths and courses open to all.'),
     ],
     q3Box: const [
-      'focus', 'follow', 'control', 'wait', 'write',
-      'understand', 'read', 'upgrade', 'play', 'be'
+      'focus',
+      'follow',
+      'control',
+      'wait',
+      'write',
+      'understand',
+      'read',
+      'upgrade',
+      'play',
+      'be'
     ],
     q3Passage: 'Text books are the rich sources of information and knowledge. '
         'They (a) ________ a vital role in teaching-learning activities. If a '
@@ -349,16 +401,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'lead Bangladesh applying their knowledge, skill and wisdom.',
     q4: const [
       EBTransformItem('Water is a liquid substance.', 'Interrogative'),
-      EBTransformItem('What an useful element it is in our daily life?',
-          'Assertive'),
+      EBTransformItem(
+          'What an useful element it is in our daily life?', 'Assertive'),
       EBTransformItem('We drink water to satisfy our thirst.', 'Complex'),
       EBTransformItem('We get water from many sources.', 'Interrogative'),
       EBTransformItem('Surface water is not safe for drinking.', 'Affirmative'),
       EBTransformItem(
           'We can drink water from sources like tube-well and fountain.',
           'Compound'),
-      EBTransformItem('Polluted water is very dangerous for our life.',
-          'Exclamatory'),
+      EBTransformItem(
+          'Polluted water is very dangerous for our life.', 'Exclamatory'),
       EBTransformItem(
           'If we throw wastage and dirts into water, we make it polluted.',
           'Simple'),
@@ -396,7 +448,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'But, this existence of life would be impossible (d) ________ '
         'sunlight. In fact, sunlight is the prerequisite (e) ________ the '
         'existence of all types of living beings.',
-    q8Passage: 'We know that trees are very important (a) ________ they produce '
+    q8Passage:
+        'We know that trees are very important (a) ________ they produce '
         'oxygen (b) ________ is a must for all living creatures. They are our '
         'best friends (c) ________ we are not conscious of it. Time is coming '
         '(d) ________ there will be no tree left for us. (e) ________, we '
@@ -404,7 +457,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     q9Text: "won't you go to school today raju he said dad i feel feverish i "
         'dont want to go to school ok take rest now said he.',
     q10: 'Write a paragraph on "A School Magazine".',
-    q11: 'Imagine that one of your school friends is in England for six months. '
+    q11:
+        'Imagine that one of your school friends is in England for six months. '
         'He/She is having some troubles with the new place and the new food. '
         'Write a letter advising him/her on how to adjust the new place and '
         'the new food.',
@@ -415,10 +469,19 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 54,
     board: 'Cumilla Board–2024',
     q1Box: const [
-      'nutrition', 'normal', 'illiterate', 'grow', 'ability',
-      'malnutrition', 'due', 'rapid', 'aware', 'nutrition'
+      'nutrition',
+      'normal',
+      'illiterate',
+      'grow',
+      'ability',
+      'malnutrition',
+      'due',
+      'rapid',
+      'aware',
+      'nutrition'
     ],
-    q1Passage: 'Adolescence or puberty is a period after childhood. During this '
+    q1Passage:
+        'Adolescence or puberty is a period after childhood. During this '
         'period physical and mental (a) ________ of boys and girls is so (b) '
         '________ that they need proper amount of (c) ________ food. But many '
         'boys and girls are not (d) ________ of this fact. So often they '
@@ -428,8 +491,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         '________ to the parents\u2019 reluctance, unawareness or (j) ________.',
     q2: const [
       EBMatchRow('Physical fitness', '', 'physical exercise regularly.'),
-      EBMatchRow('Physical exercise', 'is',
-          'a precondition to lead a healthy life.'),
+      EBMatchRow(
+          'Physical exercise', 'is', 'a precondition to lead a healthy life.'),
       EBMatchRow('People of all ages', 'take',
           'essential for achieving physical fitness.'),
       EBMatchRow('Many changes', 'should take', 'a balanced diet.'),
@@ -437,8 +500,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
           'place inside body due to physical exercise.'),
     ],
     q3Box: const [
-      'ensure', 'create', 'waste', 'divide', 'remain',
-      'do', 'appear', 'save', 'execute', 'end'
+      'ensure',
+      'create',
+      'waste',
+      'divide',
+      'remain',
+      'do',
+      'appear',
+      'save',
+      'execute',
+      'end'
     ],
     q3Passage: 'Proper time management makes it possible to complete any work '
         'timely. If a person (a) ________ his works into smaller portions and '
@@ -451,31 +522,32 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'difficult and no work (j) ________ pending.',
     q4: const [
       EBTransformItem('We need strategy for the examination.', 'Interrogative'),
-      EBTransformItem('Elaborating answer in the exam is very unnecessary.',
-          'Exclamatory'),
+      EBTransformItem(
+          'Elaborating answer in the exam is very unnecessary.', 'Exclamatory'),
       EBTransformItem(
           'When a student gets the question paper, he should read it '
-          'attentively.',
+              'attentively.',
           'Simple'),
-      EBTransformItem('Initially the questions may seem difficult.', 'Negative'),
+      EBTransformItem(
+          'Initially the questions may seem difficult.', 'Negative'),
       EBTransformItem(
           'A student should try to answer all the questions to do good in the '
-          'exam.',
+              'exam.',
           'Complex'),
       EBTransformItem(
           'If a student answers all the questions correctly, he will get good '
-          'marks.',
+              'marks.',
           'Simple'),
-      EBTransformItem('A student should not write irrelevant answers.',
-          'Affirmative'),
+      EBTransformItem(
+          'A student should not write irrelevant answers.', 'Affirmative'),
       EBTransformItem(
           'How irritated the examiners become to see such irrelevant answers!',
           'Assertive'),
-      EBTransformItem('The examinee should not waste time by doing so.',
-          'Interrogative'),
+      EBTransformItem(
+          'The examinee should not waste time by doing so.', 'Interrogative'),
       EBTransformItem(
           'By following the process, every student can achieve a good result '
-          'in an examination.',
+              'in an examination.',
           'Negative'),
     ],
     q5: const [
@@ -524,8 +596,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 55,
     board: 'Chattogram Board–2024',
     q1Box: const [
-      'about', 'between', 'of', 'basic', 'no',
-      'educate', 'almost', 'right', 'will', 'light'
+      'about',
+      'between',
+      'of',
+      'basic',
+      'no',
+      'educate',
+      'almost',
+      'right',
+      'will',
+      'light'
     ],
     q1Passage: 'Education removes our ignorance and gives us the (a) ________ '
         'of knowledge. In respect (b) ________ imparting education, there '
@@ -543,8 +623,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBMatchRow('', 'is', 'us the outside world like a mirror.'),
     ],
     q3Box: const [
-      'command', 'prepare', 'claim', 'memorize', 'develop',
-      'help', 'do', 'think', 'make', 'exercise'
+      'command',
+      'prepare',
+      'claim',
+      'memorize',
+      'develop',
+      'help',
+      'do',
+      'think',
+      'make',
+      'exercise'
     ],
     q3Passage: 'Most of the students of our country are expert in (a) ________ '
         'answers. They do not (b) ________ notes themselves. They get them (c) '
@@ -555,36 +643,36 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'can (i) ________ no credit of their own. This result does not (j) '
         '________ them in their later life.',
     q4: const [
-      EBTransformItem('Internet is a computer-based networking system.',
-          'Interrogative'),
-      EBTransformItem('It is a speedy transmitting system of information.',
-          'Complex'),
-      EBTransformItem('Its functions are not only smooth but also rapid.',
-          'Affirmative'),
-      EBTransformItem('A man has an internet connection and gets a link soon.',
-          'Simple'),
+      EBTransformItem(
+          'Internet is a computer-based networking system.', 'Interrogative'),
+      EBTransformItem(
+          'It is a speedy transmitting system of information.', 'Complex'),
+      EBTransformItem(
+          'Its functions are not only smooth but also rapid.', 'Affirmative'),
+      EBTransformItem(
+          'A man has an internet connection and gets a link soon.', 'Simple'),
       EBTransformItem(
           'Many educational institutions are greatly benefited through the use '
-          'of internet.',
+              'of internet.',
           'Complex'),
       EBTransformItem(
           'A student can visit all the renowned libraries of the world without '
-          'going there.',
+              'going there.',
           'Negative'),
       EBTransformItem(
           'It plays an effective role in the field of trade and commerce.',
           'Exclamatory'),
       EBTransformItem(
           'E-commerce has become one of the most popular topics to the '
-          'customers.',
+              'customers.',
           'Interrogative'),
       EBTransformItem(
           'It helps the customers to buy anything easily without going to '
-          'market.',
+              'market.',
           'Compound'),
       EBTransformItem(
           'What an amazing milestone it is in the modern world of '
-          'communication!',
+              'communication!',
           'Assertive'),
     ],
     q5: const [
@@ -633,8 +721,15 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 56,
     board: 'Sylhet Board–2024',
     q1Box: const [
-      'with', 'for', 'compliment', 'of', 'from',
-      'in', 'the', 'leisure', 'idle'
+      'with',
+      'for',
+      'compliment',
+      'of',
+      'from',
+      'in',
+      'the',
+      'leisure',
+      'idle'
     ],
     q1Passage: 'Leisure is the moment when a person is free (a) ________ his '
         'work as well as his worries and tensions. It is (b) ________ free '
@@ -651,14 +746,21 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBMatchRow('Independence', 'went', 'the war.'),
       EBMatchRow('No nation', 'joined', 'to the battle field.'),
       EBMatchRow('Our war of independence', 'is', 'to save the country.'),
-      EBMatchRow('People of all walks of life', 'took place',
-          'it without struggle.'),
+      EBMatchRow(
+          'People of all walks of life', 'took place', 'it without struggle.'),
       EBMatchRow('They', 'can achieve', 'in 1971.'),
       EBMatchRow('', '', 'the birth right of a man.'),
     ],
     q3Box: const [
-      'enable', 'give', 'exercise', 'send', 'do',
-      'compare', 'mean', 'be', 'bring'
+      'enable',
+      'give',
+      'exercise',
+      'send',
+      'do',
+      'compare',
+      'mean',
+      'be',
+      'bring'
     ],
     q3Passage: 'Science (a) ________ simply miracle. It (b) ________ about a '
         'change over the face of the globe. It (c) ________ man to control '
@@ -674,8 +776,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'television (j) ________ pictures seen through the wireless.',
     q4: const [
       EBTransformItem('Who does not want to succeed in life?', 'Assertive'),
-      EBTransformItem('Being industrious, everyone can prosper in life.',
-          'Negative'),
+      EBTransformItem(
+          'Being industrious, everyone can prosper in life.', 'Negative'),
       EBTransformItem('It is not an easy thing.', 'Affirmative'),
       EBTransformItem('The idle always lag behind.', 'Complex'),
       EBTransformItem('We must work hard so that we can earn money.', 'Simple'),
@@ -687,8 +789,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBTransformItem(
           'We should not forget that industry is the key to success.',
           'Assertive'),
-      EBTransformItem('An idle man leads a very miserable life.',
-          'Exclamatory'),
+      EBTransformItem(
+          'An idle man leads a very miserable life.', 'Exclamatory'),
     ],
     q5: const [
       'At present extended families are found in rural areas,',
@@ -740,8 +842,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 57,
     board: 'Barishal Board–2024',
     q1Box: const [
-      'female', 'organs', 'on', 'prevail', 'allow',
-      'no', 'cause', 'bites', 'breed', 'a'
+      'female',
+      'organs',
+      'on',
+      'prevail',
+      'allow',
+      'no',
+      'cause',
+      'bites',
+      'breed',
+      'a'
     ],
     q1Passage: 'Dengue fever is (a) ________ tropical virus-infected disease. '
         'It is (b) ________ in more than 110 countries. It is (c) ________ by '
@@ -756,17 +866,26 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     q2: const [
       EBMatchRow('(a)  The Republic of Maldives', 'faces',
           'the tourists across the world.'),
-      EBMatchRow('(b)  The location of the country', 'be',
-          'the country every year.'),
-      EBMatchRow('(c)  Its heavenly beaches', 'visit', 'a south Asian country.'),
+      EBMatchRow(
+          '(b)  The location of the country', 'be', 'the country every year.'),
+      EBMatchRow(
+          '(c)  Its heavenly beaches', 'visit', 'a south Asian country.'),
       EBMatchRow('(d)  Millions of tourists from different countries',
           'attract', 'the bad impact of climate change.'),
-      EBMatchRow('(e)  Unfortunately the country', 'be',
-          'in the Indian ocean.'),
+      EBMatchRow(
+          '(e)  Unfortunately the country', 'be', 'in the Indian ocean.'),
     ],
     q3Box: const [
-      'throw', 'kill', 'work', 'have', 'release',
-      'be', 'ensure', 'live', 'originate', 'pollute'
+      'throw',
+      'kill',
+      'work',
+      'have',
+      'release',
+      'be',
+      'ensure',
+      'live',
+      'originate',
+      'pollute'
     ],
     q3Passage: 'Rivers generally (a) ________ from a mountain or a lake. They '
         '(b) ________ very much important for our existence and economy. But '
@@ -781,11 +900,13 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'happy, prosperous and pollution free environment can\u2019t be (j) '
         '________ for the next generation.',
     q4: const [
-      EBTransformItem('The Padma is one of the mightiest rivers of '
-          'Bangladesh.', 'Complex'),
+      EBTransformItem(
+          'The Padma is one of the mightiest rivers of '
+              'Bangladesh.',
+          'Complex'),
       EBTransformItem('It is a very turbulent river.', 'Exclamatory'),
-      EBTransformItem('When it is winter, the river remains calm and tranquil.',
-          'Simple'),
+      EBTransformItem(
+          'When it is winter, the river remains calm and tranquil.', 'Simple'),
       EBTransformItem(
           'But during the rainy season, the river assumes a terrible shape.',
           'Compound'),
@@ -793,12 +914,13 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBTransformItem('The river is used for different purposes.', 'Negative'),
       EBTransformItem(
           'As our farmers use its water for irrigation purpose, they can grow '
-          'plenty of crops.',
+              'plenty of crops.',
           'Compound'),
-      EBTransformItem('Everyone likes the Hilsa fish of the river.', 'Negative'),
+      EBTransformItem(
+          'Everyone likes the Hilsa fish of the river.', 'Negative'),
       EBTransformItem(
           'The river destroys the houses of men but it is still very useful '
-          'to us.',
+              'to us.',
           'Complex'),
       EBTransformItem('So, let us save the river.', 'Assertive'),
     ],
@@ -853,8 +975,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 58,
     board: 'Dinajpur Board–2024',
     q1Box: const [
-      'personality', 'between', 'beneficial', 'saying', 'for',
-      'participation', 'an', 'popular', 'physically', 'on'
+      'personality',
+      'between',
+      'beneficial',
+      'saying',
+      'for',
+      'participation',
+      'an',
+      'popular',
+      'physically',
+      'on'
     ],
     q1Passage: 'Sports are very essential (a) ________ us. There are various '
         'types of sports. Among them cricket, football, swimming etc. are '
@@ -866,16 +996,23 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'Sports play (i) ________ important role in forming one\u2019s (j) '
         '________.',
     q2: const [
-      EBMatchRow('Everybody', 'creates',
-          'love which is the food of our soul.'),
+      EBMatchRow('Everybody', 'creates', 'love which is the food of our soul.'),
       EBMatchRow('Love', 'should', 'divine.'),
       EBMatchRow('We', 'is', 'love.'),
       EBMatchRow('It', 'need', 'inspiration to go ahead.'),
       EBMatchRow('', '', 'love all the creations of God.'),
     ],
     q3Box: const [
-      'lag', 'reach', 'lead', 'follow', 'depend',
-      'build', 'remember', 'be', 'idle', 'work'
+      'lag',
+      'reach',
+      'lead',
+      'follow',
+      'depend',
+      'build',
+      'remember',
+      'be',
+      'idle',
+      'work'
     ],
     q3Passage: 'Bangladesh is full of natural resources. The prosperity of the '
         'country (a) ________ on the proper utilization of the resources. We '
@@ -888,8 +1025,8 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'them.',
     q4: const [
       EBTransformItem('A Journey by train is always enjoyable.', 'Negative'),
-      EBTransformItem('People are fond of a journey by train.',
-          'Interrogative'),
+      EBTransformItem(
+          'People are fond of a journey by train.', 'Interrogative'),
       EBTransformItem('It is not unpleasant.', 'Affirmative'),
       EBTransformItem(
           'When a man makes a journey by train, he can enjoy natural scenery.',
@@ -897,10 +1034,10 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
       EBTransformItem('People like it as it is cheap.', 'compound'),
       EBTransformItem(
           'There are class distinction in a train and people can buy tickets '
-          'of various classes.',
+              'of various classes.',
           'Complex'),
-      EBTransformItem('Train is one of the most comfortable vehicles.',
-          'Interrogative'),
+      EBTransformItem(
+          'Train is one of the most comfortable vehicles.', 'Interrogative'),
       EBTransformItem('Can a man enjoy a train journey?', 'Assertive'),
       EBTransformItem('The British Govt. introduced train to us.', 'Complex'),
       EBTransformItem('A train journey is very safe.', 'Exclamatory'),
@@ -943,8 +1080,16 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
     serial: 59,
     board: 'Mymensingh Board–2024',
     q1Box: const [
-      'attract', 'fallen', 'through', 'and', 'subconscious',
-      'when', 'its', 'special', 'childhood', 'at'
+      'attract',
+      'fallen',
+      'through',
+      'and',
+      'subconscious',
+      'when',
+      'its',
+      'special',
+      'childhood',
+      'at'
     ],
     q1Passage: 'A man cannot remember everything that happened in his (a) '
         '________. But certain events are vivid in his (b) ________ mind. '
@@ -963,14 +1108,22 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
           'badly confluence by the negative impacts of western culture.'),
       EBMatchRow('It', 'be', 'Very fond of showing hospitality.'),
       EBMatchRow('Hospitality', 'represent', 'a term used for a way of life.'),
-      EBMatchRow('We', '',
-          "A society's beliefs, customs, languages, foods etc."),
-      EBMatchRow('But nowadays our culture', '',
-          'a part of Bangladeshi culture.'),
+      EBMatchRow(
+          'We', '', "A society's beliefs, customs, languages, foods etc."),
+      EBMatchRow(
+          'But nowadays our culture', '', 'a part of Bangladeshi culture.'),
     ],
     q3Box: const [
-      'talk', 'enable', 'live', 'prove', 'be',
-      'choose', 'give', 'fail', 'suffer', 'take'
+      'talk',
+      'enable',
+      'live',
+      'prove',
+      'be',
+      'choose',
+      'give',
+      'fail',
+      'suffer',
+      'take'
     ],
     q3Passage: 'There are several reasons why friendship (a) ________ so '
         'necessary in human life. A man without a friend feels like a man '
@@ -983,23 +1136,23 @@ final List<EnglishBoardSet> englishBoardSets2024 = [
         'person as a friend, he (j) ________ in the long run.',
     q4: const [
       EBTransformItem('Corruption is one of the worst evils.', 'Compound'),
-      EBTransformItem('A corrupt person can do anything against morality.',
-          'Complex'),
+      EBTransformItem(
+          'A corrupt person can do anything against morality.', 'Complex'),
       EBTransformItem("People don't like a corrupt person.", 'Affirmative'),
       EBTransformItem('Nobody respects him.', 'Interrogative'),
       EBTransformItem(
           'Though we have strict laws, we are still affected by this evil.',
           'Compound'),
-      EBTransformItem('No other person is as hated as a corrupt person.',
-          'Affirmative'),
-      EBTransformItem('We hope that Bangladesh will be free from this evil.',
-          'Simple'),
+      EBTransformItem(
+          'No other person is as hated as a corrupt person.', 'Affirmative'),
+      EBTransformItem(
+          'We hope that Bangladesh will be free from this evil.', 'Simple'),
       EBTransformItem('Everybody avoids a corrupt person.', 'Negative'),
-      EBTransformItem('A corrupt person leads a very unhappy life.',
-          'Exclamatory'),
+      EBTransformItem(
+          'A corrupt person leads a very unhappy life.', 'Exclamatory'),
       EBTransformItem(
           'Let us all work together to make Bangladesh a corruption free '
-          'country.',
+              'country.',
           'Assertive'),
     ],
     q5: const [

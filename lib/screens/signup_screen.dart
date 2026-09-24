@@ -69,7 +69,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(_phoneCtrl.text))) {
       return 'Enter a valid mobile number, e.g. 1XXXXXXXXX.';
     }
-    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_emailCtrl.text.trim())) {
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+        .hasMatch(_emailCtrl.text.trim())) {
       return 'Enter a valid email address.';
     }
     if (_passCtrl.text.length < AuthService.minPasswordLength) {
@@ -129,7 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       setState(() => _msg =
           'Code sent again. If nothing arrives, check spam — the free mail '
-          'service only allows a few messages an hour.');
+              'service only allows a few messages an hour.');
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {

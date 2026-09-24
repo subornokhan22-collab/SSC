@@ -55,9 +55,8 @@ class PaperEntry {
         year: m['year'] as String? ?? '',
         kind: m['kind'] as String? ?? 'images',
         pages: m['pages'] as int? ?? 1,
-        createdAt:
-            DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-                DateTime.now(),
+        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
+            DateTime.now(),
       );
 }
 
@@ -100,6 +99,7 @@ class SavedPaper {
   final List<int> key; // option index (0–3) per MCQ
   final List<SavedQuestion> questions;
   final DateTime createdAt;
+
   /// Rendered page count (p1.jpg…pN.jpg in the entry dir). 0 for entries
   /// saved before pages were stored.
   final int pages;
@@ -147,9 +147,8 @@ class SavedPaper {
             .map((e) =>
                 SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
             .toList(),
-        createdAt:
-            DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-                DateTime.now(),
+        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
+            DateTime.now(),
         pages: m['pages'] as int? ?? 0,
       );
 }
@@ -161,7 +160,8 @@ class PaperLibrary {
 
   static Future<Directory> root() async {
     final appDoc = await getApplicationDocumentsDirectory();
-    final dir = Directory('${appDoc.path}${Platform.pathSeparator}tutors_desk_papers');
+    final dir =
+        Directory('${appDoc.path}${Platform.pathSeparator}tutors_desk_papers');
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir;
   }
@@ -199,8 +199,7 @@ class PaperLibrary {
   }
 
   static Future<Directory> _dirFor(String id) async {
-    final dir =
-        Directory((await root()).path + Platform.pathSeparator + id);
+    final dir = Directory((await root()).path + Platform.pathSeparator + id);
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir;
   }
@@ -468,8 +467,7 @@ class PaperLibrary {
   }
 
   static String _safeName(String title) {
-    final clean =
-        title.replaceAll(RegExp(r'[\\/:*?"<>|]'), ' ').trim();
+    final clean = title.replaceAll(RegExp(r'[\\/:*?"<>|]'), ' ').trim();
     return clean.isEmpty ? 'paper' : clean;
   }
 
@@ -521,10 +519,7 @@ class PaperLibrary {
               little ? (j[o] | (j[o + 1] << 8)) : ((j[o] << 8) | j[o + 1]);
           int u32e(int o) => little
               ? (j[o] | (j[o + 1] << 8) | (j[o + 2] << 16) | (j[o + 3] << 24))
-              : ((j[o] << 24) |
-                  (j[o + 1] << 16) |
-                  (j[o + 2] << 8) |
-                  j[o + 3]);
+              : ((j[o] << 24) | (j[o + 1] << 16) | (j[o + 2] << 8) | j[o + 3]);
           final ifdOff = u32e(tiffStart + 4);
           final ifd = tiffStart + ifdOff; // TIFF offsets are relative
           if (ifd + 2 <= j.length) {
@@ -582,10 +577,8 @@ Uint8List _normalizeJpegCore(Uint8List raw) {
   final side = im.width > im.height ? im.width : im.height;
   if (side > maxSide) {
     final s = maxSide / side;
-    im = img.copyResize(
-        im,
-        width: (im.width * s).round(),
-        height: (im.height * s).round());
+    im = img.copyResize(im,
+        width: (im.width * s).round(), height: (im.height * s).round());
   }
   return img.encodeJpg(im, quality: 85);
 }
@@ -622,8 +615,7 @@ class PaperBackup {
   /// Whether the app may write into the shared Download folder.
   static Future<bool> permissionGranted() async {
     try {
-      return (await _channel.invokeMethod<bool>('canManageAllFiles')) ??
-          true;
+      return (await _channel.invokeMethod<bool>('canManageAllFiles')) ?? true;
     } catch (_) {
       return true;
     }
@@ -678,8 +670,7 @@ class PaperBackup {
     final entries = await PaperLibrary.loadEntries();
     final files = <String, String>{};
     for (final e in entries) {
-      final dir =
-          Directory('${rootDir.path}${Platform.pathSeparator}${e.id}');
+      final dir = Directory('${rootDir.path}${Platform.pathSeparator}${e.id}');
       if (!dir.existsSync()) continue;
       for (final f in dir.listSync()) {
         if (f is File) {

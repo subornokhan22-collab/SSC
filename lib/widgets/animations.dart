@@ -269,7 +269,8 @@ class _ShimmerBoxState extends State<ShimmerBox>
   @override
   void initState() {
     super.initState();
-    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
+    _c = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1400))
       ..repeat();
   }
 
@@ -415,7 +416,8 @@ class HaloRing extends StatefulWidget {
   State<HaloRing> createState() => _HaloRingState();
 }
 
-class _HaloRingState extends State<HaloRing> with SingleTickerProviderStateMixin {
+class _HaloRingState extends State<HaloRing>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _c;
 
   @override

@@ -4,8 +4,10 @@ import '../../data/questions_data.dart';
 class DuplicateHit {
   /// The generated question that looks like a copy.
   final Question generated;
+
   /// The bank question it resembles.
   final Question source;
+
   /// 0.0 (unrelated) … 1.0 (identical after normalization).
   final double similarity;
 
@@ -94,6 +96,8 @@ class DuplicateDetector {
   static Set<String> _tokens(String s) =>
       _norm(s).split(' ').where((w) => w.isNotEmpty).toSet();
 
-  static String _norm(String s) =>
-      s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9\u0980-\u09FF]+'), ' ').trim();
+  static String _norm(String s) => s
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9\u0980-\u09FF]+'), ' ')
+      .trim();
 }

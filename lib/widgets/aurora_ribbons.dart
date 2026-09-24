@@ -50,7 +50,8 @@ class _AuroraPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFFF7F9FE));
+    canvas.drawRect(
+        Offset.zero & size, Paint()..color = const Color(0xFFF7F9FE));
     final w = size.width;
     final h = size.height;
     final time = t * pi * 2;
@@ -81,12 +82,17 @@ class _AuroraPainter extends CustomPainter {
       }
 
       final riverPath = Path()..moveTo(upper.first.dx, upper.first.dy);
-      for (final p in upper) { riverPath.lineTo(p.dx, p.dy); }
-      for (var i = lower.length - 1; i >= 0; i--) { riverPath.lineTo(lower[i].dx, lower[i].dy); }
+      for (final p in upper) {
+        riverPath.lineTo(p.dx, p.dy);
+      }
+      for (var i = lower.length - 1; i >= 0; i--) {
+        riverPath.lineTo(lower[i].dx, lower[i].dy);
+      }
       riverPath.close();
 
       final gradient = ui.Gradient.linear(
-        Offset(0, baseY - thickness), Offset(0, baseY + thickness),
+        Offset(0, baseY - thickness),
+        Offset(0, baseY + thickness),
         [band[2], band[0], band[1], band[0], band[2]],
         const [0, .24, .5, .76, 1],
       );
@@ -99,8 +105,13 @@ class _AuroraPainter extends CustomPainter {
 
       final highlight = Path();
       for (var i = 0; i < upper.length; i++) {
-        final p = Offset((upper[i].dx + lower[i].dx) / 2, (upper[i].dy + lower[i].dy) / 2);
-        if (i == 0) { highlight.moveTo(p.dx, p.dy); } else { highlight.lineTo(p.dx, p.dy); }
+        final p = Offset(
+            (upper[i].dx + lower[i].dx) / 2, (upper[i].dy + lower[i].dy) / 2);
+        if (i == 0) {
+          highlight.moveTo(p.dx, p.dy);
+        } else {
+          highlight.lineTo(p.dx, p.dy);
+        }
       }
       canvas.drawPath(
           highlight,
@@ -119,5 +130,6 @@ class _AuroraPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _AuroraPainter oldDelegate) => oldDelegate.t != t;
+  bool shouldRepaint(covariant _AuroraPainter oldDelegate) =>
+      oldDelegate.t != t;
 }

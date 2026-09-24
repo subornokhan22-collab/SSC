@@ -32,19 +32,19 @@ class EnglishPaperAdapter {
   // ═══════════ English Second Paper (Grammar 60 + Composition 40) ═══════════
   static List<EnglishSection> second(EnglishBoardSet s) {
     String strip(String t) => t.replaceAll('{', '').replaceAll('}', '');
-    final q2Rows = [for (final r in s.q2) [r.a, r.b, r.c]];
+    final q2Rows = [
+      for (final r in s.q2) [r.a, r.b, r.c]
+    ];
     final q2Empty = _emptyTable(q2Rows);
     return [
       const EnglishSection(ebPartAHeader, []),
       const EnglishSection(ebBengaliNote, []),
-      EnglishSection('1. $ebInstrQ1   —   [1 × 10 = 10]',
-          ['', s.q1Passage],
+      EnglishSection('1. $ebInstrQ1   —   [1 × 10 = 10]', ['', s.q1Passage],
           table: [s.q1Box], centerTable: true),
       EnglishSection('2. $ebInstrQ2   —   [1 × 5 = 5]',
           q2Empty ? const ['⧉ v22-check: Q2 টেবিল-ডেটা ফাঁকা!'] : const [],
           table: q2Empty ? null : q2Rows),
-      EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]',
-          ['', s.q3Passage],
+      EnglishSection('3. $ebInstrQ3   —   [1 × 10 = 10]', ['', s.q3Passage],
           table: [s.q3Box], centerTable: true),
       EnglishSection('4. $ebInstrQ4   —   [1 × 10 = 10]', [
         for (var i = 0; i < s.q4.length; i++)
@@ -119,5 +119,4 @@ class EnglishPaperAdapter {
       for (var i = 0; i < n; i++) [cell(a, i), cell(b, i), cell(c, i)],
     ];
   }
-
 }

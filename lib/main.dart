@@ -214,7 +214,8 @@ class _FriendlyErrorView extends StatelessWidget {
               const Text(
                 'Please go back and try again.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.muted, fontSize: 13, height: 1.5),
+                style:
+                    TextStyle(color: AppTheme.muted, fontSize: 13, height: 1.5),
               ),
               if (kDebugMode) ...[
                 const SizedBox(height: 14),

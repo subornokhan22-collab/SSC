@@ -1064,10 +1064,13 @@ class PaperPdf {
           // Missing file: leave a labelled placeholder rather than a blank
           // gap, so the problem is obvious on the printed page.
           canvas.drawRect(Rect.fromLTWH(dx, y0, drawW, drawH), line);
-          final tp = makePainter('[ছবি পাওয়া যায়নি]', 9.5, align: TextAlign.center);
+          final tp =
+              makePainter('[ছবি পাওয়া যায়নি]', 9.5, align: TextAlign.center);
           tp.layout(maxWidth: drawW);
-          tp.paint(canvas,
-              Offset(dx + (drawW - tp.width) / 2, y0 + drawH / 2 - tp.height / 2));
+          tp.paint(
+              canvas,
+              Offset(
+                  dx + (drawW - tp.width) / 2, y0 + drawH / 2 - tp.height / 2));
         }
       }
 
@@ -1566,7 +1569,6 @@ class PaperPdf {
       ));
     }
 
-
     return pages;
   }
 
@@ -1838,9 +1840,11 @@ class PaperPdf {
   /// Keep the channel signature in sync with the scanner's drop-out test:
   /// `r > g + 25 && r > b + 10`.
   static const Color omrTemplateInk = Color(0xFFB03060);
+
   /// Light maroon tint for the template's soft bands (header/zebra) — a
   /// background, not ink, so it never enters the scanner's ink mask.
   static const Color omrTemplateSoft = Color(0xFFF7E9EF);
+
   /// Pre-filled code discs (subject code / set code) are printed "answers"
   /// the scanner must *read*, so they stay a neutral dark ink — NOT the
   /// drop-out maroon — otherwise the subject/set codes would be excluded
@@ -1898,8 +1902,7 @@ class PaperPdf {
       pages.add(bd!.buffer.asUint8List());
     }
 
-    TextStyle st(double size, bool isBold, double lineHeight,
-            {Color? color}) =>
+    TextStyle st(double size, bool isBold, double lineHeight, {Color? color}) =>
         TextStyle(
           fontFamily: isBold ? (_bold ?? _regular) : _regular,
           fontFamilyFallback: _fb(isBold),
@@ -1915,7 +1918,8 @@ class PaperPdf {
             TextAlign align = TextAlign.left,
             Color? color}) =>
         TextPainter(
-          text: TextSpan(text: text, style: st(size, isBold, 1.4, color: color)),
+          text:
+              TextSpan(text: text, style: st(size, isBold, 1.4, color: color)),
           textDirection: TextDirection.ltr,
           textAlign: align,
         );
@@ -1947,10 +1951,10 @@ class PaperPdf {
           ..strokeWidth = .8 * _k,
       );
       final t = makePainter(value, 6.4,
-              isBold: selected,
-              align: TextAlign.center,
-              color: selected ? Colors.white : null)
-          ..layout();
+          isBold: selected,
+          align: TextAlign.center,
+          color: selected ? Colors.white : null)
+        ..layout();
       t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
     }
 
@@ -1968,20 +1972,20 @@ class PaperPdf {
     // Header band — fixed geometry, title shrinks to fit one line.
     final titleText = title.trim().isEmpty ? 'Question Paper' : title.trim();
     var titleSize = 14.0;
-    var titlePainter = makePainter(titleText, titleSize, isBold: true)..layout();
+    var titlePainter = makePainter(titleText, titleSize, isBold: true)
+      ..layout();
     while (titlePainter.width > OMrGeometry.contentW && titleSize > 9.5) {
       titleSize -= 0.5;
-      titlePainter =
-          makePainter(titleText, titleSize, isBold: true)..layout();
+      titlePainter = makePainter(titleText, titleSize, isBold: true)..layout();
     }
-    titlePainter.paint(canvas, Offset(OMrGeometry.margin, OMrGeometry.titleTop));
+    titlePainter.paint(
+        canvas, Offset(OMrGeometry.margin, OMrGeometry.titleTop));
     final subtitle = makePainter(
-            'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
-            8.2,
-            isBold: true)
-        ..layout(maxWidth: OMrGeometry.contentW);
-    subtitle.paint(
-        canvas, Offset(OMrGeometry.margin, OMrGeometry.subtitleTop));
+        'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
+        8.2,
+        isBold: true)
+      ..layout(maxWidth: OMrGeometry.contentW);
+    subtitle.paint(canvas, Offset(OMrGeometry.margin, OMrGeometry.subtitleTop));
     canvas.drawLine(
       Offset(OMrGeometry.margin, OMrGeometry.ruleY),
       Offset(sw - OMrGeometry.margin, OMrGeometry.ruleY),
@@ -1999,8 +2003,7 @@ class PaperPdf {
       final x = geo.columnX(column);
       final top = OMrGeometry.questionsTop;
       final width = geo.questionWidth;
-      final h =
-          OMrGeometry.boxHeaderH + count * OMrGeometry.rowH + 4 * _k;
+      final h = OMrGeometry.boxHeaderH + count * OMrGeometry.rowH + 4 * _k;
       canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
       canvas.drawRect(
         Rect.fromLTWH(x, top, width, OMrGeometry.boxHeaderH),
@@ -2011,10 +2014,11 @@ class PaperPdf {
           Offset(x + 4 * _k, top + (OMrGeometry.boxHeaderH - head.height) / 2));
       for (var option = 0; option < 4; option++) {
         final letter = makePainter(_optionLetters[option], 7.0,
-                isBold: true, align: TextAlign.center)
-            ..layout();
+            isBold: true, align: TextAlign.center)
+          ..layout();
         final cx = x + OMrGeometry.bubbleLeft + option * geo.bubbleStep;
-        letter.paint(canvas,
+        letter.paint(
+            canvas,
             Offset(cx - letter.width / 2,
                 top + (OMrGeometry.boxHeaderH - letter.height) / 2));
       }
@@ -2061,14 +2065,15 @@ class PaperPdf {
           cols = 6;
       }
       final top = geo.identityTop;
-      canvas.drawRect(Rect.fromLTWH(x, top, w, OMrGeometry.panelH), borderAccent);
+      canvas.drawRect(
+          Rect.fromLTWH(x, top, w, OMrGeometry.panelH), borderAccent);
       canvas.drawRect(
         Rect.fromLTWH(x, top, w, OMrGeometry.labelBand),
         Paint()..color = accentSoft,
       );
-      final label = makePainter(panelTitle, 8.5, isBold: true,
-              align: TextAlign.center)
-          ..layout(maxWidth: w - 6 * _k);
+      final label =
+          makePainter(panelTitle, 8.5, isBold: true, align: TextAlign.center)
+            ..layout(maxWidth: w - 6 * _k);
       label.paint(canvas, Offset(x + (w - label.width) / 2, top + 2 * _k));
       for (var c = 0; c < cols; c++) {
         final wanted = c < digits.length ? digits[c] : '';
@@ -2087,10 +2092,12 @@ class PaperPdf {
     // ── Set code + instructions ────────────────────────────────────
     final setTop = geo.setTop;
     canvas.drawRect(
-        Rect.fromLTWH(OMrGeometry.margin, setTop, OMrGeometry.setW, OMrGeometry.setH),
+        Rect.fromLTWH(
+            OMrGeometry.margin, setTop, OMrGeometry.setW, OMrGeometry.setH),
         borderAccent);
     final setTitle = makePainter('সেট কোড', 8.2, isBold: true)..layout();
-    setTitle.paint(canvas,
+    setTitle.paint(
+        canvas,
         Offset(OMrGeometry.margin + 5 * _k,
             setTop + (OMrGeometry.setH - setTitle.height) / 2));
     for (var i = 0; i < 4; i++) {
@@ -2126,7 +2133,10 @@ class PaperPdf {
     final signWidth = OMrGeometry.contentW * .34;
     for (final entry in [
       ('পরীক্ষার্থীর স্বাক্ষর', OMrGeometry.margin),
-      ('পরিদর্শকের স্বাক্ষর', OMrGeometry.margin + OMrGeometry.contentW - signWidth),
+      (
+        'পরিদর্শকের স্বাক্ষর',
+        OMrGeometry.margin + OMrGeometry.contentW - signWidth
+      ),
     ]) {
       canvas.drawLine(
         Offset(entry.$2, signatureY),
@@ -2169,7 +2179,8 @@ class PaperPdf {
       total: total,
       subjectCode: subjectCode,
       setCode: setCode,
-    )).first;
+    ))
+        .first;
     final doc = pw.Document();
     final n = copies.clamp(1, 200).toInt();
     for (var i = 0; i < n; i++) {
@@ -2269,12 +2280,11 @@ class PaperPdf {
         );
 
     Future<void> para(String text, double size,
-            {bool isBold = false,
-            TextAlign align = TextAlign.center,
-            double gapBefore = 0}) async {
-      final tp =
-          makePainter(text, size, isBold: isBold, align: align)
-            ..layout(maxWidth: contentW);
+        {bool isBold = false,
+        TextAlign align = TextAlign.center,
+        double gapBefore = 0}) async {
+      final tp = makePainter(text, size, isBold: isBold, align: align)
+        ..layout(maxWidth: contentW);
       if (y + gapBefore * _k + tp.height > bottomY + 1) {
         await commit();
         begin();
@@ -2342,12 +2352,16 @@ class PaperPdf {
     for (var i = 0; i < cells.length; i++) {
       final cx = margin + i * (cellW + cellGap);
       canvas.drawRect(Rect.fromLTWH(cx, stripY, cellW, cellH), cell);
-      final cap = makePainter(cells[i].$1, 8.5)..layout(maxWidth: cellW - 6 * _k);
+      final cap = makePainter(cells[i].$1, 8.5)
+        ..layout(maxWidth: cellW - 6 * _k);
       cap.paint(canvas, Offset(cx + (cellW - cap.width) / 2, stripY + 4 * _k));
-      final val = makePainter(cells[i].$2, 11.5, isBold: true,
-          align: TextAlign.center)..layout(maxWidth: cellW - 6 * _k);
+      final val =
+          makePainter(cells[i].$2, 11.5, isBold: true, align: TextAlign.center)
+            ..layout(maxWidth: cellW - 6 * _k);
       val.paint(
-          canvas, Offset(cx + (cellW - val.width) / 2, stripY + cellH - val.height - 4 * _k));
+          canvas,
+          Offset(cx + (cellW - val.width) / 2,
+              stripY + cellH - val.height - 4 * _k));
     }
     y = stripY + cellH;
 
@@ -2365,8 +2379,9 @@ class PaperPdf {
       }
       final col = i % cols;
       final gx = margin + (contentW / cols) * col;
-      final status =
-          i < key.length ? (answers.isNotEmpty ? _statusOf(i, answers, key) : 2) : 2;
+      final status = i < key.length
+          ? (answers.isNotEmpty ? _statusOf(i, answers, key) : 2)
+          : 2;
       final tp = makePainter(
           '${_bn(i + 1)}.${letterOf(i < answers.length ? answers[i] : -1)}${glyphOf(status)}',
           10,

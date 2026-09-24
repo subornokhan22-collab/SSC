@@ -47,8 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings',
-            style:
-                TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppTheme.textDark),
@@ -71,8 +70,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: GlassCard(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14),
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const ProfileScreen())),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ProfileScreen())),
                     child: Row(children: [
                       Container(
                         width: 44,
@@ -96,15 +97,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     fontSize: 14.5,
                                     fontWeight: FontWeight.w800)),
                             SizedBox(height: 2),
-                            Text(
-                                'Details, workspace theme, Pro sync, sign out',
+                            Text('Details, workspace theme, Pro sync, sign out',
                                 style: TextStyle(
                                     fontSize: 11.5, color: AppTheme.muted)),
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right_rounded,
-                          color: AppTheme.muted),
+                      Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
                     ]),
                   ),
                 ),
@@ -133,8 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                  'Prefill set & subject code in OMR',
+                              const Text('Prefill set & subject code in OMR',
                                   style: TextStyle(
                                       fontSize: 14.5,
                                       fontWeight: FontWeight.w800)),
@@ -203,8 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               padding: EdgeInsets.only(top: 8),
                               child: Text('Saved ✓',
                                   style: TextStyle(
-                                      fontSize: 11.5,
-                                      color: AppTheme.success)),
+                                      fontSize: 11.5, color: AppTheme.success)),
                             ),
                         ]),
                   ),

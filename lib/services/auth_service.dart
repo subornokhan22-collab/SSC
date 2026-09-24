@@ -122,8 +122,7 @@ class AuthService {
     AuthResponse? res;
     // Newer projects issue a `signup` token; older ones fall back to `email`.
     try {
-      res = await _c.auth
-          .verifyOTP(type: OtpType.signup, token: c, email: e);
+      res = await _c.auth.verifyOTP(type: OtpType.signup, token: c, email: e);
     } on AuthException {
       res = await _c.auth.verifyOTP(type: OtpType.email, token: c, email: e);
     }
@@ -194,7 +193,8 @@ class AuthService {
   }
 
   // ── Reading the profile ───────────────────────────────────────────
-  static Future<Map<String, dynamic>?> fetchProfile({bool refresh = true}) async {
+  static Future<Map<String, dynamic>?> fetchProfile(
+      {bool refresh = true}) async {
     if (!isLoggedIn) return null;
     if (!refresh && _profileCache != null) return _profileCache;
     final u = _c.auth.currentUser;
@@ -224,15 +224,13 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c.from('profiles')
-            .insert({
-              'id': u.id,
-              'email': u.email ?? '',
-              'role': teacherRole,
-              'name': name,
-              'phone': phone,
-            })
-            .timeout(const Duration(seconds: 6));
+        await _c.from('profiles').insert({
+          'id': u.id,
+          'email': u.email ?? '',
+          'role': teacherRole,
+          'name': name,
+          'phone': phone,
+        }).timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -245,7 +243,8 @@ class AuthService {
           patch['role'] = teacherRole;
         }
         if (patch.isNotEmpty) {
-          await _c.from('profiles')
+          await _c
+              .from('profiles')
               .update(patch)
               .eq('id', u.id)
               .timeout(const Duration(seconds: 6));
@@ -275,7 +274,8 @@ class AuthService {
     if (name != null) patch['name'] = name.trim();
     if (phone != null) patch['phone'] = phone.trim();
     if (patch.isEmpty) return;
-    await _c.from('profiles')
+    await _c
+        .from('profiles')
         .update(patch)
         .eq('id', u.id)
         .timeout(const Duration(seconds: 6));

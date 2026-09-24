@@ -44,9 +44,8 @@ void main() {
           final name = removed.split('/').last;
           // Match a real import of that exact file, not a substring of
           // another name (e.g. home_screen.dart vs teacher_home_screen.dart).
-          final pattern = RegExp("import\\s+'[^']*(?<![\\w])" +
-              RegExp.escape(name) +
-              "'");
+          final pattern =
+              RegExp("import\\s+'[^']*(?<![\\w])" + RegExp.escape(name) + "'");
           if (pattern.hasMatch(source)) {
             offenders.add('${entity.path} -> $name');
           }
@@ -67,7 +66,8 @@ void main() {
       expect(File('lib/models/subject_info.dart').existsSync(), isTrue);
       expect(allSubjects, isNotEmpty);
       final ids = allSubjects.map((s) => s.id).toList();
-      expect(ids.toSet().length, ids.length, reason: 'subject ids must be unique');
+      expect(ids.toSet().length, ids.length,
+          reason: 'subject ids must be unique');
       // The full catalogue stays available even where a subject has no
       // questions yet; the bank is what was trimmed, not the subject list.
       for (final wanted in [
@@ -98,7 +98,8 @@ void main() {
     });
 
     test('index wrapping never throws', () {
-      expect(() => AppStyle.colors[99 % AppStyle.colors.length], returnsNormally);
+      expect(
+          () => AppStyle.colors[99 % AppStyle.colors.length], returnsNormally);
     });
 
     test('every backdrop preset is light', () {

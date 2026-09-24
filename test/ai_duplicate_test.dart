@@ -59,8 +59,7 @@ void main() {
 
     test('different questions on the same topic are not duplicates', () {
       expect(
-          DuplicateDetector.isDuplicate(
-              'What is the SI unit of force?',
+          DuplicateDetector.isDuplicate('What is the SI unit of force?',
               'Define acceleration with its SI unit.'),
           isFalse);
     });
@@ -77,7 +76,8 @@ void main() {
   group('findDuplicates', () {
     final bank = [
       q('bank_1', 'What is the SI unit of force?'),
-      q('bank_2', 'Sound is a longitudinal wave that needs a medium to travel.'),
+      q('bank_2',
+          'Sound is a longitudinal wave that needs a medium to travel.'),
     ];
 
     test('flags the near copy and reports its source', () {

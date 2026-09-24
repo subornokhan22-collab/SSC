@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
@@ -29,9 +28,8 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = highlighted
-        ? AppTheme.primary.withOpacity(.45)
-        : AppTheme.border;
+    final border =
+        highlighted ? AppTheme.primary.withOpacity(.45) : AppTheme.border;
     // No BackdropFilter here on purpose. The card fill is 88-94% opaque, so
     // the blur behind it was barely visible, but it is one of the most
     // expensive things Flutter can draw — and during a page transition two
@@ -70,7 +68,8 @@ class SectionTitle extends StatelessWidget {
   final String? subtitle;
   final IconData? icon;
 
-  const SectionTitle({super.key, required this.title, this.subtitle, this.icon});
+  const SectionTitle(
+      {super.key, required this.title, this.subtitle, this.icon});
 
   @override
   Widget build(BuildContext context) {

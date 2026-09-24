@@ -32,6 +32,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   bool _capturing = false;
 
   OmFrameQuality? _quality;
+
   /// Leaky-bucket confidence toward auto-capture: +1 on a ready frame,
   /// -[_confidenceLoss] on a not-ready one (clamped to 0). A single
   /// tremor/blur frame no longer wipes all progress; a genuinely shaky
@@ -117,7 +118,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            msg = 'Camera permission is off. Allow it in settings, or use the system camera.';
+            msg =
+                'Camera permission is off. Allow it in settings, or use the system camera.';
           case 'CameraUnavailable':
             msg = 'No camera found on this device.';
           default:
@@ -262,9 +264,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                   Text(_error!,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.4,
-                          color: Colors.white70)),
+                          fontSize: 14, height: 1.4, color: Colors.white70)),
                 ]),
               ),
             )
@@ -333,8 +333,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                           ? const Padding(
                               padding: EdgeInsets.all(20),
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: AppTheme.primary),
+                                  strokeWidth: 2.5, color: AppTheme.primary),
                             )
                           : const Icon(Icons.photo_camera_outlined,
                               color: AppTheme.primary, size: 34),
@@ -342,15 +341,12 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                   ),
                   const SizedBox(width: 18),
                   GestureDetector(
-                    onTap: () =>
-                        setState(() => _autoCapture = !_autoCapture),
+                    onTap: () => setState(() => _autoCapture = !_autoCapture),
                     child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 13, vertical: 11),
                       decoration: BoxDecoration(
-                        color: _autoCapture
-                            ? AppTheme.primary
-                            : Colors.black54,
+                        color: _autoCapture ? AppTheme.primary : Colors.black54,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                             color: _autoCapture
@@ -449,8 +445,8 @@ class _GuidePainter extends CustomPainter {
       }
       // Status above the sheet (its bottom edge is usually near the
       // screen bottom).
-      final topY = math.min(math.min(pts[0].dy, pts[1].dy),
-          math.min(pts[2].dy, pts[3].dy));
+      final topY = math.min(
+          math.min(pts[0].dy, pts[1].dy), math.min(pts[2].dy, pts[3].dy));
       final textY = topY - 46;
       if (textY > 70) {
         _statusRow(canvas, w, q, textY);
@@ -481,7 +477,8 @@ class _GuidePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
       ..color = const Color(0xD9FF5252);
-    canvas.drawRRect(RRect.fromRectAndRadius(guide, Radius.circular(r)), border);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(guide, Radius.circular(r)), border);
 
     // Corner brackets.
     final bracket = Paint()
@@ -511,9 +508,10 @@ class _GuidePainter extends CustomPainter {
         // it and fall back to manual framing with the static guide.
         final tp = TextPainter(
           text: const TextSpan(
-              text: 'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
-              style: TextStyle(
-                  color: Colors.white, fontSize: 12.5, height: 1.35)),
+              text:
+                  'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
+              style:
+                  TextStyle(color: Colors.white, fontSize: 12.5, height: 1.35)),
           textDirection: TextDirection.ltr,
         )..layout(maxWidth: w - 24);
         tp.paint(canvas, Offset((w - tp.width) / 2, textY));
@@ -541,18 +539,14 @@ class _GuidePainter extends CustomPainter {
         TextSpan(
           text: '      ${marks >= 2 ? '✓' : '•'} Marks $marks/4',
           style: TextStyle(
-              color: marks >= 2
-                  ? const Color(0xFF57D9A3)
-                  : Colors.white70,
+              color: marks >= 2 ? const Color(0xFF57D9A3) : Colors.white70,
               fontSize: 13,
               fontWeight: FontWeight.w700),
         ),
         TextSpan(
           text: '      ${sharpOk ? '✓' : '•'} Sharp',
           style: TextStyle(
-              color: sharpOk
-                  ? const Color(0xFF57D9A3)
-                  : Colors.white70,
+              color: sharpOk ? const Color(0xFF57D9A3) : Colors.white70,
               fontSize: 13,
               fontWeight: FontWeight.w700),
         ),
@@ -566,7 +560,8 @@ class _GuidePainter extends CustomPainter {
     final progress = (streak / readyStreak).clamp(0.0, 1.0);
     if (reason != null) {
       final tp = TextPainter(
-        text: TextSpan(text: reason,
+        text: TextSpan(
+            text: reason,
             style: const TextStyle(
                 color: Colors.white, fontSize: 13, height: 1.3)),
         textDirection: TextDirection.ltr,
@@ -580,20 +575,18 @@ class _GuidePainter extends CustomPainter {
       final bg = Paint()..color = Colors.white24;
       canvas.drawRRect(
           RRect.fromRectAndRadius(
-              Rect.fromLTWH(barX, barY, barW, 6),
-              const Radius.circular(3)),
+              Rect.fromLTWH(barX, barY, barW, 6), const Radius.circular(3)),
           bg);
       final fg = Paint()..color = const Color(0xFF57D9A3);
       canvas.drawRRect(
-          RRect.fromRectAndRadius(
-              Rect.fromLTWH(barX, barY, barW * progress, 6),
+          RRect.fromRectAndRadius(Rect.fromLTWH(barX, barY, barW * progress, 6),
               const Radius.circular(3)),
           fg);
       final tp = TextPainter(
         text: TextSpan(
             text: autoCapture ? 'Capturing when ready…' : 'Sheet locked',
-            style:
-                const TextStyle(color: Colors.white, fontSize: 12, height: 1.3)),
+            style: const TextStyle(
+                color: Colors.white, fontSize: 12, height: 1.3)),
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: w - 32);
       tp.paint(canvas, Offset((w - tp.width) / 2, barY + 12));

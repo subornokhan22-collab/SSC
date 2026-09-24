@@ -97,7 +97,7 @@ void main() {
         ...allMCQs.where((q) => q.figure != null).map((q) => q.figure!),
         ...allCQs.where((q) => q.figure != null).map((q) => q.figure!),
       ];
-      
+
       for (final f in withFigures) {
         expect(f.headers, isNotEmpty);
       }

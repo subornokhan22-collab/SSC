@@ -56,7 +56,8 @@ class OmFrameQuality {
 class OmQuality {
   OmQuality._();
 
-  static const int _outW = 240; // downscale width — enough for marks + sharpness
+  static const int _outW =
+      240; // downscale width — enough for marks + sharpness
 
   /// Analyzes one camera frame. Only YUV_420 (the format phones stream) is
   /// supported; anything else reports not-ready.
@@ -285,9 +286,12 @@ class OmQuality {
 
     final sx = nativeW / w.toDouble();
     final sy = nativeH / h.toDouble();
-    return (frac, [
-      for (final p in pts) Offset(p.dx * sx, p.dy * sy),
-    ]);
+    return (
+      frac,
+      [
+        for (final p in pts) Offset(p.dx * sx, p.dy * sy),
+      ]
+    );
   }
 
   static List<int>? _parallelogram(int missing, List<List<int>?> f) {
@@ -340,7 +344,8 @@ class OmQuality {
     for (var ly = 0; ly < rh; ly++) {
       for (var lx = 0; lx < rw; lx++) {
         final idx0 = ly * rw + lx;
-        if (visited[idx0] == 1 || g[(y0 + ly) * w + (x0 + lx)] >= darkT) continue;
+        if (visited[idx0] == 1 || g[(y0 + ly) * w + (x0 + lx)] >= darkT)
+          continue;
         // BFS.
         var top = 0;
         visited[idx0] = 1;

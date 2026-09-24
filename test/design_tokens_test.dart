@@ -18,7 +18,9 @@ void main() {
     ]);
   });
 
-  test('workspace preset indices and default colors follow the refreshed palette', () {
+  test(
+      'workspace preset indices and default colors follow the refreshed palette',
+      () {
     expect(AppStyle.colors, AppColors.workspaceBackgrounds);
     expect(AppStyle.accents, AppColors.workspaceAccents);
     expect(AppStyle.colors.length, 8);

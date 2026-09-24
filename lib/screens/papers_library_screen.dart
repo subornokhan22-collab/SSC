@@ -82,11 +82,12 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
+
   /// The standard red, animated problem dialog — every error the user must
   /// act on uses this (never a plain snackbar).
   Future<void> _problem(String title, String message, {String? detail}) =>
-      showProblemDialog(context, title: title, message: message, detail: detail);
-
+      showProblemDialog(context,
+          title: title, message: message, detail: detail);
 
   // ── Auto-save (one-time nudge) ──────────────────────────────────
   // Android deletes the app's private folder on uninstall. With the one-time
@@ -156,8 +157,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     showDialog(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Answer key — ${p.title}',
-            overflow: TextOverflow.ellipsis),
+        title: Text('Answer key — ${p.title}', overflow: TextOverflow.ellipsis),
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
@@ -230,8 +230,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppTheme.primary.withOpacity(.35)),
           ),
-          child: const Icon(Icons.key_rounded,
-              color: AppTheme.primary, size: 22),
+          child:
+              const Icon(Icons.key_rounded, color: AppTheme.primary, size: 22),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -240,7 +240,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           Text(p.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
           Wrap(spacing: 6, runSpacing: 4, children: [
             _pill(p.subject),
@@ -253,18 +254,17 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           Text(_date(p.createdAt),
               style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
         ])),
-        Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _iconBtn(Icons.qr_code_scanner_rounded, 'Scan OMR',
-                  () => _scanWith(p)),
-              _iconBtn(Icons.key_rounded, 'View answers', () => _showKey(p)),
-              if (p.pages > 0)
-                _iconBtn(Icons.description_rounded, 'View paper',
-                    () => _viewSaved(p)),
-              _iconBtn(Icons.delete_outline_rounded, 'Delete',
-                  () => _deleteSaved(p), color: AppTheme.danger),
-            ]),
+        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          _iconBtn(
+              Icons.qr_code_scanner_rounded, 'Scan OMR', () => _scanWith(p)),
+          _iconBtn(Icons.key_rounded, 'View answers', () => _showKey(p)),
+          if (p.pages > 0)
+            _iconBtn(
+                Icons.description_rounded, 'View paper', () => _viewSaved(p)),
+          _iconBtn(
+              Icons.delete_outline_rounded, 'Delete', () => _deleteSaved(p),
+              color: AppTheme.danger),
+        ]),
       ]),
     );
   }
@@ -278,7 +278,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       if (b != null) thumbs.add(b);
     }
     if (thumbs.isEmpty) {
-      await _problem('Pages not found', 'The stored pages for this paper could not be found.');
+      await _problem('Pages not found',
+          'The stored pages for this paper could not be found.');
       return;
     }
     if (!mounted) return;
@@ -318,8 +319,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       );
     }
     return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(
-          parent: BouncingScrollPhysics()),
+      physics:
+          const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
       itemCount: _saved.length,
       itemBuilder: (context, i) => _savedCard(_saved[i]),
@@ -459,7 +460,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       if (result == null || result.files.isEmpty) return;
       final path = result.files.single.path;
       if (path == null) {
-        await _problem('PDF not found', 'The stored PDF for this paper could not be found.');
+        await _problem('PDF not found',
+            'The stored PDF for this paper could not be found.');
         return;
       }
       final bytes = await File(path).readAsBytes();
@@ -479,7 +481,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     if (e.kind == 'pdf') {
       final bytes = await PaperLibrary.pdfBytes(e.id);
       if (bytes == null) {
-        await _problem('PDF not found', 'The stored PDF for this paper could not be found.');
+        await _problem('PDF not found',
+            'The stored PDF for this paper could not be found.');
         return;
       }
       if (!mounted) return;
@@ -494,7 +497,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       if (b != null) thumbs.add(b);
     }
     if (thumbs.isEmpty) {
-      await _problem('Pages not found', 'The stored pages for this paper could not be found.');
+      await _problem('Pages not found',
+          'The stored pages for this paper could not be found.');
       return;
     }
     if (!mounted) return;
@@ -633,8 +637,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           Text(e.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w800)),
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
           Wrap(spacing: 6, runSpacing: 4, children: [
             _pill(e.subject),
@@ -645,15 +649,13 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           Text(_date(e.createdAt),
               style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
         ])),
-        Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _iconBtn(Icons.visibility_rounded, 'View', () => _view(e)),
-              _iconBtn(Icons.print_rounded, 'Print', () => _print(e)),
-              _iconBtn(Icons.share_rounded, 'Share', () => _share(e)),
-              _iconBtn(Icons.delete_outline_rounded, 'Delete', () => _delete(e),
-                  color: AppTheme.danger),
-            ]),
+        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          _iconBtn(Icons.visibility_rounded, 'View', () => _view(e)),
+          _iconBtn(Icons.print_rounded, 'Print', () => _print(e)),
+          _iconBtn(Icons.share_rounded, 'Share', () => _share(e)),
+          _iconBtn(Icons.delete_outline_rounded, 'Delete', () => _delete(e),
+              color: AppTheme.danger),
+        ]),
       ]),
     );
   }

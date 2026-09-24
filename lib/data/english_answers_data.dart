@@ -15,144 +15,585 @@ class SecondPaperAns {
   final List<String> q6; // (a)–(e) suffix/prefix শব্দ
   final List<String> q7; // (a)–(e) prepositions
   final List<String> q8; // (a)–(e) connectors
-  final String q9;       // punctuation & capital letters সহ পুরো প্যাসেজ
-  final String q10;      // paragraph
-  final String q11;      // application / email / letter
-  final String q12;      // composition
+  final String q9; // punctuation & capital letters সহ পুরো প্যাসেজ
+  final String q10; // paragraph
+  final String q11; // application / email / letter
+  final String q12; // composition
   const SecondPaperAns({
-    required this.q1, required this.q2, required this.q3, required this.q4,
-    required this.q5, required this.q6, required this.q7, required this.q8,
-    required this.q9, required this.q10, required this.q11, required this.q12,
+    required this.q1,
+    required this.q2,
+    required this.q3,
+    required this.q4,
+    required this.q5,
+    required this.q6,
+    required this.q7,
+    required this.q8,
+    required this.q9,
+    required this.q10,
+    required this.q11,
+    required this.q12,
   });
 }
 
 /// 2nd Paper উত্তরমালা — serial → answers
 const Map<int, SecondPaperAns> english2Answers2024 = {
   51: SecondPaperAns(
-    q1: ['biggest','natural','of','way','hills','the','by','visit','of','gentle'],
-    q2: ['(a) Good health plays a vital role in attaining this wealth.','(b) Bulky body does not mean good health.','(c) To be a healthy men one should have the soundness of both body and mind.','(d) Food habit makes our life happy and enjoyable.','(e) An unhealthy man leads an unhappy life.'],
-    q3: ['is','has become','needs','taking','is ordered','do not want','arrive','wishes','entertained','making'],
-    q4: ['(a) It is a very charming moonlit night.','(b) What a beautiful sight it presents!','(c) It cannot but dazzle our eyes and soothe our heart.','(d) Do not people of all ages enjoy a moonlit night?','(e) Little boys and girls make merriment so that they can enjoy themselves.','(f) Who does not like a moonlit night?','(g) The moon gives us light but it does not have the light of its own.','(h) The moon borrows light from the sun.','(i) Without enjoying the beauty of a moonlit night, one cannot explain it properly.','(j) In fact, a moonlit night is not unpleasant at all.'],
-    q5: ['(a) Many people hanker after money, don\u2019t they?','(b) But money is not as valuable as morality, is it?','(c) Let us always keep this truth in mind, shall we?','(d) Money can hardly bring happiness, can it?','(e) So, we should never have greed for money, should we?'],
-    q6: ['unlimited','enrich','prosperity','Truly','various'],
-    q7: ['between','to','of','up','of'],
-    q8: ['that','Though','who','because','that'],
+    q1: [
+      'biggest',
+      'natural',
+      'of',
+      'way',
+      'hills',
+      'the',
+      'by',
+      'visit',
+      'of',
+      'gentle'
+    ],
+    q2: [
+      '(a) Good health plays a vital role in attaining this wealth.',
+      '(b) Bulky body does not mean good health.',
+      '(c) To be a healthy men one should have the soundness of both body and mind.',
+      '(d) Food habit makes our life happy and enjoyable.',
+      '(e) An unhealthy man leads an unhappy life.'
+    ],
+    q3: [
+      'is',
+      'has become',
+      'needs',
+      'taking',
+      'is ordered',
+      'do not want',
+      'arrive',
+      'wishes',
+      'entertained',
+      'making'
+    ],
+    q4: [
+      '(a) It is a very charming moonlit night.',
+      '(b) What a beautiful sight it presents!',
+      '(c) It cannot but dazzle our eyes and soothe our heart.',
+      '(d) Do not people of all ages enjoy a moonlit night?',
+      '(e) Little boys and girls make merriment so that they can enjoy themselves.',
+      '(f) Who does not like a moonlit night?',
+      '(g) The moon gives us light but it does not have the light of its own.',
+      '(h) The moon borrows light from the sun.',
+      '(i) Without enjoying the beauty of a moonlit night, one cannot explain it properly.',
+      '(j) In fact, a moonlit night is not unpleasant at all.'
+    ],
+    q5: [
+      '(a) Many people hanker after money, don\u2019t they?',
+      '(b) But money is not as valuable as morality, is it?',
+      '(c) Let us always keep this truth in mind, shall we?',
+      '(d) Money can hardly bring happiness, can it?',
+      '(e) So, we should never have greed for money, should we?'
+    ],
+    q6: ['unlimited', 'enrich', 'prosperity', 'Truly', 'various'],
+    q7: ['between', 'to', 'of', 'up', 'of'],
+    q8: ['that', 'Though', 'who', 'because', 'that'],
     q9: '"What kind of stories did Aesop tell?" said Abdullah. "Fables," replied Mr Rahman. "Do you know what fables are?" "No," replied Abdullah. "Well," continued Mr Rahman, "fables are stories with a message or a moral."',
-    q10: 'The Life of a Farmer\nA farmer is a person who works in the field to grow crops for us. Bangladesh being an agricultural country, most of our villagers are farmers. He rises very early in the morning, takes his simple breakfast and goes to the field with his plough and bullocks. He works from morning till evening ploughing, sowing, weeding and harvesting. His life is very hard — he works under the open sky in sun and rain, yet lives from hand to mouth. In the harvesting season he becomes happy when he gets good crops. But flood, drought and storm often destroy his crops and make him helpless. We cannot live without the crops he grows. So the government should give him fair prices, easy loans and education. Our farmers deserve our respect, help and sympathy.',
-    q11: 'Shuvo Rahman\nClass-IX, Roll-05\nAzimpur Govt. High School, Dhaka\n5 May 2024\nThe Headmaster\nAzimpur Govt. High School, Dhaka\nSubject: Application for setting up a canteen in the school.\nSir,\nWith due respect we beg to state that our school is a reputed one, but there is no canteen here. During the tiffin period we cannot get fresh food from home as the school hours are long. The nearby street food is stale and harmful. A canteen on the campus would solve this problem.\nWe, therefore, pray that you would kindly take necessary steps to set up a canteen in our school campus as early as possible.\nYours obediently,\nShuvo Rahman,\nOn behalf of all the students.',
-    q12: 'The Importance of Reading Newspaper\nNewspaper is called the mirror of the world. It brings us news of home and abroad every morning and keeps us in touch with the whole world. By reading a newspaper we learn about politics, economy, sports, science, education, culture and accidents. It nourishes our curiosity and broadens our outlook. Students can enrich their general knowledge and improve their language by reading newspapers regularly. Businessmen find market news; job seekers find vacancies. The editorial columns help us form our own opinion on national issues. A newspaper also entertains us with stories, cartoons and puzzles. But false or biased news may mislead people, so we should read it carefully. Since knowledge is power in the modern age, reading newspaper daily is a good habit that everyone should develop.',
+    q10:
+        'The Life of a Farmer\nA farmer is a person who works in the field to grow crops for us. Bangladesh being an agricultural country, most of our villagers are farmers. He rises very early in the morning, takes his simple breakfast and goes to the field with his plough and bullocks. He works from morning till evening ploughing, sowing, weeding and harvesting. His life is very hard — he works under the open sky in sun and rain, yet lives from hand to mouth. In the harvesting season he becomes happy when he gets good crops. But flood, drought and storm often destroy his crops and make him helpless. We cannot live without the crops he grows. So the government should give him fair prices, easy loans and education. Our farmers deserve our respect, help and sympathy.',
+    q11:
+        'Shuvo Rahman\nClass-IX, Roll-05\nAzimpur Govt. High School, Dhaka\n5 May 2024\nThe Headmaster\nAzimpur Govt. High School, Dhaka\nSubject: Application for setting up a canteen in the school.\nSir,\nWith due respect we beg to state that our school is a reputed one, but there is no canteen here. During the tiffin period we cannot get fresh food from home as the school hours are long. The nearby street food is stale and harmful. A canteen on the campus would solve this problem.\nWe, therefore, pray that you would kindly take necessary steps to set up a canteen in our school campus as early as possible.\nYours obediently,\nShuvo Rahman,\nOn behalf of all the students.',
+    q12:
+        'The Importance of Reading Newspaper\nNewspaper is called the mirror of the world. It brings us news of home and abroad every morning and keeps us in touch with the whole world. By reading a newspaper we learn about politics, economy, sports, science, education, culture and accidents. It nourishes our curiosity and broadens our outlook. Students can enrich their general knowledge and improve their language by reading newspapers regularly. Businessmen find market news; job seekers find vacancies. The editorial columns help us form our own opinion on national issues. A newspaper also entertains us with stories, cartoons and puzzles. But false or biased news may mislead people, so we should read it carefully. Since knowledge is power in the modern age, reading newspaper daily is a good habit that everyone should develop.',
   ),
   52: SecondPaperAns(
-    q1: ['from','evil','a','enough','given','deeds','contrary','injustice','result','ensuring'],
-    q2: ['(a) Global warming refers to the increase in the temperature of the globe.','(b) Irresponsible activities of human beings are mainly responsible for it.','(c) Sea level is rising due to global warming.','(d) As a result, the coastal areas are going to be vulnerable.','(e) Using of renewable energy can reduce temperature rise to a great extent.'],
-    q3: ['originate','are','polluting','do not have','releasing','polluting','throw','living','worked','ensured'],
-    q4: ['(a) No other thing in nature is as useful as water.','(b) What an important asset it is!','(c) Can we pass a single day without water?','(d) Its main source is the rain and it creates streams, lakes and rivers.','(e) When it is the monsoon, we have rain.','(f) It often floods when there is heavy rainfall.','(g) Do not crops get damaged?','(h) Our winter is not wet or rainy.','(i) Rainless winter does not bring good harvest.','(j) By making the best use of rain, we can grow more crops.'],
-    q5: ['(a) Bangladesh came into being at the cost of a bloody war, didn\u2019t it?','(b) So, everyone has some duties and responsibilities to this country, don\u2019t they?','(c) As a citizen of this country, we can hardly forget our duties, can we?','(d) I am proud to be a citizen of this country, aren\u2019t I?','(e) Let us work together to build up our country, shall we?'],
-    q6: ['universal','greatly','unparalleled','heavenly','hardly'],
-    q7: ['in','without','by','with','to'],
-    q8: ['which','Though','especially','a','and'],
+    q1: [
+      'from',
+      'evil',
+      'a',
+      'enough',
+      'given',
+      'deeds',
+      'contrary',
+      'injustice',
+      'result',
+      'ensuring'
+    ],
+    q2: [
+      '(a) Global warming refers to the increase in the temperature of the globe.',
+      '(b) Irresponsible activities of human beings are mainly responsible for it.',
+      '(c) Sea level is rising due to global warming.',
+      '(d) As a result, the coastal areas are going to be vulnerable.',
+      '(e) Using of renewable energy can reduce temperature rise to a great extent.'
+    ],
+    q3: [
+      'originate',
+      'are',
+      'polluting',
+      'do not have',
+      'releasing',
+      'polluting',
+      'throw',
+      'living',
+      'worked',
+      'ensured'
+    ],
+    q4: [
+      '(a) No other thing in nature is as useful as water.',
+      '(b) What an important asset it is!',
+      '(c) Can we pass a single day without water?',
+      '(d) Its main source is the rain and it creates streams, lakes and rivers.',
+      '(e) When it is the monsoon, we have rain.',
+      '(f) It often floods when there is heavy rainfall.',
+      '(g) Do not crops get damaged?',
+      '(h) Our winter is not wet or rainy.',
+      '(i) Rainless winter does not bring good harvest.',
+      '(j) By making the best use of rain, we can grow more crops.'
+    ],
+    q5: [
+      '(a) Bangladesh came into being at the cost of a bloody war, didn\u2019t it?',
+      '(b) So, everyone has some duties and responsibilities to this country, don\u2019t they?',
+      '(c) As a citizen of this country, we can hardly forget our duties, can we?',
+      '(d) I am proud to be a citizen of this country, aren\u2019t I?',
+      '(e) Let us work together to build up our country, shall we?'
+    ],
+    q6: ['universal', 'greatly', 'unparalleled', 'heavenly', 'hardly'],
+    q7: ['in', 'without', 'by', 'with', 'to'],
+    q8: ['which', 'Though', 'especially', 'a', 'and'],
     q9: '"Do you know me?" "Yes, I know you from my childhood." "What\u2019s your name?" "My name is Sumon. Thank you a lot," said Mr Jamal.',
-    q10: 'Our National Flag\nOur national flag is the symbol of our independence and sovereignty. We got it at the cost of a bloody liberation war in 1971. It is rectangular in size, the proportion of its length and breadth being 10:6. It has a deep green field with a red circle in the middle. The green colour represents the green fields and the everlasting youth of Bangladesh, while the red circle symbolizes the rising sun and the blood of the three million martyrs. It was first hoisted on 2 March, 1971 at Dhaka University and Kamrul Hasan prepared its final design. The national flag is hoisted on all government offices and buildings on national days. Whenever we look at it, our hearts are filled with respect for the martyrs. We must always uphold its honour and be ready to make any sacrifice for it.',
-    q11: 'To : roni@email.com\nSubject : Please return my book urgently.\nDear Roni,\nI hope you are well by the grace of Allah. You borrowed my English grammar book last month. My examination is knocking at the door and I need the book badly to revise grammar rules. So I request you to return the book within a couple of days. I shall really appreciate your kind help.\nNo more today. Convey my regards to your parents.\nYours ever,\nSajal',
-    q12: 'Your Favourite Hobby\nHobby means an occupation which one follows in leisure for pleasure. My favourite hobby is gardening. In front of our reading room I have made a small garden. I work there with a spade in the morning and afternoon. I have planted rose, marigold, china rose and many seasonal flowers there. In one corner grow vegetable plants and fruit trees. I water the plants, loosen the soil and prune the dead branches regularly. When the flowers bloom, my heart dances with joy. They spread sweet fragrance all around and the garden becomes a source of peace. Gardening also supplies our family with fresh vegetables. This hobby refreshes my mind, keeps my body fit and teaches me the beauty of creation. In truth, my garden is the dearest place of my heart.',
+    q10:
+        'Our National Flag\nOur national flag is the symbol of our independence and sovereignty. We got it at the cost of a bloody liberation war in 1971. It is rectangular in size, the proportion of its length and breadth being 10:6. It has a deep green field with a red circle in the middle. The green colour represents the green fields and the everlasting youth of Bangladesh, while the red circle symbolizes the rising sun and the blood of the three million martyrs. It was first hoisted on 2 March, 1971 at Dhaka University and Kamrul Hasan prepared its final design. The national flag is hoisted on all government offices and buildings on national days. Whenever we look at it, our hearts are filled with respect for the martyrs. We must always uphold its honour and be ready to make any sacrifice for it.',
+    q11:
+        'To : roni@email.com\nSubject : Please return my book urgently.\nDear Roni,\nI hope you are well by the grace of Allah. You borrowed my English grammar book last month. My examination is knocking at the door and I need the book badly to revise grammar rules. So I request you to return the book within a couple of days. I shall really appreciate your kind help.\nNo more today. Convey my regards to your parents.\nYours ever,\nSajal',
+    q12:
+        'Your Favourite Hobby\nHobby means an occupation which one follows in leisure for pleasure. My favourite hobby is gardening. In front of our reading room I have made a small garden. I work there with a spade in the morning and afternoon. I have planted rose, marigold, china rose and many seasonal flowers there. In one corner grow vegetable plants and fruit trees. I water the plants, loosen the soil and prune the dead branches regularly. When the flowers bloom, my heart dances with joy. They spread sweet fragrance all around and the garden becomes a source of peace. Gardening also supplies our family with fresh vegetables. This hobby refreshes my mind, keeps my body fit and teaches me the beauty of creation. In truth, my garden is the dearest place of my heart.',
   ),
   53: SecondPaperAns(
-    q1: ['by','with','medium','languages','not possible','them','the','commonly','in','of'],
-    q2: ['(a) A man without an aim is like a ship without a rudder.','(b) So, everybody should have a definite aim.','(c) But nothing is more difficult than the choice of a profession.','(d) Because there are many paths and courses open to all.','(e) That is why, to choose a profession is very difficult for a student.'],
-    q3: ['play','reads','focus','do not understand','followed','controlling','should be','are written','upgrade','waits'],
-    q4: ['(a) Is water not a liquid substance?','(b) It is a very useful element in our daily life.','(c) We drink water so that we may satisfy our thirst.','(d) Do we not get water from many sources?','(e) Surface water is unsafe for drinking.','(f) We can drink water from tube-well and also from fountain.','(g) How dangerous polluted water is for our life!','(h) By throwing wastage and dirts into water, we make it polluted.','(i) We should drink only pure water.','(j) Nobody can live without water.'],
-    q5: ['(a) Patriotism persuades a man to do everything just, doesn\u2019t it?','(b) A patriot hardly fears anybody, does he?','(c) Everybody respects a patriot, don\u2019t they?','(d) What an outstanding quality it is, isn\u2019t it?','(e) Let\u2019s be patriots, shall we?'],
-    q6: ['touchable','valueless','demandable','management','restlessly'],
-    q7: ['with','into','on','without','for'],
-    q8: ['because','which','though','when','So'],
+    q1: [
+      'by',
+      'with',
+      'medium',
+      'languages',
+      'not possible',
+      'them',
+      'the',
+      'commonly',
+      'in',
+      'of'
+    ],
+    q2: [
+      '(a) A man without an aim is like a ship without a rudder.',
+      '(b) So, everybody should have a definite aim.',
+      '(c) But nothing is more difficult than the choice of a profession.',
+      '(d) Because there are many paths and courses open to all.',
+      '(e) That is why, to choose a profession is very difficult for a student.'
+    ],
+    q3: [
+      'play',
+      'reads',
+      'focus',
+      'do not understand',
+      'followed',
+      'controlling',
+      'should be',
+      'are written',
+      'upgrade',
+      'waits'
+    ],
+    q4: [
+      '(a) Is water not a liquid substance?',
+      '(b) It is a very useful element in our daily life.',
+      '(c) We drink water so that we may satisfy our thirst.',
+      '(d) Do we not get water from many sources?',
+      '(e) Surface water is unsafe for drinking.',
+      '(f) We can drink water from tube-well and also from fountain.',
+      '(g) How dangerous polluted water is for our life!',
+      '(h) By throwing wastage and dirts into water, we make it polluted.',
+      '(i) We should drink only pure water.',
+      '(j) Nobody can live without water.'
+    ],
+    q5: [
+      '(a) Patriotism persuades a man to do everything just, doesn\u2019t it?',
+      '(b) A patriot hardly fears anybody, does he?',
+      '(c) Everybody respects a patriot, don\u2019t they?',
+      '(d) What an outstanding quality it is, isn\u2019t it?',
+      '(e) Let\u2019s be patriots, shall we?'
+    ],
+    q6: ['touchable', 'valueless', 'demandable', 'management', 'restlessly'],
+    q7: ['with', 'into', 'on', 'without', 'for'],
+    q8: ['because', 'which', 'though', 'when', 'So'],
     q9: '"Won\u2019t you go to school today, Raju?" he said. "Dad, I feel feverish. I don\u2019t want to go to school." "OK, take rest now," said he.',
-    q10: 'A School Magazine\nA school magazine is an annual publication of a school which contains the writings of the students and teachers. It is the mirror of the creative power of a school. Our school publishes a magazine every year. A committee is formed with teachers and students for its publication. Students write poems, short stories, essays, jokes and articles for it, and the best pieces are selected by the editor. It is funded by the school authority and generally distributed free among the students. A school magazine develops the habit of writing among students and helps the future writers discover themselves. It also preserves the memory of school activities. We eagerly wait for it every year and feel proud of it.',
-    q11: '7 College Road, Sylhet\n10 May 2024\nMy dear Sanjid,\nI received your email yesterday. I am very sorry to learn that you are facing troubles with the new place and the new food in England.\nYou should not lose heart. Try to mix with your classmates and neighbours; friendly faces make a new place homely. Learn a few words of everyday English use. For food, cook simple meals yourself — buy rice, fish and vegetables from the Bangladeshi stores and cook in our own style. Keep yourself busy with study and go out for a walk in the parks. Remember, every problem has a way out.\nWrite to me whenever you feel lonely. No more today.\nYours ever,\nTanvir',
-    q12: 'The Season You Like Most\nBangladesh is called the playground of six seasons. Every season comes with its own beauty, but of all the seasons I like the spring most. It is called the king of seasons and consists of the months of Falgun and Chaitra. In this season nature puts on a new dress. Trees put forth new leaves and colourful flowers bloom in every garden. The gentle breeze carries sweet fragrance everywhere. Different kinds of birds, especially the cuckoo, sing sweet songs behind the leaves. The sky remains clear and the weather is neither hot nor cold. People feel fresh and cheerful and they enjoy picnics and festivals. New crops begin to grow in the fields. In short, spring decorates our country like a bride. That is why the beauty of spring charms me most and I wait for it throughout the year.',
+    q10:
+        'A School Magazine\nA school magazine is an annual publication of a school which contains the writings of the students and teachers. It is the mirror of the creative power of a school. Our school publishes a magazine every year. A committee is formed with teachers and students for its publication. Students write poems, short stories, essays, jokes and articles for it, and the best pieces are selected by the editor. It is funded by the school authority and generally distributed free among the students. A school magazine develops the habit of writing among students and helps the future writers discover themselves. It also preserves the memory of school activities. We eagerly wait for it every year and feel proud of it.',
+    q11:
+        '7 College Road, Sylhet\n10 May 2024\nMy dear Sanjid,\nI received your email yesterday. I am very sorry to learn that you are facing troubles with the new place and the new food in England.\nYou should not lose heart. Try to mix with your classmates and neighbours; friendly faces make a new place homely. Learn a few words of everyday English use. For food, cook simple meals yourself — buy rice, fish and vegetables from the Bangladeshi stores and cook in our own style. Keep yourself busy with study and go out for a walk in the parks. Remember, every problem has a way out.\nWrite to me whenever you feel lonely. No more today.\nYours ever,\nTanvir',
+    q12:
+        'The Season You Like Most\nBangladesh is called the playground of six seasons. Every season comes with its own beauty, but of all the seasons I like the spring most. It is called the king of seasons and consists of the months of Falgun and Chaitra. In this season nature puts on a new dress. Trees put forth new leaves and colourful flowers bloom in every garden. The gentle breeze carries sweet fragrance everywhere. Different kinds of birds, especially the cuckoo, sing sweet songs behind the leaves. The sky remains clear and the weather is neither hot nor cold. People feel fresh and cheerful and they enjoy picnics and festivals. New crops begin to grow in the fields. In short, spring decorates our country like a bride. That is why the beauty of spring charms me most and I wait for it throughout the year.',
   ),
   54: SecondPaperAns(
-    q1: ['growth','rapid','nutritious','aware','malnutrition','normal','ability','nutrition','due','illiteracy'],
-    q2: ['(a) Physical fitness is a precondition to lead a healthy life.','(b) Physical exercise is essential for achieving physical fitness.','(c) People of all ages should take physical exercise regularly.','(d) Many changes take place inside body due to physical exercise.','(e) Beside physical exercise, everybody should take a balanced diet.'],
-    q3: ['divides','executes','done','wasted','is saved','is ensured','ends','is created','appears','remains'],
-    q4: ['(a) Do we not need strategy for the examination?','(b) How unnecessary elaborating answer in the exam is!','(c) On getting the question paper, a student should read it attentively.','(d) Initially the questions may not seem easy.','(e) If a student wants to do good in the exam, he should try to answer all the questions.','(f) By answering all the questions correctly, a student will get good marks.','(g) A student must avoid writing irrelevant answers.','(h) The examiners become very irritated to see such irrelevant answers.','(i) Why should the examinee waste time by doing so?','(j) Without following the process, no student can achieve a good result in an examination.'],
-    q5: ['(a) Slow and steady wins the race, doesn\u2019t it?','(b) The mother has risen in her to see the orphan, hasn\u2019t she?','(c) He hardly cast a vote for me, did he?','(d) Kindly do me a favour, will you?','(e) I need not go there, need I?'],
-    q6: ['drinkable','uncontaminated','riverine','filthy','longevity'],
-    q7: ['in','of','by','up','in'],
-    q8: ['that','as','But','Because','So'],
+    q1: [
+      'growth',
+      'rapid',
+      'nutritious',
+      'aware',
+      'malnutrition',
+      'normal',
+      'ability',
+      'nutrition',
+      'due',
+      'illiteracy'
+    ],
+    q2: [
+      '(a) Physical fitness is a precondition to lead a healthy life.',
+      '(b) Physical exercise is essential for achieving physical fitness.',
+      '(c) People of all ages should take physical exercise regularly.',
+      '(d) Many changes take place inside body due to physical exercise.',
+      '(e) Beside physical exercise, everybody should take a balanced diet.'
+    ],
+    q3: [
+      'divides',
+      'executes',
+      'done',
+      'wasted',
+      'is saved',
+      'is ensured',
+      'ends',
+      'is created',
+      'appears',
+      'remains'
+    ],
+    q4: [
+      '(a) Do we not need strategy for the examination?',
+      '(b) How unnecessary elaborating answer in the exam is!',
+      '(c) On getting the question paper, a student should read it attentively.',
+      '(d) Initially the questions may not seem easy.',
+      '(e) If a student wants to do good in the exam, he should try to answer all the questions.',
+      '(f) By answering all the questions correctly, a student will get good marks.',
+      '(g) A student must avoid writing irrelevant answers.',
+      '(h) The examiners become very irritated to see such irrelevant answers.',
+      '(i) Why should the examinee waste time by doing so?',
+      '(j) Without following the process, no student can achieve a good result in an examination.'
+    ],
+    q5: [
+      '(a) Slow and steady wins the race, doesn\u2019t it?',
+      '(b) The mother has risen in her to see the orphan, hasn\u2019t she?',
+      '(c) He hardly cast a vote for me, did he?',
+      '(d) Kindly do me a favour, will you?',
+      '(e) I need not go there, need I?'
+    ],
+    q6: ['drinkable', 'uncontaminated', 'riverine', 'filthy', 'longevity'],
+    q7: ['in', 'of', 'by', 'up', 'in'],
+    q8: ['that', 'as', 'But', 'Because', 'So'],
     q9: '"How dare you wake me up?" the lion roared. "I shall kill you for that." "Please let me go," the mouse cried.',
-    q10: 'Environment Pollution\nEnvironment means the surroundings in which we live. When the natural elements of the environment get polluted, it is called environment pollution. Today it has become a serious problem in Bangladesh. Our environment is polluted in many ways. Smoke from mills, factories and vehicles pollutes the air. Human waste, dead bodies thrown into rivers and canals pollute water. The cutting down of trees at random destroys the natural balance. As a result of pollution, greenhouse effect, climate change, floods, cyclones and various diseases appear before us. To save our life, we must keep the environment clean. We should plant more trees, stop dumping waste here and there and create public awareness. Undoubtedly, a safe environment is essential for the existence of all living beings on earth.',
-    q11: 'Milon Khan\nClass-IX, Roll-08\nPragati Bidya Niketon, Jhenidah\n12 May 2024\nThe Headmaster\nPragati Bidya Niketon, Jhenidah\nSubject: Prayer for setting up a multimedia classroom with internet facility.\nSir,\nWe, the students of your school, beg to state that technology is an integral part of modern education. But our school has no multimedia classroom with internet facilities. For want of it, we cannot enjoy digital lessons, attend online classes or collect information from the internet. If a multimedia classroom is set up, our learning will become easier and more interesting.\nWe, therefore, earnestly request you to take necessary steps for setting up a multimedia classroom with internet facility in our school campus.\nYours obediently,\nMilon Khan,\nOn behalf of all the students of the school.',
-    q12: 'A Journey You have Recently Made\nJourney is always pleasant to me. During the last winter vacation I made a pleasant journey by train from Dhaka to Chattogram with two of my friends. We got into the train at Kamalapur Railway Station at seven in the morning. When the train started moving, I looked through the window and saw green fields, rivers, hills and villages passing one after another. The vendors were selling fruits, nuts and tea. The train passed the famous Meghna bridge, and the view of the vast river charmed us all. At noon we reached Chattogram safely. In the evening we visited the sea beach at Patenga and enjoyed the sunset over the sea. The journey was one of the most delightful experiences of my life. I shall never forget the joy and freshness of that journey.',
+    q10:
+        'Environment Pollution\nEnvironment means the surroundings in which we live. When the natural elements of the environment get polluted, it is called environment pollution. Today it has become a serious problem in Bangladesh. Our environment is polluted in many ways. Smoke from mills, factories and vehicles pollutes the air. Human waste, dead bodies thrown into rivers and canals pollute water. The cutting down of trees at random destroys the natural balance. As a result of pollution, greenhouse effect, climate change, floods, cyclones and various diseases appear before us. To save our life, we must keep the environment clean. We should plant more trees, stop dumping waste here and there and create public awareness. Undoubtedly, a safe environment is essential for the existence of all living beings on earth.',
+    q11:
+        'Milon Khan\nClass-IX, Roll-08\nPragati Bidya Niketon, Jhenidah\n12 May 2024\nThe Headmaster\nPragati Bidya Niketon, Jhenidah\nSubject: Prayer for setting up a multimedia classroom with internet facility.\nSir,\nWe, the students of your school, beg to state that technology is an integral part of modern education. But our school has no multimedia classroom with internet facilities. For want of it, we cannot enjoy digital lessons, attend online classes or collect information from the internet. If a multimedia classroom is set up, our learning will become easier and more interesting.\nWe, therefore, earnestly request you to take necessary steps for setting up a multimedia classroom with internet facility in our school campus.\nYours obediently,\nMilon Khan,\nOn behalf of all the students of the school.',
+    q12:
+        'A Journey You have Recently Made\nJourney is always pleasant to me. During the last winter vacation I made a pleasant journey by train from Dhaka to Chattogram with two of my friends. We got into the train at Kamalapur Railway Station at seven in the morning. When the train started moving, I looked through the window and saw green fields, rivers, hills and villages passing one after another. The vendors were selling fruits, nuts and tea. The train passed the famous Meghna bridge, and the view of the vast river charmed us all. At noon we reached Chattogram safely. In the evening we visited the sea beach at Patenga and enjoyed the sunset over the sea. The journey was one of the most delightful experiences of my life. I shall never forget the joy and freshness of that journey.',
   ),
   55: SecondPaperAns(
-    q1: ['light','of','no','between','basic','right','almost','will','about','educate'],
-    q2: ['(a) Newspaper gives us news of home and abroad.','(b) It is useful to all section of people.','(c) It has great educative value too.','(d) They are really part and parcel of our life.','(e) It presents us the outside world like a mirror.'],
-    q3: ['memorizing','prepare','prepared','exercise','thinking','develop','command','do','claim','help'],
-    q4: ['(a) Is internet not a computer-based networking system?','(b) It is a speedy system that transmits information.','(c) Its functions are both smooth and rapid.','(d) Having an internet connection, a man gets a link soon.','(e) As many educational institutions use internet, they are greatly benefited.','(f) A student need not go to the renowned libraries of the world to visit them.','(g) What an effective role it plays in the field of trade and commerce!','(h) Has e-commerce not become one of the most popular topics to the customers?','(i) The customers can buy anything easily and they need not go to market.','(j) It is a very amazing milestone in the modern world of communication.'],
-    q5: ['(a) Everybody believes this truth, don\u2019t they?','(b) We hardly forget the golden past, do we?','(c) Nothing was said, was it?','(d) Don\u2019t disturb me, will you?','(e) Let\u2019s be sincere in our life, shall we?'],
-    q6: ['invention','unfortunate','children','incurable','irreparable'],
-    q7: ['without','of','from','to','in'],
-    q8: ['Since','and','As','but','So'],
+    q1: [
+      'light',
+      'of',
+      'no',
+      'between',
+      'basic',
+      'right',
+      'almost',
+      'will',
+      'about',
+      'educate'
+    ],
+    q2: [
+      '(a) Newspaper gives us news of home and abroad.',
+      '(b) It is useful to all section of people.',
+      '(c) It has great educative value too.',
+      '(d) They are really part and parcel of our life.',
+      '(e) It presents us the outside world like a mirror.'
+    ],
+    q3: [
+      'memorizing',
+      'prepare',
+      'prepared',
+      'exercise',
+      'thinking',
+      'develop',
+      'command',
+      'do',
+      'claim',
+      'help'
+    ],
+    q4: [
+      '(a) Is internet not a computer-based networking system?',
+      '(b) It is a speedy system that transmits information.',
+      '(c) Its functions are both smooth and rapid.',
+      '(d) Having an internet connection, a man gets a link soon.',
+      '(e) As many educational institutions use internet, they are greatly benefited.',
+      '(f) A student need not go to the renowned libraries of the world to visit them.',
+      '(g) What an effective role it plays in the field of trade and commerce!',
+      '(h) Has e-commerce not become one of the most popular topics to the customers?',
+      '(i) The customers can buy anything easily and they need not go to market.',
+      '(j) It is a very amazing milestone in the modern world of communication.'
+    ],
+    q5: [
+      '(a) Everybody believes this truth, don\u2019t they?',
+      '(b) We hardly forget the golden past, do we?',
+      '(c) Nothing was said, was it?',
+      '(d) Don\u2019t disturb me, will you?',
+      '(e) Let\u2019s be sincere in our life, shall we?'
+    ],
+    q6: ['invention', 'unfortunate', 'children', 'incurable', 'irreparable'],
+    q7: ['without', 'of', 'from', 'to', 'in'],
+    q8: ['Since', 'and', 'As', 'but', 'So'],
     q9: 'The teacher said to the girl, "Do you think that honesty is the best policy?" "Yes, Sir, I think so," said the girl. "Then learn to be honest from your childhood." "Thank you, Sir," said the girl. "May Allah bless you," said the teacher.',
-    q10: 'The Life of a Farmer\nA farmer is the person who cultivates land and grows crops to feed the nation. He is the most useful member of our rural society. He rises very early in the morning and goes to his field with bullocks and plough. He tills the soil, sows seeds, weeds the field and gathers the harvest. He works under the scorching sun and in heavy rain, yet he leads a very simple life. When the harvest is good, his joy knows no bounds, but flood, drought, insects and storms often ruin his hopes. He is neglected though we eat the rice he grows. The government should provide him with fair prices, easy loans, fertilizers and modern tools. We should respect the farmer, because the whole nation depends on his labour.',
-    q11: 'To : mother@email.com\nSubject : Feeling much better after recovery.\nDear Mother,\nTake my cordial salam. You will be glad to know that I have completely recovered from typhoid and now I am feeling quite sound and cheerful. The doctor has advised me to take a light diet and walk for a while every morning. I have already joined my classes and I am doing well. Please do not worry about me any more.\nConvey my respect to father and love to little Rani.\nYour loving son,\nArif',
-    q12: 'Your Favourite Game\nGames are essential for health and amusement. Of all games I like cricket most. It is an outdoor game played between two teams of eleven players each. The game is played on an open field with a bat, a ball and two sets of wickets. One team bats first and makes runs, while the other team bowls and fields. The team making more runs wins the match. Cricket needs skill, patience and team spirit. When our national team wins, the whole country rejoices. I never miss watching an important match of Bangladesh on television. Playing cricket in our school field with my friends in the afternoon is the happiest part of my day. This game keeps my body fit, refreshes my mind and teaches me discipline and cooperation. That is why cricket is my favourite game.',
+    q10:
+        'The Life of a Farmer\nA farmer is the person who cultivates land and grows crops to feed the nation. He is the most useful member of our rural society. He rises very early in the morning and goes to his field with bullocks and plough. He tills the soil, sows seeds, weeds the field and gathers the harvest. He works under the scorching sun and in heavy rain, yet he leads a very simple life. When the harvest is good, his joy knows no bounds, but flood, drought, insects and storms often ruin his hopes. He is neglected though we eat the rice he grows. The government should provide him with fair prices, easy loans, fertilizers and modern tools. We should respect the farmer, because the whole nation depends on his labour.',
+    q11:
+        'To : mother@email.com\nSubject : Feeling much better after recovery.\nDear Mother,\nTake my cordial salam. You will be glad to know that I have completely recovered from typhoid and now I am feeling quite sound and cheerful. The doctor has advised me to take a light diet and walk for a while every morning. I have already joined my classes and I am doing well. Please do not worry about me any more.\nConvey my respect to father and love to little Rani.\nYour loving son,\nArif',
+    q12:
+        'Your Favourite Game\nGames are essential for health and amusement. Of all games I like cricket most. It is an outdoor game played between two teams of eleven players each. The game is played on an open field with a bat, a ball and two sets of wickets. One team bats first and makes runs, while the other team bowls and fields. The team making more runs wins the match. Cricket needs skill, patience and team spirit. When our national team wins, the whole country rejoices. I never miss watching an important match of Bangladesh on television. Playing cricket in our school field with my friends in the afternoon is the happiest part of my day. This game keeps my body fit, refreshes my mind and teaches me discipline and cooperation. That is why cricket is my favourite game.',
   ),
   56: SecondPaperAns(
-    q1: ['from','the','in','idleness','complementary','of','of','leisure','with','for'],
-    q2: ['(a) Independence is the birth right of a man.','(b) No nation can achieve it without struggle.','(c) Our war of independence took place in 1971.','(d) People of all walks of life joined the war.','(e) They went to the battle field to save the country.'],
-    q3: ['means','brings','enables','send','be compared','are','gives','exercises','enables','shows'],
-    q4: ['(a) Everybody wants to succeed in life.','(b) Without being industrious, no one can prosper in life.','(c) It is a difficult thing.','(d) The people who are idle always lag behind.','(e) We must work hard to earn money.','(f) We work hard and thus we can improve our lot.','(g) The light of prosperity cannot but be seen by a hard working person.','(h) Should women not work as much as men?','(i) We should remember that industry is the key to success.','(j) What a miserable life an idle man leads!'],
-    q5: ['(a) At present extended families are found in rural areas, aren\u2019t they?','(b) There\u2019re many members in extended families, aren\u2019t there?','(c) The house is always full of guests, isn\u2019t it?','(d) It becomes very difficult for one to study, doesn\u2019t it?','(e) In the same room children are found reading, gossiping and sleeping, aren\u2019t they?'],
-    q6: ['disgrace','employers','unfavourable','risky','enforced'],
-    q7: ['in','to','of','to','in'],
-    q8: ['But','Firstly','Secondly','Thirdly','So'],
+    q1: [
+      'from',
+      'the',
+      'in',
+      'idleness',
+      'complementary',
+      'of',
+      'of',
+      'leisure',
+      'with',
+      'for'
+    ],
+    q2: [
+      '(a) Independence is the birth right of a man.',
+      '(b) No nation can achieve it without struggle.',
+      '(c) Our war of independence took place in 1971.',
+      '(d) People of all walks of life joined the war.',
+      '(e) They went to the battle field to save the country.'
+    ],
+    q3: [
+      'means',
+      'brings',
+      'enables',
+      'send',
+      'be compared',
+      'are',
+      'gives',
+      'exercises',
+      'enables',
+      'shows'
+    ],
+    q4: [
+      '(a) Everybody wants to succeed in life.',
+      '(b) Without being industrious, no one can prosper in life.',
+      '(c) It is a difficult thing.',
+      '(d) The people who are idle always lag behind.',
+      '(e) We must work hard to earn money.',
+      '(f) We work hard and thus we can improve our lot.',
+      '(g) The light of prosperity cannot but be seen by a hard working person.',
+      '(h) Should women not work as much as men?',
+      '(i) We should remember that industry is the key to success.',
+      '(j) What a miserable life an idle man leads!'
+    ],
+    q5: [
+      '(a) At present extended families are found in rural areas, aren\u2019t they?',
+      '(b) There\u2019re many members in extended families, aren\u2019t there?',
+      '(c) The house is always full of guests, isn\u2019t it?',
+      '(d) It becomes very difficult for one to study, doesn\u2019t it?',
+      '(e) In the same room children are found reading, gossiping and sleeping, aren\u2019t they?'
+    ],
+    q6: ['disgrace', 'employers', 'unfavourable', 'risky', 'enforced'],
+    q7: ['in', 'to', 'of', 'to', 'in'],
+    q8: ['But', 'Firstly', 'Secondly', 'Thirdly', 'So'],
     q9: '"Why don\u2019t you attend classes regularly?" the teacher said to the boy. "You cannot expect good results unless you attend classes as I tell you." "I am sorry, Sir," said the student.',
-    q10: 'Our National Flag\nOur national flag is the emblem of our independent Bangladesh. Every independent nation has a national flag of her own, and so have we. Our flag is rectangular in shape, its length and breadth being in the proportion of 10:6. On the deep green field there is a red round circle in the middle. The green colour stands for the fresh greenery and the youthful vigour of our motherland. The red circle reminds us of the rising sun of independence and the supreme sacrifice of our heroic sons in 1971. It was hoisted for the first time on 2 March, 1971 at Dhaka University, and its final design was prepared by Kamrul Hasan. The flag is hoisted on all government buildings and educational institutions on national days. We salute it and are ready to sacrifice our lives to uphold its honour.',
-    q11: '9 Mymensingh Road, Dhaka-1000\n15 May 2024\nMy dear Nahida,\nI hope you are well. You wanted to know about the picnic we enjoyed last Friday. Our class went to Zinda Park at Narayanganj. We reached there by bus at ten o\u2019clock. The park was full of trees and there was a lovely lake. We cooked polao, chicken curry and vegetables under a big banyan tree and enjoyed the meal together. After lunch we sang songs, played games and had a cultural function where Nila recited a poem. We took many photographs. In the evening we returned home safely but our hearts remained there. It was really the happiest day of our school life.\nWith love,\nSohana',
-    q12: 'Importance of Reading Newspapers\nNewspaper is the storehouse of information. It is a great blessing of modern printing press. By reading a newspaper we come to know the news of home and abroad — politics, economy, education, sports and culture. It is called the mirror of the world because it reflects everything happening around us. Students can increase their general knowledge and learn the correct use of language by reading newspapers regularly. The jobless can find vacancies; businessmen can know market prices. Editorials help us build rational opinions about contemporary affairs. Newspapers also carry advertisements and entertainment. No nation can remain up-to-date without newspapers. False or partial news, however, should be read with care. Since it costs little but gives much, everyone should form the habit of reading newspapers daily.',
+    q10:
+        'Our National Flag\nOur national flag is the emblem of our independent Bangladesh. Every independent nation has a national flag of her own, and so have we. Our flag is rectangular in shape, its length and breadth being in the proportion of 10:6. On the deep green field there is a red round circle in the middle. The green colour stands for the fresh greenery and the youthful vigour of our motherland. The red circle reminds us of the rising sun of independence and the supreme sacrifice of our heroic sons in 1971. It was hoisted for the first time on 2 March, 1971 at Dhaka University, and its final design was prepared by Kamrul Hasan. The flag is hoisted on all government buildings and educational institutions on national days. We salute it and are ready to sacrifice our lives to uphold its honour.',
+    q11:
+        '9 Mymensingh Road, Dhaka-1000\n15 May 2024\nMy dear Nahida,\nI hope you are well. You wanted to know about the picnic we enjoyed last Friday. Our class went to Zinda Park at Narayanganj. We reached there by bus at ten o\u2019clock. The park was full of trees and there was a lovely lake. We cooked polao, chicken curry and vegetables under a big banyan tree and enjoyed the meal together. After lunch we sang songs, played games and had a cultural function where Nila recited a poem. We took many photographs. In the evening we returned home safely but our hearts remained there. It was really the happiest day of our school life.\nWith love,\nSohana',
+    q12:
+        'Importance of Reading Newspapers\nNewspaper is the storehouse of information. It is a great blessing of modern printing press. By reading a newspaper we come to know the news of home and abroad — politics, economy, education, sports and culture. It is called the mirror of the world because it reflects everything happening around us. Students can increase their general knowledge and learn the correct use of language by reading newspapers regularly. The jobless can find vacancies; businessmen can know market prices. Editorials help us build rational opinions about contemporary affairs. Newspapers also carry advertisements and entertainment. No nation can remain up-to-date without newspapers. False or partial news, however, should be read with care. Since it costs little but gives much, everyone should form the habit of reading newspapers daily.',
   ),
   57: SecondPaperAns(
-    q1: ['a','prevalent','caused','female','bites','organs','no','on','breeding','allow'],
-    q2: ['(a) The Republic of Maldives is a south Asian country.','(b) The location of the country is in the Indian ocean.','(c) Its heavenly beaches attract the tourists across the world.','(d) Millions of tourists from different countries visit the country every year.','(e) Unfortunately the country faces the bad impact of climate change.'],
-    q3: ['originate','are','polluting','do not have','releasing','polluting','throw','living','worked','ensured'],
-    q4: ['(a) It is a fact that the Padma is one of the mightiest rivers of Bangladesh.','(b) What a turbulent river it is!','(c) In winter the river remains calm and tranquil.','(d) It is the rainy season and the river assumes a terrible shape.','(e) Who does not know this?','(f) The river is not left unused for different purposes.','(g) Our farmers use its water for irrigation purpose and so they can grow plenty of crops.','(h) There is nobody but likes the Hilsa fish of the river.','(i) Though the river destroys the houses of men, it is still very useful to us.','(j) So, we should save the river.'],
-    q5: ['(a) Industry is the key to success, isn\u2019t it?','(b) The industrious are prosperous, aren\u2019t they?','(c) They hardly suffer from poverty, do they?','(d) On the other hand, idleness is a curse, isn\u2019t it?','(e) The idle seldom prosper, do they?'],
-    q6: ['happiness','unhappy','satisfaction','Actually','fully'],
-    q7: ['of','for','about','by','into'],
-    q8: ['which','Though','especially','a','and'],
+    q1: [
+      'a',
+      'prevalent',
+      'caused',
+      'female',
+      'bites',
+      'organs',
+      'no',
+      'on',
+      'breeding',
+      'allow'
+    ],
+    q2: [
+      '(a) The Republic of Maldives is a south Asian country.',
+      '(b) The location of the country is in the Indian ocean.',
+      '(c) Its heavenly beaches attract the tourists across the world.',
+      '(d) Millions of tourists from different countries visit the country every year.',
+      '(e) Unfortunately the country faces the bad impact of climate change.'
+    ],
+    q3: [
+      'originate',
+      'are',
+      'polluting',
+      'do not have',
+      'releasing',
+      'polluting',
+      'throw',
+      'living',
+      'worked',
+      'ensured'
+    ],
+    q4: [
+      '(a) It is a fact that the Padma is one of the mightiest rivers of Bangladesh.',
+      '(b) What a turbulent river it is!',
+      '(c) In winter the river remains calm and tranquil.',
+      '(d) It is the rainy season and the river assumes a terrible shape.',
+      '(e) Who does not know this?',
+      '(f) The river is not left unused for different purposes.',
+      '(g) Our farmers use its water for irrigation purpose and so they can grow plenty of crops.',
+      '(h) There is nobody but likes the Hilsa fish of the river.',
+      '(i) Though the river destroys the houses of men, it is still very useful to us.',
+      '(j) So, we should save the river.'
+    ],
+    q5: [
+      '(a) Industry is the key to success, isn\u2019t it?',
+      '(b) The industrious are prosperous, aren\u2019t they?',
+      '(c) They hardly suffer from poverty, do they?',
+      '(d) On the other hand, idleness is a curse, isn\u2019t it?',
+      '(e) The idle seldom prosper, do they?'
+    ],
+    q6: ['happiness', 'unhappy', 'satisfaction', 'Actually', 'fully'],
+    q7: ['of', 'for', 'about', 'by', 'into'],
+    q8: ['which', 'Though', 'especially', 'a', 'and'],
     q9: 'The old woman said, "Can you give me some food? I have been starving for three days." The young man said, "Why do you beg? Can\u2019t you work?"',
-    q10: 'A Tea Stall\nA tea stall is a small shop where tea, biscuits, bread and light snacks are sold. It is a common sight in Bangladesh. Usually it remains open from early morning to late night and is mostly crowded in the afternoon and evening. A tea stall generally has a few benches and a couple of tables. People of all classes — rickshaw pullers, students, day labourers and office goers — come here to take a cup of tea and refresh themselves. It is called a social meeting place because people sit here for hours, discuss politics, business, games and the problems of daily life. The murmur, the smoke of cigarettes and the clink of cups make a typical atmosphere. Sometimes heated arguments take place here. Indeed, a tea stall is a tiny stage of our everyday life.',
-    q11: 'Nabila Akter\nClass-IX, Roll-12\nBalaka Model High School, Rajshahi\n18 May 2024\nThe Head Teacher\nBalaka Model High School, Rajshahi\nSubject: Prayer for opening a canteen in the school campus.\nSir,\nWe, the students of your school, feel the necessity of opening a canteen in the school campus. Our classes continue for a long time and during tiffin period we suffer much for want of fresh food. We have to buy stale food from outside shops which is harmful to our health. If a canteen is opened on the campus, we shall get fresh food at a reasonable price.\nWe, therefore, pray and hope that you would be kind enough to open a canteen in the school campus without delay.\nYours obediently,\nNabila Akter,\nOn behalf of the students of the whole school.',
-    q12: 'The Importance of Reading Newspapers\nA newspaper is a paper which carries news and views from all corners of the world to our door every morning. It is one of the greatest gifts of modern civilization. As a student, I read newspapers regularly along with my academic study, and I have realized its great importance. It gives us news of politics, economy, science, education, sports and current affairs. Regular reading enriches our vocabulary and general knowledge which is very helpful for examinations and job tests. The editorial page develops our power of thought and helps us judge national and international issues independently. Advertisements inform us about jobs and products. Moreover, a newspaper keeps us away from idleness and bad company. Truly, the habit of reading newspapers makes a man informed, thoughtful and modern.',
+    q10:
+        'A Tea Stall\nA tea stall is a small shop where tea, biscuits, bread and light snacks are sold. It is a common sight in Bangladesh. Usually it remains open from early morning to late night and is mostly crowded in the afternoon and evening. A tea stall generally has a few benches and a couple of tables. People of all classes — rickshaw pullers, students, day labourers and office goers — come here to take a cup of tea and refresh themselves. It is called a social meeting place because people sit here for hours, discuss politics, business, games and the problems of daily life. The murmur, the smoke of cigarettes and the clink of cups make a typical atmosphere. Sometimes heated arguments take place here. Indeed, a tea stall is a tiny stage of our everyday life.',
+    q11:
+        'Nabila Akter\nClass-IX, Roll-12\nBalaka Model High School, Rajshahi\n18 May 2024\nThe Head Teacher\nBalaka Model High School, Rajshahi\nSubject: Prayer for opening a canteen in the school campus.\nSir,\nWe, the students of your school, feel the necessity of opening a canteen in the school campus. Our classes continue for a long time and during tiffin period we suffer much for want of fresh food. We have to buy stale food from outside shops which is harmful to our health. If a canteen is opened on the campus, we shall get fresh food at a reasonable price.\nWe, therefore, pray and hope that you would be kind enough to open a canteen in the school campus without delay.\nYours obediently,\nNabila Akter,\nOn behalf of the students of the whole school.',
+    q12:
+        'The Importance of Reading Newspapers\nA newspaper is a paper which carries news and views from all corners of the world to our door every morning. It is one of the greatest gifts of modern civilization. As a student, I read newspapers regularly along with my academic study, and I have realized its great importance. It gives us news of politics, economy, science, education, sports and current affairs. Regular reading enriches our vocabulary and general knowledge which is very helpful for examinations and job tests. The editorial page develops our power of thought and helps us judge national and international issues independently. Advertisements inform us about jobs and products. Moreover, a newspaper keeps us away from idleness and bad company. Truly, the habit of reading newspapers makes a man informed, thoughtful and modern.',
   ),
   58: SecondPaperAns(
-    q1: ['for','popular','beneficial','between','saying','on','participation','physically','an','personality'],
-    q2: ['(a) Everybody needs love which is the food of our soul.','(b) Love creates inspiration to go ahead.','(c) We should love all the creations of God.','(d) It is divine.','(e) Our greatest duty is love.'],
-    q3: ['depends','lead','build','work','remember','idle','will lag','are','reach','follow'],
-    q4: ['(a) A journey by train is never boring.','(b) Are people not fond of a journey by train?','(c) It is pleasant.','(d) By making a journey by train, a man can enjoy natural scenery.','(e) It is cheap, so people like it.','(f) As there are class distinctions in a train, people can buy tickets of various classes.','(g) Is train not one of the most comfortable vehicles?','(h) A man can enjoy a train journey.','(i) It is the British Govt. which introduced train to us.','(j) How safe a train journey is!'],
-    q5: ['(a) None can solve this problem, can they?','(b) Everybody hates them, don\u2019t they?','(c) Let\u2019s do the work, shall we?','(d) Telling lies is a great sin, isn\u2019t it?','(e) How nice the bird is, isn\u2019t it?'],
-    q6: ['naturally','different','wooden','fully','approximately'],
-    q7: ['In','in','in','For','for'],
-    q8: ['to us.','which','that','If','and'],
+    q1: [
+      'for',
+      'popular',
+      'beneficial',
+      'between',
+      'saying',
+      'on',
+      'participation',
+      'physically',
+      'an',
+      'personality'
+    ],
+    q2: [
+      '(a) Everybody needs love which is the food of our soul.',
+      '(b) Love creates inspiration to go ahead.',
+      '(c) We should love all the creations of God.',
+      '(d) It is divine.',
+      '(e) Our greatest duty is love.'
+    ],
+    q3: [
+      'depends',
+      'lead',
+      'build',
+      'work',
+      'remember',
+      'idle',
+      'will lag',
+      'are',
+      'reach',
+      'follow'
+    ],
+    q4: [
+      '(a) A journey by train is never boring.',
+      '(b) Are people not fond of a journey by train?',
+      '(c) It is pleasant.',
+      '(d) By making a journey by train, a man can enjoy natural scenery.',
+      '(e) It is cheap, so people like it.',
+      '(f) As there are class distinctions in a train, people can buy tickets of various classes.',
+      '(g) Is train not one of the most comfortable vehicles?',
+      '(h) A man can enjoy a train journey.',
+      '(i) It is the British Govt. which introduced train to us.',
+      '(j) How safe a train journey is!'
+    ],
+    q5: [
+      '(a) None can solve this problem, can they?',
+      '(b) Everybody hates them, don\u2019t they?',
+      '(c) Let\u2019s do the work, shall we?',
+      '(d) Telling lies is a great sin, isn\u2019t it?',
+      '(e) How nice the bird is, isn\u2019t it?'
+    ],
+    q6: ['naturally', 'different', 'wooden', 'fully', 'approximately'],
+    q7: ['In', 'in', 'in', 'For', 'for'],
+    q8: ['to us.', 'which', 'that', 'If', 'and'],
     q9: 'The man said to me, "Where are you going?" "I am going to Varsity," said I. "Did you go to Varsity yesterday?" "No," I replied. "Why did you not go?" "I was very busy," said I.',
-    q10: 'A Winter Morning\nA winter morning is misty, cold and dull. Everything looks hazy because of dense fog; nothing can be seen from a little distance. The sun rises late and seems a little ball of blood in the misty sky. Poor people, especially the old and children, suffer much from cold. They make fires with dry leaves and straw and warm themselves. Generally people get up late and like to stay under the quilt. Date juice sellers gather juice from the trees and village women make delicious cakes. In the Sunday morning the poor shiver in cold while the rich enjoy winter in warm clothes, pitha and juice. Farmers go to the fields with their cattle and the sound of their songs floats in the air. A winter morning, though lazy, has a beauty and charm of its own.',
-    q11: 'To : rafid@email.com\nSubject : Be regular in your studies.\nDear Rafid,\nI came to know from mother that you are not regular in your studies these days. As your elder brother, I advise you to give up this bad habit. Your SSC examination is not far away. Make a routine and study every subject daily. Attend your classes regularly, prepare notes and revise them at home. Avoid the company of bad friends and stop wasting time on mobile games. Remember, hard work today will make your future bright.\nTake care of your health and write back soon.\nYour elder brother,\nSakib',
-    q12: 'Your Favourite Hobby\nA hobby is a pleasant work which one does in one\u2019s spare time not for money but for joy. It refreshes the mind after hard labour. My favourite hobby is fishing. There is a big pond beside our village home. On Friday afternoons I go there with a rod, a fishing line and some earthworms as bait. I sit quietly under a tree and throw the line into the clear water. The waiting for the fish to bite is very thrilling. When a fish is caught, my joy knows no bounds. Sometimes I take the fish home and mother cooks it for dinner. Fishing teaches me patience and concentration. It also takes me close to nature. Whenever I feel tired of study, an hour of fishing makes me fresh again. Truly, fishing is the best gift of my leisure.',
+    q10:
+        'A Winter Morning\nA winter morning is misty, cold and dull. Everything looks hazy because of dense fog; nothing can be seen from a little distance. The sun rises late and seems a little ball of blood in the misty sky. Poor people, especially the old and children, suffer much from cold. They make fires with dry leaves and straw and warm themselves. Generally people get up late and like to stay under the quilt. Date juice sellers gather juice from the trees and village women make delicious cakes. In the Sunday morning the poor shiver in cold while the rich enjoy winter in warm clothes, pitha and juice. Farmers go to the fields with their cattle and the sound of their songs floats in the air. A winter morning, though lazy, has a beauty and charm of its own.',
+    q11:
+        'To : rafid@email.com\nSubject : Be regular in your studies.\nDear Rafid,\nI came to know from mother that you are not regular in your studies these days. As your elder brother, I advise you to give up this bad habit. Your SSC examination is not far away. Make a routine and study every subject daily. Attend your classes regularly, prepare notes and revise them at home. Avoid the company of bad friends and stop wasting time on mobile games. Remember, hard work today will make your future bright.\nTake care of your health and write back soon.\nYour elder brother,\nSakib',
+    q12:
+        'Your Favourite Hobby\nA hobby is a pleasant work which one does in one\u2019s spare time not for money but for joy. It refreshes the mind after hard labour. My favourite hobby is fishing. There is a big pond beside our village home. On Friday afternoons I go there with a rod, a fishing line and some earthworms as bait. I sit quietly under a tree and throw the line into the clear water. The waiting for the fish to bite is very thrilling. When a fish is caught, my joy knows no bounds. Sometimes I take the fish home and mother cooks it for dinner. Fishing teaches me patience and concentration. It also takes me close to nature. Whenever I feel tired of study, an hour of fishing makes me fresh again. Truly, fishing is the best gift of my leisure.',
   ),
   59: SecondPaperAns(
-    q1: ['childhood','subconscious','through','attraction','at','especially','fallen','its','and','when'],
-    q2: ['(a) Culture is a term used for a way of life.','(b) It refers to a society\u2019s beliefs, customs, languages, foods etc.','(c) Hospitality is a part of Bangladeshi culture.','(d) We are very fond of showing hospitality.','(e) But nowadays our culture is badly influenced by the negative impacts of western culture.'],
-    q3: ['is','living','enables','talking','given','proves','take','choosing','fails','will suffer'],
-    q4: ['(a) Corruption is an evil and it is one of the worst evils.','(b) A person who is corrupt can do anything against morality.','(c) People hate a corrupt person.','(d) Who respects him?','(e) We have strict laws but we are still affected by this evil.','(f) A corrupt person is the most hated person.','(g) We hope to see Bangladesh free from this evil.','(h) There is nobody who does not avoid a corrupt person.','(i) What an unhappy life a corrupt person leads!','(j) We should all work together to make Bangladesh a corruption free country.'],
-    q5: ['(a) Patriotism is a noble virtue, isn\u2019t it?','(b) Wise people teach us to love our own country, don\u2019t they?','(c) We should remember that motherland is above everything, shouldn\u2019t we?','(d) Some people forget it, don\u2019t they?','(e) We hope that everybody will love his motherland, don\u2019t we?'],
-    q6: ['relaxation','beautiful','smoothness','overwork','idleness'],
-    q7: ['in','Of','for','by','about'],
-    q8: ['Because','But','Unless','As a result','Therefore'],
+    q1: [
+      'childhood',
+      'subconscious',
+      'through',
+      'attraction',
+      'at',
+      'especially',
+      'fallen',
+      'its',
+      'and',
+      'when'
+    ],
+    q2: [
+      '(a) Culture is a term used for a way of life.',
+      '(b) It refers to a society\u2019s beliefs, customs, languages, foods etc.',
+      '(c) Hospitality is a part of Bangladeshi culture.',
+      '(d) We are very fond of showing hospitality.',
+      '(e) But nowadays our culture is badly influenced by the negative impacts of western culture.'
+    ],
+    q3: [
+      'is',
+      'living',
+      'enables',
+      'talking',
+      'given',
+      'proves',
+      'take',
+      'choosing',
+      'fails',
+      'will suffer'
+    ],
+    q4: [
+      '(a) Corruption is an evil and it is one of the worst evils.',
+      '(b) A person who is corrupt can do anything against morality.',
+      '(c) People hate a corrupt person.',
+      '(d) Who respects him?',
+      '(e) We have strict laws but we are still affected by this evil.',
+      '(f) A corrupt person is the most hated person.',
+      '(g) We hope to see Bangladesh free from this evil.',
+      '(h) There is nobody who does not avoid a corrupt person.',
+      '(i) What an unhappy life a corrupt person leads!',
+      '(j) We should all work together to make Bangladesh a corruption free country.'
+    ],
+    q5: [
+      '(a) Patriotism is a noble virtue, isn\u2019t it?',
+      '(b) Wise people teach us to love our own country, don\u2019t they?',
+      '(c) We should remember that motherland is above everything, shouldn\u2019t we?',
+      '(d) Some people forget it, don\u2019t they?',
+      '(e) We hope that everybody will love his motherland, don\u2019t we?'
+    ],
+    q6: ['relaxation', 'beautiful', 'smoothness', 'overwork', 'idleness'],
+    q7: ['in', 'Of', 'for', 'by', 'about'],
+    q8: ['Because', 'But', 'Unless', 'As a result', 'Therefore'],
     q9: '"Hi Jhorna, I\u2019m coming to Bangladesh next month. Will you receive me at the airport?" said Meghla. "Don\u2019t worry, I\u2019ll be there," Jhorna said.',
-    q10: 'Our National Flag\nOur national flag is the symbol of the independence and sovereignty of Bangladesh. It is rectangular in size, the ratio of its length and breadth being 10:6. It consists of a deep green field and a red circle placed in the middle. The deep green represents the fresh green fields of our motherland and the ever-youthful spirit of her people. The red circle symbolizes the sun of independence rising over Bangladesh and also the sacrifice of the brave martyrs of the Liberation War of 1971. It was hoisted first at Dhaka University on 2 March, 1971 and the final design was done by Kamrul Hasan. The national flag is hoisted on all government offices and buildings on national occasions. We derive inspiration from it and feel proud to be its owner. It is the duty of every citizen to uphold its dignity and honour at any cost.',
-    q11: '12 Green Road, Dhaka\n22 May 2024\nMy dear Anika,\nI hope you are well. A few days ago my parents and I went to Chattogram by train, and I cannot but share the experience with you. We started from Kamalapur station at seven in the morning by the Subarna Express. The train ran very fast. Sitting by the window, I saw green paddy fields, flowing rivers, rows of villages and small hills flying past. Inside the train the seats were comfortable and vendors were selling tea, fruits and cakes. When the train crossed the beautiful Meghna bridge, everyone was amazed to see the vast water below. We reached Chattogram within five hours. It was my first train journey, and I enjoyed every moment of it. I wish you were with us!\nYours ever,\nSamia',
-    q12: 'The Season You Like Most\nThere are six seasons in Bangladesh and each comes with its own features. Among them, the rainy season is my favourite. It comprises the months of Ashar and Sraban. During this season the sky often remains cloudy and rain falls in torrents, sometimes for days together. Fields, canals and ponds are filled with water. Trees and plants look green and fresh after bathing in rain. Boys like me sail paper boats and play in the rainwater. The washing of nature\u2019s face charms the poet\u2019s mind. Farmers become busy transplanting paddy seedlings. But excessive rain causes flood and waterlogging and the poor suffer much. Even then, I like the rainy season most because it brings life, greenery and relief from the summer heat. In short, rain decorates my Bangladesh like a garden.',
+    q10:
+        'Our National Flag\nOur national flag is the symbol of the independence and sovereignty of Bangladesh. It is rectangular in size, the ratio of its length and breadth being 10:6. It consists of a deep green field and a red circle placed in the middle. The deep green represents the fresh green fields of our motherland and the ever-youthful spirit of her people. The red circle symbolizes the sun of independence rising over Bangladesh and also the sacrifice of the brave martyrs of the Liberation War of 1971. It was hoisted first at Dhaka University on 2 March, 1971 and the final design was done by Kamrul Hasan. The national flag is hoisted on all government offices and buildings on national occasions. We derive inspiration from it and feel proud to be its owner. It is the duty of every citizen to uphold its dignity and honour at any cost.',
+    q11:
+        '12 Green Road, Dhaka\n22 May 2024\nMy dear Anika,\nI hope you are well. A few days ago my parents and I went to Chattogram by train, and I cannot but share the experience with you. We started from Kamalapur station at seven in the morning by the Subarna Express. The train ran very fast. Sitting by the window, I saw green paddy fields, flowing rivers, rows of villages and small hills flying past. Inside the train the seats were comfortable and vendors were selling tea, fruits and cakes. When the train crossed the beautiful Meghna bridge, everyone was amazed to see the vast water below. We reached Chattogram within five hours. It was my first train journey, and I enjoyed every moment of it. I wish you were with us!\nYours ever,\nSamia',
+    q12:
+        'The Season You Like Most\nThere are six seasons in Bangladesh and each comes with its own features. Among them, the rainy season is my favourite. It comprises the months of Ashar and Sraban. During this season the sky often remains cloudy and rain falls in torrents, sometimes for days together. Fields, canals and ponds are filled with water. Trees and plants look green and fresh after bathing in rain. Boys like me sail paper boats and play in the rainwater. The washing of nature\u2019s face charms the poet\u2019s mind. Farmers become busy transplanting paddy seedlings. But excessive rain causes flood and waterlogging and the poor suffer much. Even then, I like the rainy season most because it brings life, greenery and relief from the summer heat. In short, rain decorates my Bangladesh like a garden.',
   ),
 };
 
@@ -162,149 +603,571 @@ class FirstPaperAns {
   final List<String> q2; // (a)–(e) সংক্ষিপ্ত উত্তর
   final List<String> q3; // (a)–(e) cloze-test শব্দ
   final List<String> q4; // (i)–(v) information transfer
-  final String q5;       // summary
+  final String q5; // summary
   final List<String> q6; // (a)–(e) matching ('iii & iii' আকারে B–C কলাম)
-  final String q7;       // arranging chain  (যেমন: d → h → c → g → f → b → a → e)
+  final String q7; // arranging chain  (যেমন: d → h → c → g → f → b → a → e)
   final List<String> q8; // (a)–(h) কবিতাভিত্তিক প্রশ্নের উত্তর
   final List<String> q9; // (a)–(h) রচনাভিত্তিক প্রশ্নের উত্তর
   final String q10Title; // completing story-এর উপযুক্ত শিরোনাম
-  final String q10;      // completing story (সম্পূর্ণ)
-  final String q11;      // dialogue (সম্পূর্ণ)
+  final String q10; // completing story (সম্পূর্ণ)
+  final String q11; // dialogue (সম্পূর্ণ)
   const FirstPaperAns({
-    required this.q1, required this.q2, required this.q3, required this.q4,
-    required this.q5, required this.q6, required this.q7,
-    required this.q8, required this.q9,
-    required this.q10Title, required this.q10, required this.q11,
+    required this.q1,
+    required this.q2,
+    required this.q3,
+    required this.q4,
+    required this.q5,
+    required this.q6,
+    required this.q7,
+    required this.q8,
+    required this.q9,
+    required this.q10Title,
+    required this.q10,
+    required this.q11,
   });
 }
 
 /// 1st Paper উত্তরমালা — serial → answers
 const Map<int, FirstPaperAns> english1Answers2024 = {
   61: FirstPaperAns(
-    q1: ['(a) iv. designed','(b) iii. media for communicating with others','(c) i. recurrently','(d) iii. social networking services','(e) iv. Internet','(f) ii. rise','(g) ii. privacy'],
-    q2: ['(a) Social networking services are web-based services like Facebook, Google+, Twitter and LinkedIn that allow people to interact and build social relations through the Internet.','(b) They connect people across the borders instantly, so the users of different countries become one community and feel that they really live in a global village.','(c) Social networks work through the Internet — users create personal profiles, make them public, upload pictures and contents, post blog entries and exchange comments.','(d) It means that using social networks is very simple and easy — anybody can open a profile, look into others\u2019 profiles and communicate without any complexity.','(e) Because most of the social services are cost-free, simple and easy, and they allow sharing of profile, pictures and blogs with privacy protection.'],
-    q3: ['communication','order','status','opportunities','solve'],
-    q4: ['(i) on 7 March, 1949','(ii) Took admission (in the department of Statistics)','(iii) in the Pakistan Military Academy','(iv) Was commissioned','(v) on 14 December 1971'],
-    q6: ['(a) ii & iv','(b) v & i','(c) i & ii','(d) iv & v','(e) iii & iii'],
-    q8: ['(a) According to the poem Books, books bring us knowledge, joy and sweet company; they carry us to lands we have never seen.','(b) The main theme of the poem Two Mothers Remembered is the loving memory of two mothers — the mother who gave birth and the mother who reared the poet with care.','(c) The poet portrays the mother-daughter bond as deep, tender and lifelong — the daughter grows in her mother\u2019s love and later becomes her strength.','(d) The main character of the poem The Sands of Dee is Mary, the innocent girl who went to call the cattle home and was drowned by the tide.','(e) In the poem Time, You Old Gipsy Man the speaker addresses Time, personified as an old gipsy man who never stops wandering.','(f) The speaker stops by the woods owned by a man whose house is in the village.','(g) The poem Solitude reflects that society loves the cheerful and ignores the sorrowful — joy wins friends while grief makes one alone.','(h) In O me! O Life! questions about the meaning and worth of life amid faithless crowds and vain struggles trouble the poet.'],
-    q9: ['(a) In a jeweller\u2019s shop we can see necklaces, bracelets, rings, earrings and other ornaments of gold and silver set with precious stones.','(b) Rosamond cried out suddenly because she saw a beautiful purple jar in the chemist\u2019s shop and became charmed by its colour.','(c) When the chemist turned the jar upside down and let the coloured water out, Rosamond saw that it was in fact a plain white glass jar.','(d) Bassanio\u2019s intention was to raise/ borrow three thousand ducats so that he could go to Belmont and win the rich and beautiful Portia.','(e) It indicates Shylock\u2019s extreme cruelty and revengefulness — under cover of the bond he actually wanted to take Antonio\u2019s life.','(f) Bassanio chose the lead casket because he valued inward worth more than outward show; true love, like the inscription on lead, must give and hazard everything.','(g) The lawful penalty was one pound of flesh to be cut off from any part of Antonio\u2019s body if he failed to repay the money in time.','(h) Shylock is greedy, revengeful and merciless, yet he is also a wronged man insulted as a Jew — so I find him cruel in mind but pitiable as a victim of oppression.'],
+    q1: [
+      '(a) iv. designed',
+      '(b) iii. media for communicating with others',
+      '(c) i. recurrently',
+      '(d) iii. social networking services',
+      '(e) iv. Internet',
+      '(f) ii. rise',
+      '(g) ii. privacy'
+    ],
+    q2: [
+      '(a) Social networking services are web-based services like Facebook, Google+, Twitter and LinkedIn that allow people to interact and build social relations through the Internet.',
+      '(b) They connect people across the borders instantly, so the users of different countries become one community and feel that they really live in a global village.',
+      '(c) Social networks work through the Internet — users create personal profiles, make them public, upload pictures and contents, post blog entries and exchange comments.',
+      '(d) It means that using social networks is very simple and easy — anybody can open a profile, look into others\u2019 profiles and communicate without any complexity.',
+      '(e) Because most of the social services are cost-free, simple and easy, and they allow sharing of profile, pictures and blogs with privacy protection.'
+    ],
+    q3: ['communication', 'order', 'status', 'opportunities', 'solve'],
+    q4: [
+      '(i) on 7 March, 1949',
+      '(ii) Took admission (in the department of Statistics)',
+      '(iii) in the Pakistan Military Academy',
+      '(iv) Was commissioned',
+      '(v) on 14 December 1971'
+    ],
+    q6: [
+      '(a) ii & iv',
+      '(b) v & i',
+      '(c) i & ii',
+      '(d) iv & v',
+      '(e) iii & iii'
+    ],
+    q8: [
+      '(a) According to the poem Books, books bring us knowledge, joy and sweet company; they carry us to lands we have never seen.',
+      '(b) The main theme of the poem Two Mothers Remembered is the loving memory of two mothers — the mother who gave birth and the mother who reared the poet with care.',
+      '(c) The poet portrays the mother-daughter bond as deep, tender and lifelong — the daughter grows in her mother\u2019s love and later becomes her strength.',
+      '(d) The main character of the poem The Sands of Dee is Mary, the innocent girl who went to call the cattle home and was drowned by the tide.',
+      '(e) In the poem Time, You Old Gipsy Man the speaker addresses Time, personified as an old gipsy man who never stops wandering.',
+      '(f) The speaker stops by the woods owned by a man whose house is in the village.',
+      '(g) The poem Solitude reflects that society loves the cheerful and ignores the sorrowful — joy wins friends while grief makes one alone.',
+      '(h) In O me! O Life! questions about the meaning and worth of life amid faithless crowds and vain struggles trouble the poet.'
+    ],
+    q9: [
+      '(a) In a jeweller\u2019s shop we can see necklaces, bracelets, rings, earrings and other ornaments of gold and silver set with precious stones.',
+      '(b) Rosamond cried out suddenly because she saw a beautiful purple jar in the chemist\u2019s shop and became charmed by its colour.',
+      '(c) When the chemist turned the jar upside down and let the coloured water out, Rosamond saw that it was in fact a plain white glass jar.',
+      '(d) Bassanio\u2019s intention was to raise/ borrow three thousand ducats so that he could go to Belmont and win the rich and beautiful Portia.',
+      '(e) It indicates Shylock\u2019s extreme cruelty and revengefulness — under cover of the bond he actually wanted to take Antonio\u2019s life.',
+      '(f) Bassanio chose the lead casket because he valued inward worth more than outward show; true love, like the inscription on lead, must give and hazard everything.',
+      '(g) The lawful penalty was one pound of flesh to be cut off from any part of Antonio\u2019s body if he failed to repay the money in time.',
+      '(h) Shylock is greedy, revengeful and merciless, yet he is also a wronged man insulted as a Jew — so I find him cruel in mind but pitiable as a victim of oppression.'
+    ],
     q5: 'Captain Mohiuddin Jahangir, one of the greatest freedom fighters of Bangladesh, was an army officer in the Liberation War of 1971. Born on 7 March, 1949 at Rahimganj in Barishal, he joined the Pakistan Military Academy as a cadet in 1967 and was commissioned in the Engineering Corps. As an officer of Sector 7 of the Mukti Bahini, he fought at the Chapai Nawabganj border and was killed on 14 December 1971 while attacking the enemy defences on the bank of the Mahananda. He was buried near Sona Masjid and was awarded the highest state honour of Birshestho for his valor and sacrifice.',
     q7: 'd → h → c → g → f → b → a → e',
     q10Title: 'A Small Act of Kindness',
-    q10: 'One day a school boy named Arif was returning home from school. On the way to his home, he saw an old woman who was begging. Arif asked the woman why she was begging. The woman replied with tears that she had no one in the world and had eaten nothing for two days. Arif\u2019s heart was filled with pity. He brought her to his home and gave her rice and curry to eat. The old woman ate heartily and prayed for the boy. Arif gave her the twenty taka he had saved for buying a story book. He also collected some warm clothes from his mother for the woman. His mother praised him for his kindness. From that day Arif decided to help the helpless whenever he could. He understood that real happiness lies in helping others. Indeed, service to man is service to God. A kind heart is the greatest treasure of a man.',
-    q11: 'Dialogue between Tunan and Milon about the importance of physical exercise:\nTunan: Good morning, Milon! Why do you look so weak these days?\nMilon: I often feel tired and cannot concentrate on my studies.\nTunan: Do you take physical exercise regularly?\nMilon: No. I think exercise is only a waste of time.\nTunan: You are wrong, my friend. Physical exercise keeps our body fit and refreshes our mind.\nMilon: What kind of exercise should I take?\nTunan: You can jog for thirty minutes every morning and play football or cricket in the afternoon.\nMilon: But I find no time after school and coaching.\nTunan: A sound mind lives in a sound body. If you manage your time properly, you will find time.\nMilon: I understand now. From tomorrow I will start morning walk and join the school team.\nTunan: Excellent! Good health is the root of all happiness.',
+    q10:
+        'One day a school boy named Arif was returning home from school. On the way to his home, he saw an old woman who was begging. Arif asked the woman why she was begging. The woman replied with tears that she had no one in the world and had eaten nothing for two days. Arif\u2019s heart was filled with pity. He brought her to his home and gave her rice and curry to eat. The old woman ate heartily and prayed for the boy. Arif gave her the twenty taka he had saved for buying a story book. He also collected some warm clothes from his mother for the woman. His mother praised him for his kindness. From that day Arif decided to help the helpless whenever he could. He understood that real happiness lies in helping others. Indeed, service to man is service to God. A kind heart is the greatest treasure of a man.',
+    q11:
+        'Dialogue between Tunan and Milon about the importance of physical exercise:\nTunan: Good morning, Milon! Why do you look so weak these days?\nMilon: I often feel tired and cannot concentrate on my studies.\nTunan: Do you take physical exercise regularly?\nMilon: No. I think exercise is only a waste of time.\nTunan: You are wrong, my friend. Physical exercise keeps our body fit and refreshes our mind.\nMilon: What kind of exercise should I take?\nTunan: You can jog for thirty minutes every morning and play football or cricket in the afternoon.\nMilon: But I find no time after school and coaching.\nTunan: A sound mind lives in a sound body. If you manage your time properly, you will find time.\nMilon: I understand now. From tomorrow I will start morning walk and join the school team.\nTunan: Excellent! Good health is the root of all happiness.',
   ),
   62: FirstPaperAns(
-    q1: ['(a) ii. the destruction of the river Jamuna','(b) i. cruelty of nature','(c) iii. river erosion','(d) i. agitation','(e) ii. to break something into pieces','(f) ii. wind that blows with a hissing sound','(g) iii. To describe the effect of river erosion'],
-    q2: ['(a) The author calls the Jamuna greedy because it has devoured Meherjan\u2019s land, trees, garden and home like an insatiable snatcher.','(b) Meherjan lives in a slum on the Sirajgonj Town Protection Embankment.','(c) \u2019Dancing flames\u2019 means the flames of the fire that move unsteadily upward in the blowing wind as if they were dancing.','(d) We can stop river erosion by taking prompt actions to adapt to climate change — building strong embankments, dredging rivers and planting trees on the banks.','(e) During each monsoon many more villages are threatened by the roaring rivers like the Jamuna, the Padma and the Meghna.'],
-    q3: ['found','used','full','but','form'],
-    q4: ['(i) President','(ii) Saturia in Barishal','(iii) passed the B.Sc Exam (obtaining Honours)','(iv) 1896','(v) was appointed as an examiner of M.A. in Math'],
-    q6: ['(a) iii & iii','(b) i & v','(c) v & ii','(d) iv & i','(e) ii & iv'],
-    q8: ['(a) When one opens and looks at a book, a new world opens before him — knowledge pours in and boredom/cares melt away.','(b) The poet claims to have two mothers — her own mother and the mother who reared her.The claim is made by the poet of Two Mothers Remembered.','(c) The poem teaches that one who cares for and nurtures a child deserves the same honour as one\u2019s own mother; caregiving is as holy as motherhood.','(d) Mary was asked to call the cattle home across the sands of Dee.','(e) The speaker requests Time to stop for a while / to wait and not to run so fast.','(f) The speaker stops by the woods to observe their beauty as they fill up with snow.','(g) Nature echoes the theme of Solitude — hills and air answer cheerful songs but never our sighs, reinforcing that the world welcomes joy and ignores sorrow.','(h) By \u2019endless train of the faithless\u2019 the poet means the never-ending line of hopeless, disloyal and discontented people crowding the earth.'],
-    q9: ['(a) Rosamond was a little disheartened because her mother refused to buy many of the pretty things she saw in the shops.','(b) Because her own shoes were worn out/had holes, so she requested her mother to buy her another pair of shoes.','(c) For buying the purple jar Rosamond could not buy new shoes; she had to walk in worn-out shoes, her feet ached, and later she found the jar was only plain white glass.','(d) Bassanio led a gay and extravagant life, spending more than he earned, and so he fell into debt.','(e) Shylock agreed to lend the money on the strange condition that if Antonio failed to repay in time, he would cut a pound of flesh from any part of Antonio\u2019s body.','(f) Bassanio said this. He said it because common sense tells that a precious thing is supposed to be kept in a precious container — yet he later reasoned otherwise and chose the lead casket.','(g) The bond did not mention any drop of blood — only the flesh was mentioned.','(h) Because the outward beauty of the jar charmed her childish mind and she judged by appearance without examining its real worth.'],
+    q1: [
+      '(a) ii. the destruction of the river Jamuna',
+      '(b) i. cruelty of nature',
+      '(c) iii. river erosion',
+      '(d) i. agitation',
+      '(e) ii. to break something into pieces',
+      '(f) ii. wind that blows with a hissing sound',
+      '(g) iii. To describe the effect of river erosion'
+    ],
+    q2: [
+      '(a) The author calls the Jamuna greedy because it has devoured Meherjan\u2019s land, trees, garden and home like an insatiable snatcher.',
+      '(b) Meherjan lives in a slum on the Sirajgonj Town Protection Embankment.',
+      '(c) \u2019Dancing flames\u2019 means the flames of the fire that move unsteadily upward in the blowing wind as if they were dancing.',
+      '(d) We can stop river erosion by taking prompt actions to adapt to climate change — building strong embankments, dredging rivers and planting trees on the banks.',
+      '(e) During each monsoon many more villages are threatened by the roaring rivers like the Jamuna, the Padma and the Meghna.'
+    ],
+    q3: ['found', 'used', 'full', 'but', 'form'],
+    q4: [
+      '(i) President',
+      '(ii) Saturia in Barishal',
+      '(iii) passed the B.Sc Exam (obtaining Honours)',
+      '(iv) 1896',
+      '(v) was appointed as an examiner of M.A. in Math'
+    ],
+    q6: [
+      '(a) iii & iii',
+      '(b) i & v',
+      '(c) v & ii',
+      '(d) iv & i',
+      '(e) ii & iv'
+    ],
+    q8: [
+      '(a) When one opens and looks at a book, a new world opens before him — knowledge pours in and boredom/cares melt away.',
+      '(b) The poet claims to have two mothers — her own mother and the mother who reared her.The claim is made by the poet of Two Mothers Remembered.',
+      '(c) The poem teaches that one who cares for and nurtures a child deserves the same honour as one\u2019s own mother; caregiving is as holy as motherhood.',
+      '(d) Mary was asked to call the cattle home across the sands of Dee.',
+      '(e) The speaker requests Time to stop for a while / to wait and not to run so fast.',
+      '(f) The speaker stops by the woods to observe their beauty as they fill up with snow.',
+      '(g) Nature echoes the theme of Solitude — hills and air answer cheerful songs but never our sighs, reinforcing that the world welcomes joy and ignores sorrow.',
+      '(h) By \u2019endless train of the faithless\u2019 the poet means the never-ending line of hopeless, disloyal and discontented people crowding the earth.'
+    ],
+    q9: [
+      '(a) Rosamond was a little disheartened because her mother refused to buy many of the pretty things she saw in the shops.',
+      '(b) Because her own shoes were worn out/had holes, so she requested her mother to buy her another pair of shoes.',
+      '(c) For buying the purple jar Rosamond could not buy new shoes; she had to walk in worn-out shoes, her feet ached, and later she found the jar was only plain white glass.',
+      '(d) Bassanio led a gay and extravagant life, spending more than he earned, and so he fell into debt.',
+      '(e) Shylock agreed to lend the money on the strange condition that if Antonio failed to repay in time, he would cut a pound of flesh from any part of Antonio\u2019s body.',
+      '(f) Bassanio said this. He said it because common sense tells that a precious thing is supposed to be kept in a precious container — yet he later reasoned otherwise and chose the lead casket.',
+      '(g) The bond did not mention any drop of blood — only the flesh was mentioned.',
+      '(h) Because the outward beauty of the jar charmed her childish mind and she judged by appearance without examining its real worth.'
+    ],
     q5: 'Abul Kashem Fazlul Huq, born in 1873 at Saturia in Barishal, was a brilliant student who stood first in the Entrance Examination and earned B.Sc with Honours from Presidency College, Calcutta. He took his M.Sc degree in Math in 1896, became an examiner of M.A. in Calcutta University and later joined the Calcutta High Court. He played an important role in founding the All India Muslim League in 1906, became the General Secretary of the Indian National Congress and the President of the All India Muslim League, leaving behind a glorious political legacy.',
     q7: 'f → c → e → h → d → g → b → a',
     q10Title: 'Midas and the Golden Touch',
-    q10: 'Once upon a time, there was a king called Midas. He was very rich but he always longed for more riches. Moreover, he was fond of gold though he had a lot of it. One day a kind stranger came to his palace and granted him a boon. Midas at once prayed that whatever he touched might turn into gold. His prayer was granted. He touched a table and it became gold; he touched a rose and it too glittered like gold. At first he was very glad. But when he sat for dinner, the food and wine turned into gold at his touch and he could not eat. Then his little daughter ran to embrace him, and as he kissed her, she became a statue of gold! Midas cried bitterly and begged the stranger to take the gift back. The stranger asked him to bathe in the river, and everything became normal again. Moral: Greed is a curse / Too much greed leads to ruin.',
-    q11: 'Dialogue between Robin and Fariha about dengue fever and its remedies:\nRobin: Hello Fariha! I heard you were absent from school yesterday. What\u2019s wrong?\nFariha: My brother is suffering from dengue fever. We were at the hospital.\nRobin: Sorry to hear that! What is dengue fever exactly?\nFariha: It is a viral fever spread by Aedes mosquito, usually biting during daytime.\nRobin: How can we prevent it?\nFariha: We should keep our surroundings clean so that mosquitoes cannot breed in stagnant water.\nRobin: Anything else?\nFariha: Yes, we should use mosquito nets day and night and spray insecticides in dark corners.\nRobin: What should a patient do if attacked by dengue?\nFariha: The patient must drink plenty of water and juice and consult a doctor for blood tests.\nRobin: What about self-medication?\nFariha: No, only the medicine prescribed by the doctor should be taken.\nRobin: Thank you for the information. I wish your brother a quick recovery!',
+    q10:
+        'Once upon a time, there was a king called Midas. He was very rich but he always longed for more riches. Moreover, he was fond of gold though he had a lot of it. One day a kind stranger came to his palace and granted him a boon. Midas at once prayed that whatever he touched might turn into gold. His prayer was granted. He touched a table and it became gold; he touched a rose and it too glittered like gold. At first he was very glad. But when he sat for dinner, the food and wine turned into gold at his touch and he could not eat. Then his little daughter ran to embrace him, and as he kissed her, she became a statue of gold! Midas cried bitterly and begged the stranger to take the gift back. The stranger asked him to bathe in the river, and everything became normal again. Moral: Greed is a curse / Too much greed leads to ruin.',
+    q11:
+        'Dialogue between Robin and Fariha about dengue fever and its remedies:\nRobin: Hello Fariha! I heard you were absent from school yesterday. What\u2019s wrong?\nFariha: My brother is suffering from dengue fever. We were at the hospital.\nRobin: Sorry to hear that! What is dengue fever exactly?\nFariha: It is a viral fever spread by Aedes mosquito, usually biting during daytime.\nRobin: How can we prevent it?\nFariha: We should keep our surroundings clean so that mosquitoes cannot breed in stagnant water.\nRobin: Anything else?\nFariha: Yes, we should use mosquito nets day and night and spray insecticides in dark corners.\nRobin: What should a patient do if attacked by dengue?\nFariha: The patient must drink plenty of water and juice and consult a doctor for blood tests.\nRobin: What about self-medication?\nFariha: No, only the medicine prescribed by the doctor should be taken.\nRobin: Thank you for the information. I wish your brother a quick recovery!',
   ),
   63: FirstPaperAns(
-    q1: ['(a) ii. web based','(b) iii. social networking services','(c) ii. People of the world','(d) iv. Internet and social media have brought the world closer','(e) iii. social relation','(f) ii. guard','(g) iii. spectator'],
-    q2: ['(a) Facebook, Google+, Twitter, LinkedIn etc. are some social media sites.','(b) It is possible because the services are web-based — anyone connected to the Internet can use them to interact from anywhere.','(c) When the users can connect with people across the borders, they feel that they really live in a global village.','(d) Social networks work through the Internet — users make personal profiles, upload pictures and contents, post blog entries and exchange comments.','(e) Because most of the social services are cost-free and easy to use, and they permit sharing, updating and privacy protection.'],
-    q3: ['due','species','extinct','emit','suffer'],
-    q4: ['(i) 26 December 1791','(ii) of the Royal Society','(iii) received an honours degree (without examination)','(iv) invention of the first mechanical computer (that eventually led to today\u2019s computer)','(v) on 18 October 1871'],
-    q6: ['(a) iv & ii','(b) i & v','(c) v & iii','(d) iii & iv','(e) ii & i'],
-    q8: ['(a) Our cares and loneliness melt away when we read a book.','(b) By \u2019two different people, yet with the same name\u2019 the poet means the mother who gave her birth and the mother who brought her up — both are called mother.','(c) One mother gave the poet birth, while the other reared her with care and love; they differ in role but not in affection.','(d) The western wind was wild and dank with foam; it moaned and swept across the sands of Dee.','(e) In return for staying, the speaker offers Time his sincere welcome and humble hospitality — whatever little he has.','(f) The owner of the woods is in the village — his house is in the village though.','(g) The poet uses \u2019feast\u2019 and \u2019fast\u2019 to contrast the world\u2019s behaviour — people join our feast but flee our fast, exposing society\u2019s selfishness.','(h) He calls himself foolish and faithless because he too shared the world\u2019s vain ambitions and doubts; he honestly counts himself among the unfaithful crowd.'],
-    q9: ['(a) I think Rosamond wanted to buy all the things because she was a child and the outward beauty of things charmed her; she could not understand their usefulness or price.','(b) Because her mother had limited money and wanted to teach her to choose wisely; at last Rosamond decided to buy the purple jar.','(c) The lesson of the story The Purple Jar is that we should not judge anything by outward appearance; a wrong choice made for show brings suffering.','(d) Yes, Antonio was really worthy of getting love, because he was kind, generous and always ready to help people; he even risked his life for his friend.','(e) Their happiness turned into sorrow when news came that Antonio\u2019s ships were lost and he could not repay the debt, so Shylock could claim his pound of flesh.','(f) Portia said that mercy is a noble, divine quality that comes from the heart; it blesses both the giver and the receiver and cannot be forced.','(g) No, I do not support him. Though the bond was legal, claiming a pound of human flesh out of revenge was cruel and inhuman; law without mercy is injustice.','(h) Though unusual, the plan was wise — the casket test selected a husband who would love Portia for herself, not for her wealth, though it denied her own choice.'],
+    q1: [
+      '(a) ii. web based',
+      '(b) iii. social networking services',
+      '(c) ii. People of the world',
+      '(d) iv. Internet and social media have brought the world closer',
+      '(e) iii. social relation',
+      '(f) ii. guard',
+      '(g) iii. spectator'
+    ],
+    q2: [
+      '(a) Facebook, Google+, Twitter, LinkedIn etc. are some social media sites.',
+      '(b) It is possible because the services are web-based — anyone connected to the Internet can use them to interact from anywhere.',
+      '(c) When the users can connect with people across the borders, they feel that they really live in a global village.',
+      '(d) Social networks work through the Internet — users make personal profiles, upload pictures and contents, post blog entries and exchange comments.',
+      '(e) Because most of the social services are cost-free and easy to use, and they permit sharing, updating and privacy protection.'
+    ],
+    q3: ['due', 'species', 'extinct', 'emit', 'suffer'],
+    q4: [
+      '(i) 26 December 1791',
+      '(ii) of the Royal Society',
+      '(iii) received an honours degree (without examination)',
+      '(iv) invention of the first mechanical computer (that eventually led to today\u2019s computer)',
+      '(v) on 18 October 1871'
+    ],
+    q6: [
+      '(a) iv & ii',
+      '(b) i & v',
+      '(c) v & iii',
+      '(d) iii & iv',
+      '(e) ii & i'
+    ],
+    q8: [
+      '(a) Our cares and loneliness melt away when we read a book.',
+      '(b) By \u2019two different people, yet with the same name\u2019 the poet means the mother who gave her birth and the mother who brought her up — both are called mother.',
+      '(c) One mother gave the poet birth, while the other reared her with care and love; they differ in role but not in affection.',
+      '(d) The western wind was wild and dank with foam; it moaned and swept across the sands of Dee.',
+      '(e) In return for staying, the speaker offers Time his sincere welcome and humble hospitality — whatever little he has.',
+      '(f) The owner of the woods is in the village — his house is in the village though.',
+      '(g) The poet uses \u2019feast\u2019 and \u2019fast\u2019 to contrast the world\u2019s behaviour — people join our feast but flee our fast, exposing society\u2019s selfishness.',
+      '(h) He calls himself foolish and faithless because he too shared the world\u2019s vain ambitions and doubts; he honestly counts himself among the unfaithful crowd.'
+    ],
+    q9: [
+      '(a) I think Rosamond wanted to buy all the things because she was a child and the outward beauty of things charmed her; she could not understand their usefulness or price.',
+      '(b) Because her mother had limited money and wanted to teach her to choose wisely; at last Rosamond decided to buy the purple jar.',
+      '(c) The lesson of the story The Purple Jar is that we should not judge anything by outward appearance; a wrong choice made for show brings suffering.',
+      '(d) Yes, Antonio was really worthy of getting love, because he was kind, generous and always ready to help people; he even risked his life for his friend.',
+      '(e) Their happiness turned into sorrow when news came that Antonio\u2019s ships were lost and he could not repay the debt, so Shylock could claim his pound of flesh.',
+      '(f) Portia said that mercy is a noble, divine quality that comes from the heart; it blesses both the giver and the receiver and cannot be forced.',
+      '(g) No, I do not support him. Though the bond was legal, claiming a pound of human flesh out of revenge was cruel and inhuman; law without mercy is injustice.',
+      '(h) Though unusual, the plan was wise — the casket test selected a husband who would love Portia for herself, not for her wealth, though it denied her own choice.'
+    ],
     q5: 'Charles Babbage, the master brain of inventing computer, was an English mathematician and mechanical engineer. Born on 26 December 1791 in London, he studied at Trinity College and Peterhouse, Cambridge and received an honours degree without examination in 1814. He was elected a fellow of the Royal Society in 1816 and served as Lucasian Professor of Mathematics. Babbage is best known for inventing the first mechanical computer in 1822 that eventually led to today\u2019s computer. He breathed his last on 18 October 1871 at his home in London.',
     q7: 'a → c → g → d → b → h → e → f',
     q10Title: 'The King Who Learnt to Love Trees',
-    q10: 'Once there lived a King in an island. There were green trees everywhere in the island. The King decided to build a magnificent palace in the island. So he ordered his men to cut down all the trees. His men obeyed and within a year the whole island became bare. Then the magnificent palace was built and the king was very happy. But soon a terrible thing happened. There came a great cyclone and there were no trees to break its speed. The wind blew away the roofs of the houses and even damaged the palace. The rivers dried up, the birds left the island and the people suffered much for want of fruit and shade. The king realized his foolishness. He called his men and ordered them to plant thousands of trees again. After some years the island became green once more and peace returned. Moral: None should destroy nature / A little negligence can cause a great disaster.',
-    q11: 'Dialogue between Sostika and Tanzima about the severe impact of dengue fever:\nSostika: Hello Tanzima! You look worried. What\u2019s the matter?\nTanzima: Dengue fever has broken out in our area. Three of our neighbours are in hospital.\nSostika: Oh! Dengue is really terrible this year. How does it spread?\nTanzima: It is spread by the Aedes mosquito which bites mostly in the morning and late afternoon.\nSostika: What are its symptoms?\nTanzima: High fever, severe headache and pain behind the eyes and in the joints.\nSostika: What happens to a severe patient?\nTanzima: Platelets decrease alarmingly and the patient may bleed and even die without treatment.\nSostika: So it is often fatal!\nTanzima: Yes, that is why we must destroy mosquito breeding places like stagnant water in tyres, pots and cans.\nSostika: You are right. Cleanliness is the best remedy.\nTanzima: Exactly! Let\u2019s keep our houses and surroundings clean and use mosquito nets all the time.',
+    q10:
+        'Once there lived a King in an island. There were green trees everywhere in the island. The King decided to build a magnificent palace in the island. So he ordered his men to cut down all the trees. His men obeyed and within a year the whole island became bare. Then the magnificent palace was built and the king was very happy. But soon a terrible thing happened. There came a great cyclone and there were no trees to break its speed. The wind blew away the roofs of the houses and even damaged the palace. The rivers dried up, the birds left the island and the people suffered much for want of fruit and shade. The king realized his foolishness. He called his men and ordered them to plant thousands of trees again. After some years the island became green once more and peace returned. Moral: None should destroy nature / A little negligence can cause a great disaster.',
+    q11:
+        'Dialogue between Sostika and Tanzima about the severe impact of dengue fever:\nSostika: Hello Tanzima! You look worried. What\u2019s the matter?\nTanzima: Dengue fever has broken out in our area. Three of our neighbours are in hospital.\nSostika: Oh! Dengue is really terrible this year. How does it spread?\nTanzima: It is spread by the Aedes mosquito which bites mostly in the morning and late afternoon.\nSostika: What are its symptoms?\nTanzima: High fever, severe headache and pain behind the eyes and in the joints.\nSostika: What happens to a severe patient?\nTanzima: Platelets decrease alarmingly and the patient may bleed and even die without treatment.\nSostika: So it is often fatal!\nTanzima: Yes, that is why we must destroy mosquito breeding places like stagnant water in tyres, pots and cans.\nSostika: You are right. Cleanliness is the best remedy.\nTanzima: Exactly! Let\u2019s keep our houses and surroundings clean and use mosquito nets all the time.',
   ),
   64: FirstPaperAns(
-    q1: ['(a) iii. remember','(b) iii. lengthy','(c) i. All over the world','(d) iii. May 3, 1886','(e) iii. Workers','(f) iii. not to surrender to their bosses','(g) iv. strikers'],
-    q2: ['(a) May Day commemorates the historical struggle and sacrifices of the working people to establish an eight-hour workday.','(b) The historic events took place on May 1, 1886 at the McCormick Harvesting Machine Company in Chicago, and at the workers\u2019 rally two days later.','(c) The workers struggled for the demand of an eight-hour workday.','(d) When the policemen attacked, one striker was killed instantly, five or six others were seriously wounded and many others were injured.','(e) The inspiration of the trade unions inspired the workers to join the protest and strike.'],
-    q3: ['evident','posing','Due','availability','someday'],
-    q4: ['(i) a small town of Barishal','(ii) in 1921','(iii) started his teaching career as a Professor of English','(iv) West Bengal, India','(v) Rabindra Purashkar'],
-    q6: ['(a) iv & iii','(b) v & v','(c) i & ii','(d) ii & iv','(e) iii & i'],
-    q8: ['(a) By the end, the people in books might become our close friends and partners in joy and sorrow.','(b) The first mother gave the poet life — she gave her birth along with her love and identity.','(c) The two mothers are the same in their selfless love and care — both cherish the child dearly.','(d) As the mist came down, the land around the sands disappeared from sight — darkness and fog swallowed the shore, hiding Mary too.','(e) The poet personifies Time as an old gipsy man who travels endlessly, never resting at any place.','(f) The horse thinks it strange and shakes his harness bells, as if asking whether stopping there without a farmhouse near is a mistake.','(g) According to the poem Solitude, when you laugh, the world laughs with you — people gather to share your joy.','(h) \u2019Eyes that vainly crave the light\u2019 symbolize hopeless, longing people who seek truth and happiness in darkness but find it not.'],
-    q9: ['(a) It indicates that Rosamond thought one could always invent a use for a thing after buying it — the childish logic of desire before need.','(b) Yes, I support her — by allowing only one thing, she taught Rosamond self-control and wise choice, which no scolding could teach.','(c) Probably she knew; she let Rosamond buy it because she wanted her to learn by experience that outward show may deceive.','(d) Antonio and Shylock were bitter enemies: Shylock hated Antonio for insulting him and lending money without interest, while Antonio despised Shylock\u2019s greed.','(e) No. Lending money at high interest enslaves the poor and corrupts the lender\u2019s heart. Yet, as it was Shylock\u2019s only trade, society\u2019s insults hardened him further.','(f) Yes, I support the idea — wicked people often hide their inner ugliness behind fair appearance, so we should judge by character, not by looks.','(g) The letter of the wisest lawyer contained the legal opinion that Shylock could take the flesh but must not shed a drop of blood in doing so.','(h) She taught her by experience: she let Rosamond buy the jar and wear the torn shoes, so that the suffering itself became an unforgettable lesson.'],
+    q1: [
+      '(a) iii. remember',
+      '(b) iii. lengthy',
+      '(c) i. All over the world',
+      '(d) iii. May 3, 1886',
+      '(e) iii. Workers',
+      '(f) iii. not to surrender to their bosses',
+      '(g) iv. strikers'
+    ],
+    q2: [
+      '(a) May Day commemorates the historical struggle and sacrifices of the working people to establish an eight-hour workday.',
+      '(b) The historic events took place on May 1, 1886 at the McCormick Harvesting Machine Company in Chicago, and at the workers\u2019 rally two days later.',
+      '(c) The workers struggled for the demand of an eight-hour workday.',
+      '(d) When the policemen attacked, one striker was killed instantly, five or six others were seriously wounded and many others were injured.',
+      '(e) The inspiration of the trade unions inspired the workers to join the protest and strike.'
+    ],
+    q3: ['evident', 'posing', 'Due', 'availability', 'someday'],
+    q4: [
+      '(i) a small town of Barishal',
+      '(ii) in 1921',
+      '(iii) started his teaching career as a Professor of English',
+      '(iv) West Bengal, India',
+      '(v) Rabindra Purashkar'
+    ],
+    q6: [
+      '(a) iv & iii',
+      '(b) v & v',
+      '(c) i & ii',
+      '(d) ii & iv',
+      '(e) iii & i'
+    ],
+    q8: [
+      '(a) By the end, the people in books might become our close friends and partners in joy and sorrow.',
+      '(b) The first mother gave the poet life — she gave her birth along with her love and identity.',
+      '(c) The two mothers are the same in their selfless love and care — both cherish the child dearly.',
+      '(d) As the mist came down, the land around the sands disappeared from sight — darkness and fog swallowed the shore, hiding Mary too.',
+      '(e) The poet personifies Time as an old gipsy man who travels endlessly, never resting at any place.',
+      '(f) The horse thinks it strange and shakes his harness bells, as if asking whether stopping there without a farmhouse near is a mistake.',
+      '(g) According to the poem Solitude, when you laugh, the world laughs with you — people gather to share your joy.',
+      '(h) \u2019Eyes that vainly crave the light\u2019 symbolize hopeless, longing people who seek truth and happiness in darkness but find it not.'
+    ],
+    q9: [
+      '(a) It indicates that Rosamond thought one could always invent a use for a thing after buying it — the childish logic of desire before need.',
+      '(b) Yes, I support her — by allowing only one thing, she taught Rosamond self-control and wise choice, which no scolding could teach.',
+      '(c) Probably she knew; she let Rosamond buy it because she wanted her to learn by experience that outward show may deceive.',
+      '(d) Antonio and Shylock were bitter enemies: Shylock hated Antonio for insulting him and lending money without interest, while Antonio despised Shylock\u2019s greed.',
+      '(e) No. Lending money at high interest enslaves the poor and corrupts the lender\u2019s heart. Yet, as it was Shylock\u2019s only trade, society\u2019s insults hardened him further.',
+      '(f) Yes, I support the idea — wicked people often hide their inner ugliness behind fair appearance, so we should judge by character, not by looks.',
+      '(g) The letter of the wisest lawyer contained the legal opinion that Shylock could take the flesh but must not shed a drop of blood in doing so.',
+      '(h) She taught her by experience: she let Rosamond buy the jar and wear the torn shoes, so that the suffering itself became an unforgettable lesson.'
+    ],
     q5: 'Jibanananda Das, born in a small town of Barishal in 1899, was a renowned poet and teacher. He took his Master\u2019s degree in English at the age of 22 and started his teaching career as a Professor of English at Kolkata City College. Losing the job in 1928, he later taught at Ramjash College, Delhi and Brajamohan College, Barishal. After the partition of 1947 he left for India, edited the Swaraj Patrika and joined Kharagpur College. He was awarded Rabindra Purashkar in 1953. After a tram accident he passed away on October 22, 1954.',
     q7: 'b → d → c → f → h → g → a → e',
     q10Title: 'A Moment of Greed',
-    q10: 'Rahmat Mia is a poor rickshaw puller in Dhaka. He pulls rickshaw in different areas of the city. One day he saw some men selling lottery tickets. He felt tempted and bought a ticket with his hard-earned fifty taka. A week later, to his great surprise, he won twenty-five thousand taka in the lottery! He became mad with joy and bought a new rickshaw and new dresses for his family. Encouraged by this, he stopped working and spent all his days buying lottery tickets. But luck did not favour him again. Gradually he spent all his money and even sold the new rickshaw to buy more tickets. He lost everything and had no money to feed his children. His wife cried and advised him to work again. Rahmat Mia now realised his foolishness. He went back to his rickshaw the next morning and promised never to trust in lottery again. Moral: Easy money never lasts; honesty and hard work are true capital.',
-    q11: 'Dialogue between Karim and Muhib about the merits and demerits of using mobile phone:\nKarim: Hello Muhib! I see you are always busy with the mobile phone.\nMuhib: Yes brother. A mobile phone is very useful — I can talk to anyone within seconds.\nKarim: That\u2019s true. It also gives us internet, camera and calculations instantly.\nMuhib: And I can learn from online classes and video lessons.\nKarim: But don\u2019t you think you spend too much time on games and social media?\nMuhib: Yes, sometimes I play games late at night.\nKarim: That\u2019s harmful. Excessive use damages eyes, disturbs sleep and hampers studies.\nMuhib: It also isolates us from family members.\nKarim: Exactly! Wonders and harms both come from the same device.\nMuhib: So what should we do, brother?\nKarim: Use the mobile phone wisely and within a limit — for communication and learning, not for wasting time.\nMuhib: I understand. From now on I\u2019ll control my mobile use. Thank you for the advice!',
+    q10:
+        'Rahmat Mia is a poor rickshaw puller in Dhaka. He pulls rickshaw in different areas of the city. One day he saw some men selling lottery tickets. He felt tempted and bought a ticket with his hard-earned fifty taka. A week later, to his great surprise, he won twenty-five thousand taka in the lottery! He became mad with joy and bought a new rickshaw and new dresses for his family. Encouraged by this, he stopped working and spent all his days buying lottery tickets. But luck did not favour him again. Gradually he spent all his money and even sold the new rickshaw to buy more tickets. He lost everything and had no money to feed his children. His wife cried and advised him to work again. Rahmat Mia now realised his foolishness. He went back to his rickshaw the next morning and promised never to trust in lottery again. Moral: Easy money never lasts; honesty and hard work are true capital.',
+    q11:
+        'Dialogue between Karim and Muhib about the merits and demerits of using mobile phone:\nKarim: Hello Muhib! I see you are always busy with the mobile phone.\nMuhib: Yes brother. A mobile phone is very useful — I can talk to anyone within seconds.\nKarim: That\u2019s true. It also gives us internet, camera and calculations instantly.\nMuhib: And I can learn from online classes and video lessons.\nKarim: But don\u2019t you think you spend too much time on games and social media?\nMuhib: Yes, sometimes I play games late at night.\nKarim: That\u2019s harmful. Excessive use damages eyes, disturbs sleep and hampers studies.\nMuhib: It also isolates us from family members.\nKarim: Exactly! Wonders and harms both come from the same device.\nMuhib: So what should we do, brother?\nKarim: Use the mobile phone wisely and within a limit — for communication and learning, not for wasting time.\nMuhib: I understand. From now on I\u2019ll control my mobile use. Thank you for the advice!',
   ),
   65: FirstPaperAns(
-    q1: ['(a) iii. a mother who serves the poor like her own children','(b) ii. missionary','(c) i. spread','(d) ii. nuns','(e) iii. under the poverty line','(f) iii. extreme poverty','(g) iv. Love for the distressed'],
-    q2: ['(a) Mother Teresa came of a rich Catholic merchant\u2019s family of Albanian descent in a small town called Skopje, Macedonia.','(b) Because at the age of 12 she heard a voice from within that urged her to spread the love of Christ.','(c) By loving and serving the poorest of the poor selflessly throughout her life, she became the mother of humanity.','(d) In the first seventeen years in India (1931–1948), she taught geography and theology at St. Mary\u2019s High School in Kolkata.','(e) She left her parental home at the age of 18 to join the Irish community of nuns called the Sisters of Loreto, which had missions in India.'],
-    q3: ['among','using','share','being','reach'],
-    q4: ['(i) A major English romantic poet','(ii) April 7, 1770','(iii) St. John\u2019s College, Cambridge','(iv) Published (jointly with Samuel Taylor Coleridge)','(v) in 1791'],
-    q6: ['(a) ii & v','(b) iii & i','(c) i & ii','(d) v & iv','(e) iv & iii'],
-    q8: ['(a) As we sail along the pages of a book, we travel through new worlds of knowledge and imagination and forget ourselves.','(b) Besides knowledge, reading can give me pleasure, improve my language and imagination, build character and remove loneliness.','(c) As she grew older, her relationship deepened — she understood her mother\u2019s sacrifices and slowly became her mother\u2019s guide and strength.','(d) In their nets the boatmen found the dead (drowned) body of Mary.','(e) The speaker expresses wonder and loving longing towards Time — he wishes Time would pause a little.','(f) The horse shakes his harness bells and makes a jingling sound to ask if there is some mistake.','(g) When you weep, you weep alone — nobody comes to share your sorrow.','(h) Explanation of the Solitude lines ("Feast, and your halls are crowded; Fast, and the world goes by"): When you prosper, people crowd your hall; when you suffer, the same world leaves you alone — the world is a fair-weather friend.'],
-    q9: ['(a) Rosamond insisted that her mother might buy the pretty things, saying she was sure some use could be found for them.','(b) A new pair of shoes was the dire necessity to Rosamond, because her own shoes were old and torn.','(c) It indicates that Rosamond had learned from her bitter experience — in future she would examine everything carefully and never be deceived by outward appearance.','(d) Her mother asked whether she wanted the jar without examining it; Rosamond chose it, and on opening, she found only coloured water in a plain white glass jar.','(e) The people of Venice loved Antonio because he was gentle, kind and generous — he lent money to the needy without any interest.','(f) The golden casket contained a death\u2019s head (a skull) with a scroll mocking those who judge by appearance.','(g) Because the bond entitled him only to the flesh, not to a single drop of blood — and flesh could not be cut without shedding blood.','(h) Bassanio went to Antonio to borrow three thousand ducats so that he could go to Belmont and try to win Portia.'],
+    q1: [
+      '(a) iii. a mother who serves the poor like her own children',
+      '(b) ii. missionary',
+      '(c) i. spread',
+      '(d) ii. nuns',
+      '(e) iii. under the poverty line',
+      '(f) iii. extreme poverty',
+      '(g) iv. Love for the distressed'
+    ],
+    q2: [
+      '(a) Mother Teresa came of a rich Catholic merchant\u2019s family of Albanian descent in a small town called Skopje, Macedonia.',
+      '(b) Because at the age of 12 she heard a voice from within that urged her to spread the love of Christ.',
+      '(c) By loving and serving the poorest of the poor selflessly throughout her life, she became the mother of humanity.',
+      '(d) In the first seventeen years in India (1931–1948), she taught geography and theology at St. Mary\u2019s High School in Kolkata.',
+      '(e) She left her parental home at the age of 18 to join the Irish community of nuns called the Sisters of Loreto, which had missions in India.'
+    ],
+    q3: ['among', 'using', 'share', 'being', 'reach'],
+    q4: [
+      '(i) A major English romantic poet',
+      '(ii) April 7, 1770',
+      '(iii) St. John\u2019s College, Cambridge',
+      '(iv) Published (jointly with Samuel Taylor Coleridge)',
+      '(v) in 1791'
+    ],
+    q6: [
+      '(a) ii & v',
+      '(b) iii & i',
+      '(c) i & ii',
+      '(d) v & iv',
+      '(e) iv & iii'
+    ],
+    q8: [
+      '(a) As we sail along the pages of a book, we travel through new worlds of knowledge and imagination and forget ourselves.',
+      '(b) Besides knowledge, reading can give me pleasure, improve my language and imagination, build character and remove loneliness.',
+      '(c) As she grew older, her relationship deepened — she understood her mother\u2019s sacrifices and slowly became her mother\u2019s guide and strength.',
+      '(d) In their nets the boatmen found the dead (drowned) body of Mary.',
+      '(e) The speaker expresses wonder and loving longing towards Time — he wishes Time would pause a little.',
+      '(f) The horse shakes his harness bells and makes a jingling sound to ask if there is some mistake.',
+      '(g) When you weep, you weep alone — nobody comes to share your sorrow.',
+      '(h) Explanation of the Solitude lines ("Feast, and your halls are crowded; Fast, and the world goes by"): When you prosper, people crowd your hall; when you suffer, the same world leaves you alone — the world is a fair-weather friend.'
+    ],
+    q9: [
+      '(a) Rosamond insisted that her mother might buy the pretty things, saying she was sure some use could be found for them.',
+      '(b) A new pair of shoes was the dire necessity to Rosamond, because her own shoes were old and torn.',
+      '(c) It indicates that Rosamond had learned from her bitter experience — in future she would examine everything carefully and never be deceived by outward appearance.',
+      '(d) Her mother asked whether she wanted the jar without examining it; Rosamond chose it, and on opening, she found only coloured water in a plain white glass jar.',
+      '(e) The people of Venice loved Antonio because he was gentle, kind and generous — he lent money to the needy without any interest.',
+      '(f) The golden casket contained a death\u2019s head (a skull) with a scroll mocking those who judge by appearance.',
+      '(g) Because the bond entitled him only to the flesh, not to a single drop of blood — and flesh could not be cut without shedding blood.',
+      '(h) Bassanio went to Antonio to borrow three thousand ducats so that he could go to Belmont and try to win Portia.'
+    ],
     q5: 'William Wordsworth, a major English romantic poet, was born on April 7, 1770 in Cumberland, Lake District of England. Losing his parents in boyhood, he continued his study under his relatives, wrote his first poem in 1787 and graduated from St. John\u2019s College, Cambridge in 1791. Greatly influenced by the French Revolution and by the friendship of Coleridge, he jointly published the epoch-making \u2019Lyrical Ballads\u2019 in 1798 introducing a new poetic theory. Finally, he became the poet laureate of England.',
     q7: 'g → e → h → c → a → d → b → f',
     q10Title: 'Unity of the Workers',
-    q10: 'Rafi is a worker of a big factory in Dhaka. There are more than 500 workers in the factory. One day while he was working, a loud sound was heard. Fire! Fire! He looked around and saw thick smoke rising from the store room. All the workers were terribly frightened and ran here and there. Rafi kept his head cool. He informed the fire service at once and shouted to the workers not to panic. He switched off the main electric line so that the fire might not spread. Then he led a group of workers with buckets of water, sand and fire extinguishers. The other workers joined him bravely and worked together for half an hour. By the time the fire fighters arrived, the fire was almost under control. The owner of the factory thanked Rafi and rewarded him for his courage and presence of mind. The workers learnt that unity can overcome any danger. Moral: Coolness and unity can defeat any crisis.',
-    q11: 'Dialogue between Abid and Ratul about the importance of physical exercise:\nAbid: Good morning, Ratul! You look pale and tired. Don\u2019t you take any physical exercise?\nRatul: No. I think exercise is a mere waste of time.\nAbid: You are wrong. Physical exercise is very important for us.\nRatul: How does it help us?\nAbid: It keeps our body strong, improves blood circulation and makes the mind fresh.\nRatul: Anything more?\nAbid: Yes, it keeps away diseases and helps us concentrate on studies better.\nRatul: What kind of exercise do you take?\nAbid: I play football and cricket in the afternoon and go for a morning walk.\nRatul: But I hardly find time after school and tuition.\nAbid: Remember, a sound mind lives in a sound body. If you can manage time, you must make time for exercise.\nRatul: You are right. From tomorrow I will start jogging with you.\nAbid: That\u2019s a wise decision!',
+    q10:
+        'Rafi is a worker of a big factory in Dhaka. There are more than 500 workers in the factory. One day while he was working, a loud sound was heard. Fire! Fire! He looked around and saw thick smoke rising from the store room. All the workers were terribly frightened and ran here and there. Rafi kept his head cool. He informed the fire service at once and shouted to the workers not to panic. He switched off the main electric line so that the fire might not spread. Then he led a group of workers with buckets of water, sand and fire extinguishers. The other workers joined him bravely and worked together for half an hour. By the time the fire fighters arrived, the fire was almost under control. The owner of the factory thanked Rafi and rewarded him for his courage and presence of mind. The workers learnt that unity can overcome any danger. Moral: Coolness and unity can defeat any crisis.',
+    q11:
+        'Dialogue between Abid and Ratul about the importance of physical exercise:\nAbid: Good morning, Ratul! You look pale and tired. Don\u2019t you take any physical exercise?\nRatul: No. I think exercise is a mere waste of time.\nAbid: You are wrong. Physical exercise is very important for us.\nRatul: How does it help us?\nAbid: It keeps our body strong, improves blood circulation and makes the mind fresh.\nRatul: Anything more?\nAbid: Yes, it keeps away diseases and helps us concentrate on studies better.\nRatul: What kind of exercise do you take?\nAbid: I play football and cricket in the afternoon and go for a morning walk.\nRatul: But I hardly find time after school and tuition.\nAbid: Remember, a sound mind lives in a sound body. If you can manage time, you must make time for exercise.\nRatul: You are right. From tomorrow I will start jogging with you.\nAbid: That\u2019s a wise decision!',
   ),
   66: FirstPaperAns(
-    q1: ['(a) iii. accelerated','(b) i. communicate','(c) iv. spectator','(d) ii. Google+ is more popular than Facebook','(e) i. others\u2019 remarks','(f) i. whole','(g) iii. seclusion'],
-    q2: ['(a) Social network means web-based services such as Facebook, Google+, Twitter and LinkedIn through which people around the world interact and build social relations.','(b) People use them to communicate with others, make their profiles public before the world and share their photos, interests and activities.','(c) Because most of the services are cost-free, simple and easy, allow uploading and updating of contents and provide privacy protection.','(d) We can share our interests and activities by posting on our profile, uploading pictures and videos, writing blog entries and giving comments.','(e) Yes, I think so — because they connect people across the borders instantly and easily, so the users feel that they really live in a global village.'],
-    q3: ['graduation','took','free','attacked','to'],
-    q4: ['(i) 1962','(ii) 1895','(iii) defeated Khaja Nazimuddin (miserably in the election)','(iv) (the first elected) Prime Minister','(v) (his historic Pakistan/Lahore) resolution'],
-    q6: ['(a) iii & ii','(b) iv & iv','(c) ii & v','(d) v & i','(e) i & iii'],
-    q8: ['(a) While reading a book, our body stays at one place — in a chair or a room — though our mind travels elsewhere.','(b) By \u2019her mind clouded so\u2019 the poet means that her mind became troubled and shadowed with worry/confusion, like the sky covered with cloud.','(c) No, Mary did not return home; she was drowned in the sands of Dee and was found dead.','(d) The peacocks and the little boys symbolize lively energy and ceaseless motion — their life and play contrast with Time\u2019s slow but never-ending journey.','(e) The other sounds mentioned are the sweep of easy wind and the sound of downy flake (falling snow).','(f) It means that if you remain cheerful, people will be attracted to you and seek your company.','(g) The poet describes the world around him as crowded with foolish, faithless and discontented people struggling in vain — sordid cities full of self-reproach and complaint.','(h) He repeatedly asks what good there is in living amid all these — what is the meaning or purpose of life.'],
-    q9: ['(a) Rosamond\u2019s mother is a wise, practical and patient woman — she refuses useless things, sets a limit of one gift and teaches by experience rather than anger.','(b) To her last request (to return the jar and take the shoes) her mother answered that she must keep the jar, so that looking at it she would always remember her foolish choice.','(c) Rosamond was disappointed to discover that the beautiful purple jar was only a plain white glass jar, while she had sacrificed her necessary shoes for it.','(d) Portia\u2019s father planned that suitors would choose one of the three caskets — gold, silver and lead — and he who chose the right casket would marry Portia.','(e) Disguised as a young lawyer, Portia pleaded for mercy and then showed that the bond allowed Shylock only the flesh — not a single drop of blood; thus Shylock\u2019s plan fell and Antonio was saved.','(f) The sentence means that mercy comes back to its giver — we can expect God\u2019s mercy only when we ourselves show mercy to others.','(g) Shylock got a bond signed so that if Antonio failed to pay in time, he could take lawful revenge on his old enemy by cutting a pound of his flesh.','(h) Rosamond believed in outward beauty and buying things first, while her mother believed in usefulness and warned that showy things are often worthless inside.'],
+    q1: [
+      '(a) iii. accelerated',
+      '(b) i. communicate',
+      '(c) iv. spectator',
+      '(d) ii. Google+ is more popular than Facebook',
+      '(e) i. others\u2019 remarks',
+      '(f) i. whole',
+      '(g) iii. seclusion'
+    ],
+    q2: [
+      '(a) Social network means web-based services such as Facebook, Google+, Twitter and LinkedIn through which people around the world interact and build social relations.',
+      '(b) People use them to communicate with others, make their profiles public before the world and share their photos, interests and activities.',
+      '(c) Because most of the services are cost-free, simple and easy, allow uploading and updating of contents and provide privacy protection.',
+      '(d) We can share our interests and activities by posting on our profile, uploading pictures and videos, writing blog entries and giving comments.',
+      '(e) Yes, I think so — because they connect people across the borders instantly and easily, so the users feel that they really live in a global village.'
+    ],
+    q3: ['graduation', 'took', 'free', 'attacked', 'to'],
+    q4: [
+      '(i) 1962',
+      '(ii) 1895',
+      '(iii) defeated Khaja Nazimuddin (miserably in the election)',
+      '(iv) (the first elected) Prime Minister',
+      '(v) (his historic Pakistan/Lahore) resolution'
+    ],
+    q6: [
+      '(a) iii & ii',
+      '(b) iv & iv',
+      '(c) ii & v',
+      '(d) v & i',
+      '(e) i & iii'
+    ],
+    q8: [
+      '(a) While reading a book, our body stays at one place — in a chair or a room — though our mind travels elsewhere.',
+      '(b) By \u2019her mind clouded so\u2019 the poet means that her mind became troubled and shadowed with worry/confusion, like the sky covered with cloud.',
+      '(c) No, Mary did not return home; she was drowned in the sands of Dee and was found dead.',
+      '(d) The peacocks and the little boys symbolize lively energy and ceaseless motion — their life and play contrast with Time\u2019s slow but never-ending journey.',
+      '(e) The other sounds mentioned are the sweep of easy wind and the sound of downy flake (falling snow).',
+      '(f) It means that if you remain cheerful, people will be attracted to you and seek your company.',
+      '(g) The poet describes the world around him as crowded with foolish, faithless and discontented people struggling in vain — sordid cities full of self-reproach and complaint.',
+      '(h) He repeatedly asks what good there is in living amid all these — what is the meaning or purpose of life.'
+    ],
+    q9: [
+      '(a) Rosamond\u2019s mother is a wise, practical and patient woman — she refuses useless things, sets a limit of one gift and teaches by experience rather than anger.',
+      '(b) To her last request (to return the jar and take the shoes) her mother answered that she must keep the jar, so that looking at it she would always remember her foolish choice.',
+      '(c) Rosamond was disappointed to discover that the beautiful purple jar was only a plain white glass jar, while she had sacrificed her necessary shoes for it.',
+      '(d) Portia\u2019s father planned that suitors would choose one of the three caskets — gold, silver and lead — and he who chose the right casket would marry Portia.',
+      '(e) Disguised as a young lawyer, Portia pleaded for mercy and then showed that the bond allowed Shylock only the flesh — not a single drop of blood; thus Shylock\u2019s plan fell and Antonio was saved.',
+      '(f) The sentence means that mercy comes back to its giver — we can expect God\u2019s mercy only when we ourselves show mercy to others.',
+      '(g) Shylock got a bond signed so that if Antonio failed to pay in time, he could take lawful revenge on his old enemy by cutting a pound of his flesh.',
+      '(h) Rosamond believed in outward beauty and buying things first, while her mother believed in usefulness and warned that showy things are often worthless inside.'
+    ],
     q5: 'Sher-E-Bangla A.K. Fazlul Huq, one of the most popular leaders of Bangladesh, was born in 1873 at Chakhar in Barishal. A meritorious student, he passed M.A. at the age of 22 and later joined the Bar. He was appointed Deputy Magistrate at 33 but resigned in 1912. He defeated Khaja Nazimuddin miserably in the 1915 election, became the first elected Prime Minister of Bengal in 1937, and moved the historic Pakistan (Lahore) resolution in 1940. He devoted himself to education as the Education Minister and died in 1962 at the age of 89, remaining ever in the nation\u2019s grateful memory.',
     q7: 'f → e → g → c → b → h → d → a',
     q10Title: 'Presence of Mind Saves a Life',
-    q10: 'Tamim, a student of class ten, was returning from school. On the way, he saw some boys and girls bathing in the pond. Suddenly he heard a girl shouting, \u2019Help! Help!\u2019 He ran to the spot and saw a little girl being drowned in the middle of the pond. Other children were crying helplessly on the bank. Tamim was a good swimmer. Without losing a moment, he took off his shoes and jumped into the pond. He swam fast to the girl, caught her hair and pulled her towards the bank. With much effort he brought her out of the water. Then he pressed her chest and made her vomit the water she had swallowed. After a while the girl opened her eyes. Her parents came and thanked Tamim with tears of gratitude. The villagers praised his courage and presence of mind. Tamim felt proud that he could save a valuable life. Moral: Presence of mind rescues one from danger.',
-    q11: 'Dialogue between Nabil and the librarian about borrowing a book:\nNabil: Good afternoon, sir! May I come in?\nLibrarian: Good afternoon! Yes, come in. What can I do for you?\nNabil: Sir, I want to borrow a book from the library.\nLibrarian: Are you a member of the library?\nNabil: Yes sir. Here is my library card.\nLibrarian: Which book do you want to borrow?\nNabil: I want \u2019A Golden Treasury of English Poetry\u2019 by Palgrave.\nLibrarian: Let me check... Yes, here it is on the poetry shelf.\nNabil: How long may I keep the book, sir?\nLibrarian: For fifteen days. You may renew it for another week if needed.\nNabil: What will happen if I fail to return it in time?\nLibrarian: You will have to pay a fine of five taka per day. Take good care of the book.\nNabil: Surely, sir. I will return it in time. Thank you very much.\nLibrarian: You are welcome!',
+    q10:
+        'Tamim, a student of class ten, was returning from school. On the way, he saw some boys and girls bathing in the pond. Suddenly he heard a girl shouting, \u2019Help! Help!\u2019 He ran to the spot and saw a little girl being drowned in the middle of the pond. Other children were crying helplessly on the bank. Tamim was a good swimmer. Without losing a moment, he took off his shoes and jumped into the pond. He swam fast to the girl, caught her hair and pulled her towards the bank. With much effort he brought her out of the water. Then he pressed her chest and made her vomit the water she had swallowed. After a while the girl opened her eyes. Her parents came and thanked Tamim with tears of gratitude. The villagers praised his courage and presence of mind. Tamim felt proud that he could save a valuable life. Moral: Presence of mind rescues one from danger.',
+    q11:
+        'Dialogue between Nabil and the librarian about borrowing a book:\nNabil: Good afternoon, sir! May I come in?\nLibrarian: Good afternoon! Yes, come in. What can I do for you?\nNabil: Sir, I want to borrow a book from the library.\nLibrarian: Are you a member of the library?\nNabil: Yes sir. Here is my library card.\nLibrarian: Which book do you want to borrow?\nNabil: I want \u2019A Golden Treasury of English Poetry\u2019 by Palgrave.\nLibrarian: Let me check... Yes, here it is on the poetry shelf.\nNabil: How long may I keep the book, sir?\nLibrarian: For fifteen days. You may renew it for another week if needed.\nNabil: What will happen if I fail to return it in time?\nLibrarian: You will have to pay a fine of five taka per day. Take good care of the book.\nNabil: Surely, sir. I will return it in time. Thank you very much.\nLibrarian: You are welcome!',
   ),
   67: FirstPaperAns(
-    q1: ['(a) ii. renewable and non-renewable','(b) iv. immense','(c) i. never runs out','(d) iii. Steam and hot water','(e) ii. Hydrogen','(f) i. depend','(g) ii. damages the environment'],
-    q2: ['(a) Because fossil fuels are finite energy resources — they exist in limited stock, and since the world consumes them heavily, the stock will one day be finished.','(b) Renewable energy sources are constantly and naturally replenished, never run out, and are friendly to the environment.','(c) Hydrogen does not exist separately as a gas in nature; it is always combined with other elements, such as with oxygen to make water.','(d) Bioenergy is the energy obtained from biomass such as firewood and alcohol; we get it from plants which grow with sunlight, rain and snow.','(e) It means dependence on fossil fuels creates serious problems — they will run out, become too costly and damaging, and pollute the atmosphere causing global warming.'],
-    q3: ['unforgettable','paying','establishment','liberation','words'],
-    q4: ['(i) was born','(ii) to St. John\u2019s College, Cambridge','(iii) from 1791 to 1792','(iv) many of his sonnets','(v) at Rydal Mount'],
-    q6: ['(a) v & iii','(b) iii & v','(c) iv & i','(d) ii & iv','(e) i & ii'],
-    q8: ['(a) While reading, our mind travels through the places and worlds the book describes, though our body stays in one place.','(b) The \u2019second mother\u2019 is described as the woman who raised the poet with selfless love — feeding, nursing and protecting the child as her own.','(c) The poet describes the sea foam as cruel and creeping — it crawls like a crab and trails across the sand.','(d) It signifies the incredible speed of Time — within a week he crosses Babylon and in a single night Rome; nothing can hold him.','(e) The speaker admires the quiet beauty of the woods as they fill up with snow — their silent, deep and dark loveliness.','(f) Because the world is selfish — sorrow finds no company; people turn their back on another\u2019s grief.','(g) The mountains echo songs because joy is answered everywhere, but sighs find no response — the world responds to happiness, not to sadness.','(h) The poem evokes sorrow and questioning about the meaning of life, but it finally awakens hope — life exists, the play goes on, and you may contribute a verse.'],
-    q9: ['(a) Yes, I support it: buying unnecessary things wastes money and habits us to temptation; we should buy only what we truly need.','(b) It indicates that Rosamond\u2019s mind kept flashing back to those beautiful things — she could not forget them and longed for them all the while.','(c) Because she had spent her money on the purple jar and had to walk in her old, torn shoes which pinched her feet, so she limped in pain.','(d) Antonio was a rich merchant of Venice; his business was in ships carrying merchandise to foreign countries.','(e) Shylock hated Antonio for insulting him as a Jew and for lending money without interest (which harmed his business); Antonio hated Shylock\u2019s greed and cruelty — so they hated each other.','(f) It indicates that Portia\u2019s father wanted a husband who would love Portia truly as a person, not a fortune-hunter running after her money.','(g) The plan was unusual but wise — the casket-choice tested the suitors\u2019 judgment and character, though it did not let Portia choose for herself.','(h) Antonio was a generous, loyal and self-sacrificing man — a rich but melancholy merchant who would risk his life for a friend; he signed a deadly bond only to help Bassanio.'],
+    q1: [
+      '(a) ii. renewable and non-renewable',
+      '(b) iv. immense',
+      '(c) i. never runs out',
+      '(d) iii. Steam and hot water',
+      '(e) ii. Hydrogen',
+      '(f) i. depend',
+      '(g) ii. damages the environment'
+    ],
+    q2: [
+      '(a) Because fossil fuels are finite energy resources — they exist in limited stock, and since the world consumes them heavily, the stock will one day be finished.',
+      '(b) Renewable energy sources are constantly and naturally replenished, never run out, and are friendly to the environment.',
+      '(c) Hydrogen does not exist separately as a gas in nature; it is always combined with other elements, such as with oxygen to make water.',
+      '(d) Bioenergy is the energy obtained from biomass such as firewood and alcohol; we get it from plants which grow with sunlight, rain and snow.',
+      '(e) It means dependence on fossil fuels creates serious problems — they will run out, become too costly and damaging, and pollute the atmosphere causing global warming.'
+    ],
+    q3: ['unforgettable', 'paying', 'establishment', 'liberation', 'words'],
+    q4: [
+      '(i) was born',
+      '(ii) to St. John\u2019s College, Cambridge',
+      '(iii) from 1791 to 1792',
+      '(iv) many of his sonnets',
+      '(v) at Rydal Mount'
+    ],
+    q6: [
+      '(a) v & iii',
+      '(b) iii & v',
+      '(c) iv & i',
+      '(d) ii & iv',
+      '(e) i & ii'
+    ],
+    q8: [
+      '(a) While reading, our mind travels through the places and worlds the book describes, though our body stays in one place.',
+      '(b) The \u2019second mother\u2019 is described as the woman who raised the poet with selfless love — feeding, nursing and protecting the child as her own.',
+      '(c) The poet describes the sea foam as cruel and creeping — it crawls like a crab and trails across the sand.',
+      '(d) It signifies the incredible speed of Time — within a week he crosses Babylon and in a single night Rome; nothing can hold him.',
+      '(e) The speaker admires the quiet beauty of the woods as they fill up with snow — their silent, deep and dark loveliness.',
+      '(f) Because the world is selfish — sorrow finds no company; people turn their back on another\u2019s grief.',
+      '(g) The mountains echo songs because joy is answered everywhere, but sighs find no response — the world responds to happiness, not to sadness.',
+      '(h) The poem evokes sorrow and questioning about the meaning of life, but it finally awakens hope — life exists, the play goes on, and you may contribute a verse.'
+    ],
+    q9: [
+      '(a) Yes, I support it: buying unnecessary things wastes money and habits us to temptation; we should buy only what we truly need.',
+      '(b) It indicates that Rosamond\u2019s mind kept flashing back to those beautiful things — she could not forget them and longed for them all the while.',
+      '(c) Because she had spent her money on the purple jar and had to walk in her old, torn shoes which pinched her feet, so she limped in pain.',
+      '(d) Antonio was a rich merchant of Venice; his business was in ships carrying merchandise to foreign countries.',
+      '(e) Shylock hated Antonio for insulting him as a Jew and for lending money without interest (which harmed his business); Antonio hated Shylock\u2019s greed and cruelty — so they hated each other.',
+      '(f) It indicates that Portia\u2019s father wanted a husband who would love Portia truly as a person, not a fortune-hunter running after her money.',
+      '(g) The plan was unusual but wise — the casket-choice tested the suitors\u2019 judgment and character, though it did not let Portia choose for herself.',
+      '(h) Antonio was a generous, loyal and self-sacrificing man — a rich but melancholy merchant who would risk his life for a friend; he signed a deadly bond only to help Bassanio.'
+    ],
     q5: 'William Wordsworth, the great poet of nature, was born on 7 April 1770 at Cockermouth in England. He was sent to St. John\u2019s College, Cambridge in 1789 and upon taking his degree in 1791, he moved to France where he stayed till 1792. Later he settled with his sister Dorothy and Coleridge and published the famous \u2019Lyrical Ballads\u2019 in 1798. He married in 1802 and published his largest poem \u2019The Excursion\u2019 in 1814. For the last fifty years he lived at Dove Cottage, Grasmere and at Rydal Mount, writing many sonnets, and breathed his last on 23 April 1850.',
     q7: 'g → c → d → b → e → a → f → h',
     q10Title: 'Light of Education',
-    q10: 'Dilara is thirteen years old living in Swapnopur. Her poor parents have two other little children. It is hard for her illiterate parents to earn enough to run the family. So Dilara could not go to school; instead she worked as a helping hand in a rich family\u2019s house in the town. The kind mistress of the house noticed that Dilara was very eager to learn. After finishing the day\u2019s work, she taught Dilara to read and write in the evening. Dilara learnt so quickly that within a year she could read story books by herself. Seeing her progress, the mistress admitted her into the village school and bore all her expenses. Dilara studied diligently and stood first in her class. Now she has a dream — she wants to be a teacher and light up the dark corners of illiteracy in her village. Her parents weep in joy seeing their daughter\u2019s success. Moral: Where there is a will, there is a way; help may come from unexpected corners.',
-    q11: 'Dialogue between you and your friend Sadika about your future plan of life:\nMe: Hello Sadika! Have you made any plan about what you will be in future?\nSadika: Yes, I have. I want to be a doctor. What about you?\nMe: I want to be an English teacher.\nSadika: Why do you choose this profession?\nMe: Because most of our students fear English. I want to make it easy and enjoyable for them.\nSadika: That is a noble choice. What preparation are you taking?\nMe: I practise grammar and spoken English every day and read model classes of experienced teachers.\nSadika: Won\u2019t you dream of any other profession?\nMe: No. A teacher builds the nation silently; quality teachers are rare in our country.\nSadika: You are right. A doctor also serves people, and I want to open a free clinic for the poor.\nMe: Wonderful! Let us both work hard to reach our goals.\nSadika: Surely! Best of luck for your dream!\nMe: Thank you — the same to you!',
+    q10:
+        'Dilara is thirteen years old living in Swapnopur. Her poor parents have two other little children. It is hard for her illiterate parents to earn enough to run the family. So Dilara could not go to school; instead she worked as a helping hand in a rich family\u2019s house in the town. The kind mistress of the house noticed that Dilara was very eager to learn. After finishing the day\u2019s work, she taught Dilara to read and write in the evening. Dilara learnt so quickly that within a year she could read story books by herself. Seeing her progress, the mistress admitted her into the village school and bore all her expenses. Dilara studied diligently and stood first in her class. Now she has a dream — she wants to be a teacher and light up the dark corners of illiteracy in her village. Her parents weep in joy seeing their daughter\u2019s success. Moral: Where there is a will, there is a way; help may come from unexpected corners.',
+    q11:
+        'Dialogue between you and your friend Sadika about your future plan of life:\nMe: Hello Sadika! Have you made any plan about what you will be in future?\nSadika: Yes, I have. I want to be a doctor. What about you?\nMe: I want to be an English teacher.\nSadika: Why do you choose this profession?\nMe: Because most of our students fear English. I want to make it easy and enjoyable for them.\nSadika: That is a noble choice. What preparation are you taking?\nMe: I practise grammar and spoken English every day and read model classes of experienced teachers.\nSadika: Won\u2019t you dream of any other profession?\nMe: No. A teacher builds the nation silently; quality teachers are rare in our country.\nSadika: You are right. A doctor also serves people, and I want to open a free clinic for the poor.\nMe: Wonderful! Let us both work hard to reach our goals.\nSadika: Surely! Best of luck for your dream!\nMe: Thank you — the same to you!',
   ),
   68: FirstPaperAns(
-    q1: ['(a) iii. significant','(b) iii. martyrs of liberation war','(c) iii. amuse','(d) i. spectator','(e) ii. a befitting manner','(f) iv. focus on the valiant struggle and sacrifice of Liberation War','(g) iv. national holiday'],
-    q2: ['(a) Our Independence Day reminds us of the declaration of independence and the heroic struggle and sacrifice of 1971; it renews our pledge to protect the freedom of the country.','(b) We pay homage by placing floral wreaths at the National Mausoleum at Savar; leaders, diplomats and people of all walks of life go there in rallies and processions.','(c) School children, scouts and girl guides entertain thousands of spectators in the National Stadium with various displays.','(d) In our school we celebrate it by hoisting the national flag, singing the national anthem and patriotic songs, holding discussion meetings and cultural programmes.','(e) The main features of the day are: a national holiday, the 31 gun salute, wreath-placing at Savar, rallies, cultural programmes, sports (including the boat race in the Buriganga) and illumination of public buildings in the evening.'],
-    q3: ['that','threat','free','feared','to'],
-    q4: ['(i) December 9, 1608','(ii) Cambridge University','(iii) Mary Powell','(iv) \u2019Paradise Lost\u2019','(v) November 8, 1674'],
-    q6: ['(a) v & ii','(b) iii & iv','(c) ii & i','(d) i & v','(e) iv & iii'],
-    q8: ['(a) The poem Books describes each book as a faithful friend and a magic ship that carries the reader across the seas of knowledge.','(b) \u2019Full circle\u2019 means the poet\u2019s life has turned completely — she now cares for her mother just as her mother once cared for her.','(c) Mary was buried in a little churchyard on the western shore / beside the sea.','(d) The poet calls Time a \u2019gipsy\u2019 because, like a gipsy, Time never settles down — he keeps wandering from place to place forever.','(e) \u2019The darkest evening of the year\u2019 intensifies the mystery and loneliness of the scene and also hints at the deep symbolic weight of the journey of life.','(f) According to the poet, the world turns away from sorrow — no one comes to share our grief; in suffering we are left alone.','(g) The poet\u2019s ultimate realization is hopeful — life exists, the powerful play goes on and one may contribute a verse of one\u2019s own.','(h) Yes, the answer section is convincing — it turns the poem\u2019s despair into hope by telling us that our existence itself has a purpose.'],
-    q9: ['(a) After seeing the pretty things in the milliner\u2019s shop, Rosamond asked her mother to buy them, saying she was sure she could find a use for them.','(b) The two things were the beautiful purple jar in the chemist\u2019s shop and a new pair of shoes.','(c) When Rosamond bought the jar, she felt extremely happy and proud of her choice.','(d) The purple jar glittered but was only plain white glass; Rosamond rejected useful shoes for its shine and suffered a whole month. This proves that all that glitters is not gold.','(e) When Bassanio needed money, he would go to his friend Antonio, who generously helped him.','(f) The Prince of Morocco conjectured that Portia\u2019s portrait must surely lie in the golden casket, for only gold seemed worthy of such preciousness.','(g) He was misled by the outward glitter of gold and ignored the warning on it; outside show deceived his judgment.','(h) The Prince of Spain failed because he judged by self-esteem and outward value — the proud inscription of silver matched his vanity, while the humble lead did not attract him.'],
+    q1: [
+      '(a) iii. significant',
+      '(b) iii. martyrs of liberation war',
+      '(c) iii. amuse',
+      '(d) i. spectator',
+      '(e) ii. a befitting manner',
+      '(f) iv. focus on the valiant struggle and sacrifice of Liberation War',
+      '(g) iv. national holiday'
+    ],
+    q2: [
+      '(a) Our Independence Day reminds us of the declaration of independence and the heroic struggle and sacrifice of 1971; it renews our pledge to protect the freedom of the country.',
+      '(b) We pay homage by placing floral wreaths at the National Mausoleum at Savar; leaders, diplomats and people of all walks of life go there in rallies and processions.',
+      '(c) School children, scouts and girl guides entertain thousands of spectators in the National Stadium with various displays.',
+      '(d) In our school we celebrate it by hoisting the national flag, singing the national anthem and patriotic songs, holding discussion meetings and cultural programmes.',
+      '(e) The main features of the day are: a national holiday, the 31 gun salute, wreath-placing at Savar, rallies, cultural programmes, sports (including the boat race in the Buriganga) and illumination of public buildings in the evening.'
+    ],
+    q3: ['that', 'threat', 'free', 'feared', 'to'],
+    q4: [
+      '(i) December 9, 1608',
+      '(ii) Cambridge University',
+      '(iii) Mary Powell',
+      '(iv) \u2019Paradise Lost\u2019',
+      '(v) November 8, 1674'
+    ],
+    q6: [
+      '(a) v & ii',
+      '(b) iii & iv',
+      '(c) ii & i',
+      '(d) i & v',
+      '(e) iv & iii'
+    ],
+    q8: [
+      '(a) The poem Books describes each book as a faithful friend and a magic ship that carries the reader across the seas of knowledge.',
+      '(b) \u2019Full circle\u2019 means the poet\u2019s life has turned completely — she now cares for her mother just as her mother once cared for her.',
+      '(c) Mary was buried in a little churchyard on the western shore / beside the sea.',
+      '(d) The poet calls Time a \u2019gipsy\u2019 because, like a gipsy, Time never settles down — he keeps wandering from place to place forever.',
+      '(e) \u2019The darkest evening of the year\u2019 intensifies the mystery and loneliness of the scene and also hints at the deep symbolic weight of the journey of life.',
+      '(f) According to the poet, the world turns away from sorrow — no one comes to share our grief; in suffering we are left alone.',
+      '(g) The poet\u2019s ultimate realization is hopeful — life exists, the powerful play goes on and one may contribute a verse of one\u2019s own.',
+      '(h) Yes, the answer section is convincing — it turns the poem\u2019s despair into hope by telling us that our existence itself has a purpose.'
+    ],
+    q9: [
+      '(a) After seeing the pretty things in the milliner\u2019s shop, Rosamond asked her mother to buy them, saying she was sure she could find a use for them.',
+      '(b) The two things were the beautiful purple jar in the chemist\u2019s shop and a new pair of shoes.',
+      '(c) When Rosamond bought the jar, she felt extremely happy and proud of her choice.',
+      '(d) The purple jar glittered but was only plain white glass; Rosamond rejected useful shoes for its shine and suffered a whole month. This proves that all that glitters is not gold.',
+      '(e) When Bassanio needed money, he would go to his friend Antonio, who generously helped him.',
+      '(f) The Prince of Morocco conjectured that Portia\u2019s portrait must surely lie in the golden casket, for only gold seemed worthy of such preciousness.',
+      '(g) He was misled by the outward glitter of gold and ignored the warning on it; outside show deceived his judgment.',
+      '(h) The Prince of Spain failed because he judged by self-esteem and outward value — the proud inscription of silver matched his vanity, while the humble lead did not attract him.'
+    ],
     q5: 'John Milton, one of the famous poets in English literature, was born on December 9, 1608 in London. He studied at Cambridge University, took his M.A. degree after seven years and spent six more years at Horton in unprofessional study. He married Mary Powell in 1642, but lost his wives early and his eyesight later. In spite of all sufferings he composed his immortal epic \u2019Paradise Lost\u2019, finished in 1663 and published in 1667. This great poet breathed his last on November 8, 1674 at the age of 66.',
     q7: 'g → d → e → c → h → f → a → b',
     q10Title: 'The Honest Rickshawpuller',
-    q10: 'Once there lived a poor rickshawpuller. He had to maintain his family consisting of eight members with great difficulty. One day while walking through the field, he found a leather bag lying on the ground. He picked it up and found inside fifty thousand taka and some papers of a bank. His family was needy, but his heart was honest. He went to the address written on the papers and found the house of an old farmer who had lost the bag while coming back from the bank. The poor farmer had been crying since morning, for it was the money for his son\u2019s treatment. When the rickshawpuller returned the bag with every note intact, the farmer wept in joy and blessed him. He gave him five thousand taka as a reward and told everyone about his honesty. Later, the villagers honoured the rickshawpuller and the local school offered free education to his children. Moral: Honesty is the best policy.',
-    q11: 'Dialogue between Sumon and Rahim emphasizing the importance of games and sports:\nSumon: Hello Rahim! Why are you reading in the field? Come and play with us.\nRahim: I cannot. I have to prepare for the examination.\nSumon: Study is important, but games and sports are equally important.\nRahim: Do you really think so?\nSumon: Certainly! Games make our body strong and keep us healthy.\nRahim: What else?\nSumon: They refresh our tired mind and improve our concentration, which helps us study better.\nRahim: Really! I never thought that way.\nSumon: Moreover, games teach us discipline, team-spirit and leadership.\nRahim: Won\u2019t they waste our valuable study time?\nSumon: No, only excessive play wastes time. \u2019All work and no play makes Jack a dull boy\u2019, they say.\nRahim: You are right. From today I will play with you every afternoon.\nSumon: Great decision! Come on then — the match is about to start!',
+    q10:
+        'Once there lived a poor rickshawpuller. He had to maintain his family consisting of eight members with great difficulty. One day while walking through the field, he found a leather bag lying on the ground. He picked it up and found inside fifty thousand taka and some papers of a bank. His family was needy, but his heart was honest. He went to the address written on the papers and found the house of an old farmer who had lost the bag while coming back from the bank. The poor farmer had been crying since morning, for it was the money for his son\u2019s treatment. When the rickshawpuller returned the bag with every note intact, the farmer wept in joy and blessed him. He gave him five thousand taka as a reward and told everyone about his honesty. Later, the villagers honoured the rickshawpuller and the local school offered free education to his children. Moral: Honesty is the best policy.',
+    q11:
+        'Dialogue between Sumon and Rahim emphasizing the importance of games and sports:\nSumon: Hello Rahim! Why are you reading in the field? Come and play with us.\nRahim: I cannot. I have to prepare for the examination.\nSumon: Study is important, but games and sports are equally important.\nRahim: Do you really think so?\nSumon: Certainly! Games make our body strong and keep us healthy.\nRahim: What else?\nSumon: They refresh our tired mind and improve our concentration, which helps us study better.\nRahim: Really! I never thought that way.\nSumon: Moreover, games teach us discipline, team-spirit and leadership.\nRahim: Won\u2019t they waste our valuable study time?\nSumon: No, only excessive play wastes time. \u2019All work and no play makes Jack a dull boy\u2019, they say.\nRahim: You are right. From today I will play with you every afternoon.\nSumon: Great decision! Come on then — the match is about to start!',
   ),
   69: FirstPaperAns(
-    q1: ['(a) iv. not being evaluated properly by the West','(b) iv. childhood','(c) iv. English taste, manners and intellect','(d) iii. His literary work','(e) ii. with outstanding literary talent','(f) iii. anger','(g) i. to sketch Michael\u2019s life'],
-    q2: ['(a) Michael Madhusudan Dutt was a celebrated 19th century Bangalee poet and dramatist, born in Sagordari on the bank of the Kopotaksho River in Jashore; he wrote the first Bangla epic \u2019Meghnad Badh Kabya\u2019.','(b) In his early age his ambition was to be an Englishman in form and manner — to imitate the English in taste, manners and intellect.','(c) Michael started writing in Bangla because he was frustrated at not gaining appreciation in the West and gradually realized that his true identity lay in Bengal.','(d) Out of his frustration, after he found that he was not esteemed as a native writer of English literature, he composed the sonnet Kopotaksha Nad.','(e) Because he was not esteemed in Europe as he deserved — the West remained unreceptive to his genius, so he felt himself only a temporary guest or sojourner there.'],
-    q3: ['control','the','cause','emitted','purposes'],
-    q4: ['(i) July, 1885','(ii) 1910','(iii) the University of Dhaka','(iv) was awarded the Doctorate Degree','(v) \u2019Bangla Shahitter Katha\u2019'],
-    q6: ['(a) v & ii','(b) iii & iii','(c) i & iv','(d) ii & v','(e) iv & i'],
-    q8: ['(a) According to the poem, a child can travel anywhere with a book — sitting still, his mind can sail to far lands and learn wonderful things.','(b) The poet calls herself her mother\u2019s strength because the grown daughter now supports her aged mother, returning the strength her mother once gave her.','(c) The boatmen still hear Mary\u2019s last cry echoing across the sands of Dee.','(d) The caravan represents the endless journey of Time moving onward through ages, carrying human life with it.','(e) The poet describes Time as tightening its rein to show that Time urges life forward relentlessly, like a rider hastening his horse.','(f) The horse\u2019s reaction symbolizes practical duty and purpose — it questions the needless pause, reminding us that life\u2019s journey must continue.','(g) According to the poem Solitude, when you are successful and rejoice, people seek your company and friendship.','(h) The main theme of O me! O Life! is the search for the meaning of life amid the faithless crowd — answered by hope: life exists and you may contribute a verse.'],
-    q9: ['(a) The windows of the milliner\u2019s shop were decorated with artificial flowers, ribbons, caps, fans and other pretty ornaments.','(b) Rosamond\u2019s last request to her mother was to buy her the purple jar, even if that meant giving up the new shoes.','(c) The writer means that because of her foolish choice, Rosamond had to suffer and regret long afterwards — the lesson would make her wiser.','(d) Because she had chosen the jar and had to wear her old, worn-out shoes for a whole month, which made her feet ache.','(e) Antonio did not have much money with him because all his wealth was invested in his ships, which were then sailing abroad.','(f) Bassanio chose rightly because he valued the inner worth over outward show — the plain lead casket, demanding one to give and hazard all, suited true love.','(g) It indicates that according to the bond, Antonio is legally forced to surrender a pound of his flesh to Shylock — that is, to lose his life.','(h) Antonio was Bassanio\u2019s best friend because he loved him dearly, helped him with money whenever he needed and even signed a deadly bond risking his own life for him.'],
+    q1: [
+      '(a) iv. not being evaluated properly by the West',
+      '(b) iv. childhood',
+      '(c) iv. English taste, manners and intellect',
+      '(d) iii. His literary work',
+      '(e) ii. with outstanding literary talent',
+      '(f) iii. anger',
+      '(g) i. to sketch Michael\u2019s life'
+    ],
+    q2: [
+      '(a) Michael Madhusudan Dutt was a celebrated 19th century Bangalee poet and dramatist, born in Sagordari on the bank of the Kopotaksho River in Jashore; he wrote the first Bangla epic \u2019Meghnad Badh Kabya\u2019.',
+      '(b) In his early age his ambition was to be an Englishman in form and manner — to imitate the English in taste, manners and intellect.',
+      '(c) Michael started writing in Bangla because he was frustrated at not gaining appreciation in the West and gradually realized that his true identity lay in Bengal.',
+      '(d) Out of his frustration, after he found that he was not esteemed as a native writer of English literature, he composed the sonnet Kopotaksha Nad.',
+      '(e) Because he was not esteemed in Europe as he deserved — the West remained unreceptive to his genius, so he felt himself only a temporary guest or sojourner there.'
+    ],
+    q3: ['control', 'the', 'cause', 'emitted', 'purposes'],
+    q4: [
+      '(i) July, 1885',
+      '(ii) 1910',
+      '(iii) the University of Dhaka',
+      '(iv) was awarded the Doctorate Degree',
+      '(v) \u2019Bangla Shahitter Katha\u2019'
+    ],
+    q6: [
+      '(a) v & ii',
+      '(b) iii & iii',
+      '(c) i & iv',
+      '(d) ii & v',
+      '(e) iv & i'
+    ],
+    q8: [
+      '(a) According to the poem, a child can travel anywhere with a book — sitting still, his mind can sail to far lands and learn wonderful things.',
+      '(b) The poet calls herself her mother\u2019s strength because the grown daughter now supports her aged mother, returning the strength her mother once gave her.',
+      '(c) The boatmen still hear Mary\u2019s last cry echoing across the sands of Dee.',
+      '(d) The caravan represents the endless journey of Time moving onward through ages, carrying human life with it.',
+      '(e) The poet describes Time as tightening its rein to show that Time urges life forward relentlessly, like a rider hastening his horse.',
+      '(f) The horse\u2019s reaction symbolizes practical duty and purpose — it questions the needless pause, reminding us that life\u2019s journey must continue.',
+      '(g) According to the poem Solitude, when you are successful and rejoice, people seek your company and friendship.',
+      '(h) The main theme of O me! O Life! is the search for the meaning of life amid the faithless crowd — answered by hope: life exists and you may contribute a verse.'
+    ],
+    q9: [
+      '(a) The windows of the milliner\u2019s shop were decorated with artificial flowers, ribbons, caps, fans and other pretty ornaments.',
+      '(b) Rosamond\u2019s last request to her mother was to buy her the purple jar, even if that meant giving up the new shoes.',
+      '(c) The writer means that because of her foolish choice, Rosamond had to suffer and regret long afterwards — the lesson would make her wiser.',
+      '(d) Because she had chosen the jar and had to wear her old, worn-out shoes for a whole month, which made her feet ache.',
+      '(e) Antonio did not have much money with him because all his wealth was invested in his ships, which were then sailing abroad.',
+      '(f) Bassanio chose rightly because he valued the inner worth over outward show — the plain lead casket, demanding one to give and hazard all, suited true love.',
+      '(g) It indicates that according to the bond, Antonio is legally forced to surrender a pound of his flesh to Shylock — that is, to lose his life.',
+      '(h) Antonio was Bassanio\u2019s best friend because he loved him dearly, helped him with money whenever he needed and even signed a deadly bond risking his own life for him.'
+    ],
     q5: 'Dr. Muhammad Shahidullah, one of the greatest scholars of his time, made great contributions to Bangla language and literature. Born in July 1885 at 24 Pargonas in West Bengal, he passed the Entrance examination in 1904 and obtained B.A., M.A. and B.L. degrees successively. He joined the University of Dhaka in 1921 as a Professor of Sanskrit and Bengali and was awarded the Doctorate Degree from Sorbonne University, Paris in 1928. His famous \u2019Bangla Shahitter Katha\u2019, the first well-arranged history of Bengali literature, was published in 1953. He breathed his last on July 13, 1969 in Dhaka.',
     q7: 'e → c → f → a → h → d → b → g',
     q10Title: 'The Pied Piper of Hamelin',
-    q10: 'A long time ago, the town of Hamelin faced a great problem. It became full of rats. The situation became very unbearable; the rats ate the corn, tore the clothes and even troubled the babies. The Mayor and the people could find no way out. At that moment a strange piper appeared and promised to free the town of rats in exchange for a thousand guilders. The Mayor happily agreed. The piper began to play a sweet tune on his pipe, and wonder of wonders — all the rats followed him and plunged into the river and drowned. When the piper came back for his reward, the dishonest Mayor refused to pay. The piper grew angry and played another tune. This time all the children of the town followed him dancing towards the mountain. A cave opened, the piper and the children entered, and the door closed forever. Only one lame boy, who could not keep pace, saw the whole thing. The people of Hamelin lost their children forever for breaking the promise. Moral: Never break a promise / Be honest about a just bargain.',
-    q11: 'Dialogue between Tanveer and Habib about the necessity of tree plantation:\nTanveer: Hello Habib! I heard you celebrated a plantation week at your college. Why do you love tree plantation so much?\nHabib: Because trees are our best friends — they give us oxygen, food, fruits, timber and shade.\nTanveer: But people are cutting down trees every day.\nHabib: That is the tragedy. Without trees, the earth will turn into a desert and no creature will survive.\nTanveer: How does deforestation harm us?\nHabib: It increases carbon dioxide, raises temperature and causes floods and droughts.\nTanveer: Then what should we do?\nHabib: We should plant at least two trees for every tree we cut.\nTanveer: When is the best time for planting trees?\nHabib: The rainy season — June and July — is the best planting time in Bangladesh.\nTanveer: Where can we plant trees?\nHabib: On roadsides, in school yards, rooftops and any open space around our homes.\nTanveer: Your love for nature is really inspiring. I will start planting trees from this week!\nHabib: Great! Together we can make our country green again.',
+    q10:
+        'A long time ago, the town of Hamelin faced a great problem. It became full of rats. The situation became very unbearable; the rats ate the corn, tore the clothes and even troubled the babies. The Mayor and the people could find no way out. At that moment a strange piper appeared and promised to free the town of rats in exchange for a thousand guilders. The Mayor happily agreed. The piper began to play a sweet tune on his pipe, and wonder of wonders — all the rats followed him and plunged into the river and drowned. When the piper came back for his reward, the dishonest Mayor refused to pay. The piper grew angry and played another tune. This time all the children of the town followed him dancing towards the mountain. A cave opened, the piper and the children entered, and the door closed forever. Only one lame boy, who could not keep pace, saw the whole thing. The people of Hamelin lost their children forever for breaking the promise. Moral: Never break a promise / Be honest about a just bargain.',
+    q11:
+        'Dialogue between Tanveer and Habib about the necessity of tree plantation:\nTanveer: Hello Habib! I heard you celebrated a plantation week at your college. Why do you love tree plantation so much?\nHabib: Because trees are our best friends — they give us oxygen, food, fruits, timber and shade.\nTanveer: But people are cutting down trees every day.\nHabib: That is the tragedy. Without trees, the earth will turn into a desert and no creature will survive.\nTanveer: How does deforestation harm us?\nHabib: It increases carbon dioxide, raises temperature and causes floods and droughts.\nTanveer: Then what should we do?\nHabib: We should plant at least two trees for every tree we cut.\nTanveer: When is the best time for planting trees?\nHabib: The rainy season — June and July — is the best planting time in Bangladesh.\nTanveer: Where can we plant trees?\nHabib: On roadsides, in school yards, rooftops and any open space around our homes.\nTanveer: Your love for nature is really inspiring. I will start planting trees from this week!\nHabib: Great! Together we can make our country green again.',
   ),
 };
 

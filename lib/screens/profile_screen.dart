@@ -94,7 +94,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _forgotPassword() async {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
-      setState(() => _err = 'Type your email first, then tap "Forgot password".');
+      setState(
+          () => _err = 'Type your email first, then tap "Forgot password".');
       return;
     }
     setState(() {
@@ -200,7 +201,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setD(() => err = 'Enter your full name (min 3 characters).');
                   return;
                 }
-                if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(phoneCtrl.text))) {
+                if (!RegExp(r'^1\d{9}$')
+                    .hasMatch(_localPhone(phoneCtrl.text))) {
                   setD(() => err = 'Enter a valid number, e.g. 1XXXXXXXXX.');
                   return;
                 }
@@ -374,7 +376,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // true means the plan ran out).
     DateTime? pu;
     final puRaw = _profile?['pro_until']?.toString() ?? '';
-    if (puRaw.isNotEmpty) pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
+    if (puRaw.isNotEmpty)
+      pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
     final serverPro = _profile?['is_pro'] == true &&
         (pu == null || pu.isAfter(DateTime.now()));
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
@@ -396,7 +399,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   gradient: AppTheme.brandGradient,
                   boxShadow: [
                     BoxShadow(
-                        color: AppTheme.primary.withOpacity(.3), blurRadius: 16),
+                        color: AppTheme.primary.withOpacity(.3),
+                        blurRadius: 16),
                   ],
                 ),
                 child: Text(
@@ -425,8 +429,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       AuthService.email ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:
-                          const TextStyle(fontSize: 12.5, color: AppTheme.muted),
+                      style: const TextStyle(
+                          fontSize: 12.5, color: AppTheme.muted),
                     ),
                     if (phone.isNotEmpty) ...[
                       const SizedBox(height: 2),
@@ -540,7 +544,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontSize: 15.5,
                         fontWeight: FontWeight.w800)),
                 SizedBox(height: 3),
-                Text('Unlock every question, remove the watermark, print freely.',
+                Text(
+                    'Unlock every question, remove the watermark, print freely.',
                     style: TextStyle(
                         color: AppTheme.muted, fontSize: 12, height: 1.4)),
               ],
@@ -600,7 +605,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           boxShadow: selected
                               ? [
                                   BoxShadow(
-                                      color: AppStyle.accents[i].withOpacity(.28),
+                                      color:
+                                          AppStyle.accents[i].withOpacity(.28),
                                       blurRadius: 14)
                                 ]
                               : null,

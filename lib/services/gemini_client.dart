@@ -21,10 +21,12 @@ import 'supabase_config.dart';
 
 class GeminiException implements Exception {
   final String message;
+
   /// Fatal = a fallback to another model cannot help (bad key, quota,
   /// safety block, network). Non-fatal errors (unknown model) trigger the
   /// internal model fallback.
   final bool fatal;
+
   /// Machine-readable code from the server path (see the `mimi` edge
   /// function): NOT_CONFIGURED, UNAUTHORIZED, QUOTA, KEY_INVALID,
   /// PAYLOAD_TOO_LARGE, MODEL_UNAVAILABLE, GEMINI_ERROR. Null on the
@@ -77,7 +79,11 @@ class GeminiClient {
       throw const GeminiException('Add a question or an attachment first.');
     }
     final body = jsonEncode({
-      'systemInstruction': {'parts': [{'text': systemPrompt}]},
+      'systemInstruction': {
+        'parts': [
+          {'text': systemPrompt}
+        ]
+      },
       'contents': [
         for (final h in history)
           {
@@ -124,8 +130,7 @@ class GeminiClient {
     final discovered = _discovered ?? await _discoverModel(apiKey);
     if (discovered != null && !candidates.contains(discovered)) {
       try {
-        final out =
-            await _stream(discovered, apiKey, body, onChunk, timeout);
+        final out = await _stream(discovered, apiKey, body, onChunk, timeout);
         await _saveModel(discovered);
         return out;
       } on GeminiException catch (e) {
@@ -202,7 +207,6 @@ class GeminiClient {
     }
   }
 
-
   static Future<String> _stream(String model, String apiKey, String bodyJson,
       void Function(String chunk)? onChunk, Duration timeout) async {
     final req = http.Request(
@@ -219,7 +223,8 @@ class GeminiClient {
       }
       return await _readSse(resp, onChunk);
     } on http.ClientException catch (e) {
-      throw GeminiException('Network error while contacting Gemini: ${e.message}');
+      throw GeminiException(
+          'Network error while contacting Gemini: ${e.message}');
     } on SocketException catch (e) {
       throw GeminiException('Network error: ${e.message}');
     } on TimeoutException {
@@ -238,8 +243,9 @@ class GeminiClient {
       http.StreamedResponse resp, void Function(String chunk)? onChunk) async {
     final out = StringBuffer();
     var gotAny = false;
-    await for (final line
-        in resp.stream.transform(utf8.decoder).transform(const LineSplitter())) {
+    await for (final line in resp.stream
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())) {
       if (!line.startsWith('data:')) continue;
       final payload = line.substring(5).trim();
       if (payload.isEmpty || payload == '[DONE]') continue;
@@ -317,7 +323,10 @@ class GeminiClient {
       ],
       'history': [
         for (final h in history)
-          {'role': h['role'], 'text': (h['text'] ?? '').isEmpty ? ' ' : h['text']}
+          {
+            'role': h['role'],
+            'text': (h['text'] ?? '').isEmpty ? ' ' : h['text']
+          }
       ],
     };
     final req = http.Request(
@@ -334,7 +343,8 @@ class GeminiClient {
       }
       return await _readSse(resp, onChunk);
     } on http.ClientException catch (e) {
-      throw GeminiException('Network error while contacting the AI server: ${e.message}');
+      throw GeminiException(
+          'Network error while contacting the AI server: ${e.message}');
     } on SocketException catch (e) {
       throw GeminiException('Network error: ${e.message}');
     } on TimeoutException {
@@ -347,7 +357,8 @@ class GeminiClient {
 
   /// Maps a non-2xx reply from the `mimi` edge function to a
   /// [GeminiException] carrying its machine-readable [GeminiException.code].
-  static Future<GeminiException> _serverErrorOf(http.StreamedResponse resp) async {
+  static Future<GeminiException> _serverErrorOf(
+      http.StreamedResponse resp) async {
     String text;
     try {
       text = await utf8.decodeStream(resp.stream);
@@ -358,7 +369,8 @@ class GeminiClient {
     String? code;
     try {
       final j = jsonDecode(text) as Map<String, dynamic>;
-      if (j['error'] is String) msg = (j['error'] as String).split('\n').first.trim();
+      if (j['error'] is String)
+        msg = (j['error'] as String).split('\n').first.trim();
       code = (j['code'] is String) ? j['code'] as String : null;
     } catch (_) {}
     if (resp.statusCode == 503 && (code == null || code == 'NOT_CONFIGURED')) {

@@ -70,7 +70,6 @@ class _AppButtonState extends State<AppButton> {
         padding: AppSpacing.buttonPadding,
         decoration: BoxDecoration(
           borderRadius: radius,
-
           color: disabled
               ? AppColors.disabled
               : (widget.outlined ? AppColors.surface : AppColors.primary),

@@ -254,7 +254,9 @@ void main() {
   final answers = List<int>.generate(total, (i) => i % 4);
   answers[4] = -1; // q5 blank
   answers[9] = -1; // q10 blank
-  final doubles = {8: [0, 1]}; // q9 double-marked
+  final doubles = {
+    8: [0, 1]
+  }; // q9 double-marked
   answers[8] = -2; // the scanner reports a double-mark as -2
 
   final expectedKey =
@@ -276,11 +278,12 @@ void main() {
         // Adjacent bubbles in a row must not overlap.
         final a = g.questionBubble(1, 0);
         final b = g.questionBubble(1, 1);
-        expect((b.dx - a.dx).abs(),
-            greaterThan(2 * OMrGeometry.bubbleRadiusPx));
+        expect(
+            (b.dx - a.dx).abs(), greaterThan(2 * OMrGeometry.bubbleRadiusPx));
         // Identity panels below the question grid.
         expect(g.identityTop, greaterThan(g.questionsBottom));
-        expect(g.identityBottom, lessThan(OMrGeometry.pageH - OMrGeometry.margin));
+        expect(
+            g.identityBottom, lessThan(OMrGeometry.pageH - OMrGeometry.margin));
         expect(g.setTop + OMrGeometry.setH,
             lessThan(OMrGeometry.pageH - OMrGeometry.margin));
       }
@@ -291,8 +294,10 @@ void main() {
         final t = OMrGeometry.markTopLeft(i);
         expect(t[0], greaterThanOrEqualTo(0));
         expect(t[1], greaterThanOrEqualTo(0));
-        expect(t[0] + OMrGeometry.markSize, lessThanOrEqualTo(OMrGeometry.pageW));
-        expect(t[1] + OMrGeometry.markSize, lessThanOrEqualTo(OMrGeometry.pageH));
+        expect(
+            t[0] + OMrGeometry.markSize, lessThanOrEqualTo(OMrGeometry.pageW));
+        expect(
+            t[1] + OMrGeometry.markSize, lessThanOrEqualTo(OMrGeometry.pageH));
       }
     });
   });

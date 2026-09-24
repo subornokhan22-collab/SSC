@@ -169,10 +169,10 @@ class _PulsingOfflineIconState extends State<_PulsingOfflineIcon>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _c,
-      builder: (context, _) =>
-          Transform.scale(scale: 1 + .14 * _c.value,
-              child: const Icon(Icons.cloud_off_rounded,
-                  color: Colors.white, size: 18)),
+      builder: (context, _) => Transform.scale(
+          scale: 1 + .14 * _c.value,
+          child: const Icon(Icons.cloud_off_rounded,
+              color: Colors.white, size: 18)),
     );
   }
 }

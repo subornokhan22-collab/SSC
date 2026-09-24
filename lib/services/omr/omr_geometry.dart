@@ -49,6 +49,7 @@ class OMrGeometry {
   // ── Corner alignment marks (filled squares, 13 pt) ─────────────────
   static const double markSize = 13 * k;
   static final double _markTLx = margin;
+
   /// Distance from the page edge to a corner mark's OUTER edge. All four
   /// marks sit this far in from the page border, so growing the mark
   /// (10 → 13 pt) enlarges the scanner's target without moving where the
@@ -110,8 +111,7 @@ class OMrGeometry {
   int get questionColumns => _columns;
 
   /// X origin of question column [column] (0-based, left → right).
-  double columnX(int column) =>
-      margin + column * (questionWidth + questionGap);
+  double columnX(int column) => margin + column * (questionWidth + questionGap);
 
   /// Centre of the bubble for question number [no] (1-based) and option
   /// [option] (0 = ক, 1 = খ, 2 = গ, 3 = ঘ).

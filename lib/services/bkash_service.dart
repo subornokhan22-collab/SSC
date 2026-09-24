@@ -76,8 +76,7 @@ class BkashService {
   /// longer carries an `error` field); the server's
   /// `{ok: false, error: "..."}` body rides along as the exception's
   /// `details`, which is where the human message is read from.
-  static Future<Map<String, dynamic>> _invoke(
-      Map<String, Object?> body) async {
+  static Future<Map<String, dynamic>> _invoke(Map<String, Object?> body) async {
     try {
       final res =
           await Supabase.instance.client.functions.invoke('bkash', body: body);

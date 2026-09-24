@@ -22,7 +22,9 @@ class OperationController extends ChangeNotifier {
       await action();
       return !_disposed;
     } catch (e) {
-      if (!_disposed) error = e.toString().replaceFirst(RegExp(r'^(Exception|Bad state): '), '');
+      if (!_disposed)
+        error =
+            e.toString().replaceFirst(RegExp(r'^(Exception|Bad state): '), '');
       return false;
     } finally {
       busy = false;

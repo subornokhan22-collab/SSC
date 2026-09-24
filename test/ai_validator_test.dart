@@ -43,13 +43,12 @@ void main() {
     });
 
     test('rejects duplicate options', () {
-      final v = QuestionSchemaValidator.validateMcq(q(
-          options: const [
-            'Carbon dioxide',
-            'Carbon dioxide',
-            'Oxygen',
-            'Nitrogen'
-          ]));
+      final v = QuestionSchemaValidator.validateMcq(q(options: const [
+        'Carbon dioxide',
+        'Carbon dioxide',
+        'Oxygen',
+        'Nitrogen'
+      ]));
       expect(v.valid, isFalse);
       expect(v.errors.any((e) => e.contains('distinct')), isTrue);
     });
@@ -91,8 +90,8 @@ void main() {
     });
 
     test('batch: an in-batch duplicate is flagged', () {
-      final vs = QuestionSchemaValidator.validateBatch(
-          [q(id: 'a'), q(id: 'b')]);
+      final vs =
+          QuestionSchemaValidator.validateBatch([q(id: 'a'), q(id: 'b')]);
       expect(vs[1].valid, isFalse);
       expect(vs[1].errors.any((e) => e.contains('duplicate')), isTrue);
       expect(vs[0].valid, isTrue);

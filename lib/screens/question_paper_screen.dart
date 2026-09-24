@@ -6,7 +6,11 @@ import 'create_paper_screen.dart';
 class QuestionPaperScreen extends StatelessWidget {
   final String? initialSubjectId;
   final String? initialMode;
-  const QuestionPaperScreen({super.key,this.initialSubjectId,this.initialMode});
-  @override Widget build(BuildContext context)=>CreatePaperScreen(initialSubjectId:initialSubjectId,
-    initialFormat:initialMode=='chapter'?PaperFormat.chapter:PaperFormat.board);
+  const QuestionPaperScreen(
+      {super.key, this.initialSubjectId, this.initialMode});
+  @override
+  Widget build(BuildContext context) => CreatePaperScreen(
+      initialSubjectId: initialSubjectId,
+      initialFormat:
+          initialMode == 'chapter' ? PaperFormat.chapter : PaperFormat.board);
 }

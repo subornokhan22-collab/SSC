@@ -9,6 +9,7 @@ import '../models/subject_info.dart';
 import '../services/chapter_catalog.dart';
 import '../services/paper_composer.dart';
 import '../services/paper_snapshot.dart';
+import '../services/question_validation.dart';
 import '../services/ai/question_schema_validator.dart';
 import '../services/ai/duplicate_detector.dart';
 import 'operation_controller.dart';
@@ -25,7 +26,8 @@ class PaperController extends OperationController {
   String? saveError;
   bool initialized = false;
 
-  PaperController({required this.composer, PaperDraft initial = const PaperDraft()})
+  PaperController(
+      {required this.composer, PaperDraft initial = const PaperDraft()})
       : _current = PaperSnapshot(initial, null);
   PaperDraft get draft => _current.draft;
   ComposedPaper? get paper => _current.paper;
@@ -33,29 +35,45 @@ class PaperController extends OperationController {
   bool get canRedo => _redo.isNotEmpty && !busy;
   SubjectInfo? get subject => subjectById(draft.subjectId);
   List<String> get chapters => ChapterCatalog.ordered({
-    ...composer.mcqBank.where((q) => q.subjectId == draft.subjectId).map((q) => q.chapter),
-    ...composer.saqBank.where((q) => q.subjectId == draft.subjectId).map((q) => q.chapter),
-    ...composer.cqBank.where((q) => q.subjectId == draft.subjectId).map((q) => q.chapter),
-  }, subjectId: draft.subjectId);
+        ...composer.mcqBank
+            .where((q) => q.subjectId == draft.subjectId)
+            .map((q) => q.chapter),
+        ...composer.saqBank
+            .where((q) => q.subjectId == draft.subjectId)
+            .map((q) => q.chapter),
+        ...composer.cqBank
+            .where((q) => q.subjectId == draft.subjectId)
+            .map((q) => q.chapter),
+      }, subjectId: draft.subjectId);
 
   Future<void> initialize({bool restore = true}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = restore ? prefs.getString(draftKey) : null;
       if (raw != null && !disposed) {
-        final snapshot = PaperSnapshot.fromJson(jsonDecode(raw) as Map<String,dynamic>);
-        if (subjectById(snapshot.draft.subjectId) == null) throw const FormatException('Subject no longer available');
-        final restored=snapshot.paper;
-        if(restored!=null){
-          if(restored.marks<=0 || restored.minutes<=0 || restored.mcqs.length>100 || restored.saqAnswers>restored.saqs.length || restored.cqAnswers>restored.cqs.length ||
-            restored.mcqs.any((q)=>q.subjectId!=snapshot.draft.subjectId) || QuestionSchemaValidator.validateBatch(restored.mcqs).any((v)=>!v.valid)) {
+        final snapshot =
+            PaperSnapshot.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+        if (subjectById(snapshot.draft.subjectId) == null)
+          throw const FormatException('Subject no longer available');
+        final restored = snapshot.paper;
+        if (restored != null) {
+          if (restored.marks <= 0 ||
+              restored.minutes <= 0 ||
+              restored.mcqs.length > 100 ||
+              restored.saqAnswers > restored.saqs.length ||
+              restored.cqAnswers > restored.cqs.length ||
+              restored.mcqs
+                  .any((q) => q.subjectId != snapshot.draft.subjectId) ||
+              QuestionSchemaValidator.validateBatch(restored.mcqs)
+                  .any((v) => !v.valid)) {
             throw const FormatException('Invalid paper draft');
           }
         }
         _current = snapshot;
       }
     } catch (_) {
-      saveError = 'The previous draft could not be restored. Start a new paper to replace it.';
+      saveError =
+          'The previous draft could not be restored. Start a new paper to replace it.';
     } finally {
       initialized = true;
       changed();
@@ -79,49 +97,85 @@ class PaperController extends OperationController {
 
   void selectSubject(String id) {
     final counts = PaperComposer.defaults(id);
-    update(draft.copyWith(subjectId:id, chapters:[], mcqCount:counts.$1,
-      saqCount:counts.$2, cqCount:counts.$3,
-      format: PaperComposer.isEnglish(id) ? PaperFormat.board : draft.format));
+    update(draft.copyWith(
+        subjectId: id,
+        chapters: [],
+        mcqCount: counts.$1,
+        saqCount: counts.$2,
+        cqCount: counts.$3,
+        format:
+            PaperComposer.isEnglish(id) ? PaperFormat.board : draft.format));
   }
 
   void undo() {
     if (!canUndo) return;
-    _redo.add(_current); _current = _undo.removeLast();
-    _scheduleSave(); changed();
-  }
-  void redo() {
-    if (!canRedo) return;
-    _undo.add(_current); _current = _redo.removeLast();
-    _scheduleSave(); changed();
+    _redo.add(_current);
+    _current = _undo.removeLast();
+    _scheduleSave();
+    changed();
   }
 
-  Future<bool> generate() => run('Selecting questions and checking the paper…', () async {
-    await Future<void>.delayed(const Duration(milliseconds: 16));
-    final result = composer.compose(draft);
-    for (final q in result.mcqs) {
-      final v = QuestionSchemaValidator.validateMcq(q);
-      if (!v.valid) throw StateError('Question ${q.id} needs review: ${v.errors.join(', ')}');
-    }
-    if (!disposed) _apply(PaperSnapshot(draft, result));
-  });
+  void redo() {
+    if (!canRedo) return;
+    _undo.add(_current);
+    _current = _redo.removeLast();
+    _scheduleSave();
+    changed();
+  }
+
+  Future<bool> generate() =>
+      run('Selecting questions and checking the paper…', () async {
+        await Future<void>.delayed(const Duration(milliseconds: 16));
+        final result = composer.compose(draft);
+        for (final q in <Object>[
+          ...result.mcqs,
+          ...result.saqs,
+          ...result.cqs
+        ]) {
+          final v = QuestionValidationService.validate(q);
+          if (!v.valid)
+            throw StateError(
+                'A selected question needs review: ${v.errors.join(', ')}');
+        }
+        if (!disposed) _apply(PaperSnapshot(draft, result));
+      });
 
   void replaceQuestion(int index) {
     if (busy || paper == null) return;
     final old = paper!.mcqs[index];
-    final used = paper!.mcqs.map((q) => q.questionText.trim().toLowerCase()).toSet();
-    final pool = composer.mcqBank.where((q) => q.subjectId == old.subjectId &&
-      q.chapter == old.chapter && !used.contains(q.questionText.trim().toLowerCase()) &&
-      QuestionSchemaValidator.validateMcq(q).valid).toList()..shuffle(composer.random);
-    if (pool.isEmpty) { error = 'No unused question is available in this chapter.'; changed(); return; }
+    final used =
+        paper!.mcqs.map((q) => q.questionText.trim().toLowerCase()).toSet();
+    final pool = composer.mcqBank
+        .where((q) =>
+            q.subjectId == old.subjectId &&
+            q.chapter == old.chapter &&
+            !used.contains(q.questionText.trim().toLowerCase()) &&
+            QuestionSchemaValidator.validateMcq(q).valid)
+        .toList()
+      ..shuffle(composer.random);
+    if (pool.isEmpty) {
+      error = 'No unused question is available in this chapter.';
+      changed();
+      return;
+    }
     editQuestion(index, pool.first);
   }
 
   void editQuestion(int index, Question q) {
     if (busy || paper == null) return;
     final v = QuestionSchemaValidator.validateMcq(q);
-    if (!v.valid) { error = v.errors.join('\n'); changed(); return; }
-    if(paper!.mcqs.asMap().entries.any((e)=>e.key!=index && DuplicateDetector.isDuplicate(q.questionText,e.value.questionText,threshold:1))){
-      error='This question already exists in the paper.';changed();return;
+    if (!v.valid) {
+      error = v.errors.join('\n');
+      changed();
+      return;
+    }
+    if (paper!.mcqs.asMap().entries.any((e) =>
+        e.key != index &&
+        DuplicateDetector.isDuplicate(q.questionText, e.value.questionText,
+            threshold: 1))) {
+      error = 'This question already exists in the paper.';
+      changed();
+      return;
     }
     final next = List<Question>.of(paper!.mcqs)..[index] = q;
     _apply(PaperSnapshot(draft, paper!.withMcqs(next)));
@@ -129,39 +183,73 @@ class PaperController extends OperationController {
 
   void removeQuestion(int index) {
     if (busy || paper == null || draft.format == PaperFormat.board) return;
-    if(paper!.mcqs.length==1 && paper!.saqs.isEmpty && paper!.cqs.isEmpty){error='Keep at least one question in the paper.';changed();return;}
+    if (paper!.mcqs.length == 1 && paper!.saqs.isEmpty && paper!.cqs.isEmpty) {
+      error = 'Keep at least one question in the paper.';
+      changed();
+      return;
+    }
     final next = List<Question>.of(paper!.mcqs)..removeAt(index);
-    _apply(PaperSnapshot(draft.copyWith(mcqCount: next.length), paper!.withMcqs(next)));
+    _apply(PaperSnapshot(
+        draft.copyWith(mcqCount: next.length), paper!.withMcqs(next)));
   }
 
   void useAiQuestions(List<Question> questions) {
     if (busy || questions.isEmpty) return;
-    if(questions.length>100 || QuestionSchemaValidator.validateBatch(questions).any((v)=>!v.valid))throw StateError('Invalid or duplicate AI questions.');
+    if (questions.length > 100 ||
+        QuestionSchemaValidator.validateBatch(questions).any((v) => !v.valid))
+      throw StateError('Invalid or duplicate AI questions.');
     for (final q in questions) {
-      if (!QuestionSchemaValidator.validateMcq(q).valid || q.subjectId != questions.first.subjectId) {
-        throw StateError('AI questions must be valid and belong to one subject.');
+      if (!QuestionSchemaValidator.validateMcq(q).valid ||
+          q.subjectId != questions.first.subjectId) {
+        throw StateError(
+            'AI questions must be valid and belong to one subject.');
       }
     }
-    _apply(PaperSnapshot(draft.copyWith(subjectId: questions.first.subjectId,
-      format: PaperFormat.mcq, chapters:questions.map((q) => q.chapter).toSet().toList(),
-      mcqCount:questions.length, saqCount:0, cqCount:0),
-      ComposedPaper(mcqs:List.unmodifiable(questions), marks:questions.length,
-        minutes:questions.length < 10 ? 10 : questions.length)));
+    _apply(PaperSnapshot(
+        draft.copyWith(
+            subjectId: questions.first.subjectId,
+            format: PaperFormat.mcq,
+            chapters: questions.map((q) => q.chapter).toSet().toList(),
+            mcqCount: questions.length,
+            saqCount: 0,
+            cqCount: 0),
+        ComposedPaper(
+            mcqs: List.unmodifiable(questions),
+            marks: questions.length,
+            minutes: questions.length < 10 ? 10 : questions.length)));
   }
 
   void addAiQuestions(List<Question> added) {
-    if(busy||paper==null||added.isEmpty)return;
-    if(paper!.mcqs.length+added.length>100){error='A paper supports at most 100 MCQs.';changed();return;}
-    if(added.any((q)=>q.subjectId!=draft.subjectId)||QuestionSchemaValidator.validateBatch(added).any((v)=>!v.valid)||
-      DuplicateDetector.findDuplicates(added,paper!.mcqs).isNotEmpty){error='AI questions must be valid, from this subject and different from the paper.';changed();return;}
-    final next=[...paper!.mcqs,...added];
-    _apply(PaperSnapshot(draft.copyWith(format:PaperFormat.custom,mcqCount:next.length,saqCount:paper!.saqs.length,cqCount:paper!.cqs.length),paper!.withMcqs(next)));
+    if (busy || paper == null || added.isEmpty) return;
+    if (paper!.mcqs.length + added.length > 100) {
+      error = 'A paper supports at most 100 MCQs.';
+      changed();
+      return;
+    }
+    if (added.any((q) => q.subjectId != draft.subjectId) ||
+        QuestionSchemaValidator.validateBatch(added).any((v) => !v.valid) ||
+        DuplicateDetector.findDuplicates(added, paper!.mcqs).isNotEmpty) {
+      error =
+          'AI questions must be valid, from this subject and different from the paper.';
+      changed();
+      return;
+    }
+    final next = [...paper!.mcqs, ...added];
+    _apply(PaperSnapshot(
+        draft.copyWith(
+            format: PaperFormat.custom,
+            mcqCount: next.length,
+            saqCount: paper!.saqs.length,
+            cqCount: paper!.cqs.length),
+        paper!.withMcqs(next)));
   }
 
   void _scheduleSave() {
     savedAt = null;
     _saveTimer?.cancel();
-    _saveTimer = Timer(const Duration(milliseconds: 450), () { unawaited(flush()); });
+    _saveTimer = Timer(const Duration(milliseconds: 450), () {
+      unawaited(flush());
+    });
   }
 
   Future<void> flush() {
@@ -171,8 +259,12 @@ class PaperController extends OperationController {
     _writes = _writes.then((_) async {
       try {
         final prefs = await SharedPreferences.getInstance();
-        if (!await prefs.setString(draftKey, raw)) throw StateError('Storage rejected draft');
-        if (identical(snapshot, _current)) { savedAt = DateTime.now(); saveError = null; }
+        if (!await prefs.setString(draftKey, raw))
+          throw StateError('Storage rejected draft');
+        if (identical(snapshot, _current)) {
+          savedAt = DateTime.now();
+          saveError = null;
+        }
       } catch (_) {
         saveError = 'Draft was not saved. Check device storage and try again.';
       }

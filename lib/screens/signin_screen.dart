@@ -65,7 +65,8 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _forgotPassword() async {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
-      setState(() => _err = 'Type your email first, then tap "Forgot password".');
+      setState(
+          () => _err = 'Type your email first, then tap "Forgot password".');
       return;
     }
     setState(() {

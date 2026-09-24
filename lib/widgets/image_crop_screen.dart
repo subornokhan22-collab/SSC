@@ -70,8 +70,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     final w = _view.width, h = _view.height;
     if (w <= 0 || h <= 0) return;
     final s = math.min(w, h) * 0.82;
-    _rect = Rect.fromCenter(
-        center: Offset(w / 2, h / 2), width: s, height: s);
+    _rect = Rect.fromCenter(center: Offset(w / 2, h / 2), width: s, height: s);
   }
 
   @override
@@ -84,7 +83,9 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Crop photo',
             style: TextStyle(
-                fontSize: 17, fontWeight: FontWeight.w900, color: Colors.white)),
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                color: Colors.white)),
         actions: [
           // "Use as is" — keep the original photo, skip the crop.
           TextButton(
@@ -324,14 +325,10 @@ class _CropOverlay extends CustomPainter {
       ..strokeWidth = 1
       ..color = Colors.white.withOpacity(0.45);
     for (final f in const [1.0 / 3, 2.0 / 3]) {
-      canvas.drawLine(
-          Offset(r.left + r.width * f, r.top),
-          Offset(r.left + r.width * f, r.bottom),
-          grid);
-      canvas.drawLine(
-          Offset(r.left, r.top + r.height * f),
-          Offset(r.right, r.top + r.height * f),
-          grid);
+      canvas.drawLine(Offset(r.left + r.width * f, r.top),
+          Offset(r.left + r.width * f, r.bottom), grid);
+      canvas.drawLine(Offset(r.left, r.top + r.height * f),
+          Offset(r.right, r.top + r.height * f), grid);
     }
 
     // White frame.
@@ -352,9 +349,12 @@ class _CropOverlay extends CustomPainter {
     canvas.drawLine(Offset(r.left, r.top), Offset(r.left + L, r.top), tick);
     canvas.drawLine(Offset(r.right - L, r.top), Offset(r.right, r.top), tick);
     canvas.drawLine(Offset(r.right, r.top), Offset(r.right, r.top + L), tick);
-    canvas.drawLine(Offset(r.left, r.bottom - L), Offset(r.left, r.bottom), tick);
-    canvas.drawLine(Offset(r.left, r.bottom), Offset(r.left + L, r.bottom), tick);
-    canvas.drawLine(Offset(r.right - L, r.bottom), Offset(r.right, r.bottom), tick);
+    canvas.drawLine(
+        Offset(r.left, r.bottom - L), Offset(r.left, r.bottom), tick);
+    canvas.drawLine(
+        Offset(r.left, r.bottom), Offset(r.left + L, r.bottom), tick);
+    canvas.drawLine(
+        Offset(r.right - L, r.bottom), Offset(r.right, r.bottom), tick);
     canvas.drawLine(
         Offset(r.right, r.bottom), Offset(r.right, r.bottom - L), tick);
 

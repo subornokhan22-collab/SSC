@@ -13,8 +13,7 @@ class QuestionValidation {
   const QuestionValidation({this.errors = const [], this.warnings = const []});
 
   /// Merges another validation into a new one.
-  QuestionValidation merged(QuestionValidation other) =>
-      QuestionValidation(
+  QuestionValidation merged(QuestionValidation other) => QuestionValidation(
         errors: [...errors, ...other.errors],
         warnings: [...warnings, ...other.warnings],
       );
@@ -67,7 +66,8 @@ class QuestionSchemaValidator {
 
     for (final text in [q.questionText, q.explanation, ...q.options]) {
       if (_banned.hasMatch(text)) {
-        errors.add('banned content (LaTeX/placeholder): ${text.trim().substring(0, text.trim().length > 40 ? 40 : text.trim().length)}…');
+        errors.add(
+            'banned content (LaTeX/placeholder): ${text.trim().substring(0, text.trim().length > 40 ? 40 : text.trim().length)}…');
         break;
       }
     }
@@ -106,9 +106,9 @@ class QuestionSchemaValidator {
     final out = [for (final q in questions) validateMcq(q)];
     if (expectedCount > 0 && questions.length != expectedCount) {
       for (var i = 0; i < out.length; i++) {
-        out[i] = out[i].merged(QuestionValidation(
-            errors:
-                ['batch has ${questions.length} questions, expected $expectedCount']));
+        out[i] = out[i].merged(QuestionValidation(errors: [
+          'batch has ${questions.length} questions, expected $expectedCount'
+        ]));
       }
     }
     final seen = <String, int>{};

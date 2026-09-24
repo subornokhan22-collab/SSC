@@ -106,11 +106,13 @@ class _ProblemCardState extends State<_ProblemCard>
           backgroundColor: AppTheme.danger,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
         ),
         onPressed: () => _run(a),
         child: Text(a.label,
-            style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
+            style:
+                const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
       );
     }
     return OutlinedButton(
@@ -138,8 +140,8 @@ class _ProblemCardState extends State<_ProblemCard>
             decoration: BoxDecoration(
               color: AppTheme.surface,
               borderRadius: BorderRadius.circular(20),
-              border:
-                  Border.all(color: AppTheme.danger.withOpacity(.7), width: 1.4),
+              border: Border.all(
+                  color: AppTheme.danger.withOpacity(.7), width: 1.4),
               boxShadow: const [
                 BoxShadow(
                     color: Color(0x2E16203A),
@@ -191,7 +193,9 @@ class _ProblemCardState extends State<_ProblemCard>
                       widget.message,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                          fontSize: 13.5, height: 1.5, color: Color(0xFFB23A41)),
+                          fontSize: 13.5,
+                          height: 1.5,
+                          color: Color(0xFFB23A41)),
                     ),
                     if (widget.detail != null) ...[
                       const SizedBox(height: 10),

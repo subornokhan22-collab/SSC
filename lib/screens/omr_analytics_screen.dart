@@ -106,8 +106,9 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
   Widget _bySubject(List<OmScanRecord> r) {
     final bySubject = <String, List<OmScanRecord>>{};
     for (final x in r) {
-      bySubject.putIfAbsent(x.subjectName.isEmpty ? '—' : x.subjectName,
-          () => []).add(x);
+      bySubject
+          .putIfAbsent(x.subjectName.isEmpty ? '—' : x.subjectName, () => [])
+          .add(x);
     }
     final rows = bySubject.entries.toList()
       ..sort((a, b) => b.value.length.compareTo(a.value.length));
@@ -131,8 +132,8 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
                 Expanded(
                   flex: 2,
                   child: Text('${e.value.length} scans',
-                      style: const TextStyle(
-                          fontSize: 12, color: AppTheme.muted)),
+                      style:
+                          const TextStyle(fontSize: 12, color: AppTheme.muted)),
                 ),
                 Expanded(
                   flex: 2,
@@ -150,8 +151,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
                   flex: 2,
                   child: Text(
                     'best ${(_bestPct(e.value)).toStringAsFixed(0)}%',
-                    style: const TextStyle(
-                        fontSize: 12, color: AppTheme.muted),
+                    style: const TextStyle(fontSize: 12, color: AppTheme.muted),
                   ),
                 ),
               ]),
@@ -181,8 +181,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
           const Text('Top 10 across all saved scans on this device',
               style: TextStyle(fontSize: 11, color: AppTheme.muted)),
           const SizedBox(height: 8),
-          for (var i = 0; i < top.length; i++)
-            _leaderRow(i + 1, top[i]),
+          for (var i = 0; i < top.length; i++) _leaderRow(i + 1, top[i]),
         ],
       ),
     );
@@ -190,7 +189,11 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
 
   Widget _leaderRow(int rank, OmScanRecord x) {
     final pct = x.total == 0 ? 0.0 : x.score * 100.0 / x.total;
-    final medals = {1: const Color(0xFFE8B93C), 2: const Color(0xFFB8C2D2), 3: const Color(0xFFC98A4B)};
+    final medals = {
+      1: const Color(0xFFE8B93C),
+      2: const Color(0xFFB8C2D2),
+      3: const Color(0xFFC98A4B)
+    };
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -224,8 +227,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
                       fontSize: 12.5, fontWeight: FontWeight.w800)),
               Text(
                   '${x.paperTitle.isEmpty ? '—' : x.paperTitle}${x.subjectName.isEmpty ? '' : ' • ${x.subjectName}'}',
-                  style: const TextStyle(
-                      fontSize: 10.5, color: AppTheme.muted),
+                  style: const TextStyle(fontSize: 10.5, color: AppTheme.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis),
             ],
@@ -239,10 +241,10 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.primary)),
-            Text('${pct.toStringAsFixed(1)}%   '
+            Text(
+                '${pct.toStringAsFixed(1)}%   '
                 'C${x.correct} W${x.wrong} B${x.blank}${x.ambiguous > 0 ? ' D${x.ambiguous}' : ''}',
-                style: const TextStyle(
-                    fontSize: 10, color: AppTheme.muted)),
+                style: const TextStyle(fontSize: 10, color: AppTheme.muted)),
           ],
         ),
       ]),
@@ -255,8 +257,9 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
     // Aggregate per paper: attempts + correct per question number.
     final byPaper = <String, List<OmScanRecord>>{};
     for (final x in r) {
-      byPaper.putIfAbsent(x.paperTitle.isEmpty ? '—' : x.paperTitle,
-          () => []).add(x);
+      byPaper
+          .putIfAbsent(x.paperTitle.isEmpty ? '—' : x.paperTitle, () => [])
+          .add(x);
     }
     final papers = byPaper.entries.toList()
       ..sort((a, b) => b.value.length.compareTo(a.value.length));
@@ -273,8 +276,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
               'Questions with the lowest correct rate (needs at least 2 attempts).',
               style: TextStyle(fontSize: 11, color: AppTheme.muted)),
           const SizedBox(height: 8),
-          for (final e in shown)
-            _missedBlock(e.key, e.value),
+          for (final e in shown) _missedBlock(e.key, e.value),
         ],
       ),
     );
@@ -308,16 +310,16 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(paper,
-              style: const TextStyle(
-                  fontSize: 12.5, fontWeight: FontWeight.w800)),
+              style:
+                  const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
           Wrap(spacing: 6, runSpacing: 6, children: [
             for (final m in top)
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: m.$2 == 0 ? const Color(0x22E5484D) : AppTheme.surfaceAlt,
+                  color:
+                      m.$2 == 0 ? const Color(0x22E5484D) : AppTheme.surfaceAlt,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                       color: m.$2 == 0
@@ -370,12 +372,11 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
   Widget _stat(String value, String label) => Expanded(
         child: Column(children: [
           Text(value,
-              style: const TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.w900)),
+              style:
+                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
           const SizedBox(height: 2),
           Text(label,
-              style: const TextStyle(
-                  fontSize: 10.5, color: AppTheme.muted)),
+              style: const TextStyle(fontSize: 10.5, color: AppTheme.muted)),
         ]),
       );
 }

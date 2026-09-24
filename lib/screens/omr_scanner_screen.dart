@@ -66,7 +66,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   late final TextEditingController _subjectCtrl;
 
   bool _busy = false;
-  int _step=0;
+  int _step = 0;
   String? _activeRecordId;
   OmScanResult? _result;
 
@@ -79,11 +79,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   // ── batch (whole-class) scan state ──
   bool _batchMode = false;
   List<OmScanRecord> _batch = [];
+
   /// Result overlays accumulated during a camera batch (one per _batch
   /// entry; null when a sheet's overlay could not be rendered).
   List<Uint8List?> _batchOverlays = [];
   String? _batchProgress;
   List<OmScanRecord>? _batchDone;
+
   /// Overlays for _batchDone (parallel list — same index, may be null).
   List<Uint8List?> _batchDoneOverlays = const [];
 
@@ -136,7 +138,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _photoBytes = bytes;
         _photoImage = frame.image;
         _result = null;
-          _graded = null;
+        _graded = null;
         _overlayJpg = null;
       });
     } catch (e) {
@@ -147,11 +149,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
+
   /// The standard red, animated problem dialog — every error the user must
   /// act on uses this (never a plain snackbar).
   Future<void> _problem(String title, String message, {String? detail}) =>
-      showProblemDialog(context, title: title, message: message, detail: detail);
-
+      showProblemDialog(context,
+          title: title, message: message, detail: detail);
 
   /// Primary capture path: Google's ML Kit document scanner — live corner
   /// tracking, auto-capture and a crop step, all inside Google's own
@@ -171,7 +174,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// failure point for clean printed OMR sheets that never use it.
   Future<void> _openCamera() async {
     if (_key.any((k) => k < 0)) {
-      await _problem('Answer key incomplete', 'Complete the answer key first — or tap "Use saved paper".');
+      await _problem('Answer key incomplete',
+          'Complete the answer key first — or tap "Use saved paper".');
       return;
     }
     final (status, statusError) = await _scannerModuleStatus();
@@ -308,8 +312,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2)),
             SizedBox(width: 12),
             Expanded(
-                child:
-                    Text('This can take a moment on slow connections.')),
+                child: Text('This can take a moment on slow connections.')),
           ]),
         ),
       ),
@@ -366,12 +369,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// sheet/marks/sharp indicators and auto-captures a steady frame.
   Future<void> _openLiveScan() async {
     if (_key.any((k) => k < 0)) {
-      await _problem('Answer key incomplete', 'Complete the answer key first — or tap "Use saved paper".');
+      await _problem('Answer key incomplete',
+          'Complete the answer key first — or tap "Use saved paper".');
       return;
     }
     final result = await Navigator.of(context).push<String>(
-        MaterialPageRoute(
-            builder: (_) => const OmLiveScanScreen()));
+        MaterialPageRoute(builder: (_) => const OmLiveScanScreen()));
     if (result == null) return;
     if (result == 'system') {
       _pickPhoto(ImageSource.camera);
@@ -390,7 +393,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         _photoBytes = bytes;
         _photoImage = frame.image;
         _result = null;
-          _graded = null;
+        _graded = null;
         _overlayJpg = null;
       });
       _scan(rectified: rectified);
@@ -421,11 +424,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _scan({bool rectified = false}) async {
     final photo = _photoBytes;
     if (photo == null) {
-      await _problem('No sheet to scan', 'Take a clear photo of the OMR sheet first.');
+      await _problem(
+          'No sheet to scan', 'Take a clear photo of the OMR sheet first.');
       return;
     }
     if (_key.any((k) => k < 0)) {
-      await _problem('Answer key incomplete', '${_total - _keyDone} answer key question(s) still empty.');
+      await _problem('Answer key incomplete',
+          '${_total - _keyDone} answer key question(s) still empty.');
       return;
     }
     setState(() {
@@ -455,8 +460,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       // Results remain provisional until the teacher reviews and confirms them.
       if (!mounted) return;
       setState(() {
-        _step=2;
-        _activeRecordId=null;
+        _step = 2;
+        _activeRecordId = null;
         _result = res;
         _graded = graded;
         _overlayJpg = overlay;
@@ -467,8 +472,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       if (!mounted) return;
       setState(() => _busy = false);
       if (mounted) {
-        await showProblemDialog(
-            context, title: 'Image could not be read', message: e.detail);
+        await showProblemDialog(context,
+            title: 'Image could not be read', message: e.detail);
       }
     } catch (e) {
       if (!mounted) return;
@@ -499,7 +504,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     }
   }
 
-  OmScanRecord _recordOf(OmScanResult res, OmGraded g, {String? id}) => OmScanRecord(
+  OmScanRecord _recordOf(OmScanResult res, OmGraded g, {String? id}) =>
+      OmScanRecord(
         id: id ?? 's_${DateTime.now().microsecondsSinceEpoch}',
         date: DateTime.now(),
         paperTitle: _titleCtrl.text.trim().isEmpty
@@ -510,10 +516,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         registration: res.registration,
         // Prefill off (Settings) → ignore the sheet's printed codes.
         subjectCode: AppSettings.omrPrefill ? res.subjectCode : '',
-        setCode:
-            AppSettings.omrPrefill && res.setCode >= 0
-                ? _letters[res.setCode]
-                : '—',
+        setCode: AppSettings.omrPrefill && res.setCode >= 0
+            ? _letters[res.setCode]
+            : '—',
         total: _total,
         score: g.score,
         correct: g.correct,
@@ -521,7 +526,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         blank: g.blank,
         ambiguous: g.ambiguous,
         answers: List.of(res.answers),
-        correctedIndices:res.correctedIndices,
+        correctedIndices: res.correctedIndices,
         key: List.of(_key),
         durationMs: _scanMs ?? 0,
       );
@@ -545,9 +550,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     bool cropped = false;
     if (res.rectifiedJpeg != null) {
       try {
-        final frame =
-            await (await ui.instantiateImageCodec(res.rectifiedJpeg!))
-                .getNextFrame();
+        final frame = await (await ui.instantiateImageCodec(res.rectifiedJpeg!))
+            .getNextFrame();
         img = frame.image;
         cropped = true;
       } catch (_) {
@@ -618,8 +622,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       // itself, so it sits concentric on the printed square.
       ringPaint.color = const Color(0xB33D5AFE);
       for (final c in cornerPts) {
-        canvas.drawCircle(
-            c * k, OMrGeometry.markSize / 2 * k + 2, ringPaint);
+        canvas.drawCircle(c * k, OMrGeometry.markSize / 2 * k + 2, ringPaint);
       }
 
       for (var i = 0; i < _total; i++) {
@@ -643,8 +646,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           // concentric, same-size fill makes any misalignment visible
           // (and makes the verdict legible).
           final c2 = _mp(geo.questionBubble(i + 1, a));
-          canvas.drawCircle(c2, br,
-              ui.Paint()..color = verdict.withOpacity(.35));
+          canvas.drawCircle(
+              c2, br, ui.Paint()..color = verdict.withOpacity(.35));
           canvas.drawCircle(c2, br, ringPaint);
         } else {
           // blank / unread: draw a dim line across the row
@@ -662,9 +665,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         // distinct).
         if (status == 1 || (status == 2 && g.key[i] >= 0)) {
           final pc = _mp(geo.questionBubble(i + 1, g.key[i]));
-          canvas.drawCircle(pc, br,
-              ui.Paint()..color = const Color(0x6612A150));
-          canvas.drawCircle(pc, br,
+          canvas.drawCircle(
+              pc, br, ui.Paint()..color = const Color(0x6612A150));
+          canvas.drawCircle(
+              pc,
+              br,
               ui.Paint()
                 ..style = ui.PaintingStyle.stroke
                 ..strokeWidth = 2
@@ -708,8 +713,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       );
     } catch (e) {
       if (mounted) {
-        await showProblemDialog(
-            context, title: 'Print error', message: '$e');
+        await showProblemDialog(context, title: 'Print error', message: '$e');
       }
     }
   }
@@ -727,8 +731,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   void _scanNext() {
     setState(() {
-      _step=1;
-      _activeRecordId=null;
+      _step = 1;
+      _activeRecordId = null;
       _photoBytes = null;
       _photoImage = null;
       _result = null;
@@ -738,25 +742,38 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   }
 
   Future<void> _confirmReview() async {
-    if(_busy||_result==null)return;
-    setState(()=>_busy=true);
-    try{
-      final result=_result!;
-      final graded=OMrScanner.grade(result,_key);
-      final overlay=await _buildOverlay(result,graded);
-      if(!mounted)return;
-      final record=_recordOf(result,graded,id:_activeRecordId);
+    if (_busy || _result == null) return;
+    setState(() => _busy = true);
+    try {
+      final result = _result!;
+      final graded = OMrScanner.grade(result, _key);
+      final overlay = await _buildOverlay(result, graded);
+      if (!mounted) return;
+      final record = _recordOf(result, graded, id: _activeRecordId);
       await OmrStore.addRecord(record);
-      if(!mounted)return;
-      if(_batchMode){
-        final index=_batch.indexWhere((r)=>r.id==record.id);
-        if(index<0){_batch.add(record);_batchOverlays.add(overlay);}
-        else{_batch[index]=record;_batchOverlays[index]=overlay;}
+      if (!mounted) return;
+      if (_batchMode) {
+        final index = _batch.indexWhere((r) => r.id == record.id);
+        if (index < 0) {
+          _batch.add(record);
+          _batchOverlays.add(overlay);
+        } else {
+          _batch[index] = record;
+          _batchOverlays[index] = overlay;
+        }
       }
-      setState((){_activeRecordId=record.id;_graded=graded;_overlayJpg=overlay;_step=3;});
+      setState(() {
+        _activeRecordId = record.id;
+        _graded = graded;
+        _overlayJpg = overlay;
+        _step = 3;
+      });
       await _loadHistory();
-    }catch(e){if(mounted)await _problem('Could not save this review','$e');}
-    finally{if(mounted)setState(()=>_busy=false);}
+    } catch (e) {
+      if (mounted) await _problem('Could not save this review', '$e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   // ═══════════════════ UI ═══════════════════
@@ -772,8 +789,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           IconButton(
             tooltip: 'Analytics & leaderboard',
             onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (_) => const OMrAnalyticsScreen())),
+                MaterialPageRoute(builder: (_) => const OMrAnalyticsScreen())),
             icon: const Icon(Icons.bar_chart_rounded),
           ),
           IconButton(
@@ -788,160 +804,191 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 30),
           children: [
-            WorkflowProgress(steps:const ['Choose paper','Capture sheet','Review answers','Grade & save'],current:_step),
-            if(_step>0)Align(alignment:Alignment.centerLeft,child:TextButton.icon(onPressed:_busy?null:()=>setState(()=>_step--),icon:const Icon(Icons.arrow_back,size:16),label:const Text('Back'))),
-            if(_step==0)...[
-            GlassCard(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(children: [
-                    const Expanded(
-                        child: Text('Paper & answer key',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w800))),
-                    Text('$_keyDone/$_total filled',
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: _keyDone == _total
-                                ? AppTheme.success
-                                : AppTheme.warning)),
-                  ]),
-                  const SizedBox(height: 10),
-                  Row(children: [
-                    Expanded(
-                        child: TextField(
-                            controller: _titleCtrl,
-                            decoration:
-                                const InputDecoration(labelText: 'Paper title'))),
-                    const SizedBox(width: 10),
-                    Expanded(
-                        child: TextField(
-                            controller: _subjectCtrl,
-                            decoration:
-                                const InputDecoration(labelText: 'Subject (optional)'))),
-                  ]),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
-                      ),
-                      onPressed: _busy ? null : _pickSavedPaper,
-                      icon: const Icon(Icons.bookmarks_rounded, size: 18),
-                      label: const Text('Use saved paper (key auto-loads)',
+            WorkflowProgress(steps: const [
+              'Choose paper',
+              'Capture sheet',
+              'Review answers',
+              'Grade & save'
+            ], current: _step),
+            if (_step > 0)
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                      onPressed: _busy ? null : () => setState(() => _step--),
+                      icon: const Icon(Icons.arrow_back, size: 16),
+                      label: const Text('Back'))),
+            if (_step == 0) ...[
+              GlassCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const Expanded(
+                          child: Text('Paper & answer key',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w800))),
+                      Text('$_keyDone/$_total filled',
                           style: TextStyle(
-                              fontSize: 13.5, fontWeight: FontWeight.w800)),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(children: [
-                    const Text('মোট প্রশ্ন',
-                        style:
-                            TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 12),
-                    IconButton(
-                        onPressed: _total > 5
-                            ? () => _setTotal(_total - 5)
-                            : null,
-                        icon: const Icon(Icons.remove_circle_outline)),
-                    SizedBox(
-                        width: 44,
-                        child: Center(
-                            child: Text('$_total',
-                                style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800)))),
-                    IconButton(
-                        onPressed: _total < 100
-                            ? () => _setTotal(_total + 5)
-                            : null,
-                        icon: const Icon(Icons.add_circle_outline)),
-                    const Spacer(),
-                    TextButton(
-                        onPressed: _key.any((k) => k >= 0) ? _clearKey : null,
-                        child: const Text('Clear all')),
-                  ]),
-                  const SizedBox(height: 6),
-                  _keyGrid(),
-                ],
-              ),
-            ),
-              FilledButton(onPressed:_busy||_keyDone!=_total?null:()=>setState(()=>_step=1),child:const Text('Continue to capture')),
-            ],
-            if(_step==1)...[
-            GlassCard(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Capture the OMR sheet',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 3),
-                  const Text(
-                      'Keep the whole sheet in frame with all four corner marks visible, in even light.',
-                      style: TextStyle(
-                          fontSize: 11.5, color: AppTheme.muted)),
-                  const SizedBox(height: 10),
-                  if (_photoBytes == null)
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: _keyDone == _total
+                                  ? AppTheme.success
+                                  : AppTheme.warning)),
+                    ]),
+                    const SizedBox(height: 10),
                     Row(children: [
                       Expanded(
-                          child: AppButton(
-                              label: 'Camera',
-                              icon: Icons.view_in_ar_rounded,
-                              onPressed: _busy ? null : _openCamera)),
+                          child: TextField(
+                              controller: _titleCtrl,
+                              decoration: const InputDecoration(
+                                  labelText: 'Paper title'))),
                       const SizedBox(width: 10),
                       Expanded(
-                          child: AppButton(
-                              label: 'Gallery',
-                              icon: Icons.photo_library_rounded,
-                              outlined: true,
-                              onPressed: _busy ? null : () => _pickPhoto(ImageSource.gallery))),
-                    ])
-                  else
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.memory(
-                        _photoBytes!,
-                        fit: BoxFit.fitWidth,
+                          child: TextField(
+                              controller: _subjectCtrl,
+                              decoration: const InputDecoration(
+                                  labelText: 'Subject (optional)'))),
+                    ]),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppTheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                        ),
+                        onPressed: _busy ? null : _pickSavedPaper,
+                        icon: const Icon(Icons.bookmarks_rounded, size: 18),
+                        label: const Text('Use saved paper (key auto-loads)',
+                            style: TextStyle(
+                                fontSize: 13.5, fontWeight: FontWeight.w800)),
                       ),
                     ),
-                  if (_step==1 && _photoBytes != null) ...[
+                    const SizedBox(height: 12),
+                    Row(children: [
+                      const Text('মোট প্রশ্ন',
+                          style: TextStyle(
+                              fontSize: 13.5, fontWeight: FontWeight.w700)),
+                      const SizedBox(width: 12),
+                      IconButton(
+                          onPressed:
+                              _total > 5 ? () => _setTotal(_total - 5) : null,
+                          icon: const Icon(Icons.remove_circle_outline)),
+                      SizedBox(
+                          width: 44,
+                          child: Center(
+                              child: Text('$_total',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800)))),
+                      IconButton(
+                          onPressed:
+                              _total < 100 ? () => _setTotal(_total + 5) : null,
+                          icon: const Icon(Icons.add_circle_outline)),
+                      const Spacer(),
+                      TextButton(
+                          onPressed: _key.any((k) => k >= 0) ? _clearKey : null,
+                          child: const Text('Clear all')),
+                    ]),
+                    const SizedBox(height: 6),
+                    _keyGrid(),
+                  ],
+                ),
+              ),
+              FilledButton(
+                  onPressed: _busy || _keyDone != _total
+                      ? null
+                      : () => setState(() => _step = 1),
+                  child: const Text('Continue to capture')),
+            ],
+            if (_step == 1) ...[
+              GlassCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Capture the OMR sheet',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 3),
+                    const Text(
+                        'Keep the whole sheet in frame with all four corner marks visible, in even light.',
+                        style:
+                            TextStyle(fontSize: 11.5, color: AppTheme.muted)),
+                    const SizedBox(height: 10),
+                    if (_photoBytes == null)
+                      Row(children: [
+                        Expanded(
+                            child: AppButton(
+                                label: 'Camera',
+                                icon: Icons.view_in_ar_rounded,
+                                onPressed: _busy ? null : _openCamera)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                            child: AppButton(
+                                label: 'Gallery',
+                                icon: Icons.photo_library_rounded,
+                                outlined: true,
+                                onPressed: _busy
+                                    ? null
+                                    : () => _pickPhoto(ImageSource.gallery))),
+                      ])
+                    else
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.memory(
+                          _photoBytes!,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    if (_step == 1 && _photoBytes != null) ...[
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => _scanNext(),
+                        icon: const Icon(Icons.close_rounded, size: 16),
+                        label: const Text('Change / remove photo'),
+                      ),
+                    ],
                     const SizedBox(height: 8),
-                    TextButton.icon(
-                      onPressed: () => _scanNext(),
-                      icon: const Icon(Icons.close_rounded, size: 16),
-                      label: const Text('Change / remove photo'),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _busy ? null : _batchDialog,
+                        icon: const Icon(Icons.groups_rounded, size: 18),
+                        label: const Text('Batch scan'),
+                      ),
                     ),
                   ],
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _busy ? null : _batchDialog,
-                      icon: const Icon(Icons.groups_rounded, size: 18),
-                      label: const Text('Batch scan'),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
             ],
-            if(_step==2 && result!=null)...[
-              if(_photoBytes!=null)SizedBox(height:280,child:InteractiveViewer(maxScale:5,child:Image.memory(_photoBytes!,fit:BoxFit.contain))),
-              AbsorbPointer(absorbing:_busy,child:OmrAnswerReview(result:result,onChanged:(r)=>setState((){_result=r;_graded=OMrScanner.grade(r,_key);}))),
-              const SizedBox(height:12),FilledButton(onPressed:_busy?null:_confirmReview,child:const Text('Confirm answers, grade & save')),
+            if (_step == 2 && result != null) ...[
+              if (_photoBytes != null)
+                SizedBox(
+                    height: 280,
+                    child: InteractiveViewer(
+                        maxScale: 5,
+                        child:
+                            Image.memory(_photoBytes!, fit: BoxFit.contain))),
+              AbsorbPointer(
+                  absorbing: _busy,
+                  child: OmrAnswerReview(
+                      result: result,
+                      onChanged: (r) => setState(() {
+                            _result = r;
+                            _graded = OMrScanner.grade(r, _key);
+                          }))),
+              const SizedBox(height: 12),
+              FilledButton(
+                  onPressed: _busy ? null : _confirmReview,
+                  child: const Text('Confirm answers, grade & save')),
             ],
-            if (_photoBytes != null) ...[
+            if (_step == 1 && _photoBytes != null) ...[
               const SizedBox(height: 12),
               AppButton(
                 label: 'Read answers for review',
@@ -998,7 +1045,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                   Text(_batchProgress ?? 'শিট পড়া হচ্ছে...'),
                 ]),
               ),
-            if (_step==3 && result != null && graded != null) ...[
+            if (_step == 3 && result != null && graded != null) ...[
               GlassCard(
                 padding: const EdgeInsets.all(16),
                 highlighted: true,
@@ -1014,7 +1061,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     if ((_scanMs ?? 0) > 0)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: Text('Scanned in ${(_scanMs! / 1000).toStringAsFixed(1)}s',
+                        child: Text(
+                            'Scanned in ${(_scanMs! / 1000).toStringAsFixed(1)}s',
                             style: const TextStyle(
                                 fontSize: 11.5, color: AppTheme.muted)),
                       ),
@@ -1046,7 +1094,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       if (AppSettings.omrPrefill) ...[
                         _chip('বিষয় কোড ${result.subjectCode}',
                             AppTheme.primaryDark),
-                        _chip('সেট ${result.setCode >= 0 ? _letters[result.setCode] : '—'}',
+                        _chip(
+                            'সেট ${result.setCode >= 0 ? _letters[result.setCode] : '—'}',
                             AppTheme.primaryDark),
                       ],
                     ]),
@@ -1063,12 +1112,15 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     if (_overlayJpg != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child:
-                            Image.memory(_overlayJpg!, fit: BoxFit.fitWidth),
+                        child: Image.memory(_overlayJpg!, fit: BoxFit.fitWidth),
                       ),
                     const SizedBox(height: 12),
                     _verdictGrid(graded),
-                    TextButton.icon(onPressed:_busy?null:()=>setState(()=>_step=2),icon:const Icon(Icons.edit_outlined),label:const Text('Review / correct readings')),
+                    TextButton.icon(
+                        onPressed:
+                            _busy ? null : () => setState(() => _step = 2),
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text('Review / correct readings')),
                     const SizedBox(height: 14),
                     Row(children: [
                       Expanded(
@@ -1090,8 +1142,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         child: OutlinedButton.icon(
                             onPressed: _scanNext,
                             icon: const Icon(Icons.person_rounded, size: 18),
-                            label: const Text(
-                                "Scan next student's OMR sheet"))),
+                            label:
+                                const Text("Scan next student's OMR sheet"))),
                   ],
                 ),
               ),
@@ -1164,11 +1216,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                   child: Row(children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundColor: r.score * 100 ~/
-                          math.max(1, r.total) >=
-                          50
-                          ? AppTheme.success
-                          : AppTheme.warning,
+                      backgroundColor:
+                          r.score * 100 ~/ math.max(1, r.total) >= 50
+                              ? AppTheme.success
+                              : AppTheme.warning,
                       child: Text('${r.score}/${r.total}',
                           style: const TextStyle(
                               fontSize: 9,
@@ -1182,8 +1233,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                             children: [
                           Text(r.roll.isEmpty ? 'রোল —' : 'রোল ${r.roll}',
                               style: const TextStyle(
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w700)),
+                                  fontSize: 12.5, fontWeight: FontWeight.w700)),
                           Text(
                               '${r.paperTitle.isEmpty ? '—' : r.paperTitle} • সেট ${r.setCode} • ${_dateStr(r.date)}',
                               style: const TextStyle(
@@ -1266,8 +1316,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                   '${rec.score}/${rec.total} • '
                   '${rec.correct} সঠিক • ${rec.wrong} ভুল',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 11.5, color: AppTheme.muted),
+                  style: const TextStyle(fontSize: 11.5, color: AppTheme.muted),
                 ),
               ]),
             );
@@ -1353,8 +1402,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
               color:
                   (pass ? AppTheme.success : AppTheme.warning).withOpacity(.14),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                  color: pass ? AppTheme.success : AppTheme.warning),
+              border:
+                  Border.all(color: pass ? AppTheme.success : AppTheme.warning),
             ),
             child: Text('${r.score}/${r.total}',
                 style: const TextStyle(
@@ -1381,10 +1430,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
-            color: chosen >= 0 ? AppTheme.primary.withOpacity(.08) : AppTheme.surfaceAlt,
+            color: chosen >= 0
+                ? AppTheme.primary.withOpacity(.08)
+                : AppTheme.surfaceAlt,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-                color: chosen >= 0 ? AppTheme.primary.withOpacity(.5) : AppTheme.border),
+                color: chosen >= 0
+                    ? AppTheme.primary.withOpacity(.5)
+                    : AppTheme.border),
           ),
           child: Row(children: [
             SizedBox(
@@ -1398,7 +1451,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             for (var o = 0; o < 4; o++)
               Expanded(
                   child: GestureDetector(
-                      onTap: _busy?null:() => setState(() {_key[i] = o;_result=null;_graded=null;_activeRecordId=null;}),
+                      onTap: _busy
+                          ? null
+                          : () => setState(() {
+                                _key[i] = o;
+                                _result = null;
+                                _graded = null;
+                                _activeRecordId = null;
+                              }),
                       child: Center(
                           child: Container(
                               width: 26,
@@ -1437,7 +1497,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   Future<void> _pickSavedPaper() async {
     final papers = await PaperLibrary.loadSavedPapers();
     if (papers.isEmpty) {
-      await _problem('No saved papers', 'No saved papers yet. Generate a paper and tap "Save paper".');
+      await _problem('No saved papers',
+          'No saved papers yet. Generate a paper and tap "Save paper".');
       return;
     }
     if (!mounted) return;
@@ -1456,8 +1517,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     dense: true,
                     title: Text(sp.title,
                         maxLines: 1, overflow: TextOverflow.ellipsis),
-                    subtitle: Text(
-                        '${sp.subject} • ${sp.total} questions'
+                    subtitle: Text('${sp.subject} • ${sp.total} questions'
                         '${sp.setCode != '—' ? ' • set ${sp.setCode}' : ''}'),
                     onTap: () => Navigator.pop(c, sp),
                   ),
@@ -1490,7 +1550,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// Entry point for batch scanning: pick the source for the whole class.
   Future<void> _batchDialog() async {
     if (_key.any((k) => k < 0)) {
-      await _problem('Answer key incomplete', 'Complete the answer key first — or tap "Use saved paper".');
+      await _problem('Answer key incomplete',
+          'Complete the answer key first — or tap "Use saved paper".');
       return;
     }
     final mode = await showDialog<String>(
@@ -1553,18 +1614,19 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         final bytes = await f.readAsBytes();
         OmScanResult res;
         try {
-          res = await compute(
-              omrScanIsolateEntry, OmScanRequest(bytes, _total));
+          res =
+              await compute(omrScanIsolateEntry, OmScanRequest(bytes, _total));
         } on OmDecodeException {
           // Background isolate can't decode it — retry on the UI isolate.
           res = await OMrScanner.scan(bytes, total: _total);
         }
         if (!res.ok) continue; // unreadable sheet — skip, keep going
-        if(!mounted)return;
-        final reviewed=await reviewOmrSheet(context,res,title:'Review sheet $idx of ${picked.length}');
-        if(reviewed==null)continue;
-        if(!mounted)return;
-        res=reviewed;
+        if (!mounted) return;
+        final reviewed = await reviewOmrSheet(context, res,
+            title: 'Review sheet $idx of ${picked.length}');
+        if (reviewed == null) continue;
+        if (!mounted) return;
+        res = reviewed;
         final g = OMrScanner.grade(res, _key);
         final rec = _recordOf(res, g);
         // Overlay for the batch review (swipe through every sheet).
@@ -1580,7 +1642,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     setState(() {
       _busy = false;
       _batchProgress = null;
-      _step=3;
+      _step = 3;
       _batchDone = items;
       _batchDoneOverlays = overlays;
       _batchMode = false;
@@ -1640,9 +1702,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                   fontWeight: FontWeight.w700,
                   color: g.status[i] == 0
                       ? AppTheme.success
-                      : (g.status[i] == 1
-                          ? AppTheme.danger
-                          : AppTheme.muted)),
+                      : (g.status[i] == 1 ? AppTheme.danger : AppTheme.muted)),
             ),
         ]),
       ]),
@@ -1662,7 +1722,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     showDialog(
         context: context,
         builder: (c) => AlertDialog(
-              title: Text('রোল ${r.roll.isEmpty ? '—' : r.roll} • ${r.score}/${r.total}'),
+              title: Text(
+                  'রোল ${r.roll.isEmpty ? '—' : r.roll} • ${r.score}/${r.total}'),
               content: SizedBox(
                 height: 200,
                 width: double.maxFinite,
@@ -1674,17 +1735,18 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         style: TextStyle(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w700,
-                            color: i < r.answers.length &&
-                                    r.answers[i] == r.key[i]
-                                ? AppTheme.success
-                                : AppTheme.danger),
+                            color:
+                                i < r.answers.length && r.answers[i] == r.key[i]
+                                    ? AppTheme.success
+                                    : AppTheme.danger),
                       ),
                   ]),
                 ),
               ),
               actions: [
                 TextButton(
-                    onPressed: () => Navigator.pop(c), child: const Text('Close')),
+                    onPressed: () => Navigator.pop(c),
+                    child: const Text('Close')),
               ],
             ));
   }

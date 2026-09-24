@@ -121,7 +121,8 @@ class AppTheme {
           foregroundColor: Colors.white,
           padding: AppSpacing.buttonPadding,
           textStyle: AppTypography.button,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.control)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadii.control)),
           elevation: 0,
         ),
       ),
@@ -133,14 +134,17 @@ class AppTheme {
           disabledForegroundColor: Colors.white,
           padding: AppSpacing.buttonPadding,
           textStyle: AppTypography.button,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.control)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadii.control)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primary,
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.compact)),
+          textStyle:
+              const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadii.compact)),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -149,7 +153,8 @@ class AppTheme {
           side: BorderSide(color: primary.withOpacity(.42), width: 1.2),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
           textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.control)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadii.control)),
         ),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
@@ -206,8 +211,8 @@ class AppTheme {
         menuStyle: MenuStyle(
           backgroundColor: const WidgetStatePropertyAll(surface),
           surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16))),
+          shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
         ),
       ),
       popupMenuTheme: PopupMenuThemeData(
@@ -231,7 +236,9 @@ class AppTheme {
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((s) =>
-            s.contains(WidgetState.selected) ? primary : const Color(0xFFAEB7CC)),
+            s.contains(WidgetState.selected)
+                ? primary
+                : const Color(0xFFAEB7CC)),
         trackColor: WidgetStateProperty.resolveWith((s) =>
             s.contains(WidgetState.selected)
                 ? primary.withOpacity(.28)
@@ -275,7 +282,8 @@ class AppTheme {
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -284,7 +292,8 @@ class AppTheme {
         actionTextColor: accent,
         behavior: SnackBarBehavior.floating,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.control)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadii.control)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: primary,

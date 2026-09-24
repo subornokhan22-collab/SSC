@@ -35,7 +35,6 @@ class _RootGateState extends State<RootGate> {
   void initState() {
     super.initState();
     _boot = _prepare();
-
   }
 
   /// Warms up the profile/Pro state before showing the workspace so the
@@ -46,6 +45,7 @@ class _RootGateState extends State<RootGate> {
       await AuthService.ensureTeacherProfile();
       await AuthService.syncProFromServer();
     }
+
     try {
       // Hard cap: a dead network must never hold the boot screen — the
       // profile sync gets 8 seconds, then the app opens with local state.
@@ -79,9 +79,17 @@ class _RootGateState extends State<RootGate> {
 /// A short functional loading state, without a perpetual decorative animation.
 class _BootSplash extends StatelessWidget {
   const _BootSplash();
-  @override Widget build(BuildContext context)=>const Scaffold(body:Center(child:Column(
-    mainAxisSize:MainAxisSize.min,children:[AppLogo(size:64),SizedBox(height:24),
-    Text("Tutor’s Desk",style:TextStyle(fontSize:24,fontWeight:FontWeight.w700)),
-    SizedBox(height:20),CircularProgressIndicator(),SizedBox(height:12),Text('Opening your workspace…'),
-  ])));
+  @override
+  Widget build(BuildContext context) => const Scaffold(
+          body: Center(
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+        AppLogo(size: 64),
+        SizedBox(height: 24),
+        Text("Tutor’s Desk",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+        SizedBox(height: 20),
+        CircularProgressIndicator(),
+        SizedBox(height: 12),
+        Text('Opening your workspace…'),
+      ])));
 }
