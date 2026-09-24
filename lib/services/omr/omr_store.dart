@@ -18,6 +18,7 @@ class OmScanRecord {
   final int wrong;
   final int blank;
   final int ambiguous;
+  final List<int> correctedIndices;
   final List<int> answers;
   final List<int> key;
 
@@ -42,6 +43,7 @@ class OmScanRecord {
     required this.answers,
     required this.key,
     this.durationMs = 0,
+    this.correctedIndices=const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +62,7 @@ class OmScanRecord {
         'blank': blank,
         'ambiguous': ambiguous,
         'answers': answers,
+        'correctedIndices':correctedIndices,
         'key': key,
         'durationMs': durationMs,
       };
@@ -87,6 +90,7 @@ class OmScanRecord {
             .map((e) => (e as num).toInt())
             .toList(),
         durationMs: (m['durationMs'] as num? ?? 0).toInt(),
+        correctedIndices:List<int>.from(m['correctedIndices'] as List? ?? []),
       );
 }
 
@@ -145,7 +149,7 @@ class OmrStore {
 
   static Future<void> addRecord(OmScanRecord record) async {
     final prefs = await SharedPreferences.getInstance();
-    final all = [record, ...await loadHistory()];
+    final all = [record, ...(await loadHistory()).where((r)=>r.id!=record.id)];
     final trimmed = all.length > _maxHistory
         ? all.sublist(0, _maxHistory)
         : all;

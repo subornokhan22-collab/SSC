@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
-import 'animations.dart';
 
 /// Shared primary action. Loading disables both pointer and semantic actions.
 class AppButton extends StatefulWidget {
@@ -71,22 +70,14 @@ class _AppButtonState extends State<AppButton> {
         padding: AppSpacing.buttonPadding,
         decoration: BoxDecoration(
           borderRadius: radius,
-          gradient: widget.outlined || disabled ? null : AppTheme.brandGradient,
+
           color: disabled
               ? AppColors.disabled
-              : (widget.outlined ? AppColors.surface : null),
+              : (widget.outlined ? AppColors.surface : AppColors.primary),
           border: widget.outlined
               ? Border.all(color: AppTheme.primary.withOpacity(.45), width: 1.3)
               : null,
-          boxShadow: widget.outlined || disabled
-              ? []
-              : [
-                  BoxShadow(
-                    color: AppTheme.primary.withOpacity(pressed ? .14 : .28),
-                    blurRadius: pressed ? 7 : 16,
-                    offset: Offset(0, pressed ? 2 : 7),
-                  ),
-                ],
+          boxShadow: const [],
         ),
         child: child,
       ),
@@ -99,9 +90,7 @@ class _AppButtonState extends State<AppButton> {
         onTapUp: disabled ? null : (_) => setState(() => _pressed = false),
         onTapCancel: disabled ? null : () => setState(() => _pressed = false),
         onTap: disabled ? null : widget.onPressed,
-        child: widget.outlined || disabled
-            ? button
-            : ShineSweep(borderRadius: radius, child: button),
+        child: button,
       ),
     );
   }

@@ -11,6 +11,8 @@ def escape(value: str) -> str:
 
 def main() -> None:
     text = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
+    if 'Could not format because' in text:
+        print(f'::error::{escape(text[-12000:])}')
     for line in text.splitlines():
         parts = [p.strip() for p in line.split('•')]
         if len(parts) >= 4 and parts[0] == 'error':

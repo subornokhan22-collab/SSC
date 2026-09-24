@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'data/question_bank.dart';
+import 'navigation/app_routes.dart';
 import 'data/question_sync.dart';
 import 'services/app_settings.dart';
 import 'services/app_style.dart';
@@ -87,6 +88,7 @@ class ALearningApp extends StatelessWidget {
       theme: AppTheme.light(),
       themeMode: ThemeMode.light,
       home: const _CrashReportGate(),
+      onGenerateRoute: AppRoutes.generate,
       // Every screen (pushed routes included) sits on the animated backdrop,
       // and text never scales past a readable size on large-font devices.
       builder: (context, child) {

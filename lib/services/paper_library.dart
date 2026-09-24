@@ -166,8 +166,17 @@ class PaperLibrary {
     return dir;
   }
 
-  static Future<File> _indexFile() async =>
-      File((await root()).path + '$_indexName');
+  static Future<File> _indexFile() async {
+    final dir = await root();
+    final correct = File('${dir.path}${Platform.pathSeparator}$_indexName');
+    // Older builds omitted the separator. Copy once, keeping the old file as
+    // recovery data so an upgrade never loses a teacher's saved papers.
+    final legacy = File('${dir.path}$_indexName');
+    if (!await correct.exists() && await legacy.exists()) {
+      await legacy.copy(correct.path);
+    }
+    return correct;
+  }
 
   static Future<List<PaperEntry>> loadEntries() async {
     final f = await _indexFile();

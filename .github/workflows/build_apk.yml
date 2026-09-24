@@ -37,7 +37,7 @@ jobs:
       - name: Type-check Gemini edge function
         run: deno check supabase/functions/mimi/index.ts
       - name: Gateway request boundary tests
-        run: node --experimental-strip-types --test supabase/tests/mimi_request_test.mjs
+        run: node --experimental-strip-types --test supabase/tests/*_test.mjs
       - name: Profiles RLS and audit regression tests (disposable database)
         env:
           PGPASSWORD: ci-only-password
@@ -65,6 +65,24 @@ jobs:
         with:
           channel: stable
 
+      # Opt-in mechanical formatting for this Arena branch (no force push).
+      # Needed because the editor sandbox has no Flutter/Dart SDK.
+      - name: Format sources on request
+        if: github.ref == 'refs/heads/arena/01a0ce12-ssc' && contains(github.event.head_commit.message, '[format]')
+        run: |
+          set -o pipefail
+          if ! dart format lib test tool 2>&1 | tee format.log; then
+            python3 tool/ci_annotations.py format.log
+            exit 1
+          fi
+          if ! git diff --quiet -- lib test tool; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add lib test tool
+            git commit -m "Format Dart sources for the teacher workflow quality gate"
+            git push origin HEAD:arena/01a0ce12-ssc
+          fi
+
       - name: Get packages
         run: flutter pub get
 
@@ -86,14 +104,8 @@ jobs:
             exit 1
           fi
 
-      - name: Format check (report — becomes a hard gate once the repo is formatted)
-        # First run of this step reports every unformatted file. Once a
-        # "dart format ." pass lands (Phase 2), remove the `|| true` so
-        # unformatted code fails the build.
-        run: |
-          set -o pipefail
-          dart format --output=none --set-exit-if-changed lib test tool 2>&1 | tee format.log \
-            || (echo "::warning::Formatting changes required — see format.log; run dart format lib test tool"; true)
+      - name: Format check (quality gate)
+        run: dart format --output=none --set-exit-if-changed lib test tool
 
       - name: Question bank health (review item #35)
         # Warnings (duplicate stems etc.) are reported but do not block;

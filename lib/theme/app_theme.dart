@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../widgets/animations.dart';
 import 'design_tokens.dart';
 
-/// Light "Indigo & Teal" design system for Tutor's Desk.
+/// Light "Paper + Ink + Indigo" design system for Tutor's Desk.
 ///
 /// The palette is built for long reading sessions and for screens that sit
 /// next to printed paper: a soft paper-white canvas, deep indigo as the
@@ -63,7 +63,7 @@ class AppTheme {
     );
     return base.copyWith(
       colorScheme: scheme,
-      scaffoldBackgroundColor: Colors.transparent,
+      scaffoldBackgroundColor: canvas,
       canvasColor: canvas,
       splashColor: primary.withOpacity(.08),
       highlightColor: primary.withOpacity(.04),

@@ -43,6 +43,7 @@ Future<OmScanResult> omrScanIsolateEntry(OmScanRequest req) =>
 /// Result of reading one photographed OMR sheet.
 class OmScanResult {
   final int total;
+  final List<int> correctedIndices;
   final List<int> answers; // per question: 0–3 option, -1 blank, -2 double-marked
   final List<List<double>> inks; // per question: 4 ink ratios
   final String roll;
@@ -78,6 +79,7 @@ class OmScanResult {
   final Uint8List? rectifiedJpeg;
 
   OmScanResult._({
+    this.correctedIndices=const [],
     required this.total,
     required this.answers,
     required this.inks,
@@ -114,6 +116,17 @@ class OmScanResult {
         error: message,
         debug: debug,
       );
+
+  /// Retains the measured ink/alignment data when a teacher overrides a read.
+  OmScanResult corrected({List<int>? answers,String? roll,String? registration}) {
+    final next=answers??this.answers;
+    if(next.length!=total || next.any((a)=>a < -2 || a > 3))throw ArgumentError('Invalid answer correction');
+    return OmScanResult._(total:total,answers:List.unmodifiable(next),inks:inks,
+      correctedIndices:{...correctedIndices,for(var i=0;i<next.length;i++)if(next[i]!=this.answers[i])i}.toList(),
+      roll:roll??this.roll,registration:registration??this.registration,subjectCode:subjectCode,setCode:setCode,
+      photoCorners:photoCorners,homography:homography,scale:scale,workWidth:workWidth,workHeight:workHeight,
+      error:error,debug:debug,inkDiag:inkDiag,rectifiedJpeg:rectifiedJpeg);
+  }
 
   bool get ok => error == null;
   int get blankCount => answers.where((a) => a == -1).length;

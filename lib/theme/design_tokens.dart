@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 
-/// Phase 2 foundation: preserve the current palette while consumers migrate.
-/// Phase 4's Paper + Ink + Indigo rebrand will change these values centrally.
+/// Paper + Ink + Indigo. Semantic colors shared across the teacher workspace.
 abstract final class AppColors {
-  static const primary = Color(0xFF3D5AFE);
-  static const primaryDark = Color(0xFF2A3EB1);
-  static const secondary = Color(0xFF00897B);
-  static const accent = Color(0xFF00B8A9);
-  static const gradientEnd = Color(0xFF6B7BFF);
+  static const primary = Color(0xFF3157D5);
+  static const primaryDark = Color(0xFF3157D5);
+  static const secondary = Color(0xFF16845B);
+  static const accent = Color(0xFF16845B);
+  static const gradientEnd = Color(0xFF3157D5);
 
-  static const canvas = Color(0xFFF4F6FB);
+  static const canvas = Color(0xFFF7F8FA);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceAlt = Color(0xFFEDF1F9);
-  static const border = Color(0xFFDDE3EF);
-  static const text = Color(0xFF16203A);
-  static const muted = Color(0xFF66739A);
+  static const surfaceAlt = Color(0xFFF7F8FA);
+  static const border = Color(0xFFE4E7EC);
+  static const text = Color(0xFF172033);
+  static const muted = Color(0xFF667085);
   static const disabled = Color(0xFFC9D0E2);
-  static const progressTrack = Color(0xFFE1E6F0);
-  static const appBar = Color(0xF2FFFFFF);
+  static const progressTrack = Color(0xFFE4E7EC);
+  static const appBar = Color(0xFFFFFFFF);
 
-  static const success = Color(0xFF12A150);
-  static const warning = Color(0xFFE08700);
-  static const danger = Color(0xFFE5484D);
+  static const success = Color(0xFF16845B);
+  static const warning = Color(0xFFC27A00);
+  static const danger = Color(0xFFD64545);
 
   // Preserve this order: the workspace preset index is saved on the device.
   static const workspaceBackgrounds = <Color>[
