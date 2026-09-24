@@ -24,21 +24,21 @@ session; the session that made them closed when PR #5 merged). CI gates
 | # | Item | Status | Notes |
 |---|------|--------|-------|
 | 31 | Release signing | 🔒 | CI + gradle wiring verified correct (PKCS12 keystore, debug fallback). Owner: follow docs/RELEASE-SIGNING.md (4 secrets + one-time reinstall). |
-| 33 | Automated quality gates | ✅ | analyze + test gates since 35816456766; now also: `dart format` report step (flips to hard gate in Phase 2 after one format pass) and the bank-health gate (#35). |
+| 33 | Automated quality gates | ✅ | analyze + test gates since 35816456766; now also: `dart format` hard gate (repository-wide formatting pass completed) and the bank-health gate (#35). |
 | 9 | Automated flutter analyze | ✅ | Same as 33. |
 | 1 | Server-side Gemini architecture | ✅ (code) / 🔒 (deploy) | Edge function `supabase/functions/mimi/` (SSE pass-through, model fallback, error codes) + app server-first routing with device-key fallback; key entry demoted to the ⚙ advanced dialog. Owner: `supabase functions deploy mimi` + set `GEMINI_API_KEY` secret. |
 | 3 | Supabase RLS audit | ✅ (code) / 🔒 (run) | `supabase/migrations/…_harden_profiles.sql` (drop permissive profiles policies, own-row select/update, trigger that freezes is_pro/pro_until/pro_plan for any user-context write; service role unaffected → bKash function still works). `supabase/audit_rls.sql` = read-only report the owner runs in the SQL editor. docs/RLS-CHECKLIST.md. |
 | 4 | Pro entitlement security | ✅ (code) / 🔒 (run) | Covered by the same migration (client already only *reads* entitlements — verified: auth_service never writes is_pro; only bKash edge fn, via service role, does). PaperLicense stays a cache. |
-| 6 | AI answer validation | ✅ | `lib/services/ai/question_schema_validator.dart`: count, 4 distinct options, correct ∈ 0..3, non-empty fields, no placeholder/LaTeX, explanation↔key consistency flags. Wired into any AI question path; tests included. (No in-app AI question *generator* currently ships — MiMi is a tutor chat; the generator returns in Phase 5 built on this validator.) |
+| 6 | AI answer validation | ✅ | `lib/services/ai/question_schema_validator.dart`: count, 4 distinct options, correct ∈ 0..3, non-empty fields, no placeholder/LaTeX, explanation↔key consistency flags. Wired into any AI question path; tests included. The new teacher-command generator uses this validator, plus a server-side independent solver. |
 | 7 | Duplicate detection | ✅ | `lib/services/ai/duplicate_detector.dart`: normalized token similarity vs local bank + previous AI questions. Tests included. |
 | 8 | Async lifecycle safety | ✅ | Repo-wide audit; 5 unguarded awaits fixed (MiMi audio/PDF pickers, OMR photo picker, OMR key save/restore, saved-paper pick). |
 | 34 | Test expansion | 🔄 | Added: ai_validator_test, ai_duplicate_test, paper distribution/marks tests, OMR already covered (blank/double-mark/rotation). Auth tests: no live network in CI — structured around fakes where possible. |
 | 35 | Question-bank health report | ✅ | `tool/bank_health.py` on every build (artifact `bank-health`). First run already caught **6 real duplicate stems** in the shipped bank (5 general_math, 1 physics) — dedupe in Phase 3/4. Report: totals, bad keys, dup ids/stems, invalid options, empty explanations, CQ part/marks consistency (3-part 2-4-4 math + 4-part 1-2-3-4 both legal), chapter distribution. | the "Question Bank Health" summary (totals, missing answers, dup IDs, dup questions, invalid indexes, empty explanations, missing chapters) as an annotation + artifact. |
 | 32 | Release only when tagged | ✅ | Branch builds → Actions artifact (run → Artifacts); formal release only from `v*` tags; diag logs → artifacts too. **Download flow changes:** branch APKs come from the Actions run page, releases from tags. |
-| 10 | AI loading UX | ⏳ | Phased steps (Reading chapter → Applying SSC pattern → Generating → Checking answers) once the generator lands (Phase 5); MiMi chat already streams + has the animated orb. |
+| 10 | AI loading UX | ⏳ | Actual server generation/checking phases plus local duplicate validation now appear in AI Tools. |
 | 36 | "Board-verified" wording | ✅ | Already fixed in a prior session (teacher_home_screen: "board-style"); verified absent from lib/. |
 | 2 | AI parser (fragile indexOf slice) | ✅ (superseded) | The old `ai_question_generator.dart` JSON-slice parser was removed in a prior session (nothing ships it). Superseded by #6/#34: the Phase 5 generator uses schema-forced output + this validator instead of string slicing. |
-| 5 | AI questions duplicate each other | ✅(part) | Detector built + tested now (#7); wired into the generator in Phase 5 (#14/#38). |
+| 5 | AI questions duplicate each other | ✅(part) | Detector built/tested and wired into the teacher-command generator (#14/#38). |
 
 ## Phase 2 — architecture (🔄)
 

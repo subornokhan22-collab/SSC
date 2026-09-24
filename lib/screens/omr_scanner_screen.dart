@@ -150,18 +150,17 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   }
 
   void _snack(String msg) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   /// The standard red, animated problem dialog — every error the user must
   /// act on uses this (never a plain snackbar).
-  Future<void> _problem(String title, String message, {String? detail}) =>
-      showProblemDialog(
-        context,
-        title: title,
-        message: message,
-        detail: detail,
-      );
+  Future<void> _problem(String title, String message, {String? detail}) {
+    if (!mounted) return Future<void>.value();
+    return showProblemDialog(context,
+        title: title, message: message, detail: detail);
+  }
 
   /// Primary capture path: Google's ML Kit document scanner — live corner
   /// tracking, auto-capture and a crop step, all inside Google's own
@@ -838,7 +837,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           ),
           IconButton(
             tooltip: 'Key draft restore',
-            onPressed: _restoreKeyDraft,
+            onPressed: _busy || _step != 0 ? null : _restoreKeyDraft,
             icon: const Icon(Icons.history_rounded),
           ),
         ],

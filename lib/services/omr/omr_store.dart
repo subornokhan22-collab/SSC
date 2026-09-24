@@ -154,10 +154,12 @@ class OmrStore {
     ];
     final trimmed =
         all.length > _maxHistory ? all.sublist(0, _maxHistory) : all;
-    await prefs.setString(
+    if (!await prefs.setString(
       _historyKey,
       json.encode([for (final r in trimmed) r.toJson()]),
-    );
+    ))
+      throw StateError(
+          'The scan could not be saved. Check device storage and retry.');
   }
 
   static Future<void> deleteRecord(String id) async {
