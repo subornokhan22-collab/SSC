@@ -20,6 +20,7 @@ import 'subscription_screen.dart';
 import 'ai_tools_screen.dart';
 
 class CreatePaperScreen extends StatefulWidget {
+  final bool quickStart;
   final String? initialSubjectId;
   final PaperFormat? initialFormat;
   final List<Question>? initialQuestions;
@@ -72,6 +73,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     if (widget.initialQuestions?.isNotEmpty == true) {
       c.useAiQuestions(widget.initialQuestions!);
       step = 3;
+    }
+    if (widget.quickStart && widget.initialQuestions == null) {
+      if (await c.generate() && mounted) step = 3;
     }
     sync();
   }

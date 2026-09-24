@@ -8,10 +8,12 @@ import '../screens/subscription_screen.dart';
 import '../screens/ai_tools_screen.dart';
 
 class CreatePaperArgs {
+  final bool quickStart;
   final String? subjectId;
   final PaperFormat? format;
   final List<Question>? questions;
-  const CreatePaperArgs({this.subjectId, this.format, this.questions});
+  const CreatePaperArgs(
+      {this.subjectId, this.format, this.questions, this.quickStart = false});
 }
 
 class AppRoutes {
@@ -25,6 +27,7 @@ class AppRoutes {
       case createPaper:
         final a = route.arguments as CreatePaperArgs?;
         screen = CreatePaperScreen(
+          quickStart: a?.quickStart ?? false,
           initialSubjectId: a?.subjectId,
           initialFormat: a?.format,
           initialQuestions: a?.questions,

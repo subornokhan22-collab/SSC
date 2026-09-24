@@ -67,6 +67,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
       AppRoutes.createPaper,
       arguments: quick
           ? const CreatePaperArgs(
+              quickStart: true,
               subjectId: 'physics',
               format: PaperFormat.board,
             )

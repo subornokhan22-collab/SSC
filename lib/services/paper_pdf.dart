@@ -1502,7 +1502,7 @@ class PaperPdf {
           await paraMark(
             'ক) ${cq.questionK}',
             10.5,
-            q.marks.length == 3
+            cq.marks.length == 3
                 ? '২'
                 : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
             indent: 10,
@@ -1511,7 +1511,7 @@ class PaperPdf {
           await paraMark(
             'খ) ${cq.questionKh}',
             10.5,
-            q.marks.length == 3
+            cq.marks.length == 3
                 ? '৪'
                 : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
             indent: 10,
@@ -1520,13 +1520,13 @@ class PaperPdf {
           await paraMark(
             'গ) ${cq.questionG}',
             10.5,
-            q.marks.length == 3
+            cq.marks.length == 3
                 ? '৪'
                 : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
             indent: 10,
             gapBefore: 1.5,
           );
-          if (q.marks.length != 3) {
+          if (cq.marks.length != 3) {
             await paraMark(
               'ঘ) ${cq.questionGh}',
               10.5,
