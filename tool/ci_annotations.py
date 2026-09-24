@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""Expose analyzer errors via GitHub checks as well as downloadable log artifacts."""
+import re
+import sys
+from pathlib import Path
+
+
+def escape(value: str) -> str:
+    return value.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+
+
+def main() -> None:
+    text = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
+    for line in text.splitlines():
+        parts = [p.strip() for p in line.split('•')]
+        if len(parts) >= 4 and parts[0] == 'error':
+            location = re.fullmatch(r'(.+):(\d+):(\d+)', parts[-2])
+            if location:
+                path, row, column = location.groups()
+                path = escape(path).replace(',', '%2C').replace(':', '%3A')
+                print(f'::error file={path},line={row},col={column}::{escape(parts[1])}')
+                continue
+        if re.search(r'\bError:|\[E\]|Some tests failed', line):
+            print(f'::error::{escape(line)}')
+
+
+if __name__ == '__main__':
+    main()

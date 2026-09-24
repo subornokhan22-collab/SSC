@@ -73,12 +73,18 @@ jobs:
         # withOpacity) must not block builds; real errors still fail it.
         run: |
           set -o pipefail
-          flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log
+          if ! flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log; then
+            python3 tool/ci_annotations.py analyze.log
+            exit 1
+          fi
 
       - name: Test (quality gate — blocks on failing tests)
         run: |
           set -o pipefail
-          flutter test 2>&1 | tee test.log
+          if ! flutter test --reporter expanded 2>&1 | tee test.log; then
+            python3 tool/ci_annotations.py test.log
+            exit 1
+          fi
 
       - name: Format check (report — becomes a hard gate once the repo is formatted)
         # First run of this step reports every unformatted file. Once a
