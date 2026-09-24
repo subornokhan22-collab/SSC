@@ -281,20 +281,26 @@ class PaperController extends OperationController {
   void replaceWritten(int index, {required bool creative}) {
     if (busy || paper == null) return;
     final candidates = <Object>[];
+    String? section;
     if (creative) {
       final old = paper!.cqs[index];
       final used = paper!.cqs.map((q) => q.stem.trim()).toSet();
+      final ids = paper!.cqs.map((q) => q.id).toSet();
+      section = RegExp(r'^\[[^\]]+\]\s*').firstMatch(old.stem)?.group(0);
       candidates.addAll(composer.cqBank.where((q) =>
           q.subjectId == old.subjectId &&
           q.chapter == old.chapter &&
           q.marks.length == old.marks.length &&
+          !ids.contains(q.id) &&
           !used.contains(q.stem.trim())));
     } else {
       final old = paper!.saqs[index];
       final used = paper!.saqs.map((q) => q.questionText.trim()).toSet();
+      final ids = paper!.saqs.map((q) => q.id).toSet();
       candidates.addAll(composer.saqBank.where((q) =>
           q.subjectId == old.subjectId &&
           q.chapter == old.chapter &&
+          !ids.contains(q.id) &&
           !used.contains(q.questionText.trim())));
     }
     candidates.removeWhere((q) => !QuestionValidationService.validate(q).valid);
@@ -304,7 +310,23 @@ class PaperController extends OperationController {
       changed();
       return;
     }
-    editWritten(index, candidates.first);
+    var selected = candidates.first;
+    if (selected is CreativeQuestion && section != null) {
+      selected = CreativeQuestion(
+          id: selected.id,
+          subjectId: selected.subjectId,
+          chapter: selected.chapter,
+          stem: '$section${selected.stem}',
+          questionK: selected.questionK,
+          questionKh: selected.questionKh,
+          questionG: selected.questionG,
+          questionGh: selected.questionGh,
+          marks: selected.marks,
+          source: selected.source,
+          sourceLabel: selected.sourceLabel,
+          figure: selected.figure);
+    }
+    editWritten(index, selected);
   }
 
   void removeWritten(int index, {required bool creative}) {

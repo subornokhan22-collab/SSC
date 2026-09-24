@@ -23,6 +23,24 @@ void main() {
         cqBank: allCQs,
         random: Random(7),
       );
+  test('board CQ replacement keeps its section and never reuses a selected id',
+      () async {
+    final c = PaperController(
+        composer: engine(),
+        initial: const PaperDraft(subjectId: 'general_math'));
+    await c.initialize();
+    expect(await c.generate(), isTrue);
+    final old = c.paper!.cqs.first;
+    final ids = c.paper!.cqs.map((q) => q.id).toSet();
+    c.replaceWritten(0, creative: true);
+    expect(c.error, isNull);
+    expect(ids.contains(c.paper!.cqs.first.id), isFalse);
+    expect(c.paper!.cqs.first.chapter, old.chapter);
+    expect(c.paper!.cqs.first.stem.startsWith(old.stem.split(']').first + ']'),
+        isTrue);
+    expect(c.paper!.marks, 100);
+    c.dispose();
+  });
   test(
       'missing subject banks fail explicitly instead of inventing a full paper',
       () {
