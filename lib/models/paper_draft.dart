@@ -2,6 +2,7 @@ enum PaperFormat { board, chapter, custom, mcq }
 
 /// Serializable teacher choices, kept separate from widget and PDF state.
 class PaperDraft {
+  final String? englishPaperId;
   final String subjectId;
   final String title;
   final PaperFormat format;
@@ -13,6 +14,7 @@ class PaperDraft {
   final bool answerKey;
 
   const PaperDraft({
+    this.englishPaperId,
     this.subjectId = 'physics',
     this.title = 'মডেল পরীক্ষা — ২০২৭',
     this.format = PaperFormat.board,
@@ -26,6 +28,8 @@ class PaperDraft {
 
   PaperDraft copyWith({
     String? subjectId,
+    String? englishPaperId,
+    bool clearEnglishPaper = false,
     String? title,
     PaperFormat? format,
     List<String>? chapters,
@@ -36,6 +40,8 @@ class PaperDraft {
     bool? answerKey,
   }) =>
       PaperDraft(
+        englishPaperId:
+            clearEnglishPaper ? null : englishPaperId ?? this.englishPaperId,
         subjectId: subjectId ?? this.subjectId,
         title: title ?? this.title,
         format: format ?? this.format,
@@ -48,6 +54,7 @@ class PaperDraft {
       );
 
   Map<String, dynamic> toJson() => {
+        'englishPaperId': englishPaperId,
         'subjectId': subjectId,
         'title': title,
         'format': format.name,
@@ -60,6 +67,7 @@ class PaperDraft {
       };
 
   factory PaperDraft.fromJson(Map<String, dynamic> j) => PaperDraft(
+        englishPaperId: j['englishPaperId'] as String?,
         subjectId: j['subjectId'] as String? ?? 'physics',
         title: j['title'] as String? ?? '',
         format: PaperFormat.values.firstWhere(

@@ -22,7 +22,13 @@ class SubjectInfo {
   });
 }
 
-const List<SubjectInfo> allSubjects = [
+List<SubjectInfo> remoteSubjects = const [];
+List<SubjectInfo> get allSubjects => [
+      for (final s in bundledSubjects)
+        if (!remoteSubjects.any((r) => r.id == s.id)) s,
+      ...remoteSubjects
+    ];
+const List<SubjectInfo> bundledSubjects = [
   // ——— Science (with practical 75+25) ———
   SubjectInfo(
     id: 'physics',

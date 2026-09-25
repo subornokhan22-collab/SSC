@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'data/question_bank.dart';
 import 'navigation/app_routes.dart';
 import 'data/question_sync.dart';
+import 'data/english_paper_sync.dart';
+import 'data/content_catalog_sync.dart';
 import 'services/app_settings.dart';
 import 'services/app_style.dart';
 import 'services/auth_service.dart';
@@ -44,6 +46,8 @@ Future<void> main() async {
   // read is instant and offline; the network pull happens after startup so
   // nothing waits on it.
   await QuestionSync.loadCache();
+  await EnglishPaperSync.loadCache();
+  await ContentCatalogSync.loadCache();
   await AppStyle.load();
   await AppSettings.load();
   await AuthService.init();
@@ -54,6 +58,8 @@ Future<void> main() async {
 
   // Fire-and-forget: errors are swallowed inside refresh().
   unawaited(QuestionSync.refresh());
+  unawaited(EnglishPaperSync.refresh());
+  unawaited(ContentCatalogSync.refresh());
 
   // If the previous session ended in an uncaught crash, the native side
   // saved the details — surface them on first frame (see _CrashReportGate).

@@ -1,16 +1,14 @@
 import 'dart:math';
 
 import '../data/questions_data.dart';
+import '../data/english_paper_sync.dart';
 import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
-import '../data/english_board_data.dart';
-import '../data/english_first_data.dart';
 import '../models/paper_draft.dart';
 import 'bangla_first_board_pattern.dart';
 import 'bangla_second_board_pattern.dart';
 import 'general_math_board_pattern.dart';
 import 'ict_board_pattern.dart';
-import 'english_paper_adapter.dart';
 import 'paper_pdf.dart';
 
 class ComposedPaper {
@@ -155,16 +153,15 @@ class PaperComposer {
     }
     final sid = draft.subjectId;
     final board = draft.format == PaperFormat.board;
+    if (board && !codes.containsKey(sid))
+      throw StateError(
+          'Custom subjects use chapter or custom papers, not an unverified official board pattern.');
     if (isEnglish(sid)) {
       if (!board)
         throw StateError(
             'English uses the complete Reading/Grammar and Writing board pattern.');
       return ComposedPaper(
-          english: sid == 'english_1st'
-              ? EnglishPaperAdapter.first(
-                  EnglishFirstMixer.mix(rng: random).set)
-              : EnglishPaperAdapter.second(
-                  EnglishBoardMixer.mix(rng: random).set),
+          english: EnglishPaperSync.compose(sid, draft.englishPaperId, random),
           marks: 100,
           minutes: 180);
     }

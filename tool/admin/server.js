@@ -21,6 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const https = require('https');
+const ContentCore = require('../../web-admin/content-core.js');
 
 const REPO = path.resolve(__dirname, '..', '..');
 const DIR = path.join(REPO, 'assets', 'questions');
@@ -251,7 +252,7 @@ function validate(body, idx) {
     if (uniq.size !== options.filter(Boolean).length) {
       errors.push('Options must be distinct.');
     }
-    const ci = Number(body.correctIndex);
+    const ci = body.correctIndex==null||body.correctIndex==='' ? -1 : Number(body.correctIndex);
     if (!Number.isInteger(ci) || ci < 0 || ci >= options.length) {
       errors.push('Select which option is correct.');
     }
@@ -306,7 +307,8 @@ function validate(body, idx) {
     errors.push(`Unknown question type "${type}".`);
   }
 
-  return { errors, payload };
+  errors.push(...ContentCore.validateQuestion({id:body.id||'local_draft',type,subject_id:subjectId,chapter,payload}));
+  return { errors: [...new Set(errors)], payload };
 }
 
 // ── request handling ──────────────────────────────────────────────────

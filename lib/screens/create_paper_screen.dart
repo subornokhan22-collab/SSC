@@ -6,6 +6,7 @@ import 'package:printing/printing.dart';
 
 import '../controllers/paper_controller.dart';
 import '../data/questions_data.dart';
+import '../data/english_paper_sync.dart';
 import '../models/paper_draft.dart';
 import '../models/subject_info.dart';
 import '../services/paper_composer.dart';
@@ -360,6 +361,28 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         Text('Choose the paper format',
             style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 12),
+        if (PaperComposer.isEnglish(c.draft.subjectId)) ...[
+          DropdownButtonFormField<String>(
+              value: EnglishPaperSync.choices(c.draft.subjectId)
+                      .containsKey(c.draft.englishPaperId)
+                  ? c.draft.englishPaperId
+                  : '',
+              isExpanded: true,
+              decoration: const InputDecoration(
+                  labelText: 'Board / year · synced English papers'),
+              items: [
+                const DropdownMenuItem(
+                    value: '', child: Text('Mixed practice set')),
+                for (final e
+                    in EnglishPaperSync.choices(c.draft.subjectId).entries)
+                  DropdownMenuItem(
+                      value: e.key,
+                      child: Text(e.value, overflow: TextOverflow.ellipsis))
+              ],
+              onChanged: (id) => c.update(c.draft
+                  .copyWith(englishPaperId: id, clearEnglishPaper: id == ''))),
+          const SizedBox(height: 16),
+        ],
         for (final f in PaperFormat.values)
           Card(
               child: RadioListTile<PaperFormat>(

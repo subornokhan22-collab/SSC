@@ -11,6 +11,7 @@ import '../data/ict/ict_chapter_catalog.dart';
 /// Textbook order is numeric; combined/generated chapter labels stay hidden.
 class ChapterCatalog {
   ChapterCatalog._();
+  static Map<String, List<String>> remote = {};
 
   static const _bn = {
     '০': 0,
@@ -72,6 +73,8 @@ class ChapterCatalog {
   }
 
   static List<String> ordered(Iterable<String> values, {String? subjectId}) {
+    if (remote.containsKey(subjectId))
+      return List.unmodifiable(remote[subjectId]!);
     // Show each complete official catalog even before every chapter has questions.
     if (subjectId == 'physics') return List<String>.from(physics);
     if (subjectId == BanglaFirstCatalog.subjectId) {

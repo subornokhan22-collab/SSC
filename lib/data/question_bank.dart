@@ -23,6 +23,9 @@ class QuestionBank {
   static List<Question> _mcqs = const [];
   static List<ShortQuestion> _saqs = const [];
   static List<CreativeQuestion> _cqs = const [];
+  static List<Question> _bundledMcqs = const [];
+  static List<ShortQuestion> _bundledSaqs = const [];
+  static List<CreativeQuestion> _bundledCqs = const [];
   static bool _loaded = false;
 
   /// True once the bank has been read from assets.
@@ -63,6 +66,9 @@ class QuestionBank {
     _mcqs = List<Question>.unmodifiable(parsed.mcqs);
     _saqs = List<ShortQuestion>.unmodifiable(parsed.saqs);
     _cqs = List<CreativeQuestion>.unmodifiable(parsed.cqs);
+    _bundledMcqs = _mcqs;
+    _bundledSaqs = _saqs;
+    _bundledCqs = _cqs;
     _loaded = true;
 
     final expected = manifest['total'];
@@ -111,6 +117,17 @@ class QuestionBank {
     );
   }
 
+  /// Reconcile a complete remote snapshot, including removals and archives.
+  static void replaceRemote(
+      {List<Question> mcqs = const [],
+      List<ShortQuestion> saqs = const [],
+      List<CreativeQuestion> cqs = const []}) {
+    _mcqs = _bundledMcqs;
+    _saqs = _bundledSaqs;
+    _cqs = _bundledCqs;
+    addRemote(mcqs: mcqs, saqs: saqs, cqs: cqs);
+  }
+
   /// Test seam — lets widget tests install a small bank without touching
   /// the asset bundle.
   @visibleForTesting
@@ -122,6 +139,9 @@ class QuestionBank {
     _mcqs = List<Question>.unmodifiable(mcqs);
     _saqs = List<ShortQuestion>.unmodifiable(saqs);
     _cqs = List<CreativeQuestion>.unmodifiable(cqs);
+    _bundledMcqs = _mcqs;
+    _bundledSaqs = _saqs;
+    _bundledCqs = _cqs;
     _loaded = true;
   }
 }

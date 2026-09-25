@@ -2108,14 +2108,15 @@ class MixedFirstPaper {
 class EnglishFirstMixer {
   EnglishFirstMixer._();
 
-  static MixedFirstPaper mix({Random? rng}) {
+  static MixedFirstPaper mix({Random? rng, List<EnglishFirstSet>? pool}) {
     final r = rng ?? Random();
-    EnglishFirstSet pick() =>
-        englishFirstSets2024[r.nextInt(englishFirstSets2024.length)];
+    final available =
+        pool == null || pool.isEmpty ? englishFirstSets2024 : pool;
+    EnglishFirstSet pick() => available[r.nextInt(available.length)];
     final g = List<EnglishFirstSet>.generate(9, (_) => pick());
     final set = EnglishFirstSet(
       serial: 0,
-      board: 'Mixed Board Set–2024',
+      board: pool == null ? 'Mixed Board Set–2024' : 'Mixed practice set',
       passage1Intro: g[0].passage1Intro,
       passage1Unit: g[0].passage1Unit,
       passage1: g[0].passage1,

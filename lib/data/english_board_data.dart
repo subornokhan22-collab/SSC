@@ -1355,14 +1355,15 @@ class MixedSecondPaper {
 class EnglishBoardMixer {
   EnglishBoardMixer._();
 
-  static MixedSecondPaper mix({Random? rng}) {
+  static MixedSecondPaper mix({Random? rng, List<EnglishBoardSet>? pool}) {
     final r = rng ?? Random();
-    EnglishBoardSet pick() =>
-        englishBoardSets2024[r.nextInt(englishBoardSets2024.length)];
+    final available =
+        pool == null || pool.isEmpty ? englishBoardSets2024 : pool;
+    EnglishBoardSet pick() => available[r.nextInt(available.length)];
     final g = List<EnglishBoardSet>.generate(12, (_) => pick());
     final set = EnglishBoardSet(
       serial: 0,
-      board: 'Mixed Board Set–2024',
+      board: pool == null ? 'Mixed Board Set–2024' : 'Mixed practice set',
       headerExtra: const [
         'English (Compulsory)–Second Paper',
         'Full Marks : 100          Time : 3 hours',

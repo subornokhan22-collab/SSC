@@ -1,0 +1,274 @@
+{
+  "first": {
+    "type": "OBJECT",
+    "properties": {
+      "schema_version": {
+        "type": "INTEGER"
+      },
+      "passage1Intro": {
+        "type": "STRING"
+      },
+      "passage1Unit": {
+        "type": "STRING"
+      },
+      "passage1": {
+        "type": "STRING"
+      },
+      "q1Instr": {
+        "type": "STRING"
+      },
+      "q1": {
+        "type": "ARRAY",
+        "items": {
+          "type": "OBJECT",
+          "properties": {
+            "stem": {
+              "type": "STRING"
+            },
+            "options": {
+              "type": "ARRAY",
+              "items": {
+                "type": "STRING"
+              }
+            }
+          },
+          "required": [
+            "stem",
+            "options"
+          ]
+        }
+      },
+      "q2": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q3Instr": {
+        "type": "STRING"
+      },
+      "q3Source": {
+        "type": "STRING"
+      },
+      "q3Unit": {
+        "type": "STRING"
+      },
+      "q3Cloze": {
+        "type": "STRING"
+      },
+      "passage2Intro": {
+        "type": "STRING"
+      },
+      "passage2": {
+        "type": "STRING"
+      },
+      "q4Instr": {
+        "type": "STRING"
+      },
+      "q4Table": {
+        "type": "ARRAY",
+        "items": {
+          "type": "ARRAY",
+          "items": {
+            "type": "STRING"
+          }
+        }
+      },
+      "q4BoldRows": {
+        "type": "ARRAY",
+        "items": {
+          "type": "INTEGER"
+        }
+      },
+      "q6A": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q6B": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q6C": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q7": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q8": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q9": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q10Instr": {
+        "type": "STRING"
+      },
+      "q10Starter": {
+        "type": "STRING"
+      },
+      "q11": {
+        "type": "STRING"
+      }
+    },
+    "required": [
+      "schema_version",
+      "passage1Intro",
+      "passage1Unit",
+      "passage1",
+      "q1Instr",
+      "q1",
+      "q2",
+      "q3Instr",
+      "q3Source",
+      "q3Unit",
+      "q3Cloze",
+      "passage2Intro",
+      "passage2",
+      "q4Instr",
+      "q4Table",
+      "q4BoldRows",
+      "q6A",
+      "q6B",
+      "q6C",
+      "q7",
+      "q8",
+      "q9",
+      "q10Instr",
+      "q10Starter",
+      "q11"
+    ]
+  },
+  "second": {
+    "type": "OBJECT",
+    "properties": {
+      "schema_version": {
+        "type": "INTEGER"
+      },
+      "headerExtra": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q1Box": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q1Passage": {
+        "type": "STRING"
+      },
+      "q2": {
+        "type": "ARRAY",
+        "items": {
+          "type": "OBJECT",
+          "properties": {
+            "a": {
+              "type": "STRING"
+            },
+            "b": {
+              "type": "STRING"
+            },
+            "c": {
+              "type": "STRING"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      },
+      "q3Box": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q3Passage": {
+        "type": "STRING"
+      },
+      "q4": {
+        "type": "ARRAY",
+        "items": {
+          "type": "OBJECT",
+          "properties": {
+            "sentence": {
+              "type": "STRING"
+            },
+            "direction": {
+              "type": "STRING"
+            }
+          },
+          "required": [
+            "sentence",
+            "direction"
+          ]
+        }
+      },
+      "q5": {
+        "type": "ARRAY",
+        "items": {
+          "type": "STRING"
+        }
+      },
+      "q6Passage": {
+        "type": "STRING"
+      },
+      "q7Passage": {
+        "type": "STRING"
+      },
+      "q8Passage": {
+        "type": "STRING"
+      },
+      "q9Text": {
+        "type": "STRING"
+      },
+      "q10": {
+        "type": "STRING"
+      },
+      "q11": {
+        "type": "STRING"
+      },
+      "q12": {
+        "type": "STRING"
+      }
+    },
+    "required": [
+      "schema_version",
+      "headerExtra",
+      "q1Box",
+      "q1Passage",
+      "q2",
+      "q3Box",
+      "q3Passage",
+      "q4",
+      "q5",
+      "q6Passage",
+      "q7Passage",
+      "q8Passage",
+      "q9Text",
+      "q10",
+      "q11",
+      "q12"
+    ]
+  }
+}

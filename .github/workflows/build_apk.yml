@@ -35,13 +35,27 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check Gemini edge function
-        run: deno check supabase/functions/mimi/index.ts
+        run: deno check supabase/functions/mimi/index.ts supabase/functions/admin-content/index.ts
       - name: Gateway request boundary tests
         run: node --experimental-strip-types --test supabase/tests/*_test.mjs
       - name: Profiles RLS and audit regression tests (disposable database)
         env:
           PGPASSWORD: ci-only-password
         run: psql -h 127.0.0.1 -U postgres -d rls_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles_rls_test.sql
+
+      - name: Content workflow, English and audit RLS regressions
+        env:
+          PGPASSWORD: ci-only-password
+        run: |
+          createdb -h 127.0.0.1 -U postgres content_test
+          psql -h 127.0.0.1 -U postgres -d content_test -v ON_ERROR_STOP=1 -f supabase/tests/content_manager_test.sql
+      - name: Admin validation and browser tests
+        working-directory: web-admin
+        run: |
+          npm ci --ignore-scripts
+          npm test
+          npx playwright install --with-deps chromium
+          npx playwright test
 
   build:
     needs: security-tests

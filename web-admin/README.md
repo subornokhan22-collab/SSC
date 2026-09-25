@@ -1,123 +1,70 @@
-# Hosted question admin
+# Tutor’s Desk · Content Studio
 
-A permanent web panel for publishing questions. Two static files talking
-straight to Supabase — no server of our own, so it can be hosted free and
-the URL never expires.
+A static, server-enforced content manager for SSC questions and **separate structured English board papers**. The default `index.html` is the new studio; the obsolete manual-JWT hosted implementation has been removed.
 
-**Questions published here reach the app without an app update.**
+## Preview and tests
 
----
-
-## Setup — about 15 minutes, once
-
-### 1. Create the table
-
-Open the SQL editor:
-
-<https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/sql/new>
-
-Paste the whole of **`schema.sql`** and press **Run**. Safe to run twice.
-
-That creates the `questions` table, its indexes, row-level security, and a
-public `question-figures` bucket for pictures.
-
-### 2. Put the panel online
-
-Any static host works. The simplest is Netlify Drop:
-
-1. Go to <https://app.netlify.com/drop>
-2. Drag the **`web-admin`** folder onto the page
-3. You get a permanent URL like `https://something.netlify.app`
-
-Alternatives: Cloudflare Pages, GitHub Pages, Vercel — all free, all fine.
-There is no build step; these are plain files.
-
-### 3. Use it
-
-Open the URL on any device and sign in with **the same email and password
-you use in the app**. Publish a question, then reopen the app — it appears.
-
----
-
-## How the app picks questions up
-
-```
-web panel  ──► Supabase questions table
-                        │  (only rows newer than last sync)
-                        ▼
-app launch ──► cached locally ──► merged into the bundled bank
+```sh
+cd web-admin
+npm ci --ignore-scripts
+npm run vendor                      # pinned Supabase SDK, PDF.js, generated SQL bootstrap
+npm test                            # shared validation / import tests
+npx playwright install --with-deps chromium
+npx playwright test                 # real-browser offline workflow tests
+python3 -m http.server 4173 --bind 0.0.0.0
 ```
 
-* The 15,392 bundled questions still load instantly and work offline.
-* On launch the app asks "anything newer than X?" — normally a tiny request
-  that returns nothing.
-* Anything new is cached, so it survives being offline afterwards.
-* Every failure is silent. A paper never fails to generate because the
-  network is down.
-* A published row whose id matches a bundled one replaces it, so you can
-  correct a wrong answer without creating a duplicate.
+Open the server and choose **Explore an offline demo**. Demo records are intentionally labeled, memory-only and never sent to Supabase or AI. Closing/reloading clears them. Production counts come from the server, **not** the 5,279 APK assets.
 
----
+## Production rollout — separate from code/CI delivery
 
-## Who sees what
+1. Back up the Supabase database and existing `web-admin` deployment.
+2. Apply `supabase/migrations/20260925000001_content_manager.sql`. Existing questions are grandfathered as published; new content defaults to draft. Existing admin membership is retained. This migration does not create an administrator.
+3. For a new installation, configure `question-figures` using `supabase/content_storage.sql`. Alternatively, `web-admin/schema.sql` is a generated **complete bootstrap** containing both. Do not use an older copy of the legacy schema: it lacks draft visibility restrictions.
+4. An existing project owner grants administrator membership in `public.question_admins` using a verified account UUID in the server SQL console. Never expose a service-role key to the browser.
+5. Deploy `supabase/functions/admin-content` for optional AI structuring/review. It verifies the caller’s authenticated user and administrator membership. Configure `GEMINI_API_KEY` as an Edge Function secret, not a frontend setting. Manual import works without it.
+6. Upload the static `web-admin` directory, **including `vendor/`, `catalog.json`, and the worker**, to your HTTPS hosting. Exclude `node_modules`, tests and reports. Configure `.mjs` as JavaScript. CSP is in `index.html`; a hosting-level equivalent is recommended. API traffic goes directly to the configured Supabase HTTPS project, never localhost.
+7. Ship the companion APK: the previously accepted build cannot consume `english_papers`. The new build adds English sync, board/year selection, catalog sync and archive/deletion reconciliation.
+8. Smoke-test with one first-paper draft and one second-paper draft: validate → review → publish → launch updated app online → select the board/year → generate PDF → archive → launch app online again. Test offline after a successful sync.
 
-**Everything you publish here is visible to every user of the app.** That is
-the point: one shared bank, updated without a release.
+No production migration, function deployment, hosting replacement or signing configuration is implied by passing tests.
 
-Row-level security enforces it:
+## Two pipelines
 
-| Row | Who can read | Who can write |
-|---|---|---|
-| `owner_id IS NULL` — official | **every user**, signed in or not | listed admins only |
-| `owner_id = a user` — private | only that tutor | only that tutor |
+- `questions` → paginated `QuestionSync` → `QuestionBank`: MCQ, SAQ, CQ only.
+- `english_papers` → `EnglishPaperSync` → **actual `EnglishFirstSet` / `EnglishBoardSet`** → `EnglishPaperAdapter` → composer/PDF.
+- `content_subjects` → cached `ContentCatalogSync` → subject list/chapter selectors. New subjects use custom counts; they do not acquire an invented official board pattern.
 
-The panel always writes `owner_id = null`, so your questions join the shared
-bank. Nobody else can publish to it unless you add them to
-`question_admins`.
+English schema v1 follows the existing book pattern (11 first-paper / 12 second-paper questions), not a claim about every future official exam. First paper has reading MCQs, comprehension, cloze, information transfer/summary, matching, rearrangement, poem/story questions and writing. Second paper has grammar and composition. They are not interchangeable.
 
-### Making yourself an admin
+## Workflow
 
-`schema.sql` ends with a block that adds your account to `question_admins`.
-It matches on `subornokhan22@gmail.com` — change that line if you publish
-from a different account, and sign in to the app once first so the account
-exists.
+- New or edited material is saved as **Draft**, including incomplete imports. Validation gates entry into Review and Published on the server.
+- Editing published content returns it to draft; it is temporarily absent from the next public app snapshot until reapproved. Saved generated-paper snapshots remain printable.
+- Publish one reviewed record or exactly the selected reviewed subset. Bulk operations are sequential, report partial completion and never silently overwrite a stale revision. IDs are immutable; use Duplicate for a new record.
+- Archive sets `is_active=false`. Restore is reversible. Permanent deletion requires an archived record, confirmation and a downloaded JSON backup. Bulk archive/restore also downloads a backup first.
+- Export all, a subject/chapter or the current selection as JSON. Selection is deliberately page-scoped (25 rows). Every export fetches all required server pages.
+- Audit entries are generated by database triggers, readable by administrators and not browser-writable. Private-user question payloads are excluded from audit snapshots.
 
-If you skip this, publishing fails with a message telling you so. Reading is
-unaffected.
+## Import and answer safety
 
-### Adding another teacher later
+- CSV headers: `id,subject,chapter,type,question,option_a,option_b,option_c,option_d,answer,explanation`. `B` means index 1. Missing/invalid answer → **-1**, never A. MCQ needs four distinct options, an explicit key and explanation before review.
+- JSON supports row arrays, exported `{records:[...]}` and a single structured English record. Bulk imports always preview first and insert drafts; duplicate IDs do not overwrite existing content.
+- English text detection conservatively extracts board/year and obvious section boundaries and retains the complete `data.source_text`. It does **not** claim to perfectly reconstruct tables or passages.
+- PDF.js extracts text locally. Image-only PDFs require manual transcription; tables require human repair. No OCR/multimodal extraction is claimed. Generic question figures have original/processed/final previews and PNG upload. English inline-image embedding is not yet a model feature.
+- Optional AI structuring is admin-only and produces reviewable drafts. English answers are forcibly null in AI responses. Generic keys require a source answer marker; source explanations/answers are retained only when found in the input. AI can still misassociate source fragments, so human review is mandatory.
+- AI Review offers uncertain findings, not verified factual corrections; it never edits or publishes a record automatically.
 
-```sql
-insert into public.question_admins (user_id, note)
-select id, 'co-author' from auth.users where email = 'them@example.com';
-```
+## Offline, removals and limitations
 
-Removing them is a `delete` on the same table. Their questions stay.
+A successful full paginated sync atomically replaces the cached remote snapshot; partial network failures retain the last successful cache. Archived/deleted **remote** IDs disappear on the next successful sync. With no network, the last downloaded content remains available. An override of a bundled ID falls back to the bundled original when removed: retiring bundled source content still requires an asset update or a future signed tombstone mechanism.
 
-The anon key in `app.js` is safe to publish — it is designed to be public,
-and RLS is what actually protects the data.
+English answers are stored for source provenance and shown in admin review. They are **not newly integrated into the APK answer-key renderer**. The app consumes the actual structured question sections without invented keys. The admin browser print preview is a review layout, not pixel-identical to the app’s PDF pagination.
 
----
+Storage cleanup reports missing and apparently unused server images. It cannot prove that an old APK, exported paper or external link no longer references an object. Deletion requires filename confirmation, a fresh server-reference check and an image backup; do not delete an object still used by a shipped asset. Storage object operations are not yet represented in the content-row audit history.
 
-## Notes
+The local `tool/admin` bank writer uses the same `content-core.js` validation, but remains a developer-only asset tool, not an alternative hosted workflow or English publisher. Rebuilding and shipping an APK is still required for local asset changes.
 
-* **Chapter names must match exactly** what the app uses, e.g.
-  `অধ্যায় ৩: কোষ বিভাজন`. The field offers previous entries as suggestions.
-* **Check the ✓ marks** on AI-formatted questions before publishing. If your
-  source does not mark the answer, the first option is selected rather than
-  guessed.
-* Images go to Supabase Storage and are referenced by URL, so they are
-  fetched on demand rather than bloating the APK.
-* Deleting a question here removes it from the server, but a question that
-  shipped inside the APK stays until the next release.
+## Security model
 
----
-
-## The other two routes
-
-* **`tool/admin/`** — the local Node panel. Writes to repo files, needs a
-  computer and an app release to publish. Better for bulk work offline.
-* **`docs/ADD-QUESTIONS-FROM-PHONE.md`** — GitHub's web editor, no tooling
-  at all, also needs a release.
-
-This hosted panel is the only one that publishes without a release.
+The supported Supabase browser SDK handles refresh with `persistSession:false`: access/refresh tokens stay in this tab’s memory. Reload requires sign-in. Old localStorage token entries are removed. Dynamic content is escaped; no user source text becomes HTML. The anon key is intentionally public; all meaningful privileges come from server RLS, triggers and Edge Function authentication. Do not host the local filesystem-writing admin on the public internet.

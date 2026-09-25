@@ -6,3 +6,9 @@ previews/
 
 # CI-restored release signing keystore (never commit — it lives in GitHub Secrets)
 android/app/release.keystore
+
+# Hosted admin dependencies and generated test artifacts
+node_modules/
+web-admin/test-results/
+web-admin/playwright-report/
+test-results/

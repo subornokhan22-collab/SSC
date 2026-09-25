@@ -102,12 +102,17 @@ class PaperController extends OperationController {
     final counts = PaperComposer.defaults(id);
     update(
       draft.copyWith(
+        clearEnglishPaper: true,
         subjectId: id,
         chapters: [],
         mcqCount: counts.$1,
         saqCount: counts.$2,
         cqCount: counts.$3,
-        format: PaperComposer.isEnglish(id) ? PaperFormat.board : draft.format,
+        format: PaperComposer.isEnglish(id)
+            ? PaperFormat.board
+            : !PaperComposer.codes.containsKey(id)
+                ? PaperFormat.custom
+                : draft.format,
       ),
     );
   }
