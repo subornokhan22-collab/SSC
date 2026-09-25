@@ -626,6 +626,7 @@ function drawEditor() {
     html +=
       input("Image URL (optional)", "image", r.figure?.imagePath || "") +
       input("Source label", "source_label", r.source_label || "") +
+      `<label>Provenance<select data-field="source">${["original", "board", "ai", "internet"].map((v) => `<option ${r.source === v ? "selected" : ""}>${v}</option>`).join("")}</select></label><label><input type="checkbox" data-field="metadata.verified" ${r.metadata?.verified ? "checked" : ""}> Verified against the source by the reviewer</label>` +
       `<label>Difficulty<select data-field="metadata.difficulty">${["easy", "medium", "hard"].map((v) => `<option ${r.metadata?.difficulty === v ? "selected" : ""}>${v}</option>`).join("")}</select></label>` +
       input("Topic", "metadata.topic", r.metadata?.topic || "") +
       input(
@@ -671,7 +672,7 @@ function drawEditor() {
     (el) =>
       (el.oninput = () => {
         const key = el.dataset.field;
-        let value = el.value;
+        let value = el.type === "checkbox" ? el.checked : el.value;
         if (el.dataset.lines)
           value = value
             .split("\n")

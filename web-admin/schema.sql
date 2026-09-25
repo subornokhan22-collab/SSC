@@ -115,6 +115,8 @@ begin
  end if;
  return new;
 end $$;
+-- Supersedes the legacy timestamp trigger; otherwise it runs after validation.
+drop trigger if exists questions_touch on public.questions;
 drop trigger if exists content_validate on public.questions;
 create trigger content_validate before insert or update on public.questions for each row execute function public.validate_content_row();
 drop trigger if exists content_validate on public.english_papers;

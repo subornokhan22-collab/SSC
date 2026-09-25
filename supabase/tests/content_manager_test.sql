@@ -5,10 +5,20 @@ create schema auth;
 create table auth.users(id uuid primary key,email text);
 create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
 grant usage on schema auth,public to anon,authenticated;
+-- Exercise an actual legacy-shaped table and a malformed grandfathered row.
+create table public.questions(id text primary key,type text not null,subject_id text not null,chapter text not null,payload jsonb not null,figure jsonb,source text not null default 'original',source_label text,owner_id uuid references auth.users(id) on delete set null,is_active boolean not null default true,updated_at timestamptz not null default now());
+create function public.touch_updated_at() returns trigger language plpgsql as $$begin new.updated_at=now();return new;end$$;
+create trigger questions_touch before update on public.questions for each row execute function public.touch_updated_at();
+insert into questions(id,type,subject_id,chapter,payload)values('legacy','mcq','physics','C','{"questionText":"Old incomplete question","options":["A","B"]}');
 \ir ../migrations/20260925000001_content_manager.sql
 \ir ../migrations/20260925000001_content_manager.sql
 create function public.test_assert(ok boolean,message text) returns void language plpgsql as $$begin if ok is distinct from true then raise exception 'FAIL: %',message;end if;end$$;
 create function public.test_reject(query text) returns void language plpgsql as $$begin begin execute query;exception when others then return;end;raise exception 'FAIL: query unexpectedly accepted: %',query;end$$;
+select public.test_assert((select review_status='published' from questions where id='legacy'),'legacy content grandfathered without rewriting payload');
+select public.test_assert(not exists(select 1 from pg_trigger where tgname='questions_touch'),'legacy timestamp trigger removed');
+update questions set is_active=false where id='legacy';
+delete from questions where id='legacy';
+select public.test_assert((select count(*)=1 from question_tombstones where id='legacy'),'legacy archive/delete retires its ID');
 begin;
 insert into auth.users values ('11111111-1111-4111-8111-111111111111','admin'),('22222222-2222-4222-8222-222222222222','teacher');
 insert into question_admins(user_id) values ('11111111-1111-4111-8111-111111111111');
