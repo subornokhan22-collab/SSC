@@ -18,7 +18,7 @@ Old APK text-only AI Tools remains compatible with the new gateway. A new APK de
 
 ## Formatting
 
-The server normalizes question text/options **before** independent answer checking. The returned explanation, review findings and client-visible content use the same rules, covered by shared fixtures. Exact chapter IDs/labels and numeric answer indices remain unchanged. Edited questions still lose their AI-checked status.
+The server normalizes question text/options **before** independent answer checking. The returned explanation, review findings and client-visible content use the same rules, covered by shared fixtures. Option uniqueness preserves signs, powers and scientific symbols (so `-1`, `+1`, `10²` and `10³` remain distinct). Exact chapter IDs/labels and numeric answer indices remain unchanged. Edited questions still lose their AI-checked status.
 
 Examples: `১ → 1`, `m/s^২ → m/s²`, `10^{-৩} → 10⁻³`, `CO_{২} → CO₂`, simple `\frac{1}{2} → (1)/(2)`. Known wrappers/commands are converted to plain Unicode; this is **not** a full LaTeX engine. Unknown exponent characters/expressions are preserved rather than silently dropped. The existing PDF renderer now uses this formatter, fixing its prior loss of unsupported exponent characters. DejaVu Sans is registered as a scientific-symbol fallback for AI results.
 
@@ -35,6 +35,6 @@ Examples: `১ → 1`, `m/s^২ → m/s²`, `10^{-৩} → 10⁻³`, `CO_{২} �
 
 ## Verification and limitations
 
-62 local Node server tests pass, including the actual dashboard bundle with mock auth/model calls, file rejection/consent, source-only attachment forwarding, normalization-before-checking, independent checker rejection, privacy-safe diagnostics and SSE framing. Flutter tests cover shared formatter fixtures, image resizing, byte/type/count limits, consent, client protocol/auth and attachment removal/busy UI.
+63 local Node server tests pass, including the actual dashboard bundle with mock auth/model calls, file rejection/consent, source-only attachment forwarding, normalization-before-checking, independent checker rejection, privacy-safe diagnostics and SSE framing. Flutter tests cover shared formatter fixtures, image resizing, byte/type/count limits, consent, client protocol/auth and attachment removal/busy UI.
 
 Flutter SDK downloads were blocked by workspace TLS, so Flutter analysis/tests and the Android APK build are verified via GitHub Actions, not claimed as locally executed. Native Android camera/gallery/file-provider behavior and live Gemini reading accuracy require the on-device smoke test above. A generated question's AI-checked label is not a guarantee of correctness.

@@ -44,3 +44,10 @@ test('review findings also normalize math and Bengali digits',async()=>{
  const result = await runTeacherTool(toolRequest({...base,action:'check',text:'test'}),async()=>({summary:'১টি ভুল',findings:[{title:'ঘাত ২',detail:'সঠিক একক m/s^২'}]}),()=>{});
  assert.equal(result.summary,'1টি ভুল');assert.equal(result.findings[0].detail,'সঠিক একক m/s²');
 });
+
+test('scientific distractors preserve signs and powers during uniqueness checks',()=>{
+ const request=toolRequest(base);
+ const rows=questionsFrom({questions:[{...q,options:['-১','+১','10^২','10^৩']}]},request);
+ assert.deepEqual(rows[0].options,['-1','+1','10²','10³']);
+ assert.throws(()=>questionsFrom({questions:[{...q,options:['m/s^2','m/s²','m/s','m']}]},request),/schema/);
+});
