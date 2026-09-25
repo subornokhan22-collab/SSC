@@ -1,6 +1,6 @@
 # Content Studio — GitHub download files
 
-Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes the `mimi-sse-mobile-v2` stream-framing repair; its canonical source and regression tests are versioned alongside this package.
+Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes `mimi-provider-diagnostics-v3`, retaining the mobile stream-framing repair and adding safe upstream error reporting; its canonical source and regression tests are versioned alongside this package.
 
 ## Downloads
 
@@ -53,6 +53,25 @@ This means the APK received HTTP 200 but did not parse a terminal `result` or `e
 
 The older bundled emitter contained literal newlines inside a template string. If a phone editor adds leading indentation during paste, it also changes the bytes inside that string: `data:` becomes space-prefixed, and the APK ignores it. This failure was reproduced locally for both successful results and model-check errors. A screenshot showing deeply accumulated indentation is consistent with that cause, but does not verify the full deployed response.
 
-The refreshed `mimi.ts` has the header **`Bundle revision: mimi-sse-mobile-v2`**. It constructs stream delimiters with an escaped newline string, so source indentation no longer changes the event framing. Replace the **entire** existing `mimi/index.ts` with this updated file and Deploy updates. Do not append it to the old code. Keep the current secret and `admin-content`; no new SQL, Netlify upload or APK installation is needed for this repair.
+The v2 repair (retained in the current v3 bundle) constructs stream delimiters with an escaped newline string, so source indentation no longer changes the event framing. Replace the **entire** existing `mimi/index.ts` with this updated file and Deploy updates. Do not append it to the old code. Keep the current secret and `admin-content`; no new SQL, Netlify upload or APK installation is needed for this repair.
 
-Tests execute the bundle after simulated editor indentation and parse line prefixes like the existing APK. All 28 local server tests passed, using mocked authentication and model responses, not a live Gemini account. If the same error remains after deployment, inspect the latest `mimi` invocation and logs immediately after an APK retry. Share status/duration and error text with tokens, request headers and private keys hidden. Do not disable authentication.
+Tests execute the bundle after simulated editor indentation and parse line prefixes like the existing APK. The v2 release passed 28 local server tests using mocked authentication and model responses, not a live Gemini account. If the same error remains after deployment, inspect the latest `mimi` invocation and logs immediately after an APK retry. Share status/duration and error text with tokens, request headers and private keys hidden. Do not disable authentication.
+
+## APK “The AI service is unavailable” while Invocations shows 200
+
+The teacher-tools stream sends HTTP 200 **before** Gemini finishes. A later provider failure is an `event: error` within that stream, so 200 is not proof that generation succeeded. The older code collapsed every non-429 provider HTTP failure into this generic message. The September 25 follow-up APK screenshot confirms the app now parses this error event, but neither that message nor the invocation's 200 identifies Gemini's actual status/cause.
+
+Replace only `mimi/index.ts` with the current [mimi.ts](mimi.ts), marked **`mimi-provider-diagnostics-v3`**, then Deploy updates and retry once. The existing APK will display a fixed diagnostic such as `[GEMINI_MODEL_UNAVAILABLE; HTTP 404; generator]`. This is a diagnostic improvement, **not a verified fix to the user's Gemini account or model access**. No private project credentials are available to us and no live model call has been tested.
+
+- `GEMINI_KEY_INVALID` / `GEMINI_KEY_BLOCKED`: Google reports invalid/expired or leaked/blocked credentials. Review or replace the project secret privately in Supabase with a Google AI Studio key, never in source or chat.
+- `GEMINI_KEY_RESTRICTED` / `GEMINI_ACCESS_DENIED`: check that key's Google project permissions and application/API restrictions; do not disable Supabase authentication.
+- `GEMINI_API_DISABLED`: check Generative Language API enablement in the Google project owning the key.
+- `GEMINI_MODEL_UNAVAILABLE`: check the indicated `GEMINI_GENERATOR_MODEL` or `GEMINI_VALIDATOR_MODEL` setting against models available to that key. This update does not change the default model or silently switch models.
+- `GEMINI_SCHEMA_REJECTED` / `GEMINI_REQUEST_REJECTED`: investigate the server request/model compatibility; do not assume the key is invalid.
+- `GEMINI_QUOTA`: review Google AI Studio limits before retrying repeatedly.
+- `GEMINI_REGION_UNSUPPORTED` / `GEMINI_BILLING_REQUIRED`: review Google's project/region/plan requirements. Do not buy a plan on the basis of the old generic message.
+- `GEMINI_UPSTREAM_ERROR`, `GEMINI_NETWORK`, `GEMINI_TIMEOUT`: provider HTTP failure, server connectivity failure or timeout, respectively.
+
+Supabase **Logs** now records a `mimi_provider_error` warning with only our fixed code, numeric `upstreamStatus` and `generator`/`validator` stage. The APK displays these through the existing error-message field. Provider bodies are bounded to 16 KiB for classification; raw messages, credentials, model names from environment settings, prompts and generated content are never included in the new diagnostics/logs. Unrecognized failures fall back to status-based diagnostics rather than guessing a cause. Chat and website-import error handling are unchanged.
+
+All **56 local server tests** passed, including classification, oversized/malformed error bodies, network failures, safe logging, checker-stage failures and mobile-indented SSE. These tests use mocked authentication/provider services. Existing authentication, independent answer checking and publication rules remain in place. Send only the new APK error code/message if it still fails; do not send API keys or request headers.

@@ -29,6 +29,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { readJsonObject, RequestBodyError } from "./request_body.ts";
 import { toolRequest, runTeacherTool, ToolError } from "./teacher_tools.ts";
+import { ProviderError, readProviderError, providerTransportError } from "./provider_errors.ts";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
@@ -130,12 +131,19 @@ Deno.serve(async (req: Request) => {
           const result = await runTeacherTool(command, async (system, input, schema, validator=false) => {
             const model = Deno.env.get(validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL") || "gemini-2.5-flash";
             if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new ToolError("The server model configuration is invalid.");
-            const resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
-              method:"POST", headers:{"Content-Type":"application/json", "x-goog-api-key":key},
-              signal:AbortSignal.any([cancellation.signal,AbortSignal.timeout(75000)]),
-              body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}]}],generationConfig:{temperature:validator?0:0.4,maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
-            });
-            if (!resp.ok) throw new ToolError(resp.status===429 ? "AI quota reached. Please try later." : "The AI service is unavailable. Please try again later.");
+            const stage = validator ? "validator" : "generator";
+            let resp: Response;
+            try {
+              resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
+                method:"POST", headers:{"Content-Type":"application/json", "x-goog-api-key":key},
+                signal:AbortSignal.any([cancellation.signal,AbortSignal.timeout(75000)]),
+                body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}]}],generationConfig:{temperature:validator?0:0.4,maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
+              });
+            } catch (error) {
+              if (cancellation.signal.aborted) throw error;
+              throw providerTransportError(error, stage);
+            }
+            if (!resp.ok) throw await readProviderError(resp, stage);
             const body=await resp.json();
             const candidate=body.candidates?.[0];
             if(candidate?.finishReason!=="STOP")throw new ToolError("The AI response was blocked or cut short. Try fewer questions.");
@@ -144,7 +152,15 @@ Deno.serve(async (req: Request) => {
           }, phase=>send("phase",{message:phase}));
           send("result",result);
         } catch(e) {
-          send("error",{message:e instanceof ToolError?e.message:"The AI request could not finish. Check your connection and retry."});
+          const diagnostic = e instanceof ProviderError
+            ? {code:e.code, upstreamStatus:e.upstreamStatus, stage:e.stage}
+            : {};
+          if (e instanceof ProviderError && !cancellation.signal.aborted) {
+            // Fixed fields only: never log keys, headers, prompts, model output,
+            // raw provider messages or environment-controlled model names.
+            console.warn(JSON.stringify({event:"mimi_provider_error", ...diagnostic}));
+          }
+          send("error",{message:e instanceof ToolError?e.message:"The AI request could not finish. Check your connection and retry.", ...diagnostic});
         } finally { if(!cancellation.signal.aborted)controller.close(); }
       },
       cancel(){cancellation.abort();},

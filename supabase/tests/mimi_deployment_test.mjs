@@ -11,9 +11,12 @@ function gateway({
   key = "fixture-key",
   checkerAgrees = true,
   simulateEditorIndentation = false,
+  providerFailure = null,
+  fetchFailure = null,
 } = {}) {
   let handler;
   const calls = [];
+  const logs = [];
   const q = {
     chapter: "Chapter 6",
     questionText: "Which option is correct?",
@@ -60,6 +63,12 @@ function gateway({
     fetch: async (url, options) => {
       const body = JSON.parse(options.body);
       calls.push({ url, body });
+      if (fetchFailure) throw fetchFailure;
+      if (providerFailure && calls.length === (providerFailure.call ?? 1)) {
+        return new Response(JSON.stringify(providerFailure.body), {
+          status: providerFailure.status,
+        });
+      }
       const data =
         calls.length === 1
           ? { questions: [q] }
@@ -92,9 +101,9 @@ function gateway({
     AbortController,
     AbortSignal,
     Uint8Array,
-    console,
+    console: { warn: (text) => logs.push(text) },
   });
-  return { handler, calls };
+  return { handler, calls, logs };
 }
 function req(
   auth = true,
@@ -196,3 +205,78 @@ for (const checkerAgrees of [true, false]) {
     );
   });
 }
+
+for (const [status, reason, code, call] of [
+  [400, "API_KEY_INVALID", "GEMINI_KEY_INVALID", 1],
+  [403, "SERVICE_DISABLED", "GEMINI_API_DISABLED", 1],
+  [404, "", "GEMINI_MODEL_UNAVAILABLE", 2],
+  [400, "", "GEMINI_REQUEST_REJECTED", 1],
+  [429, "", "GEMINI_QUOTA", 1],
+  [503, "", "GEMINI_UPSTREAM_ERROR", 1],
+]) {
+  test(`APK receives safe upstream ${status}/${code} diagnostics, not just HTTP 200`, async () => {
+    const privateText = "PRIVATE_PROMPT_DO_NOT_LOG";
+    const g = gateway({
+      simulateEditorIndentation: true,
+      providerFailure: {
+        status,
+        call,
+        body: {
+          error: {
+            message: "fixture-key " + privateText,
+            details: [{ reason }],
+          },
+        },
+      },
+    });
+    const response = await g.handler(req());
+    assert.equal(
+      response.status,
+      200,
+      "SSE status does not imply generation succeeded",
+    );
+    const text = await response.text();
+    const events = apkEvents(text);
+    const error = events.find((e) => e.event === "error")?.data;
+    assert.equal(error.code, code);
+    assert.equal(error.upstreamStatus, status);
+    assert.equal(error.stage, call === 2 ? "validator" : "generator");
+    assert.ok(
+      error.message.includes(code),
+      "Existing APK displays the diagnostic through message",
+    );
+    assert.ok(
+      !events.some((e) => e.event === "result"),
+      "Provider errors must never yield checked questions",
+    );
+    assert.equal(g.calls.length, call, "No retry loop or silent model switch");
+    assert.deepEqual(
+      g.logs.map((s) => JSON.parse(s)),
+      [
+        {
+          event: "mimi_provider_error",
+          code,
+          upstreamStatus: status,
+          stage: error.stage,
+        },
+      ],
+    );
+    for (const secret of ["fixture-key", "fixture-user-jwt", privateText]) {
+      assert.ok(!text.includes(secret));
+      assert.ok(!JSON.stringify(g.logs).includes(secret));
+    }
+  });
+}
+
+test("APK receives safe network diagnostics without exposing the failing URL", async () => {
+  const g = gateway({
+    fetchFailure: new TypeError("https://provider.invalid?key=fixture-key"),
+  });
+  const response = await g.handler(req());
+  const text = await response.text();
+  const error = apkEvents(text).find((e) => e.event === "error")?.data;
+  assert.equal(error.code, "GEMINI_NETWORK");
+  assert.equal(error.upstreamStatus, null);
+  assert.ok(!text.includes("fixture-key"));
+  assert.ok(!JSON.stringify(g.logs).includes("provider.invalid"));
+});

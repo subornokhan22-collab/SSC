@@ -19,11 +19,17 @@ CONTENT STUDIO UPDATE FILES
    Both functions share the existing GEMINI_API_KEY secret; do not duplicate keys in code.
    If the APK says AI server error (404), check mimi exists in the app project.
    This repair does not require reinstalling the APK or rerunning SQL.
-   For "no complete result", use the NEW mimi-sse-mobile-v2 bundle.
+   For "no complete result", the current bundle retains the mobile SSE fix.
    Its escaped stream delimiters withstand phone-editor indentation.
    Replace ALL old index.ts content, then tap Deploy updates.
    Do NOT create a separate function called teacher-tools.
-   If it still fails, check the latest mimi invocation/logs; hide keys and tokens.
+   Current header: mimi-provider-diagnostics-v3.
+   For "AI service unavailable", deploy this update and retry ONCE.
+   The APK now shows a GEMINI_ diagnostic code and the upstream HTTP status.
+   Supabase invocation 200 means the stream opened, not that Gemini succeeded.
+   Send the new APK error text/code, never API keys or authorization headers.
+   Do not change model/key/billing settings merely because of the old generic error.
+   This improves diagnosis; it does not prove the live provider issue is fixed.
 
 4. content-studio-netlify.zip
    This contains the website runtime, with index.html at its root.

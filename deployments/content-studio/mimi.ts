@@ -3,7 +3,7 @@
 // Deploy as function name: mimi (APK AI Tools/chat), NOT admin-content.
 // Canonical source: supabase/functions/mimi/index.ts and its local imports.
 // Uses GEMINI_API_KEY from server secrets; no private keys are included.
-// Bundle revision: mimi-sse-mobile-v2 (indentation-safe stream framing).
+// Bundle revision: mimi-provider-diagnostics-v3 (includes mobile-safe SSE).
 // supabase/functions/mimi/index.ts
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
@@ -126,6 +126,126 @@ async function runTeacherTool(request, model, emit) {
   return { kind: "questions", questions: questions.map((q, index) => ({ ...q, explanation: reasons[index] })), checked: true, checkReasons: reasons };
 }
 
+// supabase/functions/mimi/provider_errors.ts
+var ProviderError = class extends ToolError {
+  code;
+  upstreamStatus;
+  stage;
+  constructor(code, message, status, stage) {
+    super(
+      `${message} [${code}; ${status === null ? "network" : "HTTP " + status}; ${stage}]`
+    );
+    this.code = code;
+    this.upstreamStatus = status;
+    this.stage = stage;
+  }
+};
+function classifyProviderError(status, body, stage) {
+  const error = body?.error;
+  const message = typeof error?.message === "string" ? error.message : "";
+  const reasons = Array.isArray(error?.details) ? error.details.map((d) => typeof d?.reason === "string" ? d.reason : "").join(" ") : "";
+  const hints = reasons + " " + message;
+  let code;
+  let explanation;
+  if (status === 429) {
+    code = "GEMINI_QUOTA";
+    explanation = "Gemini quota or rate limit reached. Check this key's limits in Google AI Studio before retrying.";
+  } else if (status >= 500) {
+    code = "GEMINI_UPSTREAM_ERROR";
+    explanation = "Gemini returned a server error. Please retry later.";
+  } else if (/API_KEY_LEAKED|API_KEY_BLOCKED|key.{0,50}(?:reported as leaked|has been blocked)/i.test(
+    hints
+  )) {
+    code = "GEMINI_KEY_BLOCKED";
+    explanation = "Gemini reports that the server API key is leaked or blocked. Replace GEMINI_API_KEY with a new Google AI Studio key.";
+  } else if (/API_KEY_INVALID|API_KEY_EXPIRED|API key not valid|API key expired/i.test(
+    hints
+  )) {
+    code = "GEMINI_KEY_INVALID";
+    explanation = "Gemini rejected the server API key as invalid or expired. Update GEMINI_API_KEY in Supabase Secrets.";
+  } else if (/API_KEY_(?:SERVICE|HTTP_REFERRER|IP_ADDRESS|ANDROID_APP|IOS_APP)_BLOCKED/i.test(
+    hints
+  )) {
+    code = "GEMINI_KEY_RESTRICTED";
+    explanation = "This API key's restrictions block the server request. Review its application and Generative Language API restrictions in Google Cloud.";
+  } else if (/SERVICE_DISABLED|accessNotConfigured|Generative Language API.{0,180}(?:disabled|not been used)/i.test(
+    hints
+  )) {
+    code = "GEMINI_API_DISABLED";
+    explanation = "The Generative Language API is disabled or not enabled for this key's Google project. Check that project's API settings.";
+  } else if (/BILLING_DISABLED|BILLING_NOT_ACTIVE|billing.{0,40}(?:disabled|not enabled)/i.test(
+    hints
+  )) {
+    code = "GEMINI_BILLING_REQUIRED";
+    explanation = "Gemini requires billing for this request/project. Review Google AI Studio availability and plan requirements before making changes.";
+  } else if (/location is not supported|not (?:available|supported) in your (?:country|region)/i.test(
+    hints
+  )) {
+    code = "GEMINI_REGION_UNSUPPORTED";
+    explanation = "Gemini reports unsupported location or regional availability. Check availability for the Supabase server region and Google project.";
+  } else if (status === 401 || status === 403) {
+    code = "GEMINI_ACCESS_DENIED";
+    explanation = "Gemini denied access. Check the server key's Google project permissions and API restrictions.";
+  } else if (status === 404) {
+    code = "GEMINI_MODEL_UNAVAILABLE";
+    const setting = stage === "validator" ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL";
+    explanation = "The configured Gemini model was not found or is unavailable to this key. Check " + setting + " against models available in Google AI Studio.";
+  } else if (status === 400 && /response_?schema|response schema/i.test(hints)) {
+    code = "GEMINI_SCHEMA_REJECTED";
+    explanation = "Gemini rejected the structured response schema. This needs a server-code or model-compatibility fix; do not change your API key.";
+  } else if (status === 400) {
+    code = "GEMINI_REQUEST_REJECTED";
+    explanation = "Gemini rejected the AI Tools request or configuration. Share this diagnostic code with the app maintainer; do not replace your key just for this error.";
+  } else {
+    code = "GEMINI_HTTP_ERROR";
+    explanation = "Gemini could not process this request. Share this diagnostic code with the app maintainer.";
+  }
+  return new ProviderError(code, explanation, status, stage);
+}
+async function readProviderError(response, stage) {
+  const reader = response.body?.getReader();
+  let body;
+  if (reader) {
+    try {
+      const decoder = new TextDecoder();
+      let text = "";
+      let bytes = 0;
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        bytes += chunk.value.byteLength;
+        if (bytes > 16384) {
+          await reader.cancel();
+          return classifyProviderError(response.status, void 0, stage);
+        }
+        text += decoder.decode(chunk.value, { stream: true });
+      }
+      body = JSON.parse(text + decoder.decode());
+    } catch {
+    } finally {
+      reader.releaseLock();
+    }
+  }
+  return classifyProviderError(response.status, body, stage);
+}
+function providerTransportError(error, stage) {
+  const name = error?.name;
+  if (name === "TimeoutError" || name === "AbortError") {
+    return new ProviderError(
+      "GEMINI_TIMEOUT",
+      "The server timed out waiting for Gemini. Retry with fewer questions.",
+      null,
+      stage
+    );
+  }
+  return new ProviderError(
+    "GEMINI_NETWORK",
+    "The server could not reach Gemini. Please retry later.",
+    null,
+    stage
+  );
+}
+
 // supabase/functions/mimi/index.ts
 var GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 var MODELS = [
@@ -210,13 +330,20 @@ Deno.serve(async (req) => {
           const result = await runTeacherTool(command, async (system, input, schema, validator = false) => {
             const model = Deno.env.get(validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL") || "gemini-2.5-flash";
             if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new ToolError("The server model configuration is invalid.");
-            const resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-              signal: AbortSignal.any([cancellation.signal, AbortSignal.timeout(75e3)]),
-              body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: input }] }], generationConfig: { temperature: validator ? 0 : 0.4, maxOutputTokens: 16384, responseMimeType: "application/json", responseSchema: schema } })
-            });
-            if (!resp.ok) throw new ToolError(resp.status === 429 ? "AI quota reached. Please try later." : "The AI service is unavailable. Please try again later.");
+            const stage = validator ? "validator" : "generator";
+            let resp;
+            try {
+              resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+                signal: AbortSignal.any([cancellation.signal, AbortSignal.timeout(75e3)]),
+                body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: input }] }], generationConfig: { temperature: validator ? 0 : 0.4, maxOutputTokens: 16384, responseMimeType: "application/json", responseSchema: schema } })
+              });
+            } catch (error) {
+              if (cancellation.signal.aborted) throw error;
+              throw providerTransportError(error, stage);
+            }
+            if (!resp.ok) throw await readProviderError(resp, stage);
             const body = await resp.json();
             const candidate = body.candidates?.[0];
             if (candidate?.finishReason !== "STOP") throw new ToolError("The AI response was blocked or cut short. Try fewer questions.");
@@ -229,7 +356,11 @@ Deno.serve(async (req) => {
           }, (phase) => send("phase", { message: phase }));
           send("result", result);
         } catch (e) {
-          send("error", { message: e instanceof ToolError ? e.message : "The AI request could not finish. Check your connection and retry." });
+          const diagnostic = e instanceof ProviderError ? { code: e.code, upstreamStatus: e.upstreamStatus, stage: e.stage } : {};
+          if (e instanceof ProviderError && !cancellation.signal.aborted) {
+            console.warn(JSON.stringify({ event: "mimi_provider_error", ...diagnostic }));
+          }
+          send("error", { message: e instanceof ToolError ? e.message : "The AI request could not finish. Check your connection and retry.", ...diagnostic });
         } finally {
           if (!cancellation.signal.aborted) controller.close();
         }
