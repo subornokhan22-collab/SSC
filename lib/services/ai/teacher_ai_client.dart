@@ -10,13 +10,16 @@ import '../supabase_config.dart';
 /// generation. SSE phase messages reflect completed/running server stages.
 class TeacherAiClient {
   final http.Client _client;
-  TeacherAiClient({http.Client? client}) : _client = client ?? http.Client();
+  final String? Function() _tokenProvider;
+  TeacherAiClient({http.Client? client, String? Function()? tokenProvider})
+      : _client = client ?? http.Client(),
+        _tokenProvider = tokenProvider ?? (() => AuthService.currentUserToken);
   void close() => _client.close();
   Future<Map<String, dynamic>> request(
     Map<String, dynamic> payload,
     void Function(String) progress,
   ) async {
-    final token = AuthService.currentUserToken;
+    final token = _tokenProvider();
     if (token == null)
       throw StateError(
         'Sign in to use AI Tools. Your offline papers are still available.',
@@ -44,6 +47,13 @@ class TeacherAiClient {
       } catch (_) {}
       throw StateError(message);
     }
+    if (payload['attachments'] is List &&
+        (payload['attachments'] as List).isNotEmpty &&
+        response.headers['x-teacher-attachments-version'] != '1') {
+      await response.stream.listen((_) {}).cancel();
+      throw StateError(
+          'The server needs the AI Tools attachment update. No result was accepted; update the existing mimi function first.');
+    }
     Map<String, dynamic>? result;
     var event = '';
     await for (final line in response.stream
@@ -63,7 +73,7 @@ class TeacherAiClient {
     }
     if (result == null)
       throw StateError(
-        'The server returned no complete result. The teacher-tools function may need deployment.',
+        'The AI Tools response ended before a complete result. Retry; if this persists, check the server logs.',
       );
     return result;
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/questions_data.dart';
+import '../services/ai/ai_text_formatter.dart';
 import '../services/ai/question_schema_validator.dart';
 import '../theme/app_theme.dart';
 
@@ -34,9 +35,11 @@ class PaperQuestionCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                question.questionText,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                AiTextFormatter.format(question.questionText),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    fontFamilyFallback: ['DejaVu Sans']),
               ),
               if (question.figure != null)
                 const Padding(
@@ -65,7 +68,14 @@ class PaperQuestionCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          '${['ক', 'খ', 'গ', 'ঘ'][i]}. ${question.options[i]}',
+                          '${[
+                            'ক',
+                            'খ',
+                            'গ',
+                            'ঘ'
+                          ][i]}. ${AiTextFormatter.format(question.options[i])}',
+                          style: const TextStyle(
+                              fontFamilyFallback: ['DejaVu Sans']),
                         ),
                       ),
                     ],
@@ -80,7 +90,9 @@ class PaperQuestionCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(question.explanation),
+                      child: Text(AiTextFormatter.format(question.explanation),
+                          style: const TextStyle(
+                              fontFamilyFallback: ['DejaVu Sans'])),
                     ),
                   ),
                 ],

@@ -1,6 +1,6 @@
 # Content Studio — GitHub download files
 
-Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes `mimi-provider-diagnostics-v3`, retaining the mobile stream-framing repair and adding safe upstream error reporting; its canonical source and regression tests are versioned alongside this package.
+Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes `ai-tools-attachments-v4`, retaining mobile-safe streaming/diagnostics and adding photo/PDF reference intake plus scientific text formatting; its canonical source and regression tests are versioned alongside this package.
 
 ## Downloads
 
@@ -8,7 +8,7 @@ Release deliverables live in GitHub, not only in chat attachments. The website a
 - [Website-only ZIP for Netlify](content-studio-netlify.zip) — deploy this ZIP, **not** the complete update package.
 - [Supabase database update](database-update.sql) — paste the entire file into the SQL Editor.
 - [Website English-import AI function](admin-content.ts) — use as `index.ts` for the function named `admin-content`.
-- [APK AI Tools/chat function](mimi.ts) — use as `index.ts` for the **separate** function named `mimi`. Both functions are required if you use both features.
+- [APK AI Tools function](mimi.ts) — use as `index.ts` for the **separate** function named `mimi`. Both functions are required if you use both features.
 - [Short dashboard instructions](START-HERE.txt).
 - [Detailed instructions included with this release](SOURCE-README.md).
 - [File checksums](SHA256SUMS).
@@ -75,3 +75,13 @@ Replace only `mimi/index.ts` with the current [mimi.ts](mimi.ts), marked **`mimi
 Supabase **Logs** now records a `mimi_provider_error` warning with only our fixed code, numeric `upstreamStatus` and `generator`/`validator` stage. The APK displays these through the existing error-message field. Provider bodies are bounded to 16 KiB for classification; raw messages, credentials, model names from environment settings, prompts and generated content are never included in the new diagnostics/logs. Unrecognized failures fall back to status-based diagnostics rather than guessing a cause. Chat and website-import error handling are unchanged.
 
 All **56 local server tests** passed, including classification, oversized/malformed error bodies, network failures, safe logging, checker-stage failures and mobile-indented SSE. These tests use mocked authentication/provider services. Existing authentication, independent answer checking and publication rules remain in place. Send only the new APK error code/message if it still fails; do not send API keys or request headers.
+
+## Current release: AI Tools attachments and English digits
+
+Use the current bundle marked **ai-tools-attachments-v4** and the new APK from this branch's successful CI build. Deploy the backend first; old text-only APK requests remain compatible. The new APK refuses attachment results from an older backend that cannot acknowledge attachment support.
+
+The separate MiMi chat screen is removed, but **keep the existing `mimi` Supabase function**: it is the compatibility route for AI Tools. Keep your already-working API key and model overrides. No SQL or Netlify update is needed.
+
+Camera/gallery photos and PDFs now attach directly to all four tools (3 files / 3 MiB total after photo resizing), with explicit send consent, photo preview and removal. Originals stay local for the session and are not embedded as paper figures. English digits and common Unicode powers/subscripts are applied before checking and carried into paper export. Unknown math is preserved, not silently truncated.
+
+See [the complete release/verification notes](../../docs/AI-TOOLS-ATTACHMENTS-2026-09-25.md). Historical v2/v3 sections above describe previous repairs; the current v4 bundle includes them. For current deployment, do not paste an older revision linked in prior chat messages.

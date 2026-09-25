@@ -6,6 +6,8 @@ import '../data/questions_data.dart';
 import '../data/question_bank.dart';
 import '../services/auth_service.dart';
 import '../services/ai/teacher_ai_client.dart';
+import '../services/ai/teacher_attachment.dart';
+import '../services/ai/ai_text_formatter.dart';
 import '../services/ai/question_schema_validator.dart';
 import '../services/ai/duplicate_detector.dart';
 import '../services/paper_snapshot.dart';
@@ -43,8 +45,14 @@ class AiController extends OperationController {
     required String level,
     required String text,
     required String instruction,
+    List<TeacherAttachment> attachments = const [],
+    bool attachmentConsent = false,
   }) =>
       run('Reading selected chapter metadata…', () async {
+        TeacherAttachment.validate(attachments);
+        if (attachments.isNotEmpty && !attachmentConsent) {
+          throw StateError('Confirm consent before sending files to Gemini.');
+        }
         if (chapters.isEmpty)
           throw StateError('Choose a chapter from the local question bank.');
         if (count < 1 || count > 10)
@@ -74,13 +82,17 @@ class AiController extends OperationController {
           'difficulty': level,
           'text': text,
           'instruction': instruction,
+          if (attachments.isNotEmpty)
+            'attachments': attachments.map((a) => a.toJson()).toList(),
+          if (attachments.isNotEmpty) 'attachmentConsent': attachmentConsent,
         }, progress);
         if (disposed) return;
         if (response['kind'] == 'review') {
-          summary = response['summary'] as String;
+          summary = AiTextFormatter.format(response['summary'] as String);
           findings = [
             for (final f in response['findings'] as List)
-              Map<String, String>.from(f as Map),
+              Map<String, String>.from(f as Map)
+                  .map((k, v) => MapEntry(k, AiTextFormatter.format(v))),
           ];
           questions = [];
           checkedIds.clear();
@@ -112,10 +124,12 @@ class AiController extends OperationController {
               id: id,
               subjectId: subjectId,
               chapter: r['chapter'] as String,
-              questionText: r['questionText'] as String,
-              options: List<String>.from(r['options'] as List),
+              questionText: AiTextFormatter.format(r['questionText'] as String),
+              options: List<String>.from(r['options'] as List)
+                  .map(AiTextFormatter.format)
+                  .toList(),
               correctIndex: r['correctIndex'] as int,
-              explanation: r['explanation'] as String,
+              explanation: AiTextFormatter.format(r['explanation'] as String),
               source: QuestionSource.ai,
               sourceLabel: 'AI practice • teacher review required',
             ),
@@ -201,6 +215,17 @@ class AiController extends OperationController {
 
   void edit(int index, Question q) {
     if (busy) return;
+    q = Question(
+        id: q.id,
+        subjectId: q.subjectId,
+        chapter: q.chapter,
+        questionText: AiTextFormatter.format(q.questionText),
+        options: q.options.map(AiTextFormatter.format).toList(),
+        correctIndex: q.correctIndex,
+        explanation: AiTextFormatter.format(q.explanation),
+        source: q.source,
+        sourceLabel: q.sourceLabel,
+        figure: q.figure);
     final check = QuestionSchemaValidator.validateMcq(q);
     if (!check.valid) {
       error = check.errors.join(', ');

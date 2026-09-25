@@ -10,6 +10,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import 'ai/ai_text_formatter.dart';
+
 import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/question_figure.dart';
@@ -192,61 +194,13 @@ class PaperPdf {
   // DejaVu-তে থাকা সব চিহ্ন এখন আর বদলানো হয় না — সরাসরি ছাপে।
   // শুধু যেগুলো কোনো ফন্টেই নেই/ভগ্নাংশে রূপান্তর দরকার সেগুলোই বদলায়।
   static String _safe(String s, {bool preserveSpaces = false}) {
-    // ইউজার-চাহিদা: সব পেপারে সংখ্যা English (0-9) — বাংলা অঙ্ক → Latin অঙ্ক।
-    const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-    for (var i = 0; i < 10; i++) {
-      s = s.replaceAll(bnDigits[i], '$i');
-    }
+    s = AiTextFormatter.format(s, trim: false);
     const single = <String, String>{
       '½': '1/2', '¼': '1/4', '¾': '3/4', // ভগ্নাংশ রেন্ডারারে যাবে
       '⟂': '⊥', // U+27C2 কোনো ফন্টেই নেই — সমার্থক ⊥ (লম্ব) দিয়ে
     };
     single.forEach((k, v) => s = s.replaceAll(k, v));
-    s = _caretToSup(s);
     return preserveSpaces ? s : s.replaceAll(RegExp(' +'), ' ');
-  }
-
-  /// টাইপ করা/AI লেখা "x^2", "y^-2", "10^(n+1)", "x∧2" → আসল সুপারস্ক্রিপ্ট
-  static String _caretToSup(String s) {
-    const sup = {
-      '0': '⁰',
-      '1': '¹',
-      '2': '²',
-      '3': '³',
-      '4': '⁴',
-      '5': '⁵',
-      '6': '⁶',
-      '7': '⁷',
-      '8': '⁸',
-      '9': '⁹',
-      '০': '⁰',
-      '১': '¹',
-      '২': '²',
-      '৩': '³',
-      '৪': '⁴',
-      '৫': '⁵',
-      '৬': '⁶',
-      '৭': '⁷',
-      '৮': '⁸',
-      '৯': '⁹',
-      '-': '⁻',
-      '+': '⁺',
-      '−': '⁻',
-      'n': 'ⁿ',
-      'm': 'ᵐ',
-    };
-    String mapRun(String run) => run.split('').map((c) => sup[c] ?? '').join();
-    // ^(n+1) ধরনের বন্ধনী-ঘাত আগে
-    s = s.replaceAllMapped(
-      RegExp(r'[\^∧]\(([^()]{1,15})\)'),
-      (m) => mapRun(m.group(1)!),
-    );
-    // তারপর ^2, ^-2, ^১০ ধরনের সাধারণ ঘাত
-    s = s.replaceAllMapped(
-      RegExp(r'[\^∧]\s*(-?[0-9০-৯nm]{1,6})'),
-      (m) => mapRun(m.group(1)!),
-    );
-    return s;
   }
 
   // ═══════════ স্ট্যাকড ভগ্নাংশ বিভাজক ═══════════

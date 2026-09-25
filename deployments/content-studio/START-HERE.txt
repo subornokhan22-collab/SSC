@@ -23,7 +23,7 @@ CONTENT STUDIO UPDATE FILES
    Its escaped stream delimiters withstand phone-editor indentation.
    Replace ALL old index.ts content, then tap Deploy updates.
    Do NOT create a separate function called teacher-tools.
-   Current header: mimi-provider-diagnostics-v3.
+   Current header: ai-tools-attachments-v4 (includes previous diagnostics).
    For "AI service unavailable", deploy this update and retry ONCE.
    The APK now shows a GEMINI_ diagnostic code and the upstream HTTP status.
    Supabase invocation 200 means the stream opened, not that Gemini succeeded.
@@ -42,3 +42,13 @@ CONTENT STUDIO UPDATE FILES
 
 No production services were changed by preparing these files.
 Full source: https://github.com/subornokhan22-collab/SSC/pull/6
+
+AI TOOLS ATTACHMENT / FORMATTING UPDATE
+Deploy the current mimi.ts first, then install the new APK from green CI.
+The MiMi chat screen is removed, NOT the backend route. Do not delete mimi.
+Keep your working API key and model settings unchanged.
+No SQL or Netlify changes are needed for this update.
+AI Tools now accepts camera/gallery photos and PDFs, with send consent.
+Limit: 3 files / 3 MB combined after resizing; originals are session-local.
+Use English digits; common powers/subscripts carry through to paper export.
+Full notes: docs/AI-TOOLS-ATTACHMENTS-2026-09-25.md in GitHub.

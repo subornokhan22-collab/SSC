@@ -8,7 +8,9 @@ import '../services/chapter_catalog.dart';
 import '../theme/app_theme.dart';
 import '../widgets/paper_question_card.dart';
 import '../widgets/workflow_progress.dart';
-import 'ai_tutor_screen.dart';
+import '../services/ai/teacher_attachment.dart';
+import '../services/ai/ai_text_formatter.dart';
+import '../widgets/teacher_attachment_panel.dart';
 
 class AiToolsScreen extends StatefulWidget {
   final String? subjectId;
@@ -39,6 +41,9 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
   String? chapter;
   String level = 'mixed';
   int count = 5;
+  List<TeacherAttachment> attachments = [];
+  bool attachmentConsent = false;
+  bool pickingAttachment = false;
   final input = TextEditingController();
   final instruction = TextEditingController();
   @override
@@ -81,6 +86,8 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
         level: level,
         text: input.text.trim(),
         instruction: instruction.text.trim(),
+        attachments: attachments,
+        attachmentConsent: attachmentConsent,
       );
   String label(TeacherCommand cmd) => switch (cmd) {
         TeacherCommand.create => 'Create',
@@ -92,21 +99,6 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('AI Tools'),
-          actions: [
-            PopupMenuButton<String>(
-              enabled: !c.busy,
-              onSelected: (_) => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AiTutorScreen()),
-              ),
-              itemBuilder: (_) => const [
-                PopupMenuItem(
-                  value: 'chat',
-                  child: Text('Open chat & attachments'),
-                ),
-              ],
-            ),
-          ],
         ),
         body: ListView(
           padding: const EdgeInsets.all(20),
@@ -164,7 +156,8 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                       for (final ch in chapters)
                         DropdownMenuItem(
                           value: ch,
-                          child: Text(ch, overflow: TextOverflow.ellipsis),
+                          child: Text(AiTextFormatter.format(ch),
+                              overflow: TextOverflow.ellipsis),
                         ),
                     ],
                     onChanged: widget.replaceSelection
@@ -226,11 +219,37 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                       maxLines: 8,
                       maxLength: 12000,
                       decoration: const InputDecoration(
-                        labelText: 'Question or paper excerpt',
+                        labelText:
+                            'Question or paper excerpt (or attach a file)',
                         alignLabelWithHint: true,
                       ),
                     ),
                   ],
+                  const SizedBox(height: 14),
+                  TeacherAttachmentPanel(
+                    files: attachments,
+                    enabled: !c.busy,
+                    onPicking: (value) =>
+                        setState(() => pickingAttachment = value),
+                    onChanged: (files) => setState(() {
+                      attachments = files;
+                      attachmentConsent = false;
+                    }),
+                  ),
+                  if (attachments.isNotEmpty)
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: attachmentConsent,
+                      onChanged: c.busy
+                          ? null
+                          : (value) => setState(
+                              () => attachmentConsent = value ?? false),
+                      title: const Text(
+                          'Send these files to Google Gemini through Supabase when I run this tool.'),
+                      subtitle: const Text(
+                          'Only attach files you are allowed to share. Remove student names or other private information. Files are not saved in your paper; generated questions must stand alone.'),
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
                   const SizedBox(height: 14),
                   TextField(
                     controller: instruction,
@@ -265,7 +284,12 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
             ),
             const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: c.busy || chapter == null ? null : run,
+              onPressed: c.busy ||
+                      pickingAttachment ||
+                      chapter == null ||
+                      (attachments.isNotEmpty && !attachmentConsent)
+                  ? null
+                  : run,
               icon: c.busy
                   ? const SizedBox(
                       width: 16,
@@ -283,12 +307,20 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
               ),
             if (c.summary != null) ...[
               const Divider(height: 30),
-              Text(c.summary!, style: Theme.of(context).textTheme.titleMedium),
+              Text(c.summary!,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontFamilyFallback: const ['DejaVu Sans'])),
               for (final f in c.findings)
                 Card(
                   child: ListTile(
-                    title: Text(f['title']!),
-                    subtitle: Text(f['detail']!),
+                    title: Text(f['title']!,
+                        style: const TextStyle(
+                            fontFamilyFallback: ['DejaVu Sans'])),
+                    subtitle: Text(f['detail']!,
+                        style: const TextStyle(
+                            fontFamilyFallback: ['DejaVu Sans'])),
                   ),
                 ),
             ],

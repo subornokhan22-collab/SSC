@@ -101,6 +101,7 @@ function gateway({
     AbortController,
     AbortSignal,
     Uint8Array,
+    atob,
     console: { warn: (text) => logs.push(text) },
   });
   return { handler, calls, logs };
@@ -279,4 +280,21 @@ test("APK receives safe network diagnostics without exposing the failing URL", a
   assert.equal(error.upstreamStatus, null);
   assert.ok(!text.includes("fixture-key"));
   assert.ok(!JSON.stringify(g.logs).includes("provider.invalid"));
+});
+
+test("dashboard forwards attachments only to source-reading pass and advertises protocol", async () => {
+  const attachment = {mimeType:"application/pdf",data:Buffer.from("%PDF-1.7 fixture").toString("base64")};
+  const body = {action:"generate",subjectId:"chemistry",chapters:["Chapter 6"],difficulty:"hard",count:1,text:"",instruction:"",attachments:[attachment],attachmentConsent:true};
+  const g = gateway({simulateEditorIndentation:true});
+  const r = await g.handler(req(true, body));
+  assert.equal(r.headers.get("X-Teacher-Attachments-Version"), "1");
+  const events = apkEvents(await r.text());
+  assert.ok(events.some(e=>e.event==="result"));
+  assert.deepEqual(g.calls[0].body.contents[0].parts[1], {inline_data:{mime_type:attachment.mimeType,data:attachment.data}});
+  assert.equal(g.calls[1].body.contents[0].parts.length, 1, "checker cannot read source answer keys or generator answers");
+  for (const mutation of [{attachmentConsent:false},{attachments:[{mimeType:"audio/wav",data:attachment.data}]}]) {
+    const denied = gateway();
+    const response = await denied.handler(req(true,{...body,...mutation}));
+    assert.equal(response.status,400);assert.equal(denied.calls.length,0);
+  }
 });

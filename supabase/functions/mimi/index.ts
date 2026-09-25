@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────
-// Tutor's Desk — MiMi AI gateway (server-side Gemini)
+// Tutor's Desk — AI Tools AI gateway (server-side Gemini)
 //
 // The app no longer needs a per-device Gemini key for everyday use:
 //   app ──user JWT──▶ this function ──GEMINI_API_KEY──▶ Gemini
@@ -48,7 +48,7 @@ const MODELS = [
 const MAX_ATTACHMENTS = 3;
 
 const DEFAULT_SYSTEM =
-  "You are MiMi, an expert SSC tutor for the Bangladesh Education Board (NCTB curriculum, SSC 2027). Answer exam-ready, in the board's style.";
+  "You are AI Tools, an expert SSC tutor for the Bangladesh Education Board (NCTB curriculum, SSC 2027). Answer exam-ready, in the board's style.";
 
 function corsHeaders(): Record<string, string> {
   return {
@@ -83,11 +83,11 @@ Deno.serve(async (req: Request) => {
   // Never an open proxy: a signed-in Tutor's Desk account is required.
   const authHeader = req.headers.get("Authorization") ?? "";
   const token = /^Bearer\s+(\S+)$/i.exec(authHeader)?.[1];
-  if (!token) return fail("Sign in to use MiMi.", 401, "UNAUTHORIZED");
+  if (!token) return fail("Sign in to use AI Tools.", 401, "UNAUTHORIZED");
   try {
     const { data: userData, error: authError } = await supa.auth.getUser(token);
     if (!userData?.user || authError) {
-      return fail("Sign in to use MiMi.", 401, "UNAUTHORIZED");
+      return fail("Sign in to use AI Tools.", 401, "UNAUTHORIZED");
     }
   } catch {
     return fail("Could not verify your session. Try again.", 503, "AUTH_UNAVAILABLE");
@@ -114,7 +114,7 @@ Deno.serve(async (req: Request) => {
   if (["generate", "improve", "check", "explain"].includes(String(payload.action))) {
     let command;
     try { command = toolRequest(payload); } catch (e) {
-      return fail(e instanceof ToolError ? e.message : "Invalid teacher command.", 400, "BAD_REQUEST");
+      return fail(e instanceof ToolError || e instanceof RequestBodyError ? e.message : "Invalid teacher command.", e instanceof RequestBodyError ? e.status : 400, "BAD_REQUEST");
     }
     const encoder = new TextEncoder();
     const cancellation = new AbortController();
@@ -137,7 +137,7 @@ Deno.serve(async (req: Request) => {
               resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
                 method:"POST", headers:{"Content-Type":"application/json", "x-goog-api-key":key},
                 signal:AbortSignal.any([cancellation.signal,AbortSignal.timeout(75000)]),
-                body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}]}],generationConfig:{temperature:validator?0:0.4,maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
+                body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}, ...(!validator ? (command.attachments ?? []).map(a=>({inline_data:{mime_type:a.mimeType,data:a.data}})) : [])]}],generationConfig:{temperature:validator?0:0.4,maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
               });
             } catch (error) {
               if (cancellation.signal.aborted) throw error;
@@ -165,7 +165,7 @@ Deno.serve(async (req: Request) => {
       },
       cancel(){cancellation.abort();},
     });
-    return new Response(stream,{headers:{...corsHeaders(),"Content-Type":"text/event-stream","Cache-Control":"no-cache"}});
+    return new Response(stream,{headers:{...corsHeaders(),"Content-Type":"text/event-stream","Cache-Control":"no-cache","X-Teacher-Attachments-Version":"1"}});
   }
   if (payload.action !== "chat") return fail("Unknown action.", 400, "BAD_REQUEST");
 
