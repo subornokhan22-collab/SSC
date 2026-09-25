@@ -1,4 +1,5 @@
 import { createClient } from "./vendor/supabase.mjs";
+import { createEnglishUploader } from "./english-upload.js";
 const C = window.ContentCore,
   $ = (id) => document.getElementById(id),
   esc = (s) =>
@@ -100,6 +101,7 @@ async function task(fn) {
   } finally {
     state.busy = false;
     document.querySelectorAll("button").forEach((b) => (b.disabled = false));
+    englishUploader.refresh();
   }
 }
 function download(name, data, type = "application/json") {
@@ -437,7 +439,7 @@ async function listView() {
   }
   state.rows = rows;
   state.total = total;
-  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<button class="primary" data-action="new-english">+ Import / add English paper</button>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export all ${english ? "English papers" : "questions"}</button><button class="ghost small" data-action="export-subject">Export subject / chapter</button><button class="ghost small" data-action="export-selected">Export selected</button><button class="ghost small" data-action="paper-preview">Preview selected paper</button><button class="ghost small" data-action="bulk-publish">Publish selected reviewed</button><button class="ghost small" data-action="bulk-archive">Back up & ${archived ? "restore" : "archive"} selected</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell"><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete permanently</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Submit for review" : r.review_status === "review" ? "Publish" : "Review again"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
+  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<div class="toolbar"><button class="primary" data-action="upload-english">Upload English Paper (PDF / Image)</button><button class="ghost" data-action="new-english">+ Blank English paper</button></div>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export all ${english ? "English papers" : "questions"}</button><button class="ghost small" data-action="export-subject">Export subject / chapter</button><button class="ghost small" data-action="export-selected">Export selected</button><button class="ghost small" data-action="paper-preview">Preview selected paper</button><button class="ghost small" data-action="bulk-publish">Publish selected reviewed</button><button class="ghost small" data-action="bulk-archive">Back up & ${archived ? "restore" : "archive"} selected</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell"><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete permanently</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Submit for review" : r.review_status === "review" ? "Publish" : "Review again"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
 }
 function newQuestion() {
   return {
@@ -1091,7 +1093,7 @@ async function importView() {
       "english",
       "En",
       "English board paper",
-      "Paste text, upload a PDF or edit a complete set.",
+      "Upload PDF or paper photos, extract and review.",
     ],
     [
       "figures",
@@ -1490,6 +1492,10 @@ async function action(name, id) {
     table = tableFor(english),
     row = state.rows.find((r) => r.id === id);
   if (name === "reload") return render();
+  if (name === "upload-english") {
+    englishUploader.open(state.paperType);
+    return;
+  }
   if (name === "new-english") {
     openEditor(C.englishTemplate());
     return;
@@ -1672,8 +1678,10 @@ async function action(name, id) {
       location.hash = "figures";
       return;
     }
-    if (kind === "english") $("import-format").value = "first";
-    else $("import-format").value = "questions";
+    if (kind === "english") {
+      englishUploader.open();
+      return;
+    } else $("import-format").value = "questions";
     if (kind === "csv" || kind === "json") $("import-file").click();
     else $("import-text").focus();
     return;
@@ -1796,3 +1804,9 @@ function duplicateScan(rows, threshold = 0.8) {
     worker.postMessage({ rows, threshold });
   });
 }
+
+const englishUploader = createEnglishUploader({
+  client,
+  isDemo: () => state.demo,
+  onDraft: (row) => openEditor(row),
+});

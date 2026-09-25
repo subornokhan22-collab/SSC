@@ -776,3 +776,11 @@ body {
 .paper {
   font-family: StudioBangla, Georgia, "Times New Roman", serif;
 }
+
+/* Direct English-paper upload */
+.paper-drop{display:block;padding:24px;border:2px dashed #becbfa;border-radius:10px;background:#f4f6ff;text-align:center;color:var(--indigo);font-size:15px;cursor:pointer}.paper-drop input{background:white;max-width:550px;margin:15px auto}.paper-drop span{display:block;font-size:12px;color:var(--muted)}
+#upload-status{padding:12px;margin:14px 0;border-radius:7px;white-space:pre-line}
+#upload-source{border:1px solid var(--line);padding:14px;background:#f7f8fa;border-radius:8px;margin:16px 0}
+#source-canvas{display:block;max-width:100%;height:auto;max-height:65vh;object-fit:contain;margin:auto;background:white;box-shadow:0 1px 8px #1720331a}
+#english-upload .dialog-foot{flex-wrap:wrap}#english-upload .form-grid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:600px){#english-upload .form-grid{grid-template-columns:1fr}#english-upload .dialog-foot button{width:100%}}
