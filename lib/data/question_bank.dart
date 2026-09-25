@@ -119,13 +119,23 @@ class QuestionBank {
 
   /// Reconcile a complete remote snapshot, including removals and archives.
   static void replaceRemote(
-      {List<Question> mcqs = const [],
+      {Set<String> suppressedIds = const {},
+      List<Question> mcqs = const [],
       List<ShortQuestion> saqs = const [],
       List<CreativeQuestion> cqs = const []}) {
-    _mcqs = _bundledMcqs;
-    _saqs = _bundledSaqs;
-    _cqs = _bundledCqs;
-    addRemote(mcqs: mcqs, saqs: saqs, cqs: cqs);
+    _mcqs = _bundledMcqs
+        .where((q) => !suppressedIds.contains(q.id))
+        .toList(growable: false);
+    _saqs = _bundledSaqs
+        .where((q) => !suppressedIds.contains(q.id))
+        .toList(growable: false);
+    _cqs = _bundledCqs
+        .where((q) => !suppressedIds.contains(q.id))
+        .toList(growable: false);
+    addRemote(
+        mcqs: mcqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+        saqs: saqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+        cqs: cqs.where((q) => !suppressedIds.contains(q.id)).toList());
   }
 
   /// Test seam — lets widget tests install a small bank without touching

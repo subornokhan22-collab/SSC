@@ -57,7 +57,7 @@ English schema v1 follows the existing book pattern (11 first-paper / 12 second-
 
 ## Offline, removals and limitations
 
-A successful full paginated sync atomically replaces the cached remote snapshot; partial network failures retain the last successful cache. Archived/deleted **remote** IDs disappear on the next successful sync. With no network, the last downloaded content remains available. An override of a bundled ID falls back to the bundled original when removed: retiring bundled source content still requires an asset update or a future signed tombstone mechanism.
+A successful full paginated sync atomically replaces the cached remote snapshot; partial network failures retain the last successful cache. Archived/deleted IDs disappear on the next successful sync. Public ID-only server retirement markers also suppress matching bundled questions. Republish/restore clears the marker. With no network, the last downloaded content remains available. A new installation without an initial online sync still uses its original assets; already saved paper snapshots deliberately remain unchanged.
 
 English answers are stored for source provenance and shown in admin review. They are **not newly integrated into the APK answer-key renderer**. The app consumes the actual structured question sections without invented keys. The admin browser print preview is a review layout, not pixel-identical to the app’s PDF pagination.
 

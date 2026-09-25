@@ -21,7 +21,7 @@ alter table public.questions add column if not exists search_text text generated
 create table if not exists public.english_papers(
  id text primary key,paper_type text not null check(paper_type in('first','second')),board text not null,year integer not null check(year between 2000 and 2100),subject text not null check(subject in('english_1st','english_2nd')),data jsonb not null,
  source text not null default 'board',source_label text,review_status text not null default 'draft' check(review_status in('draft','review','published')),is_active boolean not null default true,created_by uuid references auth.users(id) on delete set null,created_at timestamptz not null default now(),updated_at timestamptz not null default now(),archived_at timestamptz,
- search_text text generated always as(lower(id||' '||board||' '||year::text||' '||data::text)) stored,
+ search_text text generated always as(lower(id||' '||board||' '||year::text||' '||coalesce(source_label,'')||' '||source||' '||data::text)) stored,
  check(subject=case paper_type when 'first' then 'english_1st' else 'english_2nd' end)
 );
 create table if not exists public.content_subjects(id text primary key,name text not null,chapters jsonb not null default '[]' check(jsonb_typeof(chapters)='array'),updated_at timestamptz not null default now());
@@ -37,8 +37,9 @@ begin
  if new.id !~ '^[a-zA-Z0-9_-]+$' then raise exception 'Invalid record ID';end if;
  new.updated_at=clock_timestamp();
  if new.is_active=false then new.archived_at=coalesce(new.archived_at,now());else new.archived_at=null;end if;
+ if TG_OP='INSERT' and new.review_status<>'draft' then raise exception 'New content must start as a draft';end if;
  if new.review_status='published' and (TG_OP='INSERT' or old.review_status not in('review','published')) then raise exception 'Save draft, submit for review, then publish';end if;
- if TG_OP='UPDATE' and old.review_status='published' and new.review_status='published' then
+ if TG_OP='UPDATE' and old.review_status in('review','published') and new.review_status<>'draft' then
    if TG_TABLE_NAME='questions' then
      if new.payload is distinct from old.payload or new.figure is distinct from old.figure or new.chapter is distinct from old.chapter or new.subject_id is distinct from old.subject_id or new.type is distinct from old.type or new.source_label is distinct from old.source_label or new.source is distinct from old.source or new.metadata is distinct from old.metadata then raise exception 'Save changed published content as a draft before review';end if;
    else
@@ -63,6 +64,7 @@ begin
      foreach k in array array['stem','questionK','questionKh','questionG'] loop if jsonb_typeof(p->k) is distinct from 'string' or coalesce(btrim(p->>k),'')='' then raise exception 'CQ missing %',k;end if;end loop;
      if not((p->'marks'='[2,4,4]'::jsonb and coalesce(p->>'questionGh','')='') or (p->'marks'='[1,2,3,4]'::jsonb and coalesce(btrim(p->>'questionGh'),'')<>'')) then raise exception 'CQ marks and parts do not match';end if;
    end if;
+   if new.figure->>'kind'='image' and coalesce(new.figure->>'imagePath','') !~ '^https://' then raise exception 'Figure URL must use HTTPS';end if;
    if position(chr(65533) in p::text)>0 then raise exception 'Corrupted Unicode';end if;
    if new.review_status='published' and new.is_active then
      perform pg_advisory_xact_lock(hashtextextended(new.subject_id||new.type||regexp_replace(lower(coalesce(p->>'questionText',p->>'stem')),'\s+',' ','g'),0));
@@ -139,6 +141,34 @@ create trigger content_audit after insert or update or delete on public.english_
 
 drop trigger if exists content_audit on public.content_subjects;
 create trigger content_audit after insert or update or delete on public.content_subjects for each row execute function public.audit_content_change();
+
+-- Public ID-only retirement markers also suppress shipped/bundled IDs.
+-- The content payload and private-user IDs never enter this table.
+create table if not exists public.question_tombstones(id text primary key,retired_at timestamptz not null default now());
+alter table public.question_tombstones enable row level security;
+drop policy if exists tombstones_public_read on public.question_tombstones;
+create policy tombstones_public_read on public.question_tombstones for select using(true);
+grant select on public.question_tombstones to anon,authenticated;
+revoke insert,update,delete on public.question_tombstones from anon,authenticated;
+create or replace function public.reconcile_question_retirement() returns trigger language plpgsql security definer set search_path=public,pg_catalog as $$
+begin
+ if TG_OP='DELETE' then
+   if old.owner_id is null and (old.review_status='published' or not old.is_active) then insert into public.question_tombstones(id)values(old.id)on conflict(id)do update set retired_at=clock_timestamp();end if;return old;
+ end if;
+ if new.owner_id is null then
+   if new.is_active and new.review_status='published' then delete from public.question_tombstones where id=new.id;
+   elsif not new.is_active or (TG_OP='UPDATE' and old.owner_id is null and old.review_status='published') then insert into public.question_tombstones(id)values(new.id)on conflict(id)do update set retired_at=clock_timestamp();end if;
+ end if;
+ return new;
+end$$;
+drop trigger if exists question_retirement on public.questions;
+create trigger question_retirement after insert or update or delete on public.questions for each row execute function public.reconcile_question_retirement();
+insert into public.question_tombstones(id)select id from public.questions where owner_id is null and not is_active on conflict(id)do nothing;
+create or replace function public.require_archived_delete() returns trigger language plpgsql set search_path=public,pg_catalog as $$begin if old.is_active and (to_jsonb(old)->>'owner_id') is null then raise exception 'Archive official content before permanent deletion';end if;return old;end$$;
+drop trigger if exists content_delete_guard on public.questions;
+create trigger content_delete_guard before delete on public.questions for each row execute function public.require_archived_delete();
+drop trigger if exists content_delete_guard on public.english_papers;
+create trigger content_delete_guard before delete on public.english_papers for each row execute function public.require_archived_delete();
 
 -- Replace legacy policies: unpublished official content is never public.
 alter table public.questions enable row level security;

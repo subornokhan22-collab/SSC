@@ -17,7 +17,8 @@ import 'questions_data.dart';
 class QuestionSync {
   QuestionSync._();
 
-  static const _cacheKey = 'remote_questions_v1';
+  static const _cacheKey = 'remote_questions_v2';
+  static const _legacyCacheKey = 'remote_questions_v1';
   static const _stampKey = 'remote_questions_since_v1';
 
   /// Rows pulled from the server, already merged into [QuestionBank].
@@ -34,9 +35,16 @@ class QuestionSync {
   static Future<void> loadCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_cacheKey);
+      final raw =
+          prefs.getString(_cacheKey) ?? prefs.getString(_legacyCacheKey);
       if (raw == null || raw.isEmpty) return;
-      _merge(json.decode(raw) as List);
+      final cached = json.decode(raw);
+      if (cached is List) {
+        _merge(cached);
+      } else {
+        _merge(cached['rows'] as List,
+            suppressedIds: Set<String>.from(cached['suppressedIds'] as List));
+      }
     } catch (e) {
       debugPrint('QuestionSync: cache unreadable ($e)');
     }
@@ -68,9 +76,23 @@ class QuestionSync {
         if (rows.length >= 100000)
           throw StateError('Question sync safety limit');
       }
-      if (!await prefs.setString(_cacheKey, json.encode(rows)))
+      final suppressed = <String>{};
+      for (var start = 0;; start += 500) {
+        final page = await _c
+            .from('question_tombstones')
+            .select('id')
+            .order('id')
+            .range(start, start + 499);
+        suppressed.addAll(page.map((r) => r['id'] as String));
+        if (page.length < 500) break;
+        if (suppressed.length >= 100000)
+          throw StateError('Retirement sync safety limit');
+      }
+      if (!await prefs.setString(_cacheKey,
+          json.encode({'rows': rows, 'suppressedIds': suppressed.toList()})))
         throw StateError('Question cache write failed');
-      _merge(rows);
+      await prefs.remove(_legacyCacheKey);
+      _merge(rows, suppressedIds: suppressed);
       return rows.length;
     } catch (e) {
       // Offline, table missing, RLS denial — none of it should surface.
@@ -85,13 +107,14 @@ class QuestionSync {
   static Future<void> clearCache() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_cacheKey);
+    await prefs.remove(_legacyCacheKey);
     await prefs.remove(_stampKey);
     QuestionBank.replaceRemote();
     _added = 0;
   }
 
   /// Turns server rows into model objects and hands them to [QuestionBank].
-  static void _merge(List rows) {
+  static void _merge(List rows, {Set<String> suppressedIds = const {}}) {
     final mcqs = <Question>[];
     final saqs = <ShortQuestion>[];
     final cqs = <CreativeQuestion>[];
@@ -134,6 +157,7 @@ class QuestionSync {
     }
 
     _added = mcqs.length + saqs.length + cqs.length;
-    QuestionBank.replaceRemote(mcqs: mcqs, saqs: saqs, cqs: cqs);
+    QuestionBank.replaceRemote(
+        mcqs: mcqs, saqs: saqs, cqs: cqs, suppressedIds: suppressedIds);
   }
 }

@@ -17,6 +17,7 @@ select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111'
 insert into questions(id,type,subject_id,chapter,payload) values ('q1','mcq','physics','Chapter 1','{"questionText":"Test question","options":["A","B","C","D"],"correctIndex":1,"explanation":"Source explanation"}');
 select test_assert((select review_status='draft' from questions where id='q1'),'new content starts as draft');
 select test_reject($q$update questions set review_status='published' where id='q1'$q$);
+select test_reject($q$delete from questions where id='q1'$q$);
 update questions set review_status='review' where id='q1';
 update questions set review_status='published' where id='q1';
 select test_reject($q$update questions set payload=payload||'{"correctIndex":0}' where id='q1'$q$);
@@ -52,11 +53,14 @@ select test_assert((select count(*)>0 from admin_activity where action='archive'
 select test_assert((select count(*)=0 from admin_activity where record_id='private'),'private content not copied into audit');
 set local role anon;
 select set_config('request.jwt.claim.sub','',true);
+select test_assert((select count(*)=1 from question_tombstones where id='q1'),'retirement IDs are public');
+select test_assert((select count(*)=0 from question_tombstones where id='private'),'private IDs are not retired publicly');
 select test_assert((select count(*)=0 from questions),'archive is not public');
 select test_assert((select count(*)=1 from english_papers),'archived English hidden');
 set local role authenticated;
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',true);
 update questions set is_active=true where id='q1';
+select test_assert((select count(*)=0 from question_tombstones where id='q1'),'restore removes retirement marker');
 select test_assert((select count(*)=1 from admin_activity where action='restore'),'restore audited');
 update questions set review_status='draft',payload=jsonb_set(payload,'{correctIndex}','null') where id='q1';
 select test_reject($q$update questions set review_status='review' where id='q1'$q$);

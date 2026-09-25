@@ -120,7 +120,7 @@ function download(name, data, type = "application/json") {
   setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
 const tableFor = (english) => (english ? "english_papers" : "questions");
-async function all(table) {
+async function all(table, includePrivate = false) {
   if (state.demo)
     return structuredClone(
       table === "questions"
@@ -133,9 +133,10 @@ async function all(table) {
     );
   const rows = [];
   for (let start = 0; ; start += 500) {
-    const { data, error } = await client
-      .from(table)
-      .select("*")
+    let query = client.from(table).select("*");
+    if (table === "questions" && !includePrivate)
+      query = query.is("owner_id", null);
+    const { data, error } = await query
       .order(table === "admin_activity" ? "created_at" : "id")
       .range(start, start + 499);
     if (error) throw error;
@@ -308,6 +309,7 @@ async function count(table, filter) {
       filter || (() => true),
     ).length;
   let q = client.from(table).select("id", { count: "exact", head: true });
+  if (table === "questions") q = q.is("owner_id", null);
   if (filter === "published")
     q = q.eq("is_active", true).eq("review_status", "published");
   if (filter === "review")
@@ -337,6 +339,7 @@ async function dashboard() {
     const r = await client
       .from("questions")
       .select("*")
+      .is("owner_id", null)
       .order("updated_at", { ascending: false })
       .limit(5);
     if (r.error) throw r.error;
@@ -414,13 +417,15 @@ async function listView() {
       .from(tableFor(english))
       .select("*", { count: "exact" })
       .eq("is_active", !archived);
+    if (!english) q = q.is("owner_id", null);
     if (state.query)
       q = q.ilike("search_text", "%" + state.query.replace(/[%_]/g, "") + "%");
     if (state.status) q = q.eq("review_status", state.status);
     if (!english && state.subject) q = q.eq("subject_id", state.subject);
     if (english && !archived && state.paperType)
       q = q.eq("paper_type", state.paperType);
-    if (english && state.board) q = q.eq("board", state.board);
+    if (english && state.board)
+      q = q.ilike("board", state.board.replace(/[%_]/g, ""));
     if (english && state.year) q = q.eq("year", Number(state.year));
     const r = await q.order("id").range(state.page * 25, state.page * 25 + 24);
     if (r.error) throw r.error;
@@ -1161,7 +1166,7 @@ async function storageHealth(target) {
       "Storage checks require a live admin session. Demo mode has no storage bucket.";
     return;
   }
-  const rows = await all("questions"),
+  const rows = await all("questions", true),
     english = await all("english_papers");
   const referenced = new Set();
   const marker = "/storage/v1/object/public/question-figures/";
@@ -1214,7 +1219,7 @@ async function storageHealth(target) {
             ) !== b.dataset.unused
           )
             return;
-          const current = await all("questions");
+          const current = await all("questions", true);
           if (
             JSON.stringify(current).includes(b.dataset.unused) ||
             JSON.stringify(await all("english_papers")).includes(
