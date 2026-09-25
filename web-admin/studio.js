@@ -875,43 +875,193 @@ function questionPreview(r, i = 0, answers = false) {
           : ""
   }</div>`;
 }
-function englishPreview(r) {
-  const d = r.data || {};
-  return `<article class="paper"><h2>English ${r.paper_type === "first" ? "First" : "Second"} Paper</h2><h3>${esc(r.board)} Board · ${esc(r.year)}</h3><p style="text-align:center">Full marks: 100 · Time: 3 hours · Source-pattern preview</p>${Object.keys(
-    r.paper_type === "first" ? C.firstFields : C.secondFields,
-  )
-    .filter((k) => k !== "q4BoldRows" && d[k]?.length)
-    .map(
-      (k) =>
-        '<section class="q"><strong>' +
-        esc(C.fieldLabel(k, r.paper_type)) +
-        "</strong>" +
-        rich(d[k]) +
-        "</section>",
-    )
-    .join("")}<hr><h3>Source-provided answers</h3>${Object.entries(
-    d.answers || {},
-  )
-    .map(
-      ([k, v]) =>
-        "<p><strong>" +
-        esc(k.toUpperCase()) +
-        ":</strong> " +
-        esc(v || "Answer not supplied") +
-        "</p>",
-    )
-    .join("")}</article>`;
+function englishPreview(r, answers = true) {
+  const d = r.data || {},
+    first = r.paper_type === "first";
+  const section = (n, title, marks, body) =>
+    `<section class="q" data-question="${n}"><strong>${n}. ${esc(title)} [${marks}]</strong>${body}</section>`;
+  const paragraph = (k) => rich(d[k] || ""),
+    list = (k) => rich(d[k] || []);
+  let body = "";
+  if (first) {
+    body =
+      "<h3>Part A · Reading · 70 marks</h3>" +
+      paragraph("passage1Intro") +
+      paragraph("passage1Unit") +
+      paragraph("passage1");
+    body += section(
+      1,
+      d.q1Instr || "Choose the correct answer.",
+      7,
+      '<ol type="a">' +
+        (d.q1 || [])
+          .map(
+            (q) =>
+              `<li><p>${esc(q?.stem)}</p><div class="options">${(q?.options || []).map((o, i) => "<span>" + ["i", "ii", "iii", "iv"][i] + ". " + esc(o) + "</span>").join("")}</div></li>`,
+          )
+          .join("") +
+        "</ol>",
+    );
+    body += section(2, "Answer the following questions.", 10, list("q2"));
+    body += section(
+      3,
+      d.q3Instr || "Complete the cloze passage.",
+      5,
+      paragraph("q3Source") + paragraph("q3Unit") + paragraph("q3Cloze"),
+    );
+    body += paragraph("passage2Intro") + paragraph("passage2");
+    body += section(4, d.q4Instr || "Complete the table.", 5, list("q4Table"));
+    body += section(
+      5,
+      "Write a summary of the above passage in your own words.",
+      10,
+      "",
+    );
+    const columns = [d.q6A || [], d.q6B || [], d.q6C || []];
+    const table = [
+      ["A", "B", "C"],
+      ...Array.from(
+        { length: Math.max(...columns.map((c) => c.length)) },
+        (_, i) => columns.map((c) => c[i] || ""),
+      ),
+    ];
+    body += section(
+      6,
+      "Match the parts of sentences in columns A, B and C.",
+      5,
+      rich(table),
+    );
+    body += section(
+      7,
+      "Put the following parts in the correct order to make a story.",
+      8,
+      list("q7"),
+    );
+    body += section(
+      8,
+      "Answer any five questions from the poems.",
+      10,
+      list("q8"),
+    );
+    body += section(
+      9,
+      "Answer any five questions from the stories.",
+      10,
+      list("q9"),
+    );
+    body += "<h3>Part B · Writing · 30 marks</h3>";
+    body += section(
+      10,
+      d.q10Instr || "Complete the story.",
+      15,
+      paragraph("q10Starter"),
+    );
+    body += section(11, "Write a dialogue.", 15, paragraph("q11"));
+  } else {
+    body = list("headerExtra") + "<h3>Part A · Grammar · 60 marks</h3>";
+    body += section(
+      1,
+      "Fill in the gaps with words from the box.",
+      10,
+      rich([d.q1Box || []]) + paragraph("q1Passage"),
+    );
+    body += section(
+      2,
+      "Make five sentences using the substitution table.",
+      5,
+      rich(
+        (d.q2 || []).map((row) => [row?.a || "", row?.b || "", row?.c || ""]),
+      ),
+    );
+    body += section(
+      3,
+      "Complete the text with the right forms of the verbs.",
+      10,
+      rich([d.q3Box || []]) + paragraph("q3Passage"),
+    );
+    body += section(
+      4,
+      "Change the sentences as directed.",
+      10,
+      rich(
+        (d.q4 || []).map(
+          (q) => (q?.sentence || "") + " (" + (q?.direction || "") + ")",
+        ),
+      ),
+    );
+    body += section(5, "Add tag questions.", 5, list("q5"));
+    body += section(
+      6,
+      "Complete the text using prefixes or suffixes.",
+      5,
+      paragraph("q6Passage"),
+    );
+    body += section(
+      7,
+      "Complete the text with suitable prepositions.",
+      5,
+      paragraph("q7Passage"),
+    );
+    body += section(
+      8,
+      "Complete the text using suitable connectors.",
+      5,
+      paragraph("q8Passage"),
+    );
+    body += section(
+      9,
+      "Use capitals and punctuation marks where necessary.",
+      5,
+      paragraph("q9Text"),
+    );
+    body += "<h3>Part B · Composition · 40 marks</h3>";
+    body +=
+      section(10, "Write a paragraph.", 10, paragraph("q10")) +
+      section(11, "Write a letter / application.", 10, paragraph("q11")) +
+      section(12, "Write a composition.", 20, paragraph("q12"));
+  }
+  return `<article class="paper"><h2>English ${first ? "First" : "Second"} Paper</h2><h3>${esc(r.board)} Board · ${esc(r.year)}</h3><p style="text-align:center">Full marks: 100 · Time: 3 hours · Source-pattern preview</p>${body}${
+    answers
+      ? "<hr><h3>Source-provided answers</h3>" +
+        Object.entries(d.answers || {})
+          .map(
+            ([k, v]) =>
+              "<p><strong>" +
+              esc(k.toUpperCase()) +
+              ":</strong> " +
+              esc(v || "Answer not supplied") +
+              "</p>",
+          )
+          .join("")
+      : ""
+  }</article>`;
 }
-function showPreview(rows, english = false, report = null) {
+let previewState = null;
+function paintPreview() {
+  const { rows, english, report, answers } = previewState;
+  $("preview-mode").textContent = answers
+    ? "Switch to student view"
+    : "Switch to teacher view";
+  $("preview-heading").textContent = answers
+    ? "Teacher paper preview"
+    : "Student paper preview";
   $("preview-content").innerHTML =
     (report
       ? `<div class="${report.errors.length ? "warn" : "ok"}" style="padding:14px">${report.errors.length ? report.errors.length + " blocking issue(s)" : "Structure valid"} · ${report.warnings.length} answer warning(s)</div>`
       : "") +
     (english
-      ? rows.map(englishPreview).join("")
-      : `<article class="paper"><h2>Tutor’s Desk · Question paper preview</h2><p style="text-align:center">${rows.length} selected questions · Teacher review copy</p>${rows.map((r, i) => questionPreview(r, i, true)).join("")}</article>`);
+      ? rows.map((r) => englishPreview(r, answers)).join("")
+      : `<article class="paper"><h2>Tutor’s Desk · Question paper preview</h2><p style="text-align:center">${rows.length} selected questions · ${answers ? "Teacher review" : "Student"} copy</p>${rows.map((r, i) => questionPreview(r, i, answers)).join("")}</article>`);
+}
+function showPreview(rows, english = false, report = null) {
+  previewState = { rows, english, report, answers: true };
+  paintPreview();
   $("preview").showModal();
 }
+$("preview-mode").onclick = () => {
+  previewState.answers = !previewState.answers;
+  paintPreview();
+};
 $("close-preview").onclick = () => $("preview").close();
 $("print-preview").onclick = () => window.print();
 async function importView() {

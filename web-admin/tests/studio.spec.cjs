@@ -54,6 +54,19 @@ test("full English JSON enters the separate editor and publishes after review", 
   await expect(page.locator("#preview-content")).toContainText(
     "Answer not supplied",
   );
+  await expect(page.locator("#preview-content [data-question]")).toHaveCount(
+    11,
+  );
+  await expect(page.locator("#preview-content")).toContainText(
+    "Write a summary",
+  );
+  await page.locator("#preview-mode").click();
+  await expect(page.locator("#preview-heading")).toHaveText(
+    "Student paper preview",
+  );
+  await expect(page.locator("#preview-content")).not.toContainText(
+    "Source-provided answers",
+  );
   await page.locator("#close-preview").click();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await page
