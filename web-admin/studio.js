@@ -419,13 +419,16 @@ async function listView() {
       .eq("is_active", !archived);
     if (!english) q = q.is("owner_id", null);
     if (state.query)
-      q = q.ilike("search_text", "%" + state.query.replace(/[%_]/g, "") + "%");
+      q = q.ilike(
+        "search_text",
+        "%" + state.query.replace(/[\\%_]/g, "\\$&") + "%",
+      );
     if (state.status) q = q.eq("review_status", state.status);
     if (!english && state.subject) q = q.eq("subject_id", state.subject);
     if (english && !archived && state.paperType)
       q = q.eq("paper_type", state.paperType);
     if (english && state.board)
-      q = q.ilike("board", state.board.replace(/[%_]/g, ""));
+      q = q.ilike("board", state.board.replace(/[\\%_]/g, "\\$&"));
     if (english && state.year) q = q.eq("year", Number(state.year));
     const r = await q.order("id").range(state.page * 25, state.page * 25 + 24);
     if (r.error) throw r.error;

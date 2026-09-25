@@ -114,6 +114,17 @@ test("supported SDK uses server counts, paginates and keeps session out of local
   expect(
     calls.some((c) => new URL(c.url).searchParams.get("offset") === "25"),
   ).toBe(true);
+  await page.locator("#search").fill("physics_ch%");
+  await page.locator('[data-action="filter"]').click();
+  await expect
+    .poll(() =>
+      calls.some(
+        (c) =>
+          new URL(c.url).searchParams.get("search_text") ===
+          String.raw`ilike.%physics\_ch\%%`,
+      ),
+    )
+    .toBe(true);
   await page.locator('[data-action="edit"]').click();
   await page
     .locator('[data-field="payload.questionText"]')
