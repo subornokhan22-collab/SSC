@@ -19,6 +19,11 @@ CONTENT STUDIO UPDATE FILES
    Both functions share the existing GEMINI_API_KEY secret; do not duplicate keys in code.
    If the APK says AI server error (404), check mimi exists in the app project.
    This repair does not require reinstalling the APK or rerunning SQL.
+   For "no complete result", use the NEW mimi-sse-mobile-v2 bundle.
+   Its escaped stream delimiters withstand phone-editor indentation.
+   Replace ALL old index.ts content, then tap Deploy updates.
+   Do NOT create a separate function called teacher-tools.
+   If it still fails, check the latest mimi invocation/logs; hide keys and tokens.
 
 4. content-studio-netlify.zip
    This contains the website runtime, with index.html at its root.

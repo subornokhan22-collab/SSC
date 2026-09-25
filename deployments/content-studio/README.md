@@ -1,6 +1,6 @@
 # Content Studio — GitHub download files
 
-Release deliverables live in GitHub, not only in chat attachments. This package contains the approved application source from commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`.
+Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes the `mimi-sse-mobile-v2` stream-framing repair; its canonical source and regression tests are versioned alongside this package.
 
 ## Downloads
 
@@ -46,3 +46,13 @@ Developer regeneration command (users can use the dashboard file directly):
 npx --yes --package esbuild@0.25.10 esbuild supabase/functions/mimi/index.ts --bundle --platform=neutral --target=es2022 --format=esm '--external:https://*' --outfile=deployments/content-studio/mimi.ts
 ```
 Add the generated-file `// @ts-nocheck` header for the dashboard `index.ts` editor, retain the canonical-source notice, rerun `supabase/tests/mimi_deployment_test.mjs`, and refresh the package/checksums.
+
+## APK “The server returned no complete result” after mobile paste
+
+This means the APK received HTTP 200 but did not parse a terminal `result` or `error` event. It does **not** mean a separate function named `teacher-tools` must be created. The APK endpoint remains `mimi`.
+
+The older bundled emitter contained literal newlines inside a template string. If a phone editor adds leading indentation during paste, it also changes the bytes inside that string: `data:` becomes space-prefixed, and the APK ignores it. This failure was reproduced locally for both successful results and model-check errors. A screenshot showing deeply accumulated indentation is consistent with that cause, but does not verify the full deployed response.
+
+The refreshed `mimi.ts` has the header **`Bundle revision: mimi-sse-mobile-v2`**. It constructs stream delimiters with an escaped newline string, so source indentation no longer changes the event framing. Replace the **entire** existing `mimi/index.ts` with this updated file and Deploy updates. Do not append it to the old code. Keep the current secret and `admin-content`; no new SQL, Netlify upload or APK installation is needed for this repair.
+
+Tests execute the bundle after simulated editor indentation and parse line prefixes like the existing APK. All 28 local server tests passed, using mocked authentication and model responses, not a live Gemini account. If the same error remains after deployment, inspect the latest `mimi` invocation and logs immediately after an APK retry. Share status/duration and error text with tokens, request headers and private keys hidden. Do not disable authentication.

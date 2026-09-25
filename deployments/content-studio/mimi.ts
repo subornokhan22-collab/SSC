@@ -3,6 +3,7 @@
 // Deploy as function name: mimi (APK AI Tools/chat), NOT admin-content.
 // Canonical source: supabase/functions/mimi/index.ts and its local imports.
 // Uses GEMINI_API_KEY from server secrets; no private keys are included.
+// Bundle revision: mimi-sse-mobile-v2 (indentation-safe stream framing).
 // supabase/functions/mimi/index.ts
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
@@ -202,10 +203,8 @@ Deno.serve(async (req) => {
     const stream = new ReadableStream({
       async start(controller) {
         const send = (event, data) => {
-          if (!cancellation.signal.aborted) controller.enqueue(encoder.encode(`event: ${event}
-data: ${JSON.stringify(data)}
-
-`));
+          const frame = ["event: " + event, "data: " + JSON.stringify(data), "", ""].join("\n");
+          if (!cancellation.signal.aborted) controller.enqueue(encoder.encode(frame));
         };
         try {
           const result = await runTeacherTool(command, async (system, input, schema, validator = false) => {

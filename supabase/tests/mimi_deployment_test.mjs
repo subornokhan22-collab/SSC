@@ -10,6 +10,7 @@ function gateway({
   signedIn = true,
   key = "fixture-key",
   checkerAgrees = true,
+  simulateEditorIndentation = false,
 } = {}) {
   let handler;
   const calls = [];
@@ -29,7 +30,12 @@ function gateway({
     !/^import\s/m.test(source),
     "All local dependencies must be bundled",
   );
-  vm.runInNewContext(source, {
+  // Some phone editors add leading whitespace to every pasted source line.
+  // In a multiline template literal, that whitespace becomes response bytes.
+  const pastedSource = simulateEditorIndentation
+    ? source.replace(/^/gm, "    ")
+    : source;
+  vm.runInNewContext(pastedSource, {
     Deno: {
       env: {
         get: (name) =>
@@ -146,3 +152,47 @@ test("dashboard mimi bundle refuses rejected answers instead of returning a chec
   assert.match(text, /event: error/);
   assert.doesNotMatch(text, /event: result/);
 });
+
+// Match TeacherAiClient's line-prefix handling, not just substring matches.
+function apkEvents(text) {
+  let event = "";
+  const events = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (line.startsWith("event:")) event = line.slice(6).trim();
+    if (line.startsWith("data:")) {
+      events.push({ event, data: JSON.parse(line.slice(5).trim()) });
+    }
+  }
+  return events;
+}
+for (const checkerAgrees of [true, false]) {
+  test(`dashboard SSE survives phone editor indentation (${checkerAgrees ? "result" : "error"})`, async () => {
+    const g = gateway({ simulateEditorIndentation: true, checkerAgrees });
+    const r = await g.handler(req());
+    const text = await r.text();
+    const events = apkEvents(text);
+    assert.ok(
+      events.some((e) => e.event === "phase"),
+      "APK must receive progress",
+    );
+    if (checkerAgrees) {
+      const results = events.filter((e) => e.event === "result");
+      assert.equal(results.length, 1, "APK must receive a complete result");
+      assert.equal(results[0].data.checked, true);
+      assert.equal(results[0].data.kind, "questions");
+    } else {
+      assert.ok(
+        events.some(
+          (e) =>
+            e.event === "error" && e.data.message.includes("independent check"),
+        ),
+      );
+      assert.ok(!events.some((e) => e.event === "result"));
+    }
+    assert.doesNotMatch(text, /^[ \t]+(?:event|data):/m);
+    assert.ok(
+      text.endsWith("\n\n"),
+      "SSE must end with an empty separator line",
+    );
+  });
+}

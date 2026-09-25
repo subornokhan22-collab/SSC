@@ -121,7 +121,10 @@ Deno.serve(async (req: Request) => {
     const stream = new ReadableStream({
       async start(controller) {
         const send = (event:string, data:unknown) => {
-          if (!cancellation.signal.aborted) controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+          // Keep delimiters in an escaped string: bundlers may emit template
+          // newlines literally, which phone-editor auto-indent can corrupt.
+          const frame = ["event: " + event, "data: " + JSON.stringify(data), "", ""].join("\n");
+          if (!cancellation.signal.aborted) controller.enqueue(encoder.encode(frame));
         };
         try {
           const result = await runTeacherTool(command, async (system, input, schema, validator=false) => {
