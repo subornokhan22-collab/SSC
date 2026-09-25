@@ -1,0 +1,25 @@
+CONTENT STUDIO UPDATE FILES
+
+1. database-update.sql
+   Supabase > SQL Editor > New query. Paste the entire file and Run.
+   This changes database structure/permissions. A backup is recommended.
+   If it errors, stop before deploying the website.
+
+2. admin-content.ts
+   Supabase > Edge Functions > create/update admin-content.
+   Paste this whole single-file bundle into index.ts and deploy.
+   Its shared parser, attachment validator and JSON schema are included.
+   Keep GEMINI_API_KEY in Supabase Edge Function secrets, never frontend code/chat.
+   Without that server configuration, automatic photo/scan extraction will not work.
+
+3. content-studio-netlify.zip
+   This contains the website runtime, with index.html at its root.
+   Upload THIS inner ZIP to your existing Netlify site's manual-deploy option.
+   Do not upload the outer content-studio-update.zip as your website.
+   If Netlify requests a folder, extract the inner ZIP and upload that folder.
+
+4. SOURCE-README.md
+   Detailed instructions, limits and security behavior.
+
+No production services were changed by preparing these files.
+Full source: https://github.com/subornokhan22-collab/SSC/pull/6
