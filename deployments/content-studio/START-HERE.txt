@@ -12,13 +12,21 @@ CONTENT STUDIO UPDATE FILES
    Keep GEMINI_API_KEY in Supabase Edge Function secrets, never frontend code/chat.
    Without that server configuration, automatic photo/scan extraction will not work.
 
-3. content-studio-netlify.zip
+3. mimi.ts — REQUIRED FOR APK AI TOOLS
+   Supabase > Edge Functions > create/update a SEPARATE function named mimi.
+   Paste all of mimi.ts into its index.ts and Deploy.
+   Keep admin-content: that function is for website English uploads.
+   Both functions share the existing GEMINI_API_KEY secret; do not duplicate keys in code.
+   If the APK says AI server error (404), check mimi exists in the app project.
+   This repair does not require reinstalling the APK or rerunning SQL.
+
+4. content-studio-netlify.zip
    This contains the website runtime, with index.html at its root.
    Upload THIS inner ZIP to your existing Netlify site's manual-deploy option.
    Do not upload the outer content-studio-update.zip as your website.
    If Netlify requests a folder, extract the inner ZIP and upload that folder.
 
-4. SOURCE-README.md
+5. SOURCE-README.md
    Detailed instructions, limits and security behavior.
 
 No production services were changed by preparing these files.
