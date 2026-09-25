@@ -91,7 +91,7 @@ function formatAiText(text) {
   let s = text.replace(/[০-৯]/g, (d) => String("\u09E6\u09E7\u09E8\u09E9\u09EA\u09EB\u09EC\u09ED\u09EE\u09EF".indexOf(d)));
   s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "($1)/($2)").replace(/\\sqrt\{([^{}]+)\}/g, "\u221A($1)").replace(/\\(?:mathrm|text)\{([^{}]*)\}/g, "$1");
   const symbols = { times: "\xD7", cdot: "\xB7", div: "\xF7", pm: "\xB1", minus: "\u2212", leq: "\u2264", geq: "\u2265", neq: "\u2260", pi: "\u03C0", theta: "\u03B8", alpha: "\u03B1", beta: "\u03B2", Delta: "\u0394", Omega: "\u03A9", mu: "\u03BC" };
-  s = s.replace(/\\([A-Za-z]+)\b/g, (all, cmd) => symbols[cmd] ?? all).replace(/\$\$([^$]+)\$\$|\$([^$\n]+)\$/g, (_all, a, b) => a ?? b).replace(/\\\((.*?)\\\)|\\\[(.*?)\\\]/gs, (_all, a, b) => a ?? b).replace(/\*\*([^*]+)\*\*/g, "$1");
+  s = s.replace(/\\([A-Za-z]+)\b/g, (all, cmd) => symbols[cmd] ?? all).replace(/\$\$([^$]+)\$\$|\$([^$\n]+)\$(?![0-9])/g, (_all, a, b) => a ?? b).replace(/\\\((.*?)\\\)|\\\[(.*?)\\\]/gs, (_all, a, b) => a ?? b).replace(/^\*\*([^*\n]+)\*\*/gm, "$1");
   s = s.replace(/([\^_])(?:\{([^{}]+)\}|\(([^()]+)\)|([+−-]?[A-Za-z0-9]+(?:\.[0-9]+)?))/g, (all, op, a, b, c) => {
     const run = (a ?? b ?? c).replace(/−/g, "-");
     const plain = op === "^" ? "0123456789+-=()nmi" : "0123456789+-=()aehijklmnoprstuvx";

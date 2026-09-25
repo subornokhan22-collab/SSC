@@ -6,9 +6,9 @@ export function formatAiText(text: string): string {
     .replace(/\\(?:mathrm|text)\{([^{}]*)\}/g, '$1');
   const symbols: Record<string,string> = {times:'×',cdot:'·',div:'÷',pm:'±',minus:'−',leq:'≤',geq:'≥',neq:'≠',pi:'π',theta:'θ',alpha:'α',beta:'β',Delta:'Δ',Omega:'Ω',mu:'μ'};
   s = s.replace(/\\([A-Za-z]+)\b/g, (all, cmd) => symbols[cmd] ?? all)
-    .replace(/\$\$([^$]+)\$\$|\$([^$\n]+)\$/g, (_all, a, b) => a ?? b)
+    .replace(/\$\$([^$]+)\$\$|\$([^$\n]+)\$(?![0-9])/g, (_all, a, b) => a ?? b)
     .replace(/\\\((.*?)\\\)|\\\[(.*?)\\\]/gs, (_all, a, b) => a ?? b)
-    .replace(/\*\*([^*]+)\*\*/g, '$1');
+    .replace(/^\*\*([^*\n]+)\*\*/gm, '$1');
   s = s.replace(/([\^_])(?:\{([^{}]+)\}|\(([^()]+)\)|([+−-]?[A-Za-z0-9]+(?:\.[0-9]+)?))/g, (all, op, a, b, c) => {
     const run = (a ?? b ?? c).replace(/−/g, '-');
     const plain = op === '^' ? '0123456789+-=()nmi' : '0123456789+-=()aehijklmnoprstuvx';

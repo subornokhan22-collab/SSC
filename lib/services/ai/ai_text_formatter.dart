@@ -35,11 +35,12 @@ class AiTextFormatter {
     };
     s = s.replaceAllMapped(
         RegExp(r'\\([A-Za-z]+)\b'), (m) => symbols[m[1]] ?? m[0]!);
-    s = s.replaceAllMapped(
-        RegExp(r'\$\$([^$]+)\$\$|\$([^$\n]+)\$'), (m) => m[1] ?? m[2]!);
+    s = s.replaceAllMapped(RegExp(r'\$\$([^$]+)\$\$|\$([^$\n]+)\$(?![0-9])'),
+        (m) => m[1] ?? m[2]!);
     s = s.replaceAllMapped(RegExp(r'\\\((.*?)\\\)|\\\[(.*?)\\\]', dotAll: true),
         (m) => m[1] ?? m[2]!);
-    s = s.replaceAllMapped(RegExp(r'\*\*([^*]+)\*\*'), (m) => m[1]!);
+    s = s.replaceAllMapped(
+        RegExp(r'^\*\*([^*\n]+)\*\*', multiLine: true), (m) => m[1]!);
     // Match an entire grouped/simple script. Unsupported runs remain intact.
     s = s.replaceAllMapped(
         RegExp(
