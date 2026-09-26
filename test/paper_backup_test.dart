@@ -101,18 +101,18 @@ void main() {
         pages: 1,
       );
 
+  File inAppCopy() =>
+      File('${external.path}/TutorsDesk/tutors_desk_backup.json');
+
+  File sharedCopy() =>
+      File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup.json');
+
   /// Included in failure messages so a CI failure explains itself instead of
   /// only reporting a bare false.
   Future<String> why() async =>
       'calls=${calls.map((c) => c['method']).toList()} '
       'shared=${sharedCopy().existsSync()} inApp=${inAppCopy().existsSync()} '
       'diag=${await LocalDiagnostics.report()}';
-
-  File inAppCopy() =>
-      File('${external.path}/TutorsDesk/tutors_desk_backup.json');
-
-  File sharedCopy() =>
-      File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup.json');
 
   test('saving a paper writes the uninstall-surviving Download copy', () async {
     await PaperLibrary.addSavedPaper(paper());
