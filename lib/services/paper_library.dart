@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/foundation.dart' show compute, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
@@ -655,6 +655,17 @@ class PaperBackup {
   /// needs the "all files access" permission, which users often never
   /// grant — so auto-save was a silent no-op on many phones.
   static Future<String?> _backupPath() async {
+    final override = debugBaseDir;
+    if (override != null) {
+      try {
+        final dir = await override();
+        if (dir == null) return null;
+        if (!dir.existsSync()) dir.createSync(recursive: true);
+        return '${dir.path}/$_fileName';
+      } catch (_) {
+        return null;
+      }
+    }
     try {
       Directory? base;
       try {
@@ -707,48 +718,63 @@ class PaperBackup {
     };
   }
 
+  /// Test seam: replaces app-storage resolution so tests do not depend on how
+  /// a particular path_provider version resolves platform directories.
+  /// Always null in the app.
+  @visibleForTesting
+  static Future<Directory?> Function()? debugBaseDir;
+
   /// Takes one snapshot of the whole library.
   ///
-  /// Always writes the app-scoped copy (no permission needed, but Android
-  /// deletes it on uninstall). Additionally writes a copy into the shared
-  /// `Download/TutorsDesk` folder through MediaStore — that is the copy a
-  /// reinstall can find, and it needs no permission on Android 10+.
-  /// Silent no-op when storage is unavailable — auto-save must never
-  /// disturb the user.
+  /// Writes the in-app copy (no permission needed, but Android deletes it on
+  /// uninstall) and then the shared `Download/TutorsDesk` copy through
+  /// MediaStore — the one a reinstall can find, needing no permission on
+  /// Android 10+. The two are independent: a failure in one must never skip
+  /// the other. Silent no-op when storage is unavailable, because auto-save
+  /// must never disturb the user.
   static Future<void> autoSave() async {
+    String document;
     try {
-      final payload = await _payload();
-      final document = json.encode(payload);
+      document = json.encode(await _payload());
+    } catch (_) {
+      return;
+    }
+    try {
       final path = await _backupPath();
       if (path != null) {
         final tmp = '$path.tmp';
         await File(tmp).writeAsString(document, flush: true);
         File(tmp).renameSync(path); // atomic: readers never see a half file
       }
-      await _writeSharedCopy(document);
     } catch (_) {
-      // Swallow — see above.
+      // The shared copy below is still attempted.
     }
+    await _writeSharedCopy(document);
   }
 
   /// Copies the current library backup into the shared Download folder and
-  /// returns the location, or null when this device cannot (pre-Android 10
-  /// without the all-files permission).
+  /// returns its location, or null when this device cannot (for example
+  /// pre-Android 10 without the all-files permission).
   static Future<String?> exportToDownload() async {
     try {
-      final document = json.encode(await _payload());
-      return await _writeSharedCopy(document);
+      return await _writeSharedCopy(json.encode(await _payload()));
     } catch (_) {
       return null;
     }
   }
 
-  /// Shared-copy writer: MediaStore is the sanctioned no-permission route on
-  /// Android 10+ and is where [tryAutoRestore] looks after a reinstall.
+  /// MediaStore is the sanctioned no-permission route on Android 10+ and is
+  /// where [tryAutoRestore] looks after a reinstall. Falls back to a temporary
+  /// source file when app storage is unavailable, so the uninstall-safe copy
+  /// does not depend on the in-app copy succeeding.
   static Future<String?> _writeSharedCopy(String document) async {
+    File? temporary;
     try {
-      final source = await _backupPath();
-      if (source == null) return null;
+      var source = await _backupPath();
+      if (source == null) {
+        temporary = File('${Directory.systemTemp.path}/$_fileName');
+        source = temporary.path;
+      }
       await File(source).writeAsString(document, flush: true);
       final display = await _channel.invokeMethod<String>('copyToDownloads', {
         'source': source,
@@ -756,10 +782,15 @@ class PaperBackup {
         'mime': 'application/json',
         'relativePath': 'Download/$_dirName',
       });
-      final ok = display?.trim().isNotEmpty == true;
-      return ok ? 'Download/$_dirName/$_fileName' : null;
+      return display?.trim().isNotEmpty == true
+          ? 'Download/$_dirName/$_fileName'
+          : null;
     } catch (_) {
       return null;
+    } finally {
+      try {
+        temporary?.deleteSync();
+      } catch (_) {}
     }
   }
 

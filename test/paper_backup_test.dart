@@ -27,6 +27,8 @@ void main() {
     sdcard = Directory.systemTemp.createTempSync('td_sd_');
     calls = <Map<String, Object?>>[];
     sharedWritable = true;
+    PaperBackup.debugBaseDir =
+        () async => Directory('${external.path}/TutorsDesk');
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(paths, (call) async {
@@ -68,6 +70,7 @@ void main() {
   });
 
   tearDown(() {
+    PaperBackup.debugBaseDir = null;
     for (final dir in [appDoc, external, sdcard]) {
       if (dir.existsSync()) dir.deleteSync(recursive: true);
     }
@@ -93,14 +96,8 @@ void main() {
         pages: 1,
       );
 
-  /// Path of the in-app copy [PaperBackup] actually wrote, read back from the
-  /// platform call it made. Hardcoding an external-storage path would be
-  /// wrong: on a non-Android host `_backupPath()` legitimately falls back to
-  /// the documents directory.
-  String appCopyFromCall() {
-    final call = calls.firstWhere((c) => c['method'] == 'copyToDownloads');
-    return call['source'] as String;
-  }
+  File inAppCopy() =>
+      File('${external.path}/TutorsDesk/tutors_desk_backup.json');
 
   File sharedCopy() =>
       File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup.json');
@@ -109,7 +106,7 @@ void main() {
     await PaperLibrary.addSavedPaper(paper());
     await PaperBackup.autoSave();
 
-    expect(File(appCopyFromCall()).existsSync(), isTrue,
+    expect(inAppCopy().existsSync(), isTrue,
         reason: 'the in-app copy still keeps working offline');
     expect(sharedCopy().existsSync(), isTrue,
         reason: 'the shared copy is the only one that survives an uninstall');
@@ -151,15 +148,24 @@ void main() {
       () async {
     await PaperLibrary.addSavedPaper(paper());
     await PaperBackup.autoSave();
-    final appCopy = appCopyFromCall();
-    expect(File(appCopy).existsSync(), isTrue);
+    expect(inAppCopy().existsSync(), isTrue);
     sharedWritable = false;
     calls.clear();
 
     expect(await PaperBackup.exportToDownload(), isNull);
     expect(calls.any((c) => c['method'] == 'copyToDownloads'), isTrue);
-    expect(File(appCopy).existsSync(), isTrue,
+    expect(inAppCopy().existsSync(), isTrue,
         reason: 'a failed shared copy must not lose the in-app backup');
+  });
+
+  test('the shared copy survives an unusable in-app folder', () async {
+    await PaperLibrary.addSavedPaper(paper());
+    PaperBackup.debugBaseDir = () async => throw StateError('storage gone');
+
+    expect(await PaperBackup.exportToDownload(),
+        'Download/TutorsDesk/tutors_desk_backup.json',
+        reason: 'the uninstall-safe copy must not depend on app storage');
+    expect(sharedCopy().existsSync(), isTrue);
   });
 
   test('native copy writes and reports the same folder', () {
