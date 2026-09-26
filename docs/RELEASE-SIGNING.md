@@ -30,6 +30,30 @@ The fingerprint is not a secret. Obtain it from the trusted release certificate
 or a known production APK, not an arbitrary new build. This pin prevents an
 incorrectly configured signing identity from being distributed.
 
+## Owner setup, dashboard only (no computer, no Termux)
+
+A first production identity was generated with OpenSSL as a **PKCS#12** store
+(`.p12`), alias `tutors-desk`, RSA 2048, valid for 10000 days, and kept outside
+this repository — a public repository must never contain signing material. The
+`signing-readiness` workflow proves Java 17 loads that exact format, because
+`validateProductionSigning` reads it with `KeyStore.getInstance("PKCS12")`.
+
+1. Save the keystore file to somewhere permanent (Google Drive). If it is ever
+   lost, no future build can update an installed copy: another uninstall and
+   data migration would be required.
+2. Open this repository on GitHub → **Settings** → **Secrets and variables** →
+   **Actions**.
+3. On the **Secrets** tab add the four secrets in the table above, one at a
+   time, with **New repository secret**. Names must match exactly.
+4. On the **Variables** tab add `RELEASE_CERT_SHA256` with the certificate's
+   SHA-256 fingerprint.
+5. Ask for the APK build. The workflow restores the keystore, builds, verifies
+   every APK's certificate against the pin with `apksigner`, and refuses to
+   publish a mismatch.
+
+Passwords and the keystore are never committed, never printed in chat, and the
+workflow deletes the restored keystore file at the end of every run.
+
 ## Enforcement
 
 - Gradle always selects `release-ci` for release variants.
@@ -75,3 +99,23 @@ the app says so instead of implying the papers are safe.
 No production signing credentials have been created, replaced or exposed by
 this update. The previous successful workflow skipped release-keystore restore;
 a new signed APK must wait for configuration and positive certificate checks.
+
+## Upgrading the phone that already runs a debug build
+
+Builds before release signing existed were signed with a **runner-local Android
+debug key**. GitHub runner images do not ship `~/.android/debug.keystore` (the
+`signing-readiness` workflow records whether one is present, so this is checked
+rather than assumed), so that key existed only on the machine that built the
+APK and cannot be reproduced. A production-signed APK therefore cannot be
+installed over the current one: **one uninstall is unavoidable**.
+
+The build currently on the phone (`4b535e7`) writes its automatic backup only to
+app-private storage — which Android deletes on uninstall — and ships no Dart
+caller for the native `copyToDownloads` handler, so it cannot export the library
+anywhere that survives. Its paper library is local-only: `paper_library.dart` at
+that commit contains no Supabase usage. Treat saved papers on that build as
+unrecoverable across the migration unless the `signing-readiness` verdict shows
+the debug key is in fact reproducible. This build fixes that going forward:
+`PaperBackup.autoSave` also writes `Download/TutorsDesk/tutors_desk_backup.json`
+through MediaStore, and My Papers offers an explicit export with honest failure
+messages.
