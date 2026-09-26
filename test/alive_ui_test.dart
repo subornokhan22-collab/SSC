@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutors_desk/screens/signin_screen.dart';
 import 'package:tutors_desk/services/app_settings.dart';
+import 'package:tutors_desk/theme/app_theme.dart';
+import 'package:tutors_desk/widgets/alive_background.dart';
 import 'package:tutors_desk/widgets/alive_tab_stack.dart';
 import 'package:tutors_desk/widgets/animations.dart';
 import 'package:tutors_desk/widgets/boot_sequence.dart';

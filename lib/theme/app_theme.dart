@@ -64,7 +64,9 @@ class AppTheme {
     );
     return base.copyWith(
       colorScheme: scheme,
-      scaffoldBackgroundColor: canvas,
+      // Transparent so AliveBackground paints the chosen workspace paper;
+      // an opaque scaffold would hide it and waste the accent washes.
+      scaffoldBackgroundColor: Colors.transparent,
       canvasColor: canvas,
       splashColor: primary.withOpacity(.08),
       highlightColor: primary.withOpacity(.04),

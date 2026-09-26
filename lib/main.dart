@@ -21,7 +21,7 @@ import 'services/auth_service.dart';
 import 'services/paper_library.dart';
 import 'theme/app_theme.dart';
 import 'screens/root_gate.dart';
-import 'widgets/animated_background.dart';
+import 'widgets/alive_background.dart';
 import 'widgets/offline_banner.dart';
 
 // Set by _readCrashLog(); consumed by _CrashReportGate after the first
@@ -127,8 +127,7 @@ class ALearningApp extends StatelessWidget {
           ),
           child: MotionPolicy(
             child: ConnectivityBanner(
-              child:
-                  AnimatedBackground(child: child ?? const SizedBox.shrink()),
+              child: AliveBackground(child: child ?? const SizedBox.shrink()),
             ),
           ),
         );
