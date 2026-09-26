@@ -891,7 +891,10 @@ class PaperBackup {
       File('${dir.path}${Platform.pathSeparator}$name')
           .writeAsBytesSync(base64Decode(value as String));
     });
-    final current = await PaperLibrary.loadEntries();
+    // loadEntries() returns an unmodifiable list while there is no index yet
+    // (exactly the fresh-install case this restore exists for), so copy it
+    // before adding restored papers.
+    final current = List<PaperEntry>.of(await PaperLibrary.loadEntries());
     final known = current.map((e) => e.id).toSet();
     var added = 0;
     for (final raw in m['entries'] as List) {
