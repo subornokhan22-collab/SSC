@@ -12,3 +12,11 @@ node_modules/
 web-admin/test-results/
 web-admin/playwright-report/
 test-results/
+
+# Flutter/Dart build output and local caches — never commit
+.dart_tool/
+build/
+.flutter-plugins-dependencies
+.flutter-plugins
+pubspec.lock
+*.log
