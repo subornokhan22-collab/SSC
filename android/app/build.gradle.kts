@@ -9,6 +9,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Opt-in, explicitly requested test builds only, enabled by adding
+// allowTestSigning=true to android/gradle.properties. Production builds never
+// set it: without it the release variant still uses the CI keystore and
+// validateProductionSigning still gates release packaging. A test build is
+// release mode (AOT, so motion behaves like production) but carries the
+// runner's debug signature, which is why it can never be distributed.
+val allowTestSigning = (project.findProperty("allowTestSigning") as? String) == "true"
+
 android {
     namespace = "com.tutorsdesk.app"
     compileSdk = flutter.compileSdkVersion
@@ -45,7 +53,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release-ci")
+            signingConfig = signingConfigs.getByName(
+                if (allowTestSigning) "debug" else "release-ci",
+            )
 
             // Strip unused Java/Kotlin classes and shrink bundled resources.
             // Flutter ships default ProGuard rules for its own engine bindings.
@@ -123,7 +133,9 @@ val validateProductionSigning = tasks.register("validateProductionSigning") {
     }
 }
 tasks.configureEach {
-    if (name == "preReleaseBuild" || name == "validateSigningRelease") {
+    // A test build opts out of the production signing gate; everything else,
+    // including every tag and every default release build, stays gated.
+    if ((name == "preReleaseBuild" || name == "validateSigningRelease") && !allowTestSigning) {
         dependsOn(validateProductionSigning)
     }
 }
