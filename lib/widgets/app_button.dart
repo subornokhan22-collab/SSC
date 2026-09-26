@@ -29,6 +29,7 @@ class AppButton extends StatefulWidget {
 
 class _AppButtonState extends State<AppButton> {
   bool _pressed = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +68,12 @@ class _AppButtonState extends State<AppButton> {
           color: disabled
               ? AppColors.disabled
               : (widget.outlined ? AppColors.surface : AppColors.primary),
-          border: widget.outlined
-              ? Border.all(color: AppTheme.primary.withOpacity(.45), width: 1.3)
-              : null,
+          border: _focused && !disabled
+              ? Border.all(color: AppTheme.textDark, width: 2)
+              : widget.outlined
+                  ? Border.all(
+                      color: AppTheme.primary.withOpacity(.45), width: 1.3)
+                  : null,
           boxShadow: const [],
         ),
         child: child,
@@ -81,6 +85,7 @@ class _AppButtonState extends State<AppButton> {
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
+          onFocusChange: (value) => setState(() => _focused = value),
           onHighlightChanged: (value) => setState(() => _pressed = value),
           onTap: disabled ? null : widget.onPressed,
           borderRadius: radius,

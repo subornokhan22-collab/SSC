@@ -276,8 +276,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2))
+                                    child: ActivityIndicator(strokeWidth: 2))
                                 : Icon(
                                     step == 3
                                         ? Icons.visibility_outlined

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'motion_policy.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/ai/teacher_attachment.dart';
 
@@ -107,7 +108,7 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
                       : 'Photos'),
             ),
         ]),
-        if (picking) const LinearProgressIndicator(),
+        if (picking) const ActivityBar(label: 'Preparing attachments…'),
         if (error != null)
           Text(error!,
               style: TextStyle(color: Theme.of(context).colorScheme.error)),

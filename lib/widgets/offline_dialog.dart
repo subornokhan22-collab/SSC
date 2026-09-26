@@ -5,7 +5,7 @@ import '../theme/app_theme.dart';
 import 'motion_policy.dart';
 
 /// A dramatic "offline" alert for the app-open page: dark card, glowing
-/// red frame, pulsing signal rings around the cloud-off icon, and a live
+/// red frame, a still cloud-off icon, and a live
 /// "Check connection" action that re-tests the network. Returns `true` if
 /// the connection came back while the dialog was open.
 Future<bool> showOfflineDialog(BuildContext context) {
@@ -17,11 +17,11 @@ Future<bool> showOfflineDialog(BuildContext context) {
     transitionDuration: MotionPolicy.duration(context, 200),
     transitionBuilder: (c, enter, _, child) {
       if (MotionPolicy.reduce(c)) return child;
-      final curved = CurvedAnimation(
-        parent: enter,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      );
+      final curved = CurveTween(
+        curve: enter.status == AnimationStatus.reverse
+            ? Curves.easeInCubic
+            : Curves.easeOutCubic,
+      ).animate(enter);
       final scale = Tween<double>(begin: .86, end: 1).animate(curved);
       return FadeTransition(
         opacity: curved,

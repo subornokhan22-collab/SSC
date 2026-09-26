@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/motion_policy.dart';
 
 import '../controllers/ai_controller.dart';
 import '../data/questions_data.dart';
@@ -274,7 +275,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: ActivityIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.auto_awesome_outlined, size: 18),
               label: Text(c.busy ? 'Working…' : '${label(command)} with AI'),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../services/local_diagnostics.dart';
@@ -45,7 +46,7 @@ class _BootSequenceState extends State<BootSequence> {
         if (!mounted) return;
         setState(() => completed++);
       } catch (error, stack) {
-        await LocalDiagnostics.record(error, stack, scope: 'startup');
+        unawaited(LocalDiagnostics.record(error, stack, scope: 'startup'));
         if (!mounted) return;
         setState(() {
           failed = true;

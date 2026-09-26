@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
+import '../widgets/motion_policy.dart';
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:image_picker/image_picker.dart';
@@ -321,7 +322,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
               SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: ActivityIndicator(strokeWidth: 2),
               ),
               SizedBox(width: 12),
               Expanded(
@@ -1151,9 +1152,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 padding: const EdgeInsets.all(24),
                 child: Row(
                   children: [
-                    const CircularProgressIndicator(color: AppTheme.primary),
+                    const ActivityIndicator(color: AppTheme.primary),
                     const SizedBox(width: 14),
-                    Text(_batchProgress ?? 'শিট পড়া হচ্ছে...'),
+                    Expanded(
+                        child: Text(_batchProgress ?? 'শিট পড়া হচ্ছে...')),
                   ],
                 ),
               ),

@@ -126,12 +126,38 @@ abstract class MotionLoopState<T extends StatefulWidget> extends State<T>
 class ActivityIndicator extends StatelessWidget {
   final double size;
   final Color? color;
-  const ActivityIndicator({super.key, this.size = 18, this.color});
+  final double strokeWidth;
+  const ActivityIndicator(
+      {super.key, this.size = 18, this.color, this.strokeWidth = 2});
   @override
   Widget build(BuildContext context) => SizedBox.square(
         dimension: size,
         child: MotionPolicy.reduce(context)
             ? Icon(Icons.hourglass_top_rounded, size: size, color: color)
-            : CircularProgressIndicator(strokeWidth: 2, color: color),
+            : CircularProgressIndicator(strokeWidth: strokeWidth, color: color),
+      );
+}
+
+/// An indeterminate line for actual work, or a still status under reduced motion.
+class ActivityBar extends StatelessWidget {
+  final String label;
+  const ActivityBar({super.key, this.label = 'Working…'});
+  @override
+  Widget build(BuildContext context) => Semantics(
+        liveRegion: true,
+        label: label,
+        excludeSemantics: true,
+        child: MotionPolicy.reduce(context)
+            ? Padding(
+                padding: const EdgeInsets.all(6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const ActivityIndicator(size: 14),
+                    const SizedBox(width: 8),
+                    Flexible(child: Text(label))
+                  ],
+                ))
+            : const LinearProgressIndicator(),
       );
 }

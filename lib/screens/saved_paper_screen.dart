@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import '../widgets/motion_policy.dart';
 import 'package:printing/printing.dart';
 
 import '../services/paper_library.dart';
@@ -99,10 +100,10 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
                 ),
               )
             : pages == null
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: ActivityIndicator())
                 : Column(
                     children: [
-                      if (busy) const LinearProgressIndicator(),
+                      if (busy) const ActivityBar(),
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: Text(

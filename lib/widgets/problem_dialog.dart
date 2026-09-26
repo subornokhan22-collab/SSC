@@ -23,8 +23,7 @@ final List<ProblemAction> _defaultActions = [ProblemAction('OK', _noop)];
 ///  • a dark backdrop,
 ///  • a rounded card that scales + fades in (320 ms, ease-out — no
 ///    bounce),
-///  • a red warning icon that gently blinks (smooth pulse) so the user
-///    can't scroll past the problem,
+///  • a still, legible red warning icon,
 ///  • a small muted-red detail box for exact errors/tips.
 ///
 /// Use it for error states the user must act on: scan failures,
@@ -45,11 +44,11 @@ Future<void> showProblemDialog(
     transitionDuration: MotionPolicy.duration(context, 200),
     transitionBuilder: (c, enter, _, child) {
       if (MotionPolicy.reduce(c)) return child;
-      final curved = CurvedAnimation(
-        parent: enter,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      );
+      final curved = CurveTween(
+        curve: enter.status == AnimationStatus.reverse
+            ? Curves.easeInCubic
+            : Curves.easeOutCubic,
+      ).animate(enter);
       final scale = Tween<double>(begin: .88, end: 1).animate(curved);
       return FadeTransition(
         opacity: curved,

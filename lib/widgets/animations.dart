@@ -71,6 +71,7 @@ class PressableScale extends StatefulWidget {
 
 class _PressableScaleState extends State<PressableScale> {
   bool _pressed = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -81,13 +82,24 @@ class _PressableScaleState extends State<PressableScale> {
           : 1,
       duration: MotionPolicy.duration(context, 130),
       curve: Curves.easeOut,
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: widget.onTap,
-          onHighlightChanged: (pressed) => setState(() => _pressed = pressed),
+      child: DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          child: widget.child,
+          border: _focused && enabled
+              ? Border.all(
+                  color: Theme.of(context).colorScheme.primary, width: 2)
+              : null,
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onFocusChange: (value) => setState(() => _focused = value),
+            onTap: widget.onTap,
+            onHighlightChanged: (pressed) => setState(() => _pressed = pressed),
+            borderRadius: BorderRadius.circular(16),
+            child: widget.child,
+          ),
         ),
       ),
     );
@@ -305,21 +317,21 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
   ) {
     if (MotionPolicy.reduce(context)) return child;
     // Incoming page: directional slide and fade.
-    final inCurve = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    );
+    final inCurve = CurveTween(
+      curve: animation.status == AnimationStatus.reverse
+          ? Curves.easeInCubic
+          : Curves.easeOutCubic,
+    ).animate(animation);
 
     // Outgoing page: the screen being covered. Without this the old screen
     // stays fully opaque underneath, and because every Scaffold in this app
     // is transparent (the animated backdrop shows through) you briefly see
     // both screens stacked on top of each other.
-    final outCurve = CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: Curves.easeInCubic,
-      reverseCurve: Curves.easeOutCubic,
-    );
+    final outCurve = CurveTween(
+      curve: secondaryAnimation.status == AnimationStatus.reverse
+          ? Curves.easeOutCubic
+          : Curves.easeInCubic,
+    ).animate(secondaryAnimation);
 
     // Slide + fade only: no ScaleTransition. Scaling forces the whole page
     // layer to be resampled every frame, which is the expensive part on
@@ -335,10 +347,8 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
         // Fade it out over the first 55% so the two never read as one
         // jumbled screen.
         opacity: Tween<double>(begin: 1, end: 0).animate(
-          CurvedAnimation(
-            parent: secondaryAnimation,
-            curve: const Interval(0, 0.55),
-          ),
+          CurveTween(curve: const Interval(0, 0.55))
+              .animate(secondaryAnimation),
         ),
         child: SlideTransition(
           position: Tween<Offset>(
@@ -476,18 +486,30 @@ class SoftSwitcher extends StatelessWidget {
       duration: MotionPolicy.reduce(context) ? Duration.zero : duration,
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: MotionPolicy.reduce(context)
-                ? Offset.zero
-                : const Offset(0, .025),
-            end: Offset.zero,
-          ).animate(animation),
-          child: child,
-        ),
-      ),
+      transitionBuilder: (incoming, animation) {
+        final outgoing = !Widget.canUpdate(incoming, child);
+        return ExcludeSemantics(
+          excluding: outgoing,
+          child: ExcludeFocus(
+            excluding: outgoing,
+            child: IgnorePointer(
+              ignoring: outgoing,
+              child: FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: MotionPolicy.reduce(context)
+                        ? Offset.zero
+                        : const Offset(0, .025),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: incoming,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
       child: child,
     );
   }
