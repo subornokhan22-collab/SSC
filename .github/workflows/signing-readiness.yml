@@ -162,9 +162,9 @@ jobs:
             echo 'report<<REPORT_EOF'
             echo '**APK installed on the phone** (artifact 10897601043, built from `4b535e7`)'
             echo
-            echo "- signer certificate SHA-256: `${{ steps.cert.outputs.sha }}`"
+            echo '- signer certificate SHA-256: `${{ steps.cert.outputs.sha }}`'
             echo '- identity: ${{ steps.cert.outputs.identity }}'
-            echo "- `~/.android/debug.keystore` on a fresh runner: **${{ steps.state.outputs.prebaked }}** (${{ steps.state.outputs.runner_fp }})"
+            echo '- `~/.android/debug.keystore` on a fresh runner: **${{ steps.state.outputs.prebaked }}** (${{ steps.state.outputs.runner_fp }})'
             echo
             if [ '${{ steps.state.outputs.prebaked }}' = 'yes' ]; then
               echo 'The runner image ships a debug keystore, so compare the two fingerprints above.'

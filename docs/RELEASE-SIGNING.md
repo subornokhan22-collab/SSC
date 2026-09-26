@@ -103,9 +103,10 @@ a new signed APK must wait for configuration and positive certificate checks.
 ## Upgrading the phone that already runs a debug build
 
 Builds before release signing existed were signed with a **runner-local Android
-debug key**. GitHub runner images do not ship `~/.android/debug.keystore` (the
-`signing-readiness` workflow records whether one is present, so this is checked
-rather than assumed), so that key existed only on the machine that built the
+debug key**. GitHub runner images do not ship `~/.android/debug.keystore` — checked on
+2026-09-26 by the `signing-readiness` workflow, which found no such file on a
+fresh runner while the installed APK verified as an **Android Debug**
+certificate — so that key existed only on the machine that built the
 APK and cannot be reproduced. A production-signed APK therefore cannot be
 installed over the current one: **one uninstall is unavoidable**.
 
