@@ -36,7 +36,9 @@ class _AliveBackgroundState extends MotionLoopState<AliveBackground> {
         valueListenable: AppStyle.bgIndex,
         builder: (context, _, child) => ValueListenableBuilder<WorkspaceMood>(
           valueListenable: AppStyle.mood,
-          builder: (context, _, child) => TweenAnimationBuilder<Color>(
+          // ColorTween is a Tween<Color?>, so the builder is typed nullable and
+          // falls back to the current mood colour on the very first frame.
+          builder: (context, _, child) => TweenAnimationBuilder<Color?>(
             // ~300ms between areas: enough to read as a move, short enough that
             // rapid tab switching never feels laggy.
             tween: ColorTween(end: AppStyle.moodColor),
@@ -48,7 +50,7 @@ class _AliveBackgroundState extends MotionLoopState<AliveBackground> {
               child: RepaintBoundary(
                 child: CustomPaint(
                   painter: _PaperWashPainter(
-                    tint,
+                    tint ?? AppStyle.moodColor,
                     motionAllowed ? motion.value : 0,
                   ),
                   child: child,
