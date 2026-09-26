@@ -182,38 +182,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
       enabled: true,
       opacity: .45,
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(_otpSent ? 'Verify Code' : 'Create Account'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
-          children: Stagger.list([
-            AuthHero(
-              icon: _otpSent
-                  ? Icons.mark_email_read_rounded
-                  : Icons.person_add_alt_1_rounded,
-              title: _otpSent ? 'Almost there' : 'Tutor account',
-              subtitle: _otpSent
-                  ? 'We sent a code to ${_emailCtrl.text.trim()}. Enter it below to finish setting up your workspace.'
-                  : 'Choose a password you will use to sign in. We email a code once, just to confirm this address.',
-            ),
-            const SizedBox(height: 18),
-            SoftSwitcher(child: _otpSent ? _codeCard() : _detailsCard()),
-            if (_msg != null) ...[
-              const SizedBox(height: 14),
-              InfoBanner.success(_msg!),
-            ],
-            if (_err != null) ...[
-              const SizedBox(height: 14),
-              InfoBanner.error(_err!),
-            ],
-          ]),
+        appBar: AppBar(
+          title: Text(_otpSent ? 'Verify Code' : 'Create Account'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
         ),
-      ),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+            children: Stagger.list([
+              AuthHero(
+                icon: _otpSent
+                    ? Icons.mark_email_read_rounded
+                    : Icons.person_add_alt_1_rounded,
+                title: _otpSent ? 'Almost there' : 'Tutor account',
+                subtitle: _otpSent
+                    ? 'We sent a code to ${_emailCtrl.text.trim()}. Enter it below to finish setting up your workspace.'
+                    : 'Choose a password you will use to sign in. We email a code once, just to confirm this address.',
+              ),
+              const SizedBox(height: 18),
+              SoftSwitcher(child: _otpSent ? _codeCard() : _detailsCard()),
+              if (_msg != null) ...[
+                const SizedBox(height: 14),
+                InfoBanner.success(_msg!),
+              ],
+              if (_err != null) ...[
+                const SizedBox(height: 14),
+                InfoBanner.error(_err!),
+              ],
+            ]),
+          ),
+        ),
       ),
     );
   }

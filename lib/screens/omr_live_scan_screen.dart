@@ -412,13 +412,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                           vertical: 11,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              _autoCapture ? AppColors.omr : Colors.black54,
+                          color: _autoCapture ? AppColors.omr : Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: _autoCapture
-                                ? AppColors.omr
-                                : Colors.white54,
+                            color:
+                                _autoCapture ? AppColors.omr : Colors.white54,
                           ),
                         ),
                         child: Text(
@@ -552,9 +550,8 @@ class _GuidePainter extends CustomPainter {
     final border = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = streamDead
-          ? const Color(0xD9FF5252)
-          : AppColors.omr.withOpacity(.85);
+      ..color =
+          streamDead ? const Color(0xD9FF5252) : AppColors.omr.withOpacity(.85);
     canvas.drawRRect(
       RRect.fromRectAndRadius(guide, Radius.circular(r)),
       border,
@@ -565,8 +562,7 @@ class _GuidePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
-    bracket.color =
-        streamDead ? const Color(0xFFFF5252) : AppColors.omr;
+    bracket.color = streamDead ? const Color(0xFFFF5252) : AppColors.omr;
     final L = gw * 0.10;
     final tl = Offset(gx, gy);
     final tr = Offset(gx + gw, gy);

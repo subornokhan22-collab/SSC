@@ -222,48 +222,48 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   enabled: true,
                   opacity: .34,
                   child: Padding(
-                  padding: const EdgeInsets.all(22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(children: [
-                        Icon(Icons.description_outlined,
-                            color: AppTheme.primary, size: 34),
-                        SizedBox(width: 12),
-                        Expanded(
-                            child: Text('FROM YOUR DESK TO THE CLASSROOM',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    letterSpacing: 1.1,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppTheme.primary))),
-                      ]),
-                      const SizedBox(height: 14),
-                      Text(
-                        'Create a Question Paper',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Board Pattern, Chapter Test or MCQ + OMR — one guided workflow.',
-                      ),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: () => create(),
-                          icon: const Icon(Icons.add),
-                          label: Text(draftTitle == null
-                              ? 'Create a paper'
-                              : 'Create / resume paper'),
+                    padding: const EdgeInsets.all(22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(children: [
+                          Icon(Icons.description_outlined,
+                              color: AppTheme.primary, size: 34),
+                          SizedBox(width: 12),
+                          Expanded(
+                              child: Text('FROM YOUR DESK TO THE CLASSROOM',
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      letterSpacing: 1.1,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppTheme.primary))),
+                        ]),
+                        const SizedBox(height: 14),
+                        Text(
+                          'Create a Question Paper',
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () => create(quick: true),
-                        child: const Text('Start a Physics Model Test →'),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Board Pattern, Chapter Test or MCQ + OMR — one guided workflow.',
+                        ),
+                        const SizedBox(height: 18),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () => create(),
+                            icon: const Icon(Icons.add),
+                            label: Text(draftTitle == null
+                                ? 'Create a paper'
+                                : 'Create / resume paper'),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => create(quick: true),
+                          child: const Text('Start a Physics Model Test →'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

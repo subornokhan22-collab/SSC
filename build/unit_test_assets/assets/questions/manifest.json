@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "files": [
+    "biology_cqs.json",
+    "biology_mcqs.json",
+    "biology_saqs.json",
+    "chemistry_cqs.json",
+    "chemistry_mcqs.json",
+    "chemistry_saqs.json",
+    "core_cqs.json",
+    "core_mcqs.json",
+    "extra_cqs.json",
+    "extra_mcqs.json",
+    "general_math_cqs.json",
+    "general_math_mcqs.json",
+    "general_math_saqs.json",
+    "my_questions.json",
+    "physics_cqs.json",
+    "physics_mcqs.json",
+    "physics_saqs.json"
+  ],
+  "counts": {
+    "biology_cqs.json": 140,
+    "biology_mcqs.json": 719,
+    "biology_saqs.json": 280,
+    "chemistry_cqs.json": 120,
+    "chemistry_mcqs.json": 604,
+    "chemistry_saqs.json": 240,
+    "core_cqs.json": 97,
+    "core_mcqs.json": 569,
+    "extra_cqs.json": 2,
+    "extra_mcqs.json": 8,
+    "general_math_cqs.json": 170,
+    "general_math_mcqs.json": 850,
+    "general_math_saqs.json": 340,
+    "my_questions.json": 0,
+    "physics_cqs.json": 130,
+    "physics_mcqs.json": 750,
+    "physics_saqs.json": 260
+  },
+  "total": 5279
+}

@@ -1649,9 +1649,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 : AppTheme.surfaceAlt,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: chosen >= 0
-                  ? AppColors.omr.withOpacity(.5)
-                  : AppTheme.border,
+              color:
+                  chosen >= 0 ? AppColors.omr.withOpacity(.5) : AppTheme.border,
             ),
           ),
           child: Row(
@@ -1687,9 +1686,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           shape: BoxShape.circle,
                           color: chosen == o ? AppColors.omr : Colors.white,
                           border: Border.all(
-                            color: chosen == o
-                                ? AppColors.omr
-                                : AppTheme.border,
+                            color:
+                                chosen == o ? AppColors.omr : AppTheme.border,
                           ),
                         ),
                         child: Center(
