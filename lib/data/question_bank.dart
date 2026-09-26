@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'question_figure.dart' show QuestionFigure;
 import 'questions_data.dart';
+import '../services/question_validation.dart';
 
 /// Loads the question bank from the JSON assets in `assets/questions/`.
 ///
@@ -22,6 +23,9 @@ class QuestionBank {
   static List<Question> _mcqs = const [];
   static List<ShortQuestion> _saqs = const [];
   static List<CreativeQuestion> _cqs = const [];
+  static List<Question> _bundledMcqs = const [];
+  static List<ShortQuestion> _bundledSaqs = const [];
+  static List<CreativeQuestion> _bundledCqs = const [];
   static bool _loaded = false;
 
   /// True once the bank has been read from assets.
@@ -41,8 +45,9 @@ class QuestionBank {
   static Future<void> load() async {
     if (_loaded) return;
 
-    final manifestRaw =
-        await rootBundle.loadString('assets/questions/manifest.json');
+    final manifestRaw = await rootBundle.loadString(
+      'assets/questions/manifest.json',
+    );
     final manifest = json.decode(manifestRaw) as Map<String, dynamic>;
     final files = (manifest['files'] as List).cast<String>();
 
@@ -61,6 +66,9 @@ class QuestionBank {
     _mcqs = List<Question>.unmodifiable(parsed.mcqs);
     _saqs = List<ShortQuestion>.unmodifiable(parsed.saqs);
     _cqs = List<CreativeQuestion>.unmodifiable(parsed.cqs);
+    _bundledMcqs = _mcqs;
+    _bundledSaqs = _saqs;
+    _bundledCqs = _cqs;
     _loaded = true;
 
     final expected = manifest['total'];
@@ -92,9 +100,42 @@ class QuestionBank {
       ]);
     }
 
-    _mcqs = merge(_mcqs, mcqs, (q) => q.id);
-    _saqs = merge(_saqs, saqs, (q) => q.id);
-    _cqs = merge(_cqs, cqs, (q) => q.id);
+    _mcqs = merge(
+      _mcqs,
+      mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      (q) => q.id,
+    );
+    _saqs = merge(
+      _saqs,
+      saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      (q) => q.id,
+    );
+    _cqs = merge(
+      _cqs,
+      cqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+      (q) => q.id,
+    );
+  }
+
+  /// Reconcile a complete remote snapshot, including removals and archives.
+  static void replaceRemote(
+      {Set<String> suppressedIds = const {},
+      List<Question> mcqs = const [],
+      List<ShortQuestion> saqs = const [],
+      List<CreativeQuestion> cqs = const []}) {
+    _mcqs = _bundledMcqs
+        .where((q) => !suppressedIds.contains(q.id))
+        .toList(growable: false);
+    _saqs = _bundledSaqs
+        .where((q) => !suppressedIds.contains(q.id))
+        .toList(growable: false);
+    _cqs = _bundledCqs
+        .where((q) => !suppressedIds.contains(q.id))
+        .toList(growable: false);
+    addRemote(
+        mcqs: mcqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+        saqs: saqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+        cqs: cqs.where((q) => !suppressedIds.contains(q.id)).toList());
   }
 
   /// Test seam — lets widget tests install a small bank without touching
@@ -108,6 +149,9 @@ class QuestionBank {
     _mcqs = List<Question>.unmodifiable(mcqs);
     _saqs = List<ShortQuestion>.unmodifiable(saqs);
     _cqs = List<CreativeQuestion>.unmodifiable(cqs);
+    _bundledMcqs = _mcqs;
+    _bundledSaqs = _saqs;
+    _bundledCqs = _cqs;
     _loaded = true;
   }
 }
@@ -151,7 +195,11 @@ _Decoded _decodeAll(List<String> sources) {
       }
     }
   }
-  return _Decoded(mcqs, saqs, cqs);
+  return _Decoded(
+    mcqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+    saqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+    cqs.where((q) => QuestionValidationService.validate(q).valid).toList(),
+  );
 }
 
 QuestionSource _sourceFrom(Object? v) => switch (v) {

@@ -56,22 +56,35 @@ void main() {
     });
 
     test('division chapter-number lists match the requested mapping', () {
-      expect(GeneralMathDivisions.algebraChapters,
-          const <int>[1, 2, 3, 4, 5, 11, 12, 13]);
-      expect(
-          GeneralMathDivisions.geometryChapters, const <int>[6, 7, 8, 14, 15]);
-      expect(GeneralMathDivisions.trigonometryMensurationChapters,
-          const <int>[9, 10, 16]);
+      expect(GeneralMathDivisions.algebraChapters, const <int>[
+        1,
+        2,
+        3,
+        4,
+        5,
+        11,
+        12,
+        13,
+      ]);
+      expect(GeneralMathDivisions.geometryChapters, const <int>[
+        6,
+        7,
+        8,
+        14,
+        15,
+      ]);
+      expect(GeneralMathDivisions.trigonometryMensurationChapters, const <int>[
+        9,
+        10,
+        16,
+      ]);
       expect(GeneralMathDivisions.statisticsChapters, const <int>[17]);
-      expect(
-        GeneralMathDivisions.names,
-        const <String>[
-          'ক বিভাগ — বীজগণিত',
-          'খ বিভাগ — জ্যামিতি',
-          'গ বিভাগ — ত্রিকোণমিতি ও পরিমিতি',
-          'ঘ বিভাগ — পরিসংখ্যান',
-        ],
-      );
+      expect(GeneralMathDivisions.names, const <String>[
+        'ক বিভাগ — বীজগণিত',
+        'খ বিভাগ — জ্যামিতি',
+        'গ বিভাগ — ত্রিকোণমিতি ও পরিমিতি',
+        'ঘ বিভাগ — পরিসংখ্যান',
+      ]);
     });
 
     test('every new record uses an official chapter', () {
@@ -97,12 +110,21 @@ void main() {
 
     test('each chapter has exactly 50 MCQ, 20 SAQ and 10 CQ', () {
       for (final chapter in GeneralMathChapterCatalog.chapters) {
-        expect(generalMathMcqs.where((q) => q.chapter == chapter).length, 50,
-            reason: chapter);
-        expect(generalMathSaqs.where((q) => q.chapter == chapter).length, 20,
-            reason: chapter);
-        expect(generalMathCqs.where((q) => q.chapter == chapter).length, 10,
-            reason: chapter);
+        expect(
+          generalMathMcqs.where((q) => q.chapter == chapter).length,
+          50,
+          reason: chapter,
+        );
+        expect(
+          generalMathSaqs.where((q) => q.chapter == chapter).length,
+          20,
+          reason: chapter,
+        );
+        expect(
+          generalMathCqs.where((q) => q.chapter == chapter).length,
+          10,
+          reason: chapter,
+        );
       }
     });
 
@@ -213,9 +235,12 @@ void main() {
       expect(countByDivision(paper.mcqs, GeneralMathDivisions.algebra), 13);
       expect(countByDivision(paper.mcqs, GeneralMathDivisions.geometry), 12);
       expect(
-          countByDivision(
-              paper.mcqs, GeneralMathDivisions.trigonometryMensuration),
-          4);
+        countByDivision(
+          paper.mcqs,
+          GeneralMathDivisions.trigonometryMensuration,
+        ),
+        4,
+      );
       expect(countByDivision(paper.mcqs, GeneralMathDivisions.statistics), 1);
     });
 
@@ -223,9 +248,12 @@ void main() {
       expect(countByDivision(paper.saqs, GeneralMathDivisions.algebra), 4);
       expect(countByDivision(paper.saqs, GeneralMathDivisions.geometry), 4);
       expect(
-          countByDivision(
-              paper.saqs, GeneralMathDivisions.trigonometryMensuration),
-          4);
+        countByDivision(
+          paper.saqs,
+          GeneralMathDivisions.trigonometryMensuration,
+        ),
+        4,
+      );
       expect(countByDivision(paper.saqs, GeneralMathDivisions.statistics), 3);
     });
 
@@ -244,8 +272,10 @@ void main() {
     test('new records are reachable through existing aggregate names', () {
       expect(allMCQs.where((q) => q.subjectId == 'general_math').length, 1363);
       expect(allSAQs.where((q) => q.subjectId == 'general_math').length, 340);
-      expect(allCQs.where((q) => q.subjectId == 'general_math').length,
-          greaterThanOrEqualTo(170));
+      expect(
+        allCQs.where((q) => q.subjectId == 'general_math').length,
+        greaterThanOrEqualTo(170),
+      );
       for (final q in generalMathMcqs.take(20)) {
         expect(allMCQs.any((item) => item.id == q.id), isTrue, reason: q.id);
       }

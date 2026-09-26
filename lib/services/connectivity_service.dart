@@ -42,8 +42,9 @@ class ConnectivityService {
     _checking = true;
     try {
       final results = await _connectivity.checkConnectivity();
-      final hasNetwork = results.any((r) =>
-          r != ConnectivityResult.none && r != ConnectivityResult.vpn);
+      final hasNetwork = results.any(
+        (r) => r != ConnectivityResult.none && r != ConnectivityResult.vpn,
+      );
       final reallyOnline = hasNetwork ? await _canReachInternet() : false;
       _setOnline(reallyOnline);
     } catch (_) {
@@ -64,9 +65,8 @@ class ConnectivityService {
   /// Real reachability check: a quick DNS lookup with a short timeout.
   Future<bool> _canReachInternet() async {
     try {
-      final addresses =
-          await InternetAddress.lookup('clients3.google.com')
-              .timeout(const Duration(seconds: 4));
+      final addresses = await InternetAddress.lookup('clients3.google.com')
+          .timeout(const Duration(seconds: 4));
       return addresses.isNotEmpty;
     } catch (_) {
       return false;

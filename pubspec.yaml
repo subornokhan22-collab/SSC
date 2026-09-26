@@ -24,7 +24,6 @@ dependencies:
   path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
   connectivity_plus: ^6.0.0  # offline detection (global banner + app-open error)
   url_launcher: ^6.3.0       # open the bKash checkout (bKash payment flow)
-  flutter_markdown_plus: ^1.0.12   # render Boktul's markdown answers
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +33,20 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: DejaVu Sans
+      fonts:
+        - asset: assets/fonts/DejaVuSans.ttf
+        - asset: assets/fonts/DejaVuSans-Bold.ttf
+          weight: 700
+    - family: Hind Siliguri
+      fonts:
+        - asset: assets/fonts/HindSiliguri-Regular.ttf
+    - family: Noto Serif Bengali
+      fonts:
+        - asset: assets/fonts/NotoSerifBengali-Regular.ttf
+        - asset: assets/fonts/NotoSerifBengali-Bold.ttf
+          weight: 700
   assets:
     - assets/questions/
     - assets/question_figures/

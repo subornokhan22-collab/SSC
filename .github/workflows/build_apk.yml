@@ -1,19 +1,83 @@
-name: Build APK
+name: App checks and signed APK
 
 on:
   push:
+    branches: ['**']
+    tags: ['v*']
   workflow_dispatch:
+    inputs:
+      require_signed_apk:
+        description: 'Require production APK delivery (fails if signing is not configured)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+  # Needed so a failure can be reported on the pull request: workflow logs and
+  # artifacts live on blob storage that is not reachable from every client.
+  pull-requests: write
+  issues: write
 
 jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: rls_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d rls_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Gemini edge function
+        run: deno check supabase/functions/mimi/index.ts supabase/functions/admin-content/index.ts
+      - name: Gateway request boundary tests
+        run: node --experimental-strip-types --test supabase/tests/*_test.mjs
+      - name: Profiles RLS and audit regression tests (disposable database)
+        env:
+          PGPASSWORD: ci-only-password
+        run: psql -h 127.0.0.1 -U postgres -d rls_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles_rls_test.sql
+
+      - name: Content workflow, English and audit RLS regressions
+        env:
+          PGPASSWORD: ci-only-password
+        run: |
+          createdb -h 127.0.0.1 -U postgres content_test
+          psql -h 127.0.0.1 -U postgres -d content_test -v ON_ERROR_STOP=1 -f supabase/tests/content_manager_test.sql
+      - name: Admin validation and browser tests
+        working-directory: web-admin
+        run: |
+          npm ci --ignore-scripts
+          npm test
+          npx playwright install --with-deps chromium
+          npx playwright test
+
   build:
+    needs: security-tests
     runs-on: ubuntu-latest
     # The `secrets` context is not allowed inside step `if:` conditions,
     # so the "does the keystore exist" check is staged through env here.
     env:
-      HAS_RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+      HAS_RELEASE_SIGNING: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' && secrets.RELEASE_KEYSTORE_PASSWORD != '' && secrets.RELEASE_KEY_ALIAS != '' && secrets.RELEASE_KEY_PASSWORD != '' && vars.RELEASE_CERT_SHA256 != '' }}
+      RELEASE_CERT_SHA256: ${{ vars.RELEASE_CERT_SHA256 }}
+      # A test APK is built only when a branch commit explicitly asks for it in
+      # its message. Tags can never take this path, so a version release still
+      # requires the production keystore.
+      BUILD_TEST_APK: ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && contains(github.event.head_commit.message, '[test-apk]') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,6 +92,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: Get packages
         run: flutter pub get
@@ -37,23 +102,172 @@ jobs:
         # withOpacity) must not block builds; real errors still fail it.
         run: |
           set -o pipefail
-          flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log
+          if ! flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log; then
+            python3 tool/ci_annotations.py analyze.log
+            exit 1
+          fi
 
       - name: Test (quality gate — blocks on failing tests)
         run: |
           set -o pipefail
-          flutter test 2>&1 | tee test.log
+          if ! flutter test --reporter expanded 2>&1 | tee test.log; then
+            python3 tool/ci_annotations.py test.log
+            exit 1
+          fi
+
+      - name: Format check (quality gate)
+        run: |
+          set -o pipefail
+          if ! dart format --output=none --set-exit-if-changed lib test tool 2>&1 | tee format.log; then
+            # dart format cannot be run in every editing environment, so the
+            # gate fixes itself instead of blocking: normalise, push, and still
+            # fail this run so the gate stays honest and the next run is clean.
+            dart format lib test tool > format-fix.log 2>&1 || true
+            git config user.email 'ci@local'
+            git config user.name 'ci-format'
+            # Only ever stage source: build output and logs must not ride along.
+            git add lib test tool
+            if ! git diff --cached --quiet; then
+              git commit -q -m 'Apply dart format to ${GITHUB_SHA:0:7}'
+              git push -q origin "HEAD:${GITHUB_REF#refs/heads/}"
+              echo 'Formatting normalised and pushed; re-run for a clean gate.'
+            fi
+            exit 1
+          fi
+
+      - name: Question bank health (review item #35)
+        # Warnings (duplicate stems etc.) are reported but do not block;
+        # hard problems (bad keys, dup ids, empty options) fail the build.
+        run: |
+          set -o pipefail
+          python3 tool/bank_health.py | tee bank-health.txt
+
+      - name: Upload bank health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bank-health
+          path: bank-health.txt
+          retention-days: 30
+
+      - name: Setup Gradle for compile-only checks
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
+
+      - name: Validate Android configuration and signing guard (no APK)
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
+        run: |
+          printf 'flutter.sdk=%s\nsdk.dir=%s\n' "$FLUTTER_ROOT" "$ANDROID_HOME" > android/local.properties
+          cd android
+          gradle :app:tasks --all > ../gradle-tasks.log
+          if gradle :app:validateProductionSigning > ../signing-guard.log 2>&1; then
+            echo 'ERROR: release signing guard allowed missing credentials'
+            exit 1
+          fi
+          grep -q 'Production release signing is incomplete' ../signing-guard.log
+          echo '### Production APK delivery blocked: secure production signing is not configured. No debug, unsigned or preview APK is distributed.' >> "$GITHUB_STEP_SUMMARY"
+          if [ "${BUILD_TEST_APK:-false}" = "true" ]; then
+            echo 'An explicitly requested test build (release mode, runner debug signature) follows below; it is never distributed as a release.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Compile native sources without packaging an APK
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
+        run: |
+          set -o pipefail
+          cd android
+          gradle :app:compileDebugKotlin 2>&1 | tee ../native-compile.log
+          cd ..
+          if find build -type f -name '*.apk' | grep -q .; then
+            echo 'Unexpected APK from a compile-only quality check'
+            exit 1
+          fi
+
+      - name: Require signing for an explicit release request
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' && (startsWith(github.ref, 'refs/tags/v') || inputs.require_signed_apk == true) }}
+        run: |
+          echo 'Production APK requested but release signing is incomplete.'
+          exit 1
+
+      # Explicitly requested test build. Release mode so animations run AOT like
+      # production, but signed with the runner's debug key: it can never be
+      # distributed and cannot update a production install.
+      - name: Build test APK (release mode, runner debug signature)
+        if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
+        run: |
+          set -o pipefail
+          printf '\n# Requested test build: release mode with the runner debug key.\nallowTestSigning=true\n' >> android/gradle.properties
+          dart run flutter_launcher_icons
+          flutter build apk --release --split-per-abi --dart-define=BUILD_NUMBER=${{ github.run_number }} 2>&1 | tee flutter-build.log
+
+      - name: Assert the test APK is debug-signed and list it
+        if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
+        run: |
+          set -euo pipefail
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          test -n "$signer"
+          count=0
+          for apk in build/app/outputs/flutter-apk/app-*-release.apk; do
+            count=$((count + 1))
+            "$signer" verify --verbose --print-certs "$apk" > "cert-$(basename "$apk").txt"
+            # Inverse of the production rule: a test build MUST carry the debug
+            # identity, which proves no production key was involved.
+            grep -qi 'Android Debug' "cert-$(basename "$apk").txt"
+          done
+          test "$count" -ge 1
+          {
+            echo '### Test APK built — not production signed'
+            echo
+            echo 'Release mode (AOT) signed with the runner debug key. Installing it'
+            echo 'replaces the existing app only after uninstalling, because the'
+            echo 'signature differs from any previous build.'
+            echo
+            echo '```'
+            ls -l build/app/outputs/flutter-apk/app-*-release.apk
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test APK artifact
+        if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: TEST-apk-build-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-*-release.apk
+          retention-days: 14
+
+      - name: Publish test APK as a prerelease for direct download
+        if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="test-build-$GITHUB_RUN_NUMBER"
+          notes="Release mode (AOT) test build for install-and-try testing.
+          Signed with the runner debug key, not the production identity, so it
+          cannot be distributed and cannot update a production install.
+          Install the arm64-v8a APK on a modern Android phone."
+          git -c user.email=ci@local -c user.name=ci tag -f "$tag"
+          git -c user.email=ci@local -c user.name=ci push -f origin "refs/tags/$tag"
+          gh release create "$tag" build/app/outputs/flutter-apk/app-*-release.apk \
+            --repo "$GITHUB_REPOSITORY" --prerelease \
+            --title "TEST BUILD $GITHUB_RUN_NUMBER — not production signed" \
+            --notes "$notes"
 
       - name: Restore release keystore (from GitHub Secrets)
-        if: ${{ env.HAS_RELEASE_KEYSTORE == 'true' }}
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
         run: |
-          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
-          ls -la android/app/release.keystore
+          umask 077
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
 
       - name: Generate launcher icons (fixes missing app icon)
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
         run: dart run flutter_launcher_icons
 
-      - name: Build APK
+      - name: Build production-signed APK
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
         env:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
@@ -62,10 +276,26 @@ jobs:
           set -o pipefail
           flutter build apk --release --split-per-abi --dart-define=BUILD_NUMBER=${{ github.run_number }} 2>&1 | tee flutter-build.log
 
-      - name: Post build log (TEMP diagnostic)
+      - name: Verify APK certificates before distribution
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
+        run: |
+          set -euo pipefail
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          test -n "$signer"
+          expected=$(printf '%s' "$RELEASE_CERT_SHA256" | tr -d ':' | tr '[:upper:]' '[:lower:]' | xargs)
+          for apk in build/app/outputs/flutter-apk/app-*-release.apk; do
+            "$signer" verify --verbose --print-certs "$apk" > certificate-check.txt
+            ! grep -qi 'Android Debug' certificate-check.txt
+            actual=$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' certificate-check.txt | tr '[:upper:]' '[:lower:]')
+            test "$actual" = "$expected"
+          done
+
+      - name: Remove restored keystore
+        if: always()
+        run: rm -f android/app/release.keystore
+
+      - name: Post build log (diagnostic — as artifact, not release)
         if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           {
             echo "===== ANALYZE ====="
@@ -76,23 +306,68 @@ jobs:
             echo ""
             echo "===== BUILD ====="
             tail -c 30000 flutter-build.log 2>/dev/null || echo "(no flutter-build.log)"
-          } > /tmp/log-tail.txt
-          gh release create "ci-diag-${{ github.run_id }}" \
-            --repo "${{ github.repository }}" \
-            --title "CI diagnostic log (temporary)" \
-            --notes-file /tmp/log-tail.txt \
-            --latest=false
+            echo "===== NATIVE COMPILE / SIGNING GUARD ====="
+            tail -c 15000 native-compile.log gradle-tasks.log signing-guard.log 2>/dev/null || true
+          } > ci-diag-${GITHUB_RUN_ID}.txt
 
-      - name: Upload APK to Releases (no storage quota!)
+      - name: Upload diagnostic log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diag-${{ github.run_id }}
+          path: ci-diag-${{ github.run_id }}.txt
+          retention-days: 30
+
+      # Workflow logs and artifacts live on blob storage that not every client
+      # can reach, so failures are also posted where they can be read.
+      - name: Report build failures on the pull request
+        if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # mapping.txt (R8 symbol map) rides along as an asset so any
-          # minified-crash stack can be decoded against this exact build.
-          gh release create "apk-${{ github.run_id }}" \
+          set +e
+          {
+            echo "## CI failure — run $GITHUB_RUN_NUMBER, commit ${GITHUB_SHA:0:7}"
+            for f in analyze.log test.log format.log flutter-build.log native-compile.log signing-guard.log gradle-tasks.log; do
+              if [ -s "$f" ]; then
+                echo
+                echo "### tail of $f"
+                echo '```'
+                tail -c 8000 "$f"
+                echo '```'
+              fi
+            done
+          } > failure-report.md
+          head -c 60000 failure-report.md > failure-report-trim.md
+          gh pr comment 6 --repo "$GITHUB_REPOSITORY" --body-file failure-report-trim.md
+
+      # Review item #32: a release is a release. Branch builds upload an
+      # Actions artifact (Actions → run → Artifacts → download); a formal
+      # GitHub Release is only created from a version tag (git tag v1.0.0
+      # && git push origin v1.0.0) so the release list stops accumulating
+      # a build per push.
+      - name: Upload APK as artifact (branch build)
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' && !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          # mapping.txt (R8 symbol map) rides along so any minified-crash
+          # stack can be decoded against this exact build.
+          name: tutor-desk-apk-build-${{ github.run_number }}
+          path: |
+            build/app/outputs/flutter-apk/app-*-release.apk
+            build/app/outputs/mapping/release/mapping.txt
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish GitHub Release (version tags only)
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' && startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
             build/app/outputs/flutter-apk/app-*-release.apk \
             build/app/outputs/mapping/release/mapping.txt \
             --repo "${{ github.repository }}" \
-            --title "Tutor's Desk (build ${{ github.run_number }})" \
-            --notes "Tutor's Desk. Most phones need app-arm64-v8a-release.apk." \
+            --title "Tutor's Desk ${GITHUB_REF_NAME} (build ${{ github.run_number }})" \
+            --notes "Tutor's Desk ${GITHUB_REF_NAME}. Most phones need app-arm64-v8a-release.apk." \
             --latest

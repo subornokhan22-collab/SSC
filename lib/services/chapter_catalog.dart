@@ -11,6 +11,7 @@ import '../data/ict/ict_chapter_catalog.dart';
 /// Textbook order is numeric; combined/generated chapter labels stay hidden.
 class ChapterCatalog {
   ChapterCatalog._();
+  static Map<String, List<String>> remote = {};
 
   static const _bn = {
     '০': 0,
@@ -22,7 +23,7 @@ class ChapterCatalog {
     '৬': 6,
     '৭': 7,
     '৮': 8,
-    '৯': 9
+    '৯': 9,
   };
 
   /// Official Physics chapter sequence supplied from the current contents page.
@@ -50,14 +51,17 @@ class ChapterCatalog {
         v.contains('মিলিয়ে') ||
         lower.contains('mixed') ||
         lower.contains('board-style')) return false;
-    return RegExp(r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+', caseSensitive: false)
-        .hasMatch(v);
+    return RegExp(
+      r'(^|\s)(অধ্যায়|chapter)\s*[০-৯0-9]+',
+      caseSensitive: false,
+    ).hasMatch(v);
   }
 
   static int numberOf(String raw) {
-    final hit =
-        RegExp(r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)', caseSensitive: false)
-            .firstMatch(raw);
+    final hit = RegExp(
+      r'(?:অধ্যায়|chapter)\s*([০-৯0-9]+)',
+      caseSensitive: false,
+    ).firstMatch(raw);
     if (hit == null) return 9999;
     var value = 0;
     for (final c in hit.group(1)!.split('')) {
@@ -69,6 +73,8 @@ class ChapterCatalog {
   }
 
   static List<String> ordered(Iterable<String> values, {String? subjectId}) {
+    if (remote.containsKey(subjectId))
+      return List.unmodifiable(remote[subjectId]!);
     // Show each complete official catalog even before every chapter has questions.
     if (subjectId == 'physics') return List<String>.from(physics);
     if (subjectId == BanglaFirstCatalog.subjectId) {

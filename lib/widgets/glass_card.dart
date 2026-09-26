@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import 'animations.dart';
+import 'motion_policy.dart';
 
 /// Frosted, softly-lit white surface used for every panel in the tutor
 /// portal. The translucency keeps the animated backdrop visible while the
@@ -29,9 +29,8 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = highlighted
-        ? AppTheme.primary.withOpacity(.45)
-        : AppTheme.border;
+    final border =
+        highlighted ? AppTheme.primary.withOpacity(.45) : AppTheme.border;
     // No BackdropFilter here on purpose. The card fill is 88-94% opaque, so
     // the blur behind it was barely visible, but it is one of the most
     // expensive things Flutter can draw — and during a page transition two
@@ -41,39 +40,21 @@ class GlassCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       child: RepaintBoundary(
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 240),
+          duration: MotionPolicy.duration(context, 240),
           curve: Curves.easeOut,
           padding: padding,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                (tint ?? Colors.white).withOpacity(.94),
-                (tint ?? const Color(0xFFF7F9FE)).withOpacity(.88),
-              ],
-            ),
+            color: tint ?? AppTheme.surface,
             border: Border.all(color: border, width: highlighted ? 1.3 : 1),
-            boxShadow: [
-              BoxShadow(
-                color: highlighted
-                    ? AppTheme.primary.withOpacity(.16)
-                    : const Color(0xFF16203A).withOpacity(.07),
-                blurRadius: highlighted ? 26 : 18,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            boxShadow: const [],
           ),
           child: child,
         ),
       ),
     );
 
-    final wrapped = Padding(
-      padding: margin ?? EdgeInsets.zero,
-      child: body,
-    );
+    final wrapped = Padding(padding: margin ?? EdgeInsets.zero, child: body);
     if (onTap == null) return wrapped;
     return PressableScale(onTap: onTap, child: wrapped);
   }
@@ -85,7 +66,12 @@ class SectionTitle extends StatelessWidget {
   final String? subtitle;
   final IconData? icon;
 
-  const SectionTitle({super.key, required this.title, this.subtitle, this.icon});
+  const SectionTitle({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +121,10 @@ class SectionTitle extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: const TextStyle(
-                        fontSize: 12.5, height: 1.45, color: AppTheme.muted),
+                      fontSize: 12.5,
+                      height: 1.45,
+                      color: AppTheme.muted,
+                    ),
                   ),
                 ],
               ],
@@ -163,7 +152,7 @@ class StatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
+      duration: MotionPolicy.duration(context, 220),
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
       decoration: BoxDecoration(
         color: color.withOpacity(.11),
@@ -180,7 +169,10 @@ class StatusPill extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-                fontSize: 11.5, color: color, fontWeight: FontWeight.w700),
+              fontSize: 11.5,
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -217,7 +209,7 @@ class InfoBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeSlideIn(
       offset: const Offset(0, 10),
-      duration: const Duration(milliseconds: 320),
+      duration: MotionPolicy.duration(context, 320),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(13),
@@ -283,9 +275,10 @@ class EmptyState extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.w800,
-                  color: AppTheme.textDark),
+                fontSize: 15.5,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textDark,
+              ),
             ),
             if (message != null) ...[
               const SizedBox(height: 7),
@@ -293,7 +286,10 @@ class EmptyState extends StatelessWidget {
                 message!,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    fontSize: 12.8, height: 1.55, color: AppTheme.muted),
+                  fontSize: 12.8,
+                  height: 1.55,
+                  color: AppTheme.muted,
+                ),
               ),
             ],
           ],
@@ -324,11 +320,15 @@ class BusyIndicator extends StatelessWidget {
                 children: [
                   const HaloRing(size: 74, strokeWidth: 2.4),
                   Pulse(
+                    enabled: true,
                     min: .88,
                     max: 1.06,
                     period: const Duration(milliseconds: 1100),
-                    child: const Icon(Icons.auto_awesome_rounded,
-                        color: AppTheme.primary, size: 26),
+                    child: const Icon(
+                      Icons.auto_awesome_rounded,
+                      color: AppTheme.primary,
+                      size: 26,
+                    ),
                   ),
                 ],
               ),
@@ -338,7 +338,10 @@ class BusyIndicator extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 13.2, height: 1.5, color: AppTheme.muted),
+                fontSize: 13.2,
+                height: 1.5,
+                color: AppTheme.muted,
+              ),
             ),
           ],
         ),

@@ -10,23 +10,19 @@ import 'questions_data.dart';
 
 /// Pulls questions published from the web admin panel.
 ///
-/// The 15,392 bundled questions still ship inside the APK and load instantly
-/// offline. This adds anything written since the last release, so new
-/// material reaches tutors **without an app update**.
-///
-/// Design notes:
-/// * Only rows newer than the last sync are fetched, so the usual cost is one
-///   small request returning nothing.
-/// * The result is cached, so the extra questions survive being offline.
-/// * Every failure is silent. A paper must never fail to generate because the
-///   network is down.
+/// Bundled content loads instantly offline. A paginated, complete public
+/// snapshot adds published remote content and reconciles archive/deletion.
+/// The previous snapshot survives a network failure. Private questions are
+/// never put into this device-wide public bank cache.
 class QuestionSync {
   QuestionSync._();
 
-  static const _cacheKey = 'remote_questions_v1';
+  static const _cacheKey = 'remote_questions_v2';
+  static const _legacyCacheKey = 'remote_questions_v1';
   static const _stampKey = 'remote_questions_since_v1';
 
   /// Rows pulled from the server, already merged into [QuestionBank].
+  static bool _busy = false;
   static int _added = 0;
   static int get added => _added;
 
@@ -39,60 +35,71 @@ class QuestionSync {
   static Future<void> loadCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_cacheKey);
+      final raw =
+          prefs.getString(_cacheKey) ?? prefs.getString(_legacyCacheKey);
       if (raw == null || raw.isEmpty) return;
-      _merge(json.decode(raw) as List);
+      final cached = json.decode(raw);
+      if (cached is List) {
+        _merge(cached);
+      } else {
+        _merge(cached['rows'] as List,
+            suppressedIds: Set<String>.from(cached['suppressedIds'] as List));
+      }
     } catch (e) {
       debugPrint('QuestionSync: cache unreadable ($e)');
     }
   }
 
-  /// Asks the server for anything added since the last successful sync.
+  /// Reconciles a complete, paginated published-content snapshot.
   ///
-  /// Safe to call in the background — it returns the number of new questions
+  /// Safe to call in the background — it returns the number of remote rows
   /// and swallows every error.
   static Future<int> refresh() async {
-    if (!SupabaseConfig.isConfigured) return 0;
+    if (_busy || !SupabaseConfig.isConfigured) return 0;
+    _busy = true;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final since = prefs.getString(_stampKey);
-
-      var query = _c.from('questions').select().eq('is_active', true);
-      if (since != null && since.isNotEmpty) {
-        query = query.gt('updated_at', since);
+      // A full paginated official snapshot removes archived/deleted records.
+      // The old updated_at > cursor missed removals and equal-timestamp pages.
+      final rows = <dynamic>[];
+      for (var start = 0;; start += 500) {
+        final page = await _c
+            .from('questions')
+            .select()
+            .eq('is_active', true)
+            .eq('review_status', 'published')
+            .isFilter('owner_id', null)
+            .order('id')
+            .range(start, start + 499);
+        rows.addAll(page);
+        if (page.length < 500) break;
+        if (rows.length >= 100000)
+          throw StateError('Question sync safety limit');
       }
-      final rows = await query.order('updated_at').limit(2000);
-
-      if (rows.isEmpty) return 0;
-
-      // Merge the delta into whatever is already cached, keyed by id so an
-      // edited question replaces its older copy rather than duplicating it.
-      final cachedRaw = prefs.getString(_cacheKey);
-      final byId = <String, Map<String, dynamic>>{};
-      if (cachedRaw != null && cachedRaw.isNotEmpty) {
-        for (final r in json.decode(cachedRaw) as List) {
-          final m = (r as Map).cast<String, dynamic>();
-          byId[m['id'] as String] = m;
-        }
+      final suppressed = <String>{};
+      for (var start = 0;; start += 500) {
+        final page = await _c
+            .from('question_tombstones')
+            .select('id')
+            .order('id')
+            .range(start, start + 499);
+        suppressed.addAll(page.map((r) => r['id'] as String));
+        if (page.length < 500) break;
+        if (suppressed.length >= 100000)
+          throw StateError('Retirement sync safety limit');
       }
-      String newest = since ?? '';
-      for (final r in rows) {
-        final m = Map<String, dynamic>.from(r as Map);
-        byId[m['id'] as String] = m;
-        final u = (m['updated_at'] ?? '').toString();
-        if (u.compareTo(newest) > 0) newest = u;
-      }
-
-      final merged = byId.values.toList();
-      await prefs.setString(_cacheKey, json.encode(merged));
-      if (newest.isNotEmpty) await prefs.setString(_stampKey, newest);
-
-      _merge(merged);
+      if (!await prefs.setString(_cacheKey,
+          json.encode({'rows': rows, 'suppressedIds': suppressed.toList()})))
+        throw StateError('Question cache write failed');
+      await prefs.remove(_legacyCacheKey);
+      _merge(rows, suppressedIds: suppressed);
       return rows.length;
     } catch (e) {
       // Offline, table missing, RLS denial — none of it should surface.
       debugPrint('QuestionSync: refresh skipped ($e)');
       return 0;
+    } finally {
+      _busy = false;
     }
   }
 
@@ -100,11 +107,14 @@ class QuestionSync {
   static Future<void> clearCache() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_cacheKey);
+    await prefs.remove(_legacyCacheKey);
     await prefs.remove(_stampKey);
+    QuestionBank.replaceRemote();
+    _added = 0;
   }
 
   /// Turns server rows into model objects and hands them to [QuestionBank].
-  static void _merge(List rows) {
+  static void _merge(List rows, {Set<String> suppressedIds = const {}}) {
     final mcqs = <Question>[];
     final saqs = <ShortQuestion>[];
     final cqs = <CreativeQuestion>[];
@@ -112,6 +122,10 @@ class QuestionSync {
     for (final row in rows) {
       try {
         final m = Map<String, dynamic>.from(row as Map);
+        if (m['owner_id'] != null ||
+            m['is_active'] == false ||
+            (m['review_status'] != null && m['review_status'] != 'published'))
+          continue;
         // The server stores the type-specific fields in `payload`, matching
         // the exported JSON, so the existing decoders can be reused as-is.
         final flat = <String, dynamic>{
@@ -143,6 +157,7 @@ class QuestionSync {
     }
 
     _added = mcqs.length + saqs.length + cqs.length;
-    if (_added > 0) QuestionBank.addRemote(mcqs: mcqs, saqs: saqs, cqs: cqs);
+    QuestionBank.replaceRemote(
+        mcqs: mcqs, saqs: saqs, cqs: cqs, suppressedIds: suppressedIds);
   }
 }

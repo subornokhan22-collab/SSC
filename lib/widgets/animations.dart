@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'motion_policy.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────
 /// Reusable animation toolkit for the whole app.
@@ -17,7 +18,7 @@ class FadeSlideIn extends StatelessWidget {
     super.key,
     required this.child,
     this.delay = Duration.zero,
-    this.duration = const Duration(milliseconds: 550),
+    this.duration = const Duration(milliseconds: 420),
     this.offset = const Offset(0, 24),
     this.curve = Curves.easeOutCubic,
   });
@@ -26,15 +27,17 @@ class FadeSlideIn extends StatelessWidget {
   Widget build(BuildContext context) {
     final span = duration.inMilliseconds;
     // A zero-length animation would divide by zero below; just show the child.
-    if (span <= 0) return child;
+    if (MotionPolicy.reduce(context) || span <= 0) return child;
     final total = (duration + delay).inMilliseconds;
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: Duration(milliseconds: total),
       curve: Curves.linear,
       builder: (context, value, child) {
-        final raw =
-            ((value * total - delay.inMilliseconds) / span).clamp(0.0, 1.0);
+        final raw = ((value * total - delay.inMilliseconds) / span).clamp(
+          0.0,
+          1.0,
+        );
         final t = curve.transform(raw);
         return Opacity(
           opacity: t,
@@ -68,21 +71,36 @@ class PressableScale extends StatefulWidget {
 
 class _PressableScaleState extends State<PressableScale> {
   bool _pressed = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onTap != null;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
-      onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
-      onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
-      onTap: widget.onTap,
-      child: AnimatedScale(
-        scale: _pressed ? widget.pressedScale : 1.0,
-        duration: const Duration(milliseconds: 110),
-        curve: Curves.easeOut,
-        child: widget.child,
+    return AnimatedScale(
+      scale: enabled && _pressed && !MotionPolicy.reduce(context)
+          ? widget.pressedScale
+          : 1,
+      duration: MotionPolicy.duration(context, 130),
+      curve: Curves.easeOut,
+      child: DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: _focused && enabled
+              ? Border.all(
+                  color: Theme.of(context).colorScheme.primary, width: 2)
+              : null,
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onFocusChange: (value) => setState(() => _focused = value),
+            onTap: widget.onTap,
+            onHighlightChanged: (pressed) => setState(() => _pressed = pressed),
+            borderRadius: BorderRadius.circular(16),
+            child: widget.child,
+          ),
+        ),
       ),
     );
   }
@@ -101,33 +119,25 @@ class ShineSweep extends StatefulWidget {
     required this.child,
     this.borderRadius = const BorderRadius.all(Radius.circular(14)),
     this.period = const Duration(milliseconds: 2600),
-    this.enabled = true,
+    this.enabled = false,
   });
 
   @override
   State<ShineSweep> createState() => _ShineSweepState();
 }
 
-class _ShineSweepState extends State<ShineSweep>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c;
-
+class _ShineSweepState extends MotionLoopState<ShineSweep> {
+  AnimationController get _c => motion;
   @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(vsync: this, duration: widget.period);
-    if (widget.enabled) _c.repeat();
-  }
-
+  Duration get period => widget.period;
   @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
+  bool get enabled => widget.enabled;
+  @override
+  bool get reverse => false;
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enabled) return widget.child;
+    if (!motionAllowed) return widget.child;
     return ClipRRect(
       borderRadius: widget.borderRadius,
       child: Stack(
@@ -176,7 +186,7 @@ class Pulse extends StatefulWidget {
   const Pulse({
     super.key,
     required this.child,
-    this.enabled = true,
+    this.enabled = false,
     this.min = 0.93,
     this.max = 1.07,
     this.period = const Duration(milliseconds: 800),
@@ -186,25 +196,18 @@ class Pulse extends StatefulWidget {
   State<Pulse> createState() => _PulseState();
 }
 
-class _PulseState extends State<Pulse> with SingleTickerProviderStateMixin {
-  late final AnimationController _c;
-
+class _PulseState extends MotionLoopState<Pulse> {
+  AnimationController get _c => motion;
   @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(vsync: this, duration: widget.period);
-    if (widget.enabled) _c.repeat(reverse: true);
-  }
-
+  Duration get period => widget.period;
   @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
+  bool get enabled => widget.enabled;
+  @override
+  bool get reverse => true;
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enabled) return widget.child;
+    if (!motionAllowed) return widget.child;
     return AnimatedBuilder(
       animation: _c,
       builder: (context, child) {
@@ -236,6 +239,7 @@ class CountUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (MotionPolicy.reduce(context)) return Text('$value', style: style);
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: value.toDouble()),
       duration: duration,
@@ -262,22 +266,14 @@ class ShimmerBox extends StatefulWidget {
   State<ShimmerBox> createState() => _ShimmerBoxState();
 }
 
-class _ShimmerBoxState extends State<ShimmerBox>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c;
-
+class _ShimmerBoxState extends MotionLoopState<ShimmerBox> {
+  AnimationController get _c => motion;
   @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
-      ..repeat();
-  }
-
+  Duration get period => const Duration(milliseconds: 1400);
   @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
+  bool get enabled => true;
+  @override
+  bool get reverse => false;
 
   @override
   Widget build(BuildContext context) {
@@ -319,22 +315,23 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    // Incoming page: slide up a touch, fade and scale in.
-    final inCurve = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    );
+    if (MotionPolicy.reduce(context)) return child;
+    // Incoming page: directional slide and fade.
+    final inCurve = CurveTween(
+      curve: animation.status == AnimationStatus.reverse
+          ? Curves.easeInCubic
+          : Curves.easeOutCubic,
+    ).animate(animation);
 
     // Outgoing page: the screen being covered. Without this the old screen
     // stays fully opaque underneath, and because every Scaffold in this app
     // is transparent (the animated backdrop shows through) you briefly see
     // both screens stacked on top of each other.
-    final outCurve = CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: Curves.easeInCubic,
-      reverseCurve: Curves.easeOutCubic,
-    );
+    final outCurve = CurveTween(
+      curve: secondaryAnimation.status == AnimationStatus.reverse
+          ? Curves.easeOutCubic
+          : Curves.easeInCubic,
+    ).animate(secondaryAnimation);
 
     // Slide + fade only: no ScaleTransition. Scaling forces the whole page
     // layer to be resampled every frame, which is the expensive part on
@@ -350,10 +347,8 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
         // Fade it out over the first 55% so the two never read as one
         // jumbled screen.
         opacity: Tween<double>(begin: 1, end: 0).animate(
-          CurvedAnimation(
-            parent: secondaryAnimation,
-            curve: const Interval(0, 0.55),
-          ),
+          CurveTween(curve: const Interval(0, 0.55))
+              .animate(secondaryAnimation),
         ),
         child: SlideTransition(
           position: Tween<Offset>(
@@ -379,13 +374,16 @@ class Stagger {
 
   static List<Widget> list(
     List<Widget> children, {
-    Duration step = const Duration(milliseconds: 70),
-    Duration duration = const Duration(milliseconds: 520),
+    Duration step = const Duration(milliseconds: 60),
+    Duration duration = const Duration(milliseconds: 420),
     Offset offset = const Offset(0, 26),
-    int maxStaggered = 14,
+    int maxStaggered = 4,
   }) {
+    var visible = 0;
     return List<Widget>.generate(children.length, (i) {
-      final n = i < maxStaggered ? i : maxStaggered;
+      if (children[i] is SizedBox) return children[i];
+      final n = visible.clamp(0, maxStaggered);
+      visible++;
       return FadeSlideIn(
         delay: step * n,
         duration: duration,
@@ -398,6 +396,7 @@ class Stagger {
 
 /// Animated glow ring that slowly rotates behind a widget (logo halo).
 class HaloRing extends StatefulWidget {
+  final bool enabled;
   final double size;
   final Color color;
   final double strokeWidth;
@@ -405,6 +404,7 @@ class HaloRing extends StatefulWidget {
 
   const HaloRing({
     super.key,
+    this.enabled = false,
     this.size = 120,
     this.color = const Color(0xFF3D5AFE),
     this.strokeWidth = 2,
@@ -415,20 +415,14 @@ class HaloRing extends StatefulWidget {
   State<HaloRing> createState() => _HaloRingState();
 }
 
-class _HaloRingState extends State<HaloRing> with SingleTickerProviderStateMixin {
-  late final AnimationController _c;
-
+class _HaloRingState extends MotionLoopState<HaloRing> {
+  AnimationController get _c => motion;
   @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(vsync: this, duration: widget.period)..repeat();
-  }
-
+  Duration get period => widget.period;
   @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
+  bool get enabled => widget.enabled;
+  @override
+  bool get reverse => false;
 
   @override
   Widget build(BuildContext context) {
@@ -489,17 +483,33 @@ class SoftSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: duration,
+      duration: MotionPolicy.reduce(context) ? Duration.zero : duration,
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0, .05), end: Offset.zero)
-              .animate(animation),
-          child: child,
-        ),
-      ),
+      transitionBuilder: (incoming, animation) {
+        final outgoing = !Widget.canUpdate(incoming, child);
+        return ExcludeSemantics(
+          excluding: outgoing,
+          child: ExcludeFocus(
+            excluding: outgoing,
+            child: IgnorePointer(
+              ignoring: outgoing,
+              child: FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: MotionPolicy.reduce(context)
+                        ? Offset.zero
+                        : const Offset(0, .025),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: incoming,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
       child: child,
     );
   }

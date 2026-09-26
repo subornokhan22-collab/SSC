@@ -1,76 +1,102 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'data/question_bank.dart';
+import 'navigation/app_routes.dart';
 import 'data/question_sync.dart';
+import 'data/english_paper_sync.dart';
+import 'data/content_catalog_sync.dart';
 import 'services/app_settings.dart';
+import 'services/local_diagnostics.dart';
+import 'widgets/boot_sequence.dart';
+import 'widgets/motion_policy.dart';
 import 'services/app_style.dart';
 import 'services/auth_service.dart';
 import 'services/paper_library.dart';
 import 'theme/app_theme.dart';
 import 'screens/root_gate.dart';
-import 'widgets/animated_background.dart';
+import 'widgets/alive_background.dart';
 import 'widgets/offline_banner.dart';
 
 // Set by _readCrashLog(); consumed by _CrashReportGate after the first
 // frame so the dialog can use a live navigator.
 String? _pendingCrashReport;
 
-Future<void> main() async {
-  // Binding must exist before Supabase / preferences are touched.
-  // If nothing is configured, initialisation is skipped silently.
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // A crash in a single widget should never take the whole app down —
-  // show a branded fallback instead of the grey/red error screen.
   ErrorWidget.builder = (details) => _FriendlyErrorView(details: details);
-
+  FlutterError.onError = (details) {
+    unawaited(LocalDiagnostics.record(
+        details.exception, details.stack ?? StackTrace.empty,
+        scope: 'flutter'));
+    if (kDebugMode) FlutterError.presentError(details);
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    unawaited(LocalDiagnostics.record(error, stack, scope: 'async'));
+    return true;
+  };
   SystemChrome.setSystemUIOverlayStyle(AppTheme.overlayStyle);
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
-
-  // The question bank now lives in assets/questions/*.json rather than in
-  // Dart source, so it must be read before any screen touches allMCQs.
-  await QuestionBank.load();
-  // Questions published from the web panel since the last release. The cache
-  // read is instant and offline; the network pull happens after startup so
-  // nothing waits on it.
-  await QuestionSync.loadCache();
-  await AppStyle.load();
-  await AppSettings.load();
-  await AuthService.init();
-
-  // Fresh install (empty library)? Put the tutor's papers back from the
-  // automatic backup in the shared Download folder. Silent no-op otherwise.
-  unawaited(PaperBackup.tryAutoRestore());
-
-  // Fire-and-forget: errors are swallowed inside refresh().
-  unawaited(QuestionSync.refresh());
-
-  // If the previous session ended in an uncaught crash, the native side
-  // saved the details — surface them on first frame (see _CrashReportGate).
-  _pendingCrashReport = await _readCrashLog();
-
+  // No asset, preference or network wait before the first frame.
   runApp(const ALearningApp());
 }
 
-/// Reads (and deletes) crash.log written by MainActivity's uncaught
-/// exception handler. Returns the report text or null.
+List<BootStep> _bootSteps() => [
+      BootStep('Restoring your preferences', () async {
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+        await AppStyle.load();
+        await AppSettings.load();
+      }),
+      BootStep('Loading the question bank', QuestionBank.load),
+      BootStep('Restoring saved content', () async {
+        // Cached overlays MUST follow the bundled bank, never race it.
+        await QuestionSync.loadCache();
+        await EnglishPaperSync.loadCache();
+        await ContentCatalogSync.loadCache();
+      }),
+      BootStep('Restoring sign-in', AuthService.init),
+      BootStep('Preparing your paper library', () async {
+        // Wait for restoration before home/library can read the files.
+        await PaperBackup.tryAutoRestore();
+        _pendingCrashReport = await _readCrashLog();
+        // These services handle offline errors; network sync never blocks boot.
+        unawaited(QuestionSync.refresh());
+        unawaited(EnglishPaperSync.refresh());
+        unawaited(ContentCatalogSync.refresh());
+      }),
+    ];
+
+/// Consume only the presence of a native crash, never its private message.
+/// Clean up both the corrected location and the old misplaced log.
 Future<String?> _readCrashLog() async {
   try {
     final dir = await getApplicationDocumentsDirectory();
-    final f = File('\${dir.path}/crash.log');
-    if (await f.exists()) {
-      final content = (await f.readAsString()).split('---').first.trim();
-      try {
-        await f.delete();
-      } catch (_) {}
-      return content.isEmpty ? null : content;
+    final support = await getApplicationSupportDirectory();
+    var found = false;
+    for (final path in [
+      '${dir.path}/crash.log',
+      '${support.path}/app_flutter/crash.log'
+    ]) {
+      final file = File(path);
+      if (await file.exists()) {
+        found = true;
+        try {
+          await file.delete();
+        } catch (_) {}
+      }
+    }
+    if (found) {
+      await LocalDiagnostics.record(NativeCrashDetected(), StackTrace.empty,
+          scope: 'native');
+      return 'The previous session ended unexpectedly. A privacy-safe event was saved on this device. Review or clear it in Settings. No report was sent.';
     }
   } catch (_) {}
   return null;
@@ -86,7 +112,8 @@ class ALearningApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       themeMode: ThemeMode.light,
-      home: const _CrashReportGate(),
+      home: BootSequence(steps: _bootSteps(), child: const _CrashReportGate()),
+      onGenerateRoute: AppRoutes.generate,
       // Every screen (pushed routes included) sits on the animated backdrop,
       // and text never scales past a readable size on large-font devices.
       builder: (context, child) {
@@ -98,8 +125,10 @@ class ALearningApp extends StatelessWidget {
               maxScaleFactor: 1.25,
             ),
           ),
-          child: ConnectivityBanner(
-            child: AnimatedBackground(child: child ?? const SizedBox.shrink()),
+          child: MotionPolicy(
+            child: ConnectivityBanner(
+              child: AliveBackground(child: child ?? const SizedBox.shrink()),
+            ),
           ),
         );
       },
@@ -139,13 +168,6 @@ class _CrashReportGateState extends State<_CrashReportGate> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'If you were sending a photo, audio or PDF when it closed, '
-                'this report is what we need to fix it. Screenshot this '
-                'window and send it to the developer.',
-                style: TextStyle(fontSize: 13, height: 1.5),
-              ),
-              const SizedBox(height: 12),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
@@ -196,8 +218,11 @@ class _FriendlyErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.build_circle_outlined,
-                  color: AppTheme.accent, size: 44),
+              const Icon(
+                Icons.build_circle_outlined,
+                color: AppTheme.accent,
+                size: 44,
+              ),
               const SizedBox(height: 14),
               const Text(
                 'Something did not load correctly',
@@ -212,7 +237,11 @@ class _FriendlyErrorView extends StatelessWidget {
               const Text(
                 'Please go back and try again.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.muted, fontSize: 13, height: 1.5),
+                style: TextStyle(
+                  color: AppTheme.muted,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
               ),
               if (kDebugMode) ...[
                 const SizedBox(height: 14),
@@ -222,7 +251,10 @@ class _FriendlyErrorView extends StatelessWidget {
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      color: AppTheme.danger, fontSize: 11, height: 1.4),
+                    color: AppTheme.danger,
+                    fontSize: 11,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ],

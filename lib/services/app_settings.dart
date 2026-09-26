@@ -6,21 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///  • [omrPrefillCodes] — whether generated OMR sheets print the set &
 ///    subject code pre-filled (and whether scan results use the codes
 ///    read from the sheet) (default ON).
-  ///  • [defaultPaperName] — default title for generated question papers and
-  ///    OMR tests (empty = the built-in defaults).
+///  • [defaultPaperName] — default title for generated question papers and
+///    OMR tests (empty = the built-in defaults).
 class AppSettings {
   AppSettings._();
 
   static const _kPrefill = 'omr_prefill_codes';
   static const _kName = 'default_paper_name';
+  static const _kReduceMotion = 'reduce_motion';
+  static final ValueNotifier<bool> reduceMotion = ValueNotifier(false);
 
   /// Live notifier so the Settings switch repaints instantly.
-  static final ValueNotifier<bool> omrPrefillCodes =
-      ValueNotifier<bool>(true);
+  static final ValueNotifier<bool> omrPrefillCodes = ValueNotifier<bool>(true);
 
   /// Live notifier for the default name field.
-  static final ValueNotifier<String> defaultPaperName =
-      ValueNotifier<String>('');
+  static final ValueNotifier<String> defaultPaperName = ValueNotifier<String>(
+    '',
+  );
 
   static bool get omrPrefill => omrPrefillCodes.value;
   static String get defaultName => defaultPaperName.value;
@@ -30,10 +32,19 @@ class AppSettings {
     try {
       final p = await SharedPreferences.getInstance();
       omrPrefillCodes.value = p.getBool(_kPrefill) ?? true;
+      reduceMotion.value = p.getBool(_kReduceMotion) ?? false;
       defaultPaperName.value = (p.getString(_kName) ?? '').trim();
     } catch (_) {
       // Preferences unavailable — keep the defaults.
     }
+  }
+
+  static Future<void> setReduceMotion(bool on) async {
+    reduceMotion.value = on;
+    try {
+      final p = await SharedPreferences.getInstance();
+      await p.setBool(_kReduceMotion, on);
+    } catch (_) {}
   }
 
   static Future<void> setOmriPrefill(bool on) async {

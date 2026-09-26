@@ -19,7 +19,7 @@ class GeneralMathDivisions {
     algebra,
     geometry,
     trigonometryMensuration,
-    statistics
+    statistics,
   ];
 
   static List<String> chaptersFor(String division) {
@@ -31,7 +31,7 @@ class GeneralMathDivisions {
       _ => const <int>[],
     };
     return <String>[
-      for (final n in numbers) GeneralMathChapterCatalog.chapters[n - 1]
+      for (final n in numbers) GeneralMathChapterCatalog.chapters[n - 1],
     ];
   }
 
@@ -39,7 +39,10 @@ class GeneralMathDivisions {
     final index = GeneralMathChapterCatalog.chapters.indexOf(chapter);
     if (index < 0)
       throw ArgumentError.value(
-          chapter, 'chapter', 'Unknown General Mathematics chapter');
+        chapter,
+        'chapter',
+        'Unknown General Mathematics chapter',
+      );
     final number = index + 1;
     if (algebraChapters.contains(number)) return algebra;
     if (geometryChapters.contains(number)) return geometry;

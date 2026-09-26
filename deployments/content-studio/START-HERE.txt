@@ -1,0 +1,63 @@
+CONTENT STUDIO UPDATE FILES
+
+1. database-update.sql
+   Supabase > SQL Editor > New query. Paste the entire file and Run.
+   This changes database structure/permissions. A backup is recommended.
+   If it errors, stop before deploying the website.
+
+2. admin-content.ts
+   Supabase > Edge Functions > create/update admin-content.
+   Paste this whole single-file bundle into index.ts and deploy.
+   Its shared parser, attachment validator and JSON schema are included.
+   Keep GEMINI_API_KEY in Supabase Edge Function secrets, never frontend code/chat.
+   Without that server configuration, automatic photo/scan extraction will not work.
+
+3. mimi.ts — REQUIRED FOR APK AI TOOLS
+   Supabase > Edge Functions > create/update a SEPARATE function named mimi.
+   Paste all of mimi.ts into its index.ts and Deploy.
+   Keep admin-content: that function is for website English uploads.
+   Both functions share the existing GEMINI_API_KEY secret; do not duplicate keys in code.
+   If the APK says AI server error (404), check mimi exists in the app project.
+   This repair does not require reinstalling the APK or rerunning SQL.
+   For "no complete result", the current bundle retains the mobile SSE fix.
+   Its escaped stream delimiters withstand phone-editor indentation.
+   Replace ALL old index.ts content, then tap Deploy updates.
+   Do NOT create a separate function called teacher-tools.
+   Current header: ai-tools-language-v5 (includes previous diagnostics).
+   For "AI service unavailable", deploy this update and retry ONCE.
+   The APK now shows a GEMINI_ diagnostic code and the upstream HTTP status.
+   Supabase invocation 200 means the stream opened, not that Gemini succeeded.
+   Send the new APK error text/code, never API keys or authorization headers.
+   Do not change model/key/billing settings merely because of the old generic error.
+   This improves diagnosis; it does not prove the live provider issue is fixed.
+
+4. content-studio-netlify.zip
+   This contains the website runtime, with index.html at its root.
+   Upload THIS inner ZIP to your existing Netlify site's manual-deploy option.
+   Do not upload the outer content-studio-update.zip as your website.
+   If Netlify requests a folder, extract the inner ZIP and upload that folder.
+
+5. SOURCE-README.md
+   Detailed instructions, limits and security behavior.
+
+No production services were changed by preparing these files.
+Full source: https://github.com/subornokhan22-collab/SSC/pull/6
+
+AI TOOLS ATTACHMENT / FORMATTING UPDATE
+Deploy the current mimi.ts first, then install the new APK from green CI.
+The MiMi chat screen is removed, NOT the backend route. Do not delete mimi.
+Keep your working API key and model settings unchanged.
+No SQL or Netlify changes are needed for this update.
+AI Tools accepts camera/gallery photos and PDFs: attach, then run the tool.
+No manual checkbox or Gemini/Supabase banner. Picking files does not upload.
+Limit: 3 files / 3 MB combined after resizing; originals are session-local.
+Use Bengali answers with English digits for non-English subjects.
+Use English answers only for English First/Second subjects.
+Common powers/subscripts still carry through to paper export.
+Full notes: docs/AI-TOOLS-ATTACHMENTS-2026-09-25.md in GitHub.
+
+V5 LANGUAGE / ONE-TAP UPDATE
+Deploy the current mimi.ts for the answer-language correction.
+Install the new APK to remove the extra attachment checkbox.
+No API key/model/SQL/Netlify changes. Keep your working settings.
+Old saved English answers remain unchanged; regenerate or edit them.

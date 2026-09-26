@@ -6,7 +6,7 @@ enum Bangla2WrittenType {
   summaryOrGist,
   thoughtExpansion,
   translation,
-  composition
+  composition,
 }
 
 class Bangla2WrittenQuestion {
