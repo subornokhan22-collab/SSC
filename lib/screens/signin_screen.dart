@@ -91,18 +91,17 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+    final inset = ((MediaQuery.sizeOf(context).width - 520) / 2)
+        .clamp(18.0, double.infinity)
+        .toDouble();
+    return AutofillGroup(
+        child: Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+          padding: EdgeInsets.fromLTRB(inset, 12, inset, 28),
           children: Stagger.list([
-            const AuthHero(
-              icon: Icons.login_rounded,
-              title: 'Welcome back',
-              subtitle:
-                  'Sign in with the email and password you chose when you created your tutor account.',
-            ),
+            const DeskWelcome(),
             const SizedBox(height: 18),
             GlassCard(
               child: Column(
@@ -191,6 +190,6 @@ class _SignInScreenState extends State<SignInScreen> {
           ]),
         ),
       ),
-    );
+    ));
   }
 }

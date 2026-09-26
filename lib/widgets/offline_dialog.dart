@@ -1,9 +1,8 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
+import 'motion_policy.dart';
 
 /// A dramatic "offline" alert for the app-open page: dark card, glowing
 /// red frame, pulsing signal rings around the cloud-off icon, and a live
@@ -15,8 +14,9 @@ Future<bool> showOfflineDialog(BuildContext context) {
     barrierDismissible: false,
     barrierLabel: 'Offline',
     barrierColor: const Color(0xB3070B16),
-    transitionDuration: const Duration(milliseconds: 340),
+    transitionDuration: MotionPolicy.duration(context, 200),
     transitionBuilder: (c, enter, _, child) {
+      if (MotionPolicy.reduce(c)) return child;
       final curved = CurvedAnimation(
         parent: enter,
         curve: Curves.easeOutCubic,
@@ -39,26 +39,11 @@ class _OfflineCard extends StatefulWidget {
   State<_OfflineCard> createState() => _OfflineCardState();
 }
 
-class _OfflineCardState extends State<_OfflineCard>
-    with TickerProviderStateMixin {
-  late final AnimationController _pulse = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1700),
-  )..repeat();
-  late final AnimationController _shake = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 450),
-  );
+class _OfflineCardState extends State<_OfflineCard> {
+  static const _pulse = AlwaysStoppedAnimation<double>(0);
 
   bool _checking = false;
   String? _status;
-
-  @override
-  void dispose() {
-    _pulse.dispose();
-    _shake.dispose();
-    super.dispose();
-  }
 
   Future<void> _check() async {
     if (_checking) return;
@@ -72,14 +57,13 @@ class _OfflineCardState extends State<_OfflineCard>
         _checking = false;
         _status = 'Still offline — check wifi or mobile data, then try again.';
       });
-      _shake.forward(from: 0);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Damped horizontal shake after a failed connection check.
-    final dx = (1 - _shake.value) * 9 * math.sin(_shake.value * 4 * math.pi);
+    // Keep errors still and readable; the retry result supplies feedback.
+    const dx = 0.0;
 
     return Center(
       child: Padding(

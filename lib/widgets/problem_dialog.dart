@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import 'motion_policy.dart';
 
 /// One action inside a problem dialog.
 class ProblemAction {
@@ -41,8 +42,9 @@ Future<void> showProblemDialog(
     barrierDismissible: dismissible,
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
     barrierColor: Colors.black.withOpacity(.55),
-    transitionDuration: const Duration(milliseconds: 320),
+    transitionDuration: MotionPolicy.duration(context, 200),
     transitionBuilder: (c, enter, _, child) {
+      if (MotionPolicy.reduce(c)) return child;
       final curved = CurvedAnimation(
         parent: enter,
         curve: Curves.easeOutCubic,
@@ -79,19 +81,9 @@ class _ProblemCard extends StatefulWidget {
   State<_ProblemCard> createState() => _ProblemCardState();
 }
 
-class _ProblemCardState extends State<_ProblemCard>
-    with SingleTickerProviderStateMixin {
-  /// Drives the red blink of the warning icon (smooth 0→1→0 pulse).
-  late final AnimationController _blink = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 620),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _blink.dispose();
-    super.dispose();
-  }
+class _ProblemCardState extends State<_ProblemCard> {
+  // A warning should remain legible, not blink indefinitely.
+  static const _blink = AlwaysStoppedAnimation<double>(.5);
 
   void _run(ProblemAction a) {
     Navigator.of(context).pop();

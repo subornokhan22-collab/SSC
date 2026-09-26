@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
+import 'motion_policy.dart';
 
 /// Shared primary action. Loading disables both pointer and semantic actions.
 class AppButton extends StatefulWidget {
@@ -32,7 +33,7 @@ class _AppButtonState extends State<AppButton> {
   @override
   Widget build(BuildContext context) {
     final disabled = widget.onPressed == null || widget.loading;
-    final pressed = _pressed && !disabled;
+    final pressed = _pressed && !disabled && !MotionPolicy.reduce(context);
     final foreground = widget.outlined ? AppTheme.primary : AppColors.surface;
     final radius = BorderRadius.circular(AppRadii.action);
     final child = Row(
@@ -40,11 +41,7 @@ class _AppButtonState extends State<AppButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.loading)
-          SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2, color: foreground),
-          )
+          ActivityIndicator(color: foreground)
         else if (widget.icon != null)
           Icon(widget.icon, size: 20, color: foreground),
         if (widget.loading || widget.icon != null)
@@ -60,9 +57,9 @@ class _AppButtonState extends State<AppButton> {
     );
     final button = AnimatedScale(
       scale: pressed ? .97 : 1,
-      duration: const Duration(milliseconds: 100),
+      duration: MotionPolicy.duration(context, 100),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
+        duration: MotionPolicy.duration(context, 160),
         width: widget.fullWidth ? double.infinity : null,
         padding: AppSpacing.buttonPadding,
         decoration: BoxDecoration(
@@ -81,12 +78,14 @@ class _AppButtonState extends State<AppButton> {
     return Semantics(
       button: true,
       enabled: !disabled,
-      child: GestureDetector(
-        onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
-        onTapUp: disabled ? null : (_) => setState(() => _pressed = false),
-        onTapCancel: disabled ? null : () => setState(() => _pressed = false),
-        onTap: disabled ? null : widget.onPressed,
-        child: button,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onHighlightChanged: (value) => setState(() => _pressed = value),
+          onTap: disabled ? null : widget.onPressed,
+          borderRadius: radius,
+          child: button,
+        ),
       ),
     );
   }

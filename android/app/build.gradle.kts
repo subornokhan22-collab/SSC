@@ -1,3 +1,8 @@
+import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.MessageDigest
+import java.security.cert.X509Certificate
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -26,8 +31,7 @@ android {
     }
 
     // Release signing from CI secrets. The keystore + passwords are restored
-    // by the GitHub workflow; when they are absent (local dev build) we fall
-    // back to the debug key so nothing breaks.
+    // by the GitHub workflow. Release NEVER falls back to a development key.
     signingConfigs {
         create("release-ci") {
             val ksFile = File(projectDir, "release.keystore")
@@ -41,14 +45,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (
-                    File(projectDir, "release.keystore").exists() &&
-                    System.getenv("RELEASE_KEYSTORE_PASSWORD") != null
-                ) {
-                    signingConfigs.getByName("release-ci")
-                } else {
-                    signingConfigs.getByName("debug")
-                }
+            signingConfig = signingConfigs.getByName("release-ci")
 
             // Strip unused Java/Kotlin classes and shrink bundled resources.
             // Flutter ships default ProGuard rules for its own engine bindings.
@@ -93,4 +90,40 @@ dependencies {
 
 flutter {
     source = "../.."
+}
+
+// Executed for every release packaging path, not only the CI command.
+val validateProductionSigning = tasks.register("validateProductionSigning") {
+    doLast {
+        val required = listOf("RELEASE_KEYSTORE_PASSWORD", "RELEASE_KEY_ALIAS", "RELEASE_KEY_PASSWORD", "RELEASE_CERT_SHA256")
+        check(required.all { !System.getenv(it).isNullOrBlank() } && File(projectDir, "release.keystore").isFile) {
+            "Production release signing is incomplete. Configure the existing release keystore and certificate pin; no fallback APK will be built."
+        }
+        val store = KeyStore.getInstance("PKCS12")
+        File(projectDir, "release.keystore").inputStream().use {
+            store.load(it, System.getenv("RELEASE_KEYSTORE_PASSWORD").toCharArray())
+        }
+        val alias = System.getenv("RELEASE_KEY_ALIAS")
+        val cert = store.getCertificate(alias) as? X509Certificate
+            ?: error("Release signing certificate was not found.")
+        check(store.getKey(alias, System.getenv("RELEASE_KEY_PASSWORD").toCharArray()) is PrivateKey) {
+            "Release signing requires a private key."
+        }
+        check(!alias.equals("androiddebugkey", ignoreCase = true) &&
+            !cert.subjectX500Principal.name.contains("Android Debug", ignoreCase = true)) {
+            "Debug certificates are forbidden for production releases."
+        }
+        cert.checkValidity()
+        val actual = MessageDigest.getInstance("SHA-256").digest(cert.encoded)
+            .joinToString("") { "%02x".format(it) }
+        val expected = System.getenv("RELEASE_CERT_SHA256").replace(":", "").lowercase().trim()
+        check(expected.matches(Regex("[0-9a-f]{64}")) && actual == expected) {
+            "Release certificate does not match the approved SHA-256 pin."
+        }
+    }
+}
+tasks.configureEach {
+    if (name == "preReleaseBuild" || name == "validateSigningRelease") {
+        dependsOn(validateProductionSigning)
+    }
 }

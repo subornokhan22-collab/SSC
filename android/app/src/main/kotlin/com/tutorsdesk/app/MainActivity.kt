@@ -24,19 +24,15 @@ class MainActivity : FlutterActivity() {
                 try {
                     val sb = StringBuilder()
                     sb.append("time: ").append(System.currentTimeMillis()).append('\n')
-                    sb.append("thread: ").append(t.name).append('\n')
-                    sb.append(e).append('\n')
-                    e.stackTrace.take(20).forEach { sb.append("  at ").append(it).append('\n') }
-                    var c: Throwable? = e.cause
-                    var guard = 0
-                    while (c != null && guard < 3) {
-                        sb.append("caused by: ").append(c).append('\n')
-                        c.stackTrace.take(8).forEach { sb.append("  at ").append(it).append('\n') }
-                        c = c.cause
-                        guard++
-                    }
-                    // app_flutter/ == Flutter's getApplicationDocumentsDirectory()
-                    val f = File(filesDir, "app_flutter/crash.log")
+                    // No exception messages, thread names, payloads or file paths.
+                    sb.append("type: ").append(e.javaClass.name).append('\n')
+                    sb.append("sdk: ").append(android.os.Build.VERSION.SDK_INT).append('\n')
+                    e.stackTrace.filter { it.className.startsWith("com.tutorsdesk.app.") }
+                        .take(12).forEach {
+                            sb.append(it.className).append('.').append(it.methodName)
+                                .append(':').append(it.lineNumber).append('\n')
+                        }
+                    val f = File(getDir("flutter", MODE_PRIVATE), "crash.log")
                     f.parentFile?.mkdirs()
                     f.writeText(sb.toString() + "\n---\n")
                 } catch (_: Exception) {

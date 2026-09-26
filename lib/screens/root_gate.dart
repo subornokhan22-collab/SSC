@@ -5,6 +5,7 @@ import '../widgets/animations.dart';
 import 'auth_choice_screen.dart';
 import 'teacher_home_screen.dart';
 import '../widgets/app_logo.dart';
+import '../widgets/motion_policy.dart';
 
 /// App gatekeeper —
 ///  • not signed in → welcome / sign-in screen
@@ -92,7 +93,7 @@ class _BootSplash extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
               ),
               SizedBox(height: 20),
-              CircularProgressIndicator(),
+              ActivityIndicator(size: 24),
               SizedBox(height: 12),
               Text('Opening your workspace…'),
             ],

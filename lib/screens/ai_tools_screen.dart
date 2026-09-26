@@ -6,6 +6,7 @@ import '../models/subject_info.dart';
 import '../navigation/app_routes.dart';
 import '../services/chapter_catalog.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import '../widgets/paper_question_card.dart';
 import '../widgets/workflow_progress.dart';
 import '../services/ai/teacher_attachment.dart';
@@ -278,7 +279,8 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                   : const Icon(Icons.auto_awesome_outlined, size: 18),
               label: Text(c.busy ? 'Working…' : '${label(command)} with AI'),
             ),
-            OperationNotice(error: c.error, activity: c.activity),
+            OperationNotice(
+                accent: AppColors.ai, error: c.error, activity: c.activity),
             if (c.historyWarning != null)
               Text(
                 c.historyWarning!,

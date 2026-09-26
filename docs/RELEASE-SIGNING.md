@@ -1,71 +1,60 @@
-# Release signing (review item #31)
+# Production-only release signing
 
-Your CI is already set up for proper release signing — it only waits for
-the four secrets. Until they exist, every APK is **debug-signed** (works
-on your phone, but must be uninstalled before a signed build can be
-installed over it, and is not Play-Store ready).
+Release builds now **fail closed**. There is no debug-key fallback and CI does
+not distribute unsigned, debug or preview APKs. Ordinary branch pushes still
+run quality checks when signing is unavailable; the run summary explicitly says
+**APK delivery blocked**. Green quality checks alone do not mean an Android
+release has been compiled or delivered.
 
-## One-time setup (~5 minutes, on any computer)
+## Secure configuration — repository owner / trusted maintainer
 
-### 1. Generate the keystore (ONLY ONCE — never lose this file)
+Use the **existing intended production keystore**, if one exists. Do not replace
+it, generate a new identity automatically, commit it, or send passwords/keys in
+chat. Keep an encrypted backup outside this repository. A first production key
+requires a deliberate owner decision if no production identity exists yet.
 
-```bash
-keytool -genkeypair -v \
-  -keystore release.keystore \
-  -storetype pkcs12 \
-  -alias tutorsdesk \
-  -keyalg RSA -keysize 2048 -validity 10000
-```
+Configure these in GitHub → this repository → Settings → Secrets and variables
+→ Actions. This is a maintainer task; it does not require Termux or changes to
+Supabase/Netlify.
 
-- When asked for a "distinguished name", the organization can be your
-  name; the important fields are the **store password** and the alias
-  (`tutorsdesk`).
-- **Back up `release.keystore` somewhere safe** (password manager,
-  encrypted drive). If it is ever lost, you can never update the app on
-  existing phones — a new key means a fresh install for every user.
-- Do **not** commit it to the repo.
+| Actions secret | Purpose |
+| --- | --- |
+| `RELEASE_KEYSTORE_BASE64` | Base64 of the approved PKCS12 keystore |
+| `RELEASE_KEYSTORE_PASSWORD` | Keystore password |
+| `RELEASE_KEY_ALIAS` | Existing release key alias |
+| `RELEASE_KEY_PASSWORD` | Existing private-key password |
 
-### 2. Base64-encode it
+Also configure the **Actions variable** `RELEASE_CERT_SHA256`: the public SHA-256
+fingerprint of the approved release certificate (64 hex digits; colons accepted).
+The fingerprint is not a secret. Obtain it from the trusted release certificate
+or a known production APK, not an arbitrary new build. This pin prevents an
+incorrectly configured signing identity from being distributed.
 
-```bash
-# Linux / macOS
-base64 -i release.keystore    # (macOS: base64 -i; Linux: base64 -w0)
-# Windows (PowerShell)
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("release.keystore"))
-```
+## Enforcement
 
-Copy the whole single line.
+- Gradle always selects `release-ci` for release variants.
+- `validateProductionSigning` runs before release preparation/signing. It checks
+  required values, keystore presence, private-key access, certificate validity,
+  absence of the Android debug identity and the approved certificate pin.
+- CI restores the keystore only when all four secrets and the pin exist. It
+  verifies each APK with `apksigner` and compares the certificate before upload.
+- Restored keystores are deleted in an `always()` step and ignored by Git.
+- Without signing, CI validates Android Gradle configuration and runs a negative
+  test proving that the release-signing guard rejects missing credentials. No
+  substitute APK is built or uploaded.
+- Version-tag releases and manual runs with **Require production APK delivery**
+  enabled fail if signing is unavailable; they cannot report release success.
+- Normal local debug development remains possible, but those builds are not
+  production deliverables.
 
-### 3. Add the 4 secrets to the GitHub repo
+## Existing installations
 
-<https://github.com/subornokhan22-collab/SSC/settings/secrets/actions>
+Older CI builds could be debug-signed. Android will reject an in-place update
+whose signing certificate differs. **Do not uninstall to work around this**:
+uninstalling can delete local papers and settings. Confirm the intended signing
+identity and a safe data migration/backup plan before moving an existing device
+to the first production-signed build.
 
-| Secret name                  | Value                          |
-|------------------------------|--------------------------------|
-| `RELEASE_KEYSTORE_BASE64`    | the base64 line from step 2    |
-| `RELEASE_KEYSTORE_PASSWORD`  | the keystore password          |
-| `RELEASE_KEY_ALIAS`          | `tutorsdesk` (your alias)      |
-| `RELEASE_KEY_PASSWORD`       | the key password (usually the same) |
-
-### 4. Push once
-
-The next build signs with the real key. From that point on,
-**uninstall the app once** on each phone and install the new build —
-Android refuses to update an app whose signature changed. Every build
-after that updates normally.
-
-## How CI uses it
-
-`android/app/build.gradle.kts` signs release builds with `release-ci`
-when the keystore + password are present (restored by the workflow from
-`RELEASE_KEYSTORE_BASE64`), and falls back to debug signing otherwise —
-so local development builds keep working with nothing configured.
-
-## Also set (same Secrets page, for Phase 1 AI)
-
-| Secret / location                                   | Value            |
-|-----------------------------------------------------|------------------|
-| Supabase → Edge Functions → Secrets → `GEMINI_API_KEY` | your Gemini key |
-
-(The Supabase edge-function secrets are **not** GitHub secrets — they
-live in <https://supabase.com/dashboard/project/vxexidxdoghdmzvkvgqk/functions>.)
+No production signing credentials have been created, replaced or exposed by
+this update. The previous successful workflow skipped release-keystore restore;
+a new signed APK must wait for configuration and positive certificate checks.

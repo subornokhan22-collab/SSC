@@ -1,6 +1,13 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import '../models/paper_draft.dart';
+import '../controllers/paper_controller.dart';
+import '../theme/design_tokens.dart';
+import '../widgets/animations.dart';
+import '../widgets/alive_tab_stack.dart';
+import '../widgets/motion_policy.dart';
 import '../navigation/app_routes.dart';
 import '../services/auth_service.dart';
 import '../services/paper_library.dart';
@@ -21,6 +28,9 @@ class TeacherHomeScreen extends StatefulWidget {
 class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     with WidgetsBindingObserver {
   int tab = 0;
+  int libraryVisit = 0;
+  String? draftTitle;
+  int loadGeneration = 0;
   final visited = <int>{0};
   List<PaperEntry> recent = [];
   bool loading = true;
@@ -44,16 +54,31 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   Future<void> load() async {
+    final generation = ++loadGeneration;
+    String? storedTitle;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(PaperController.draftKey);
+      if (raw != null) {
+        final snapshot = jsonDecode(raw) as Map<String, dynamic>;
+        if (snapshot['version'] == 1 && snapshot['draft'] is Map) {
+          storedTitle = (snapshot['draft']['title'] as String?)?.trim();
+        }
+      }
+    } catch (_) {
+      // A corrupt draft must not hide the saved-paper library.
+    }
     try {
       final entries = await PaperLibrary.loadEntries();
-      if (mounted)
+      if (mounted && generation == loadGeneration)
         setState(() {
+          draftTitle = storedTitle;
           recent = entries.take(4).toList();
           loading = false;
           error = null;
         });
     } catch (_) {
-      if (mounted)
+      if (mounted && generation == loadGeneration)
         setState(() {
           loading = false;
           error = 'Your papers could not be loaded. Pull down to retry.';
@@ -77,6 +102,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   void select(int i) {
+    if (i == tab) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (i == 1) libraryVisit++;
     setState(() {
       tab = i;
       visited.add(i);
@@ -91,12 +119,14 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           if (!didPop) select(0);
         },
         child: Scaffold(
-          body: IndexedStack(
+          body: AliveTabStack(
             index: tab,
             children: [
               home(),
               // Recreate the library on each visit so a just-saved paper is visible.
-              tab == 1 ? const PapersLibraryScreen() : const SizedBox.shrink(),
+              visited.contains(1)
+                  ? PapersLibraryScreen(key: ValueKey(libraryVisit))
+                  : const SizedBox.shrink(),
               visited.contains(2)
                   ? const OMrScannerScreen()
                   : const SizedBox.shrink(),
@@ -106,6 +136,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             ],
           ),
           bottomNavigationBar: NavigationBar(
+            animationDuration: MotionPolicy.duration(context, 180),
             selectedIndex: tab,
             onDestinationSelected: select,
             destinations: const [
@@ -149,7 +180,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           onRefresh: load,
           child: ListView(
             padding: const EdgeInsets.all(20),
-            children: [
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: Stagger.list([
               Text(
                 AuthService.isLoggedIn
                     ? 'Welcome, ${AuthService.displayName.isEmpty ? 'teacher' : AuthService.displayName}'
@@ -163,16 +195,28 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               ),
               const SizedBox(height: 24),
               Card(
+                color: const Color(0xFFEEF2FF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(color: AppTheme.primary.withOpacity(.18)),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(22),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.description_outlined,
-                        color: AppTheme.primary,
-                        size: 34,
-                      ),
+                      const Row(children: [
+                        Icon(Icons.description_outlined,
+                            color: AppTheme.primary, size: 34),
+                        SizedBox(width: 12),
+                        Expanded(
+                            child: Text('FROM YOUR DESK TO THE CLASSROOM',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    letterSpacing: 1.1,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.primary))),
+                      ]),
                       const SizedBox(height: 14),
                       Text(
                         'Create a Question Paper',
@@ -188,7 +232,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         child: FilledButton.icon(
                           onPressed: () => create(),
                           icon: const Icon(Icons.add),
-                          label: const Text('Create / resume paper'),
+                          label: Text(draftTitle == null
+                              ? 'Create a paper'
+                              : 'Create / resume paper'),
                         ),
                       ),
                       TextButton(
@@ -199,6 +245,18 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   ),
                 ),
               ),
+              if (draftTitle != null)
+                Card(
+                    child: ListTile(
+                  leading: const Icon(Icons.edit_note, color: AppTheme.primary),
+                  title: const Text('Continue your draft'),
+                  subtitle: Text(
+                      '${draftTitle!.isEmpty ? 'Untitled paper' : draftTitle!} · On this device',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis),
+                  trailing: const Icon(Icons.arrow_forward),
+                  onTap: () => create(),
+                )),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -208,6 +266,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       'Scan OMR',
                       'Review & grade',
                       () => select(2),
+                      AppColors.omr,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -217,6 +276,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       'AI Tools',
                       'Create · Improve · Check',
                       () => select(3),
+                      AppColors.ai,
                     ),
                   ),
                 ],
@@ -236,9 +296,21 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 ],
               ),
               if (loading)
-                const LinearProgressIndicator()
+                const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Row(children: [
+                      ActivityIndicator(),
+                      SizedBox(width: 12),
+                      Text('Loading your papers…')
+                    ]))
               else if (error != null)
-                Text(error!)
+                Card(
+                    child: ListTile(
+                        title: Text(error!),
+                        trailing: IconButton(
+                            tooltip: 'Retry loading papers',
+                            onPressed: load,
+                            icon: const Icon(Icons.refresh))))
               else if (recent.isEmpty)
                 const Card(
                   child: Padding(
@@ -261,7 +333,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Text(
-                      '${entry.subject} · ${entry.pages} pages · ${entry.createdAt.day}/${entry.createdAt.month}',
+                      'Saved · ${entry.subject} · ${entry.pages} pages · ${entry.createdAt.day}/${entry.createdAt.month}',
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
@@ -275,7 +347,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     },
                   ),
                 ),
-            ],
+            ]),
           ),
         ),
       );
@@ -284,17 +356,23 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     String title,
     String subtitle,
     VoidCallback action,
+    Color color,
   ) =>
       Card(
-        child: InkWell(
+        child: PressableScale(
           onTap: action,
-          borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, color: AppTheme.primary),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: color.withOpacity(.10),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Icon(icon, color: color),
+                ),
                 const SizedBox(height: 10),
                 Text(title,
                     style: const TextStyle(fontWeight: FontWeight.w700)),

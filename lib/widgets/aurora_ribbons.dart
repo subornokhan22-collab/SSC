@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'motion_policy.dart';
 
 /// Animated pastel-ribbon background for the welcome / sign-in choice page.
 ///
@@ -9,30 +10,19 @@ import 'package:flutter/material.dart';
 /// theme keeps a sense of motion without ever fighting the dark text on top.
 class AuroraRibbons extends StatefulWidget {
   final Widget child;
-  const AuroraRibbons({super.key, required this.child});
+  final bool enabled;
+  const AuroraRibbons({super.key, required this.child, this.enabled = false});
 
   @override
   State<AuroraRibbons> createState() => _AuroraRibbonsState();
 }
 
-class _AuroraRibbonsState extends State<AuroraRibbons>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
+class _AuroraRibbonsState extends MotionLoopState<AuroraRibbons> {
+  AnimationController get _controller => motion;
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 18),
-    )..repeat();
-  }
-
+  Duration get period => const Duration(seconds: 12);
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  bool get enabled => widget.enabled;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(

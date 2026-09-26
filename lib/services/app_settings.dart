@@ -13,6 +13,8 @@ class AppSettings {
 
   static const _kPrefill = 'omr_prefill_codes';
   static const _kName = 'default_paper_name';
+  static const _kReduceMotion = 'reduce_motion';
+  static final ValueNotifier<bool> reduceMotion = ValueNotifier(false);
 
   /// Live notifier so the Settings switch repaints instantly.
   static final ValueNotifier<bool> omrPrefillCodes = ValueNotifier<bool>(true);
@@ -30,10 +32,19 @@ class AppSettings {
     try {
       final p = await SharedPreferences.getInstance();
       omrPrefillCodes.value = p.getBool(_kPrefill) ?? true;
+      reduceMotion.value = p.getBool(_kReduceMotion) ?? false;
       defaultPaperName.value = (p.getString(_kName) ?? '').trim();
     } catch (_) {
       // Preferences unavailable — keep the defaults.
     }
+  }
+
+  static Future<void> setReduceMotion(bool on) async {
+    reduceMotion.value = on;
+    try {
+      final p = await SharedPreferences.getInstance();
+      await p.setBool(_kReduceMotion, on);
+    } catch (_) {}
   }
 
   static Future<void> setOmriPrefill(bool on) async {

@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../services/local_diagnostics.dart';
 
 /// Lifecycle-safe async state shared by paper and AI workflows.
 class OperationController extends ChangeNotifier {
@@ -21,7 +23,8 @@ class OperationController extends ChangeNotifier {
     try {
       await action();
       return !_disposed;
-    } catch (e) {
+    } catch (e, stack) {
+      unawaited(LocalDiagnostics.record(e, stack, scope: 'workflow'));
       if (!_disposed)
         error = e.toString().replaceFirst(
               RegExp(r'^(Exception|Bad state): '),

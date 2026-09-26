@@ -18,6 +18,12 @@ abstract final class AppColors {
   static const progressTrack = Color(0xFFE4E7EC);
   static const appBar = Color(0xFFFFFFFF);
 
+  // Workspace roles; do not change persisted preset ordering.
+  static const omr = Color(0xFF087F8C);
+  static const ai = Color(0xFF7C5CE0);
+  static const writing = Color(0xFFB93F66);
+  static const science = Color(0xFF0B84D9);
+
   static const success = Color(0xFF16845B);
   static const warning = Color(0xFFC27A00);
   static const danger = Color(0xFFD64545);

@@ -47,7 +47,7 @@ class AppLogo extends StatelessWidget {
             gradient: AppTheme.brandGradient,
           ),
           child: Text(
-            'MC',
+            'TD',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w900,

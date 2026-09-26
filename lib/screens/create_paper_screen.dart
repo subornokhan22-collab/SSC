@@ -18,6 +18,7 @@ import '../theme/app_theme.dart';
 import '../widgets/paper_question_card.dart';
 import '../widgets/written_question_card.dart';
 import '../widgets/workflow_progress.dart';
+import '../widgets/motion_policy.dart';
 import 'omr_scanner_screen.dart';
 import 'subscription_screen.dart';
 import 'ai_tools_screen.dart';
@@ -216,13 +217,13 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
               icon: const Icon(Icons.redo)),
         ]),
         body: !c.initialized
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: ActivityIndicator(size: 24))
             : Column(children: [
                 WorkflowProgress(steps: steps, current: step),
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(children: [
-                      const Icon(Icons.cloud_done_outlined,
+                      const Icon(Icons.save_outlined,
                           size: 14, color: AppTheme.muted),
                       const SizedBox(width: 6),
                       Expanded(
@@ -600,6 +601,19 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     if (preview == null)
       return const Center(child: Text('Return to review to render the paper.'));
     return Column(children: [
+      Semantics(
+          liveRegion: true,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Icon(Icons.check_circle_outline,
+                  color: AppTheme.success, size: 18),
+              const SizedBox(width: 8),
+              Text('PDF ready · ${preview!.pages.length} pages',
+                  style: const TextStyle(
+                      color: AppTheme.success, fontWeight: FontWeight.w600)),
+            ]),
+          )),
       Padding(
           padding: const EdgeInsets.all(12),
           child: Text(

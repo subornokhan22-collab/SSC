@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/app_settings.dart';
+import '../services/local_diagnostics.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 import 'profile_screen.dart';
@@ -42,6 +43,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Future<void> _diagnostics() async {
+    final report = await LocalDiagnostics.report();
+    if (!mounted) return;
+    await showDialog<void>(
+        context: context,
+        builder: (dialog) => AlertDialog(
+              title: const Text('Local diagnostics'),
+              content: SingleChildScrollView(
+                  child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                      'Only error types, app code locations, build and platform are stored. No messages, account details or attachments. Nothing is sent automatically.'),
+                  const SizedBox(height: 16),
+                  SelectableText(report, style: const TextStyle(fontSize: 11)),
+                ],
+              )),
+              actions: [
+                TextButton(
+                    onPressed: () async {
+                      await LocalDiagnostics.clear();
+                      if (dialog.mounted) Navigator.pop(dialog);
+                    },
+                    child: const Text('Clear records')),
+                FilledButton(
+                    onPressed: () => Navigator.pop(dialog),
+                    child: const Text('Close')),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,6 +100,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
               children: [
+                _section(
+                  'Accessibility',
+                  icon: Icons.accessibility_new,
+                  child: GlassCard(
+                    padding: EdgeInsets.zero,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: AppSettings.reduceMotion,
+                      builder: (context, value, _) => SwitchListTile(
+                        title: const Text('Reduce motion'),
+                        subtitle: const Text(
+                            'Use still transitions and loading indicators. Your device’s reduce-motion preference is always respected.'),
+                        value: value,
+                        onChanged: AppSettings.setReduceMotion,
+                      ),
+                    ),
+                  ),
+                ),
+                _section(
+                  'Privacy & diagnostics',
+                  icon: Icons.shield_outlined,
+                  child: GlassCard(
+                    padding: EdgeInsets.zero,
+                    child: ListTile(
+                      title: const Text('Local diagnostics'),
+                      subtitle: const Text(
+                          'On this device only · Remote reporting off'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: _diagnostics,
+                    ),
+                  ),
+                ),
                 _section(
                   'Profile',
                   icon: Icons.person_rounded,

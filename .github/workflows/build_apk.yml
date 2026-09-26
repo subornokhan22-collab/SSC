@@ -1,10 +1,15 @@
-name: Build APK
+name: App checks and signed APK
 
 on:
   push:
     branches: ['**']
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      require_signed_apk:
+        description: 'Require production APK delivery (fails if signing is not configured)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -63,7 +68,8 @@ jobs:
     # The `secrets` context is not allowed inside step `if:` conditions,
     # so the "does the keystore exist" check is staged through env here.
     env:
-      HAS_RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+      HAS_RELEASE_SIGNING: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' && secrets.RELEASE_KEYSTORE_PASSWORD != '' && secrets.RELEASE_KEY_ALIAS != '' && secrets.RELEASE_KEY_PASSWORD != '' && vars.RELEASE_CERT_SHA256 != '' }}
+      RELEASE_CERT_SHA256: ${{ vars.RELEASE_CERT_SHA256 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -119,16 +125,40 @@ jobs:
           path: bank-health.txt
           retention-days: 30
 
-      - name: Restore release keystore (from GitHub Secrets)
-        if: ${{ env.HAS_RELEASE_KEYSTORE == 'true' }}
+      - name: Validate Android configuration and signing guard (no APK)
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
         run: |
-          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
-          ls -la android/app/release.keystore
+          printf 'flutter.sdk=%s\nsdk.dir=%s\n' "$FLUTTER_ROOT" "$ANDROID_HOME" > android/local.properties
+          cd android
+          chmod +x gradlew
+          ./gradlew :app:tasks --all > ../gradle-tasks.log
+          if ./gradlew :app:validateProductionSigning > ../signing-guard.log 2>&1; then
+            echo 'ERROR: release signing guard allowed missing credentials'
+            exit 1
+          fi
+          grep -q 'Production release signing is incomplete' ../signing-guard.log
+          echo '### APK delivery blocked: secure production signing is not configured. Quality checks only; no debug, unsigned or preview APK is distributed.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Require signing for an explicit release request
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' && (startsWith(github.ref, 'refs/tags/v') || inputs.require_signed_apk == true) }}
+        run: |
+          echo 'Production APK requested but release signing is incomplete.'
+          exit 1
+
+      - name: Restore release keystore (from GitHub Secrets)
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          umask 077
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
 
       - name: Generate launcher icons (fixes missing app icon)
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
         run: dart run flutter_launcher_icons
 
-      - name: Build APK
+      - name: Build production-signed APK
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
         env:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
@@ -136,6 +166,24 @@ jobs:
         run: |
           set -o pipefail
           flutter build apk --release --split-per-abi --dart-define=BUILD_NUMBER=${{ github.run_number }} 2>&1 | tee flutter-build.log
+
+      - name: Verify APK certificates before distribution
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' }}
+        run: |
+          set -euo pipefail
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          test -n "$signer"
+          expected=$(printf '%s' "$RELEASE_CERT_SHA256" | tr -d ':' | tr '[:upper:]' '[:lower:]' | xargs)
+          for apk in build/app/outputs/flutter-apk/app-*-release.apk; do
+            "$signer" verify --verbose --print-certs "$apk" > certificate-check.txt
+            ! grep -qi 'Android Debug' certificate-check.txt
+            actual=$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' certificate-check.txt | tr '[:upper:]' '[:lower:]')
+            test "$actual" = "$expected"
+          done
+
+      - name: Remove restored keystore
+        if: always()
+        run: rm -f android/app/release.keystore
 
       - name: Post build log (diagnostic — as artifact, not release)
         if: failure()
@@ -165,7 +213,7 @@ jobs:
       # && git push origin v1.0.0) so the release list stops accumulating
       # a build per push.
       - name: Upload APK as artifact (branch build)
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' && !startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/upload-artifact@v4
         with:
           # mapping.txt (R8 symbol map) rides along so any minified-crash
@@ -175,9 +223,10 @@ jobs:
             build/app/outputs/flutter-apk/app-*-release.apk
             build/app/outputs/mapping/release/mapping.txt
           retention-days: 30
+          if-no-files-found: error
 
       - name: Publish GitHub Release (version tags only)
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ env.HAS_RELEASE_SIGNING == 'true' && startsWith(github.ref, 'refs/tags/v') }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

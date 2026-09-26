@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 
 import '../services/omr/omr_quality.dart';
 import '../theme/app_theme.dart';
+import '../services/local_diagnostics.dart';
+import '../widgets/motion_policy.dart';
 
 /// Full-screen guided OMR capture.
 ///
@@ -28,6 +30,9 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     with WidgetsBindingObserver {
   CameraController? _controller;
   bool _starting = true;
+  bool _foreground = true;
+  int _cameraGeneration = 0;
+  Future<void> _cameraWork = Future.value();
   String? _error;
   bool _capturing = false;
 
@@ -69,67 +74,78 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     _start();
   }
 
-  Future<void> _start() async {
+  Future<void> _start() {
+    final generation = ++_cameraGeneration;
+    // Serialize open/dispose so a fast background/resume cannot create two
+    // controllers or dispose the replacement while its stream is starting.
+    _cameraWork = _cameraWork.then((_) => _open(generation));
+    return _cameraWork;
+  }
+
+  bool _current(int generation) =>
+      mounted && _foreground && generation == _cameraGeneration;
+
+  Future<void> _open(int generation) async {
+    if (!_current(generation)) return;
     setState(() {
       _starting = true;
       _error = null;
       _framesSeen = 0;
       _streamDead = false;
+      _capturing = false;
+      _quality = null;
+      _confidence = 0;
     });
     _streamWatchdog?.cancel();
+    CameraController? opening;
     try {
       final cameras = await availableCameras();
+      if (!_current(generation)) return;
+      if (cameras.isEmpty) throw CameraException('CameraUnavailable', '');
       final back = cameras.firstWhere(
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
-      final controller = CameraController(
-        back,
-        ResolutionPreset.high,
-        enableAudio: false,
-      );
+      final controller =
+          CameraController(back, ResolutionPreset.high, enableAudio: false);
+      opening = controller;
       await controller.initialize();
-      if (!mounted) {
-        await controller.dispose();
+      if (!_current(generation)) {
+        await _teardown(controller);
         return;
       }
       _controller = controller;
       if (controller.supportsImageStreaming()) {
-        // Quality analysis on each delivered frame drives the guide +
-        // auto-capture. (The stream carries previews; the final photo
-        // comes from takePicture at full resolution.)
         try {
-          await controller.startImageStream(_onFrame);
+          await controller.startImageStream((frame) {
+            if (_current(generation)) _onFrame(frame);
+          });
         } catch (_) {
-          // Preview keeps working; auto-capture just won't kick in.
+          // Actual stream absence is shown by the watchdog, not a fake scan.
         }
-        // If no frame has arrived within a couple of seconds, this phone
-        // isn't streaming — say so instead of showing a frozen guide.
+        if (!_current(generation)) return; // lifecycle queued teardown
         _streamWatchdog = Timer(_streamDeadline, () {
-          if (!mounted || _framesSeen > 0) return;
+          if (!_current(generation) || _framesSeen > 0) return;
           setState(() => _streamDead = true);
         });
       } else {
         _streamDead = true;
       }
-      setState(() => _starting = false);
-    } catch (e) {
-      String msg = 'Camera could not start. Use the system camera instead.';
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            msg =
-                'Camera permission is off. Allow it in settings, or use the system camera.';
-          case 'CameraUnavailable':
-            msg = 'No camera found on this device.';
-          default:
-            msg = 'Camera error (${e.code}). Use the system camera instead.';
-        }
+      if (_current(generation)) setState(() => _starting = false);
+    } catch (error, stack) {
+      unawaited(LocalDiagnostics.record(error, stack, scope: 'camera'));
+      if (opening != null) {
+        if (identical(_controller, opening)) _controller = null;
+        await _teardown(opening);
       }
-      if (!mounted) return;
+      if (!_current(generation)) return;
+      final denied =
+          error is CameraException && error.code == 'CameraAccessDenied';
       setState(() {
         _starting = false;
-        _error = msg;
+        _error = denied
+            ? 'Camera permission is off. Allow it in settings, or use the system camera.'
+            : 'Camera could not start. Use the system camera instead.';
       });
     }
   }
@@ -139,7 +155,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   void _onFrame(CameraImage frame) {
     // While a capture is being processed the guidance can't change the
     // outcome — skip the analysis instead of burning CPU on every frame.
-    if (_capturing) return;
+    if (!mounted || !_foreground || _capturing) return;
     final now = DateTime.now();
     // Analyse every 66 ms while the sheet is locked (the capture streak
     // needs the cadence) and every ~90 ms while hunting (the box is a
@@ -188,13 +204,17 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
 
   Future<void> _capture() async {
     final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
+    if (!_foreground ||
+        _capturing ||
+        controller == null ||
+        !controller.value.isInitialized) return;
+    final generation = _cameraGeneration;
     setState(() => _capturing = true);
     try {
       final file = await controller.takePicture();
-      if (mounted) Navigator.of(context).pop(file.path);
+      if (_current(generation)) Navigator.of(context).pop(file.path);
     } catch (_) {
-      if (mounted) {
+      if (_current(generation)) {
         setState(() => _capturing = false);
         HapticFeedback.mediumImpact();
       }
@@ -213,13 +233,21 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
-    if (state == AppLifecycleState.inactive) {
-      _teardown(controller);
+    final resumed = state == AppLifecycleState.resumed;
+    if (resumed == _foreground) return;
+    _foreground = resumed;
+    if (resumed) {
+      // Restart even when pause cleared the controller.
+      unawaited(_start());
+    } else {
+      _cameraGeneration++;
+      _streamWatchdog?.cancel();
+      final controller = _controller;
       _controller = null;
-    } else if (state == AppLifecycleState.resumed) {
-      _start();
+      if (mounted) setState(() => _starting = true);
+      if (controller != null) {
+        _cameraWork = _cameraWork.then((_) => _teardown(controller));
+      }
     }
   }
 
@@ -235,10 +263,14 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _foreground = false;
+    _cameraGeneration++;
     _streamWatchdog?.cancel();
     final controller = _controller;
     _controller = null;
-    if (controller != null) unawaited(_teardown(controller));
+    if (controller != null) {
+      _cameraWork = _cameraWork.then((_) => _teardown(controller));
+    }
     super.dispose();
   }
 
@@ -253,7 +285,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
           children: [
             if (_starting)
               const Center(
-                child: CircularProgressIndicator(color: Colors.white70),
+                child: ActivityIndicator(size: 26, color: Colors.white70),
               )
             else if (_error != null)
               Center(

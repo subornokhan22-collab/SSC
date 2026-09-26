@@ -4,6 +4,7 @@ import '../data/questions_data.dart';
 import '../services/ai/ai_text_formatter.dart';
 import '../services/ai/question_schema_validator.dart';
 import '../theme/app_theme.dart';
+import 'animations.dart';
 
 class PaperQuestionCard extends StatelessWidget {
   final Question question;
@@ -23,7 +24,11 @@ class PaperQuestionCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => FadeSlideIn(
+      key: ValueKey('${question.id}:${question.questionText}'),
+      duration: const Duration(milliseconds: 240),
+      offset: const Offset(0, 6),
+      child: Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -134,7 +139,7 @@ class PaperQuestionCard extends StatelessWidget {
             ],
           ),
         ),
-      );
+      ));
 }
 
 class _QuestionEditor extends StatefulWidget {

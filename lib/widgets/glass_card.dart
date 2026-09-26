@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import 'animations.dart';
+import 'motion_policy.dart';
 
 /// Frosted, softly-lit white surface used for every panel in the tutor
 /// portal. The translucency keeps the animated backdrop visible while the
@@ -39,7 +40,7 @@ class GlassCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       child: RepaintBoundary(
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 240),
+          duration: MotionPolicy.duration(context, 240),
           curve: Curves.easeOut,
           padding: padding,
           decoration: BoxDecoration(
@@ -151,7 +152,7 @@ class StatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
+      duration: MotionPolicy.duration(context, 220),
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
       decoration: BoxDecoration(
         color: color.withOpacity(.11),
@@ -208,7 +209,7 @@ class InfoBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeSlideIn(
       offset: const Offset(0, 10),
-      duration: const Duration(milliseconds: 320),
+      duration: MotionPolicy.duration(context, 320),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(13),

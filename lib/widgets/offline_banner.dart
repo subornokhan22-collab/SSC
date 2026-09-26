@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
+import 'motion_policy.dart';
 
 /// A global, animated "offline" bar pinned to the top of every screen
 /// (below the status bar).
@@ -52,11 +53,19 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
     final next = !online;
     if (next == _offline) return;
     setState(() => _offline = next);
-    if (next) {
+    if (MotionPolicy.reduce(context)) {
+      _ctrl.value = next ? 1 : 0;
+    } else if (next) {
       _ctrl.forward();
     } else {
       _ctrl.reverse();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MotionPolicy.reduce(context)) _ctrl.value = _offline ? 1 : 0;
   }
 
   @override
@@ -146,40 +155,13 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
   }
 }
 
-/// The cloud-off icon with a gentle breathing pulse so the bar reads as
-/// "live" while offline.
-class _PulsingOfflineIcon extends StatefulWidget {
+/// Offline is a persistent state, not a reason for a perpetual pulse.
+class _PulsingOfflineIcon extends StatelessWidget {
   const _PulsingOfflineIcon();
-
   @override
-  State<_PulsingOfflineIcon> createState() => _PulsingOfflineIconState();
-}
-
-class _PulsingOfflineIconState extends State<_PulsingOfflineIcon>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (context, _) => Transform.scale(
-        scale: 1 + .14 * _c.value,
-        child: const Icon(
-          Icons.cloud_off_rounded,
-          color: Colors.white,
-          size: 18,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const Icon(
+        Icons.cloud_off_rounded,
+        color: Colors.white,
+        size: 18,
+      );
 }
