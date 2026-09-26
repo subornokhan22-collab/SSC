@@ -6,7 +6,9 @@ import '../models/paper_draft.dart';
 import '../controllers/paper_controller.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/animations.dart';
+import '../services/app_style.dart';
 import '../widgets/alive_tab_stack.dart';
+import '../widgets/aurora_ribbons.dart';
 import '../widgets/motion_policy.dart';
 import '../navigation/app_routes.dart';
 import '../services/auth_service.dart';
@@ -98,8 +100,20 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             )
           : null,
     );
+    // The editor can move the workspace tint (English is pink); coming back to
+    // the desk restores the accent for the tab the teacher is actually on.
+    AppStyle.mood.value = _moods[tab % _moods.length];
     if (mounted) load();
   }
+
+  /// Tab index to the colour the backdrop should drift towards. Colour is the
+  /// navigation cue: indigo desk, sky library, teal scanner, purple AI.
+  static const List<WorkspaceMood> _moods = [
+    WorkspaceMood.home,
+    WorkspaceMood.papers,
+    WorkspaceMood.omr,
+    WorkspaceMood.ai,
+  ];
 
   void select(int i) {
     if (i == tab) return;
@@ -109,6 +123,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
       tab = i;
       visited.add(i);
     });
+    AppStyle.mood.value = _moods[i % _moods.length];
     if (i == 0) load();
   }
 
@@ -200,7 +215,13 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   borderRadius: BorderRadius.circular(24),
                   side: BorderSide(color: AppTheme.primary.withOpacity(.18)),
                 ),
-                child: Padding(
+                // The one place on the desk that earns atmosphere. Kept faint
+                // and clipped to the hero so the rest of the screen stays a
+                // still, printable surface.
+                child: AuroraRibbons(
+                  enabled: true,
+                  opacity: .34,
+                  child: Padding(
                   padding: const EdgeInsets.all(22),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,6 +264,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       ),
                     ],
                   ),
+                  ),
                 ),
               ),
               if (draftTitle != null)
@@ -280,6 +302,14 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 12),
+              quickAction(
+                Icons.folder_open_outlined,
+                'My Papers',
+                'Saved · PDF · OMR keys',
+                () => select(1),
+                AppColors.science,
               ),
               const SizedBox(height: 24),
               Row(

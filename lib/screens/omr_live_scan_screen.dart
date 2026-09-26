@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../services/omr/omr_quality.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import '../services/local_diagnostics.dart';
 import '../widgets/motion_policy.dart';
 
@@ -392,12 +393,12 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                                 padding: EdgeInsets.all(20),
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  color: AppTheme.primary,
+                                  color: AppColors.omr,
                                 ),
                               )
                             : const Icon(
                                 Icons.photo_camera_outlined,
-                                color: AppTheme.primary,
+                                color: AppColors.omr,
                                 size: 34,
                               ),
                       ),
@@ -412,11 +413,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                         ),
                         decoration: BoxDecoration(
                           color:
-                              _autoCapture ? AppTheme.primary : Colors.black54,
+                              _autoCapture ? AppColors.omr : Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: _autoCapture
-                                ? AppTheme.primary
+                                ? AppColors.omr
                                 : Colors.white54,
                           ),
                         ),
@@ -499,10 +500,11 @@ class _GuidePainter extends CustomPainter {
         ..addPolygon(pts, true);
       path.fillType = PathFillType.evenOdd;
       canvas.drawPath(path, Paint()..color = const Color(0x73000000));
-      // Green = a real OMR sheet is detected, red = it isn't. That's the
-      // whole rule.
+      // Teal = a real OMR sheet is detected and readable, amber = it is still
+      // being aligned. Red stays reserved for a genuine fault, so the colour
+      // alone tells the teacher whether to hold still or stop.
       final color =
-          q!.ready ? const Color(0xFF57D9A3) : const Color(0xFFFF5252);
+          q!.ready ? const Color(0xFF087F8C) : const Color(0xFFE8B23A);
       final edge = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
@@ -550,7 +552,9 @@ class _GuidePainter extends CustomPainter {
     final border = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = const Color(0xD9FF5252);
+      ..color = streamDead
+          ? const Color(0xD9FF5252)
+          : AppColors.omr.withOpacity(.85);
     canvas.drawRRect(
       RRect.fromRectAndRadius(guide, Radius.circular(r)),
       border,
@@ -561,7 +565,8 @@ class _GuidePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
-    bracket.color = const Color(0xFFFF5252);
+    bracket.color =
+        streamDead ? const Color(0xFFFF5252) : AppColors.omr;
     final L = gw * 0.10;
     final tl = Offset(gx, gy);
     final tr = Offset(gx + gw, gy);

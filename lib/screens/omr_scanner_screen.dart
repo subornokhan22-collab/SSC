@@ -19,6 +19,7 @@ import '../services/app_settings.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import '../widgets/app_button.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/problem_dialog.dart';
@@ -922,7 +923,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       width: double.infinity,
                       child: FilledButton.icon(
                         style: FilledButton.styleFrom(
-                          backgroundColor: AppTheme.primary,
+                          backgroundColor: AppColors.omr,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
@@ -1106,7 +1107,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       children: [
                         const Icon(
                           Icons.groups_rounded,
-                          color: AppTheme.primary,
+                          color: AppColors.omr,
                           size: 20,
                         ),
                         const SizedBox(width: 10),
@@ -1152,7 +1153,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 padding: const EdgeInsets.all(24),
                 child: Row(
                   children: [
-                    const ActivityIndicator(color: AppTheme.primary),
+                    const ActivityIndicator(color: AppColors.omr),
                     const SizedBox(width: 14),
                     Expanded(
                         child: Text(_batchProgress ?? 'শিট পড়া হচ্ছে...')),
@@ -1171,7 +1172,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w900,
-                        color: AppTheme.primary,
+                        color: AppColors.omr,
                       ),
                     ),
                     if ((_scanMs ?? 0) > 0)
@@ -1210,22 +1211,22 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                             'দ্বি-দাগ ${graded.ambiguous}',
                             AppTheme.warning,
                           ),
-                        _chip('রোল ${result.roll}', AppTheme.primaryDark),
+                        _chip('রোল ${result.roll}', AppColors.omr),
                         _chip(
                           'রেজিস্ট্রেশন ${result.registration}',
                           result.registration.contains('?')
                               ? AppTheme.warning
-                              : AppTheme.primaryDark,
+                              : AppColors.omr,
                         ),
                         // Prefill off in Settings → sheet codes are not used.
                         if (AppSettings.omrPrefill) ...[
                           _chip(
                             'বিষয় কোড ${result.subjectCode}',
-                            AppTheme.primaryDark,
+                            AppColors.omr,
                           ),
                           _chip(
                             'সেট ${result.setCode >= 0 ? _letters[result.setCode] : '—'}',
-                            AppTheme.primaryDark,
+                            AppColors.omr,
                           ),
                         ],
                       ],
@@ -1411,7 +1412,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         icon: const Icon(
                           Icons.visibility_rounded,
                           size: 18,
-                          color: AppTheme.primary,
+                          color: AppColors.omr,
                         ),
                       ),
                       IconButton(
@@ -1529,8 +1530,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       spacing: 8,
       runSpacing: 8,
       children: [
-        _chip('Sheets $n', AppTheme.primaryDark),
-        _chip('Avg ${avg.toStringAsFixed(1)}%', AppTheme.primary),
+        _chip('Sheets $n', AppColors.omr),
+        _chip('Avg ${avg.toStringAsFixed(1)}%', AppColors.omr),
         _chip('Best ${best.score}/${best.total}', AppTheme.success),
         _chip('Lowest ${low.score}/${low.total}', AppTheme.warning),
       ],
@@ -1644,12 +1645,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             color: chosen >= 0
-                ? AppTheme.primary.withOpacity(.08)
+                ? AppColors.omr.withOpacity(.08)
                 : AppTheme.surfaceAlt,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: chosen >= 0
-                  ? AppTheme.primary.withOpacity(.5)
+                  ? AppColors.omr.withOpacity(.5)
                   : AppTheme.border,
             ),
           ),
@@ -1684,10 +1685,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         height: 26,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: chosen == o ? AppTheme.primary : Colors.white,
+                          color: chosen == o ? AppColors.omr : Colors.white,
                           border: Border.all(
                             color: chosen == o
-                                ? AppTheme.primary
+                                ? AppColors.omr
                                 : AppTheme.border,
                           ),
                         ),

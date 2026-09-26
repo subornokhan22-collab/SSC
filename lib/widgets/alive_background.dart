@@ -34,22 +34,30 @@ class _AliveBackgroundState extends MotionLoopState<AliveBackground> {
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<int>(
         valueListenable: AppStyle.bgIndex,
-        builder: (context, _, child) {
-          final base = AppStyle.bg;
-          final accent = AppStyle.accent;
-          return ColoredBox(
-            color: base,
-            child: RepaintBoundary(
-              child: CustomPaint(
-                painter: _PaperWashPainter(
-                  accent,
-                  motionAllowed ? motion.value : 0,
+        builder: (context, _, child) => ValueListenableBuilder<WorkspaceMood>(
+          valueListenable: AppStyle.mood,
+          builder: (context, _, child) => TweenAnimationBuilder<Color>(
+            // ~300ms between areas: enough to read as a move, short enough that
+            // rapid tab switching never feels laggy.
+            tween: ColorTween(end: AppStyle.moodColor),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: child,
+            builder: (context, tint, child) => DecoratedBox(
+              decoration: BoxDecoration(gradient: AppStyle.gradient),
+              child: RepaintBoundary(
+                child: CustomPaint(
+                  painter: _PaperWashPainter(
+                    tint,
+                    motionAllowed ? motion.value : 0,
+                  ),
+                  child: child,
                 ),
-                child: child,
               ),
             ),
-          );
-        },
+          ),
+          child: child,
+        ),
         child: widget.child,
       );
 }
@@ -68,13 +76,13 @@ class _PaperWashPainter extends CustomPainter {
       canvas,
       Offset(size.width * .18 + drift, size.height * .12),
       size.width * .8,
-      accent.withOpacity(.05),
+      accent.withOpacity(.075),
     );
     _wash(
       canvas,
       Offset(size.width * .86 - drift, size.height * .92),
       size.width * .7,
-      accent.withOpacity(.035),
+      accent.withOpacity(.05),
     );
   }
 

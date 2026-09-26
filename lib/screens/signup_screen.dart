@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
+import '../widgets/aurora_ribbons.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
@@ -177,8 +178,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(_otpSent ? 'Verify Code' : 'Create Account')),
+    return AuroraRibbons(
+      enabled: true,
+      opacity: .45,
+      child: Scaffold(
+      appBar: AppBar(
+        title: Text(_otpSent ? 'Verify Code' : 'Create Account'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
@@ -204,6 +213,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ],
           ]),
         ),
+      ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import '../widgets/animations.dart';
+import '../widgets/aurora_ribbons.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
@@ -94,9 +95,19 @@ class _SignInScreenState extends State<SignInScreen> {
     final inset = ((MediaQuery.sizeOf(context).width - 520) / 2)
         .clamp(18.0, double.infinity)
         .toDouble();
+    // The front door is the one screen that should feel like an arrival, so it
+    // gets the ribbons. The scaffold is transparent, so this sits behind the
+    // form rather than replacing the workspace paper.
     return AutofillGroup(
-        child: Scaffold(
-      appBar: AppBar(),
+        child: AuroraRibbons(
+      enabled: true,
+      opacity: .5,
+      child: Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.fromLTRB(inset, 12, inset, 28),
@@ -190,6 +201,6 @@ class _SignInScreenState extends State<SignInScreen> {
           ]),
         ),
       ),
-    ));
+    )));
   }
 }

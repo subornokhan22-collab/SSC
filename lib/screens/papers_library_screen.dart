@@ -12,6 +12,7 @@ import '../models/subject_info.dart';
 import '../services/paper_library.dart';
 import '../widgets/problem_dialog.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import '../widgets/glass_card.dart';
 import 'omr_scanner_screen.dart';
 import 'saved_paper_screen.dart';
@@ -273,13 +274,13 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppTheme.primary.withOpacity(.10),
+              color: AppColors.science.withOpacity(.10),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppTheme.primary.withOpacity(.35)),
+              border: Border.all(color: AppColors.science.withOpacity(.35)),
             ),
             child: const Icon(
               Icons.key_rounded,
-              color: AppTheme.primary,
+              color: AppColors.science,
               size: 22,
             ),
           ),
@@ -365,7 +366,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   Widget _savedTab() {
     if (_loading) {
       return const Center(
-        child: CircularProgressIndicator(color: AppTheme.primary),
+        child: CircularProgressIndicator(color: AppColors.science),
       );
     }
     if (_saved.isEmpty) {
@@ -378,7 +379,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               const Icon(
                 Icons.bookmarks_rounded,
                 size: 54,
-                color: AppTheme.primary,
+                color: AppColors.science,
               ),
               const SizedBox(height: 14),
               const Text(
@@ -663,13 +664,13 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                 children: [
                   _savedTab(),
                   RefreshIndicator(
-                    color: AppTheme.primary,
+                    color: AppColors.science,
                     onRefresh: _reload,
                     child: _loading
                         ? const Center(
                             child: ActivityIndicator(
                               size: 24,
-                              color: AppTheme.primary,
+                              color: AppColors.science,
                             ),
                           )
                         : _entries.isEmpty
@@ -703,7 +704,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             const Icon(
               Icons.photo_library_rounded,
               size: 54,
-              color: AppTheme.primary,
+              color: AppColors.science,
             ),
             const SizedBox(height: 14),
             const Text(
@@ -804,7 +805,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           ),
           child: const Icon(
             Icons.picture_as_pdf_rounded,
-            color: AppTheme.primary,
+            color: AppColors.science,
             size: 26,
           ),
         );
@@ -815,16 +816,16 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   Widget _pill(String text) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
         decoration: BoxDecoration(
-          color: AppTheme.primary.withOpacity(.08),
+          color: AppColors.science.withOpacity(.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.primary.withOpacity(.25)),
+          border: Border.all(color: AppColors.science.withOpacity(.25)),
         ),
         child: Text(
           text,
           style: const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w700,
-            color: AppTheme.primaryDark,
+            color: AppColors.science,
           ),
         ),
       );
@@ -841,7 +842,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           message: label,
           child: IconButton(
             visualDensity: VisualDensity.compact,
-            icon: Icon(icon, size: 19, color: color ?? AppTheme.primary),
+            icon: Icon(icon, size: 19, color: color ?? AppColors.science),
             onPressed: onTap,
           ),
         ),

@@ -9,6 +9,8 @@ import '../data/questions_data.dart';
 import '../data/english_paper_sync.dart';
 import '../models/paper_draft.dart';
 import '../models/subject_info.dart';
+import '../theme/design_tokens.dart';
+import '../services/app_style.dart';
 import '../services/paper_composer.dart';
 import '../services/paper_export.dart';
 import '../services/paper_library.dart';
@@ -349,12 +351,30 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         for (final s in allSubjects)
           Card(
               child: RadioListTile<String>(
+                  // English is pink everywhere it appears, so the writing
+                  // subjects are recognisable before the title is read.
+                  secondary: Icon(
+                    PaperComposer.isEnglish(s.id)
+                        ? Icons.edit_note_rounded
+                        : Icons.menu_book_outlined,
+                    color: PaperComposer.isEnglish(s.id)
+                        ? AppColors.writing
+                        : AppTheme.muted,
+                  ),
+                  activeColor: PaperComposer.isEnglish(s.id)
+                      ? AppColors.writing
+                      : AppTheme.primary,
                   title: Text(s.name),
                   subtitle: Text(
                       '${s.bengaliName} · ${PaperComposer.isEnglish(s.id) ? 'English sections available' : '${allMCQs.where((q) => q.subjectId == s.id).length} MCQs in bank'}'),
                   value: s.id,
                   groupValue: c.draft.subjectId,
-                  onChanged: (id) => c.selectSubject(id!))),
+                  onChanged: (id) {
+                    c.selectSubject(id!);
+                    AppStyle.mood.value = PaperComposer.isEnglish(id)
+                        ? WorkspaceMood.english
+                        : WorkspaceMood.home;
+                  })),
       ]);
   Widget chapterStep() =>
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

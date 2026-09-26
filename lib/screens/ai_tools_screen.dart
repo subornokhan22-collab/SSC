@@ -103,14 +103,47 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
         body: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Text(
-              'A teaching task, not a chat prompt.',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'AI practice is not an official board paper. Always review wording and answers before use.',
-              style: TextStyle(color: AppTheme.muted),
+            // AI owns purple across the app: icon well, chip selection and the
+            // activity indicator. The card underneath stays paper white.
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: AppColors.ai.withOpacity(.12),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.ai.withOpacity(.28)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.ai.withOpacity(.16),
+                        blurRadius: 18,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.auto_awesome_outlined,
+                      color: AppColors.ai, size: 24),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'A teaching task, not a chat prompt.',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'AI practice is not an official board paper. Always review wording and answers before use.',
+                        style: TextStyle(color: AppTheme.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 18),
             Wrap(
@@ -120,6 +153,12 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                   ChoiceChip(
                     label: Text(label(cmd)),
                     selected: command == cmd,
+                    selectedColor: AppColors.ai.withOpacity(.16),
+                    side: BorderSide(
+                      color: command == cmd
+                          ? AppColors.ai.withOpacity(.45)
+                          : AppColors.border,
+                    ),
                     onSelected:
                         c.busy ? null : (_) => setState(() => command = cmd),
                   ),
