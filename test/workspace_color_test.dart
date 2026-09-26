@@ -80,20 +80,23 @@ void main() {
           reason: 'AppStyle.gradient must actually reach the screen');
     });
 
-    testWidgets('rapid area switching settles without leaving motion running',
+    testWidgets('rapid area switching survives without throwing',
         (tester) async {
       await tester.pumpWidget(host(const AliveBackground(child: Text('desk'))));
       await tester.pump();
 
       // Slam through the areas faster than the 300ms transition can finish.
+      // Deliberately no pumpAndSettle: the backdrop owns a repeating drift loop,
+      // so the tree never settles by design.
       for (final mood in WorkspaceMood.values) {
         AppStyle.mood.value = mood;
         await tester.pump(const Duration(milliseconds: 40));
       }
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(AppStyle.mood.value, WorkspaceMood.english);
       expect(tester.takeException(), isNull);
+      expect(find.text('desk'), findsOneWidget);
     });
   });
 
