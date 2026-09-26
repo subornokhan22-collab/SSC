@@ -54,16 +54,17 @@ void main() {
           return sdcard.path;
         case 'copyToDownloads':
           if (!sharedWritable) return null;
-          // Mirror the real MediaStore route: shared storage, uninstall-safe.
+          // Mirror the real MediaStore route: the destination is relative to
+          // the shared storage root, exactly where the restore looks for it.
           final args = Map<String, Object?>.from(call.arguments as Map);
           final relative =
               (args['relativePath'] as String?) ?? 'Download/TutorsDeskDebug';
-          final folder = relative.replaceFirst(RegExp(r'^Downloads?/'), '');
-          Directory('${sdcard.path}/$folder').createSync(recursive: true);
           final name = args['name'] as String;
-          File('${sdcard.path}/$folder/$name').writeAsBytesSync(
+          final target = File('${sdcard.path}/$relative/$name');
+          target.parent.createSync(recursive: true);
+          target.writeAsBytesSync(
               File(args['source'] as String).readAsBytesSync());
-          return '$folder/$name';
+          return '$relative/$name';
       }
       return null;
     });
