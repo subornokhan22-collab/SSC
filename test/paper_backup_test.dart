@@ -162,6 +162,19 @@ void main() {
         reason: 'a failed shared copy must not lose the in-app backup');
   });
 
+  test('native copy writes and reports the same folder', () {
+    // The destination folder must come from the caller: a hardcoded folder
+    // here would put backups where the restore never looks, while the app
+    // still reported success.
+    final kotlin = File(
+      'android/app/src/main/kotlin/com/tutorsdesk/app/MainActivity.kt',
+    ).readAsStringSync();
+    expect(kotlin, contains('RELATIVE_PATH, relative'));
+    expect(
+        kotlin, isNot(contains('RELATIVE_PATH, "Download/TutorsDeskDebug"')));
+    expect(kotlin, contains('path = relative'));
+  });
+
   test('restore keeps existing papers instead of duplicating them', () async {
     await PaperLibrary.addSavedPaper(paper());
     await PaperBackup.autoSave();

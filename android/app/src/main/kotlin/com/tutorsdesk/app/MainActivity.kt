@@ -100,13 +100,18 @@ class MainActivity : FlutterActivity() {
                             val source = call.argument<String>("source")
                             val name = call.argument<String>("name")
                             val mime = call.argument<String>("mime")
+                            // One value drives both where MediaStore writes and
+                            // what the caller is told, so the app can never
+                            // report a folder it did not write to.
+                            val relative = call.argument<String>("relativePath")
+                                ?: "Download/TutorsDeskDebug"
                             if (Build.VERSION.SDK_INT >= 29 &&
                                 source != null && name != null && mime != null
                             ) {
                                 val values = android.content.ContentValues().apply {
                                     put(android.provider.MediaStore.Downloads.DISPLAY_NAME, name)
                                     put(android.provider.MediaStore.Downloads.MIME_TYPE, mime)
-                                    put(android.provider.MediaStore.Downloads.RELATIVE_PATH, "Download/TutorsDeskDebug")
+                                    put(android.provider.MediaStore.Downloads.RELATIVE_PATH, relative)
                                     put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
                                 }
                                 val uri = contentResolver.insert(
@@ -121,8 +126,11 @@ class MainActivity : FlutterActivity() {
                                     values.clear()
                                     values.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
                                     contentResolver.update(uri, values, null, null)
-                                    val relative = call.argument<String>("relativePath") ?: "Download/TutorsDeskDebug"
-                                if (written) path = "${relative.removePrefix("Download/").removePrefix("Downloads/")}/$name"
+                                    if (written) {
+                                        path = relative
+                                            .removePrefix("Download/")
+                                            .removePrefix("Downloads/") + "/$name"
+                                    }
                                 }
                             }
                         } catch (e: Exception) {
