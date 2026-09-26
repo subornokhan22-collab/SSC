@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_logo.dart';
+import '../widgets/animations.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
 import 'teacher_home_screen.dart';
@@ -18,12 +20,8 @@ class AuthChoiceScreen extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 440),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.description_outlined,
-                      size: 60,
-                      color: AppTheme.primary,
-                    ),
+                  children: Stagger.list([
+                    const AppLogo(size: 64),
                     const SizedBox(height: 28),
                     Text(
                       'Tutor’s Desk',
@@ -83,7 +81,7 @@ class AuthChoiceScreen extends StatelessWidget {
                         'Sign-in is not configured. You can still work with the offline question bank.',
                         style: TextStyle(color: AppTheme.muted, fontSize: 12),
                       ),
-                  ],
+                  ]),
                 ),
               ),
             ),

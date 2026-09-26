@@ -320,6 +320,7 @@ class BusyIndicator extends StatelessWidget {
                 children: [
                   const HaloRing(size: 74, strokeWidth: 2.4),
                   Pulse(
+                    enabled: true,
                     min: .88,
                     max: 1.06,
                     period: const Duration(milliseconds: 1100),

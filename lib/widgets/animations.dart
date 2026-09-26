@@ -119,7 +119,7 @@ class ShineSweep extends StatefulWidget {
     required this.child,
     this.borderRadius = const BorderRadius.all(Radius.circular(14)),
     this.period = const Duration(milliseconds: 2600),
-    this.enabled = true,
+    this.enabled = false,
   });
 
   @override
@@ -186,7 +186,7 @@ class Pulse extends StatefulWidget {
   const Pulse({
     super.key,
     required this.child,
-    this.enabled = true,
+    this.enabled = false,
     this.min = 0.93,
     this.max = 1.07,
     this.period = const Duration(milliseconds: 800),

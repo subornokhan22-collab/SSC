@@ -149,7 +149,9 @@ class DeskWelcome extends StatelessWidget {
           const SizedBox(width: 6),
           Text(label,
               style: TextStyle(
-                  fontSize: 11, color: color, fontWeight: FontWeight.w600))
+                  fontSize: 11,
+                  color: AppTheme.textDark,
+                  fontWeight: FontWeight.w600))
         ]),
       );
 }

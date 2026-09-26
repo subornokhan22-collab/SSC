@@ -125,19 +125,36 @@ jobs:
           path: bank-health.txt
           retention-days: 30
 
+      - name: Setup Gradle for compile-only checks
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
+
       - name: Validate Android configuration and signing guard (no APK)
         if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
         run: |
           printf 'flutter.sdk=%s\nsdk.dir=%s\n' "$FLUTTER_ROOT" "$ANDROID_HOME" > android/local.properties
           cd android
-          chmod +x gradlew
-          ./gradlew :app:tasks --all > ../gradle-tasks.log
-          if ./gradlew :app:validateProductionSigning > ../signing-guard.log 2>&1; then
+          gradle :app:tasks --all > ../gradle-tasks.log
+          if gradle :app:validateProductionSigning > ../signing-guard.log 2>&1; then
             echo 'ERROR: release signing guard allowed missing credentials'
             exit 1
           fi
           grep -q 'Production release signing is incomplete' ../signing-guard.log
           echo '### APK delivery blocked: secure production signing is not configured. Quality checks only; no debug, unsigned or preview APK is distributed.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Compile native sources without packaging an APK
+        if: ${{ env.HAS_RELEASE_SIGNING != 'true' }}
+        run: |
+          set -o pipefail
+          cd android
+          gradle :app:compileDebugKotlin 2>&1 | tee ../native-compile.log
+          cd ..
+          if find build -type f -name '*.apk' | grep -q .; then
+            echo 'Unexpected APK from a compile-only quality check'
+            exit 1
+          fi
 
       - name: Require signing for an explicit release request
         if: ${{ env.HAS_RELEASE_SIGNING != 'true' && (startsWith(github.ref, 'refs/tags/v') || inputs.require_signed_apk == true) }}
@@ -197,6 +214,8 @@ jobs:
             echo ""
             echo "===== BUILD ====="
             tail -c 30000 flutter-build.log 2>/dev/null || echo "(no flutter-build.log)"
+            echo "===== NATIVE COMPILE / SIGNING GUARD ====="
+            tail -c 15000 native-compile.log gradle-tasks.log signing-guard.log 2>/dev/null || true
           } > ci-diag-${GITHUB_RUN_ID}.txt
 
       - name: Upload diagnostic log

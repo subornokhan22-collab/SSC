@@ -41,7 +41,8 @@ incorrectly configured signing identity from being distributed.
 - Restored keystores are deleted in an `always()` step and ignored by Git.
 - Without signing, CI validates Android Gradle configuration and runs a negative
   test proving that the release-signing guard rejects missing credentials. No
-  substitute APK is built or uploaded.
+  substitute APK is built or uploaded. CI also compiles native debug-variant
+  classes to check Kotlin/plugin compatibility, without packaging an APK.
 - Version-tag releases and manual runs with **Require production APK delivery**
   enabled fail if signing is unavailable; they cannot report release success.
 - Normal local debug development remains possible, but those builds are not
