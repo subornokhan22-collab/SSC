@@ -93,12 +93,20 @@ void main() {
         pages: 1,
       );
 
+  /// [PaperBackup.autoSave] is fire-and-forget with several real awaits, so a
+  /// single event-loop turn is not enough to observe its result.
+  Future<void> settle() async {
+    for (var i = 0; i < 50; i++) {
+      await Future<void>.delayed(Duration.zero);
+    }
+  }
+
   File sharedCopy() =>
       File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup.json');
 
   test('saving a paper writes the uninstall-surviving Download copy', () async {
     await PaperLibrary.addSavedPaper(paper());
-    await Future<void>.delayed(Duration.zero);
+    await settle();
 
     expect(
       File('${external.path}/TutorsDesk/tutors_desk_backup.json').existsSync(),
@@ -122,7 +130,7 @@ void main() {
 
   test('a fresh install restores the paper and its answer key', () async {
     await PaperLibrary.addSavedPaper(paper());
-    await Future<void>.delayed(Duration.zero);
+    await settle();
     expect(sharedCopy().existsSync(), isTrue);
 
     // Uninstall: Android removes the app folders, shared Download stays.
@@ -144,7 +152,7 @@ void main() {
   test('manual export reports failure honestly when shared storage refuses',
       () async {
     await PaperLibrary.addSavedPaper(paper());
-    await Future<void>.delayed(Duration.zero);
+    await settle();
     sharedWritable = false;
     calls.clear();
 
@@ -159,7 +167,7 @@ void main() {
 
   test('restore keeps existing papers instead of duplicating them', () async {
     await PaperLibrary.addSavedPaper(paper());
-    await Future<void>.delayed(Duration.zero);
+    await settle();
 
     expect(await PaperBackup.tryAutoRestore(), 0,
         reason: 'a non-empty library must never be overwritten');
