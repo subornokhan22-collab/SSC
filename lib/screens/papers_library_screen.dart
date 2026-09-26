@@ -91,6 +91,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   /// reinstall can restore, useful before switching to a differently signed
   /// build. Reports the real outcome instead of assuming success.
   Future<void> _backUpToDownload() async {
+    if (_entries.isEmpty && _saved.isEmpty) {
+      _snack('Nothing to back up yet — create or save a paper first.');
+      return;
+    }
     final path = await PaperBackup.exportToDownload();
     if (!mounted) return;
     if (path == null) {

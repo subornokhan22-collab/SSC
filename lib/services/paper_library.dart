@@ -737,7 +737,15 @@ class PaperBackup {
   static Future<void> autoSave() async {
     String document;
     try {
-      document = json.encode(await _payload());
+      final payload = await _payload();
+      if (((payload['entries'] as List?) ?? const []).isEmpty &&
+          await _backupExists()) {
+        // An empty library must never replace a real backup: a fresh install,
+        // a wiped library or a transient read failure would otherwise erase
+        // the teacher's papers — including the copy a reinstall needs.
+        return;
+      }
+      document = json.encode(payload);
     } catch (_) {
       return;
     }
@@ -759,9 +767,25 @@ class PaperBackup {
   /// pre-Android 10 without the all-files permission).
   static Future<String?> exportToDownload() async {
     try {
-      return await _writeSharedCopy(json.encode(await _payload()));
+      final payload = await _payload();
+      if (((payload['entries'] as List?) ?? const []).isEmpty &&
+          await _backupExists()) {
+        return null; // keep the existing backup instead of emptying it
+      }
+      return await _writeSharedCopy(json.encode(payload));
     } catch (_) {
       return null;
+    }
+  }
+
+  /// True when any backup copy already exists, in-app or shared.
+  static Future<bool> _backupExists() async {
+    try {
+      final path = await _backupPath();
+      if (path != null && File(path).existsSync()) return true;
+      return await _legacyBackupFile() != null;
+    } catch (_) {
+      return false;
     }
   }
 

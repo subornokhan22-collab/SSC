@@ -181,6 +181,26 @@ void main() {
     expect(sharedCopy().existsSync(), isTrue);
   });
 
+  test('an empty library never overwrites an existing backup', () async {
+    await PaperLibrary.addSavedPaper(paper());
+    await PaperBackup.autoSave();
+    expect(sharedCopy().existsSync(), isTrue);
+
+    // Wiped library: a fresh install before restore has run, or a transient
+    // read failure. The next automatic save must not empty the backup.
+    File('${appDoc.path}/tutors_desk_papers/index.json')
+        .writeAsStringSync('[]');
+    expect(await PaperLibrary.loadEntries(), isEmpty);
+
+    await PaperBackup.autoSave();
+
+    final backup = jsonDecode(sharedCopy().readAsStringSync()) as Map;
+    expect(backup['entries'], isNotEmpty,
+        reason:
+            'an empty snapshot must not erase a real backup; ${await why()}');
+    expect(await PaperBackup.exportToDownload(), isNull);
+  });
+
   test('native copy writes and reports the same folder', () {
     // The destination folder must come from the caller: a hardcoded folder
     // here would put backups where the restore never looks, while the app
