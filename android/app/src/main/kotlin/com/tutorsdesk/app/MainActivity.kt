@@ -121,7 +121,8 @@ class MainActivity : FlutterActivity() {
                                     values.clear()
                                     values.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
                                     contentResolver.update(uri, values, null, null)
-                                    if (written) path = "Downloads/TutorsDeskDebug/$name"
+                                    val relative = call.argument<String>("relativePath") ?: "Download/TutorsDeskDebug"
+                                if (written) path = "${relative.removePrefix("Download/").removePrefix("Downloads/")}/$name"
                                 }
                             }
                         } catch (e: Exception) {

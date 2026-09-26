@@ -50,11 +50,27 @@ incorrectly configured signing identity from being distributed.
 
 ## Existing installations
 
-Older CI builds could be debug-signed. Android will reject an in-place update
-whose signing certificate differs. **Do not uninstall to work around this**:
-uninstalling can delete local papers and settings. Confirm the intended signing
-identity and a safe data migration/backup plan before moving an existing device
-to the first production-signed build.
+Older CI builds could be debug-signed. Android rejects an in-place update whose
+signing certificate differs, so moving a phone to the first production-signed
+build usually requires uninstalling the current one — and Android deletes the
+app’s private folder when that happens.
+
+Do this **before** uninstalling:
+
+1. Open the app → **My Papers** → tap the backup icon
+   (tooltip: “Copy backup to Download folder”), or allow the one-time permission
+   prompt. The library is copied to `Download/TutorsDesk/tutors_desk_backup.json`
+   through MediaStore (no permission on Android 10+). The app reports the real
+   location on success and a failure dialog when the device refuses.
+2. Confirm that file exists in the Download folder.
+3. Uninstall, install the production-signed APK, and start it. An empty library
+   is restored automatically from that shared copy, including OMR answer keys.
+
+The automatic in-app backup alone is **not** enough: Android deletes it on
+uninstall. Automatic saves therefore also write the shared copy, and the app no
+longer claims an uninstall-surviving copy that was never written. On devices
+older than Android 10 without the all-files permission the shared copy can fail;
+the app says so instead of implying the papers are safe.
 
 No production signing credentials have been created, replaced or exposed by
 this update. The previous successful workflow skipped release-keystore restore;

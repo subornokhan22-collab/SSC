@@ -669,8 +669,9 @@ class PaperBackup {
     }
   }
 
-  /// Legacy backup location (shared Download folder) — still readable on
-  /// installs that had the special permission granted.
+  /// Backup location in the shared Download folder — the copy that survives
+  /// an uninstall, written by [_writeSharedCopy] and readable here after a
+  /// reinstall.
   static Future<File?> _legacyBackupFile() async {
     try {
       final base = await _channel.invokeMethod<String>('externalStorageDir');
@@ -706,20 +707,59 @@ class PaperBackup {
     };
   }
 
-  /// Takes one snapshot of the whole library into the shared Download
-  /// folder. Silent no-op when the permission or storage is unavailable —
-  /// auto-save must never disturb the user.
+  /// Takes one snapshot of the whole library.
+  ///
+  /// Always writes the app-scoped copy (no permission needed, but Android
+  /// deletes it on uninstall). Additionally writes a copy into the shared
+  /// `Download/TutorsDesk` folder through MediaStore — that is the copy a
+  /// reinstall can find, and it needs no permission on Android 10+.
+  /// Silent no-op when storage is unavailable — auto-save must never
+  /// disturb the user.
   static Future<void> autoSave() async {
     try {
-      // The app-scoped folder needs no permission, so no gate here.
-      final path = await _backupPath();
-      if (path == null) return;
       final payload = await _payload();
-      final tmp = '$path.tmp';
-      await File(tmp).writeAsString(json.encode(payload), flush: true);
-      File(tmp).renameSync(path); // atomic: readers never see a half file
+      final document = json.encode(payload);
+      final path = await _backupPath();
+      if (path != null) {
+        final tmp = '$path.tmp';
+        await File(tmp).writeAsString(document, flush: true);
+        File(tmp).renameSync(path); // atomic: readers never see a half file
+      }
+      await _writeSharedCopy(document);
     } catch (_) {
       // Swallow — see above.
+    }
+  }
+
+  /// Copies the current library backup into the shared Download folder and
+  /// returns the location, or null when this device cannot (pre-Android 10
+  /// without the all-files permission).
+  static Future<String?> exportToDownload() async {
+    try {
+      final document = json.encode(await _payload());
+      return await _writeSharedCopy(document);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Shared-copy writer: MediaStore is the sanctioned no-permission route on
+  /// Android 10+ and is where [tryAutoRestore] looks after a reinstall.
+  static Future<String?> _writeSharedCopy(String document) async {
+    try {
+      final source = await _backupPath();
+      if (source == null) return null;
+      await File(source).writeAsString(document, flush: true);
+      final display = await _channel.invokeMethod<String>('copyToDownloads', {
+        'source': source,
+        'name': _fileName,
+        'mime': 'application/json',
+        'relativePath': 'Download/$_dirName',
+      });
+      final ok = display?.trim().isNotEmpty == true;
+      return ok ? 'Download/$_dirName/$_fileName' : null;
+    } catch (_) {
+      return null;
     }
   }
 

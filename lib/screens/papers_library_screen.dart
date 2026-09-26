@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../widgets/motion_policy.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,8 +61,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       PaperBackup.permissionGranted().then((granted) {
         if (granted && mounted) {
           _snack(
-            'Done — an extra copy now also lives in '
-            'Download/TutorsDesk and survives uninstalling the app.',
+            'Done — your papers are now also copied to '
+            'Download/TutorsDesk, which survives uninstalling the app.',
           );
         }
       });
@@ -84,6 +85,26 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
 
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  /// Explicit backup into the shared Download folder: the copy that a
+  /// reinstall can restore, useful before switching to a differently signed
+  /// build. Reports the real outcome instead of assuming success.
+  Future<void> _backUpToDownload() async {
+    final path = await PaperBackup.exportToDownload();
+    if (!mounted) return;
+    if (path == null) {
+      await _problem(
+        'Backup not copied',
+        'Your papers are still saved inside the app, but a copy could not be '
+            'written to the shared Download folder on this device.',
+        detail: 'Android 10 or newer is required for the automatic copy. '
+            'On older devices, grant the one-time "All files access" '
+            'permission and try again.',
+      );
+      return;
+    }
+    _snack('Backup copied to $path — it survives uninstalling the app.');
   }
 
   /// The standard red, animated problem dialog — every error the user must
@@ -607,7 +628,16 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Question Papers')),
+      appBar: AppBar(
+        title: const Text('Question Papers'),
+        actions: [
+          IconButton(
+            tooltip: 'Copy backup to Download folder',
+            onPressed: _backUpToDownload,
+            icon: const Icon(Icons.backup_outlined),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
         icon: const Icon(Icons.add_photo_alternate_rounded),
@@ -633,7 +663,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                     onRefresh: _reload,
                     child: _loading
                         ? const Center(
-                            child: CircularProgressIndicator(
+                            child: ActivityIndicator(
+                              size: 24,
                               color: AppTheme.primary,
                             ),
                           )
