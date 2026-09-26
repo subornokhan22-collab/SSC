@@ -46,13 +46,9 @@ class AiController extends OperationController {
     required String text,
     required String instruction,
     List<TeacherAttachment> attachments = const [],
-    bool attachmentConsent = false,
   }) =>
       run('Reading selected chapter metadata…', () async {
         TeacherAttachment.validate(attachments);
-        if (attachments.isNotEmpty && !attachmentConsent) {
-          throw StateError('Confirm consent before sending files to Gemini.');
-        }
         if (chapters.isEmpty)
           throw StateError('Choose a chapter from the local question bank.');
         if (count < 1 || count > 10)
@@ -84,7 +80,9 @@ class AiController extends OperationController {
           'instruction': instruction,
           if (attachments.isNotEmpty)
             'attachments': attachments.map((a) => a.toJson()).toList(),
-          if (attachments.isNotEmpty) 'attachmentConsent': attachmentConsent,
+          // Running the tool submits the selected files; picking never uploads.
+          // Keep this wire flag for compatibility with the existing gateway.
+          if (attachments.isNotEmpty) 'attachmentConsent': true,
         }, progress);
         if (disposed) return;
         if (response['kind'] == 'review') {

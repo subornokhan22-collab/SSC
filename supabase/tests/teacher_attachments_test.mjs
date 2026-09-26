@@ -14,9 +14,9 @@ test('shared AI text fixtures preserve meanings and use English digits',()=>{
   assert.equal(formatAiText(output),output,'normalization must be idempotent');
  }
 });
-test('teacher attachment allowlist accepts photos/PDF and requires informed consent',()=>{
+test('teacher attachment allowlist accepts photos/PDF and requires a submitted tool action',()=>{
  assert.equal(teacherAttachments([pdf,file('image/jpeg','\xff\xd8\xffmore'),file('image/png','\x89PNG\r\n\x1a\nmore')]).length,3);
- assert.throws(()=>toolRequest({...base,attachments:[pdf]}),/consent/);
+ assert.throws(()=>toolRequest({...base,attachments:[pdf]}),/Run AI Tools/);
  assert.equal(toolRequest({...base,action:'explain',attachments:[pdf],attachmentConsent:true}).attachments.length,1);
  assert.throws(()=>toolRequest({...base,action:'explain'}));
 });

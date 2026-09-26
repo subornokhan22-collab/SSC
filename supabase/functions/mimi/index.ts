@@ -118,6 +118,8 @@ Deno.serve(async (req: Request) => {
     }
     const encoder = new TextEncoder();
     const cancellation = new AbortController();
+    // A language repair must not multiply the total Edge Function time budget.
+    const commandDeadline = Date.now() + 120000;
     req.signal.addEventListener("abort", () => cancellation.abort(), {once:true});
     const stream = new ReadableStream({
       async start(controller) {
@@ -132,11 +134,13 @@ Deno.serve(async (req: Request) => {
             const model = Deno.env.get(validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL") || "gemini-2.5-flash";
             if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new ToolError("The server model configuration is invalid.");
             const stage = validator ? "validator" : "generator";
+            const remaining = commandDeadline - Date.now();
+            if (remaining <= 0) throw providerTransportError({name:"TimeoutError"}, stage);
             let resp: Response;
             try {
               resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
                 method:"POST", headers:{"Content-Type":"application/json", "x-goog-api-key":key},
-                signal:AbortSignal.any([cancellation.signal,AbortSignal.timeout(75000)]),
+                signal:AbortSignal.any([cancellation.signal,AbortSignal.timeout(Math.min(75000, remaining))]),
                 body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}, ...(!validator ? (command.attachments ?? []).map(a=>({inline_data:{mime_type:a.mimeType,data:a.data}})) : [])]}],generationConfig:{temperature:validator?0:0.4,maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
               });
             } catch (error) {

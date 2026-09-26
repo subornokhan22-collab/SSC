@@ -13,6 +13,7 @@ import 'package:tutors_desk/services/ai/ai_text_formatter.dart';
 import 'package:tutors_desk/services/ai/teacher_attachment.dart';
 import 'package:tutors_desk/services/ai/teacher_ai_client.dart';
 import 'package:tutors_desk/widgets/teacher_attachment_panel.dart';
+import 'package:tutors_desk/screens/ai_tools_screen.dart';
 
 class CaptureTeacherClient extends TeacherAiClient {
   Map<String, dynamic>? payload;
@@ -92,24 +93,24 @@ void main() {
     expect(img.decodeJpg(photo.bytes)!.width, 1600);
     TeacherAttachment.validate([photo]);
   });
-  test(
-      'controller refuses unconsented uploads and supports attachment-only review',
+  test('running a tool submits attachments without a separate consent step',
       () async {
     final client = CaptureTeacherClient();
     final c = AiController(bank: [], client: client);
-    Future<bool> run(bool consent) => c.execute(
-        command: TeacherCommand.check,
+    Future<bool> run(TeacherCommand command) => c.execute(
+        command: command,
         subjectId: 'physics',
         chapters: ['অধ্যায় ১'],
         count: 1,
         level: 'mixed',
         text: '',
         instruction: '',
-        attachments: [pdf()],
-        attachmentConsent: consent);
-    expect(await run(false), false);
+        attachments: [pdf()]);
     expect(client.payload, isNull);
-    expect(await run(true), true);
+    for (final command in TeacherCommand.values) {
+      expect(await run(command), true);
+      expect(client.payload!['attachmentConsent'], true);
+    }
     expect(client.payload!['attachmentConsent'], true);
     expect((client.payload!['attachments'] as List).single, pdf().toJson());
     expect(c.summary, 'ত্বরণ 2 m/s²');
@@ -174,6 +175,26 @@ void main() {
     await show(true);
     await tester.tap(find.byTooltip('Remove attachment 1'));
     expect(changed, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets(
+      'selected files do not create a consent checkbox or provider banner',
+      (tester) async {
+    tester.view.physicalSize = const Size(1000, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(const MaterialApp(home: AiToolsScreen()));
+    final panel = tester
+        .widget<TeacherAttachmentPanel>(find.byType(TeacherAttachmentPanel));
+    panel.onChanged([pdf()]);
+    await tester.pump();
+    expect(find.text('reference.pdf'), findsOneWidget);
+    expect(find.byType(CheckboxListTile), findsNothing);
+    expect(find.textContaining('Send these files'), findsNothing);
+    expect(find.textContaining('Gemini'), findsNothing);
+    expect(find.textContaining('Supabase'), findsNothing);
+    expect(find.text('Create with AI'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   test('scientific symbol fallback fonts are shipped with the APK', () async {

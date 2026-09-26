@@ -13,13 +13,15 @@ function gateway({
   simulateEditorIndentation = false,
   providerFailure = null,
   fetchFailure = null,
+  clock = () => Date.now(),
+  afterModelCall = () => {},
 } = {}) {
   let handler;
   const calls = [];
   const logs = [];
   const q = {
     chapter: "Chapter 6",
-    questionText: "Which option is correct?",
+    questionText: "কোন বিকল্পটি সঠিক?",
     options: ["One", "Two", "Three", "Four"],
     correctIndex: 1,
     explanation: "Generator source",
@@ -63,6 +65,7 @@ function gateway({
     fetch: async (url, options) => {
       const body = JSON.parse(options.body);
       calls.push({ url, body });
+      afterModelCall();
       if (fetchFailure) throw fetchFailure;
       if (providerFailure && calls.length === (providerFailure.call ?? 1)) {
         return new Response(JSON.stringify(providerFailure.body), {
@@ -78,7 +81,7 @@ function gateway({
                   index: 0,
                   correctIndex: checkerAgrees ? 1 : 2,
                   valid: checkerAgrees,
-                  reason: "Independent source",
+                  reason: "স্বতন্ত্র সমাধান অনুযায়ী এই উত্তরটি সঠিক।",
                 },
               ],
             };
@@ -102,6 +105,7 @@ function gateway({
     AbortSignal,
     Uint8Array,
     atob,
+    Date: {now: clock},
     console: { warn: (text) => logs.push(text) },
   });
   return { handler, calls, logs };
@@ -297,4 +301,15 @@ test("dashboard forwards attachments only to source-reading pass and advertises 
     const response = await denied.handler(req(true,{...body,...mutation}));
     assert.equal(response.status,400);assert.equal(denied.calls.length,0);
   }
+});
+
+test("all teacher passes share a bounded wall-clock budget", async () => {
+  let now = 0;
+  const g = gateway({clock:()=>now,afterModelCall:()=>{now+=121000;}});
+  const response = await g.handler(req());
+  const events = apkEvents(await response.text());
+  const error = events.find(e=>e.event === "error")?.data;
+  assert.equal(error.code,"GEMINI_TIMEOUT");assert.equal(error.stage,"validator");
+  assert.equal(g.calls.length,1,"do not launch another provider call after the deadline");
+  assert.ok(!events.some(e=>e.event === "result"));
 });

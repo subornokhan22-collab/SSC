@@ -86,7 +86,7 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
         const Text('Reference photos / PDFs (optional)',
             style: TextStyle(fontWeight: FontWeight.w600)),
         const Text(
-            'Up to 3 files · 3 MB combined after photo resizing. Files stay here only for this session. Use clear, short PDFs without passwords.'),
+            'Up to 3 files · 3 MB combined after photo resizing. Files are used only when you run a tool. Use clear, short PDFs without passwords.'),
         Wrap(spacing: 8, children: [
           for (final source in ['camera', 'gallery', 'pdf'])
             OutlinedButton.icon(

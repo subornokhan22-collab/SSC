@@ -23,7 +23,7 @@ CONTENT STUDIO UPDATE FILES
    Its escaped stream delimiters withstand phone-editor indentation.
    Replace ALL old index.ts content, then tap Deploy updates.
    Do NOT create a separate function called teacher-tools.
-   Current header: ai-tools-attachments-v4 (includes previous diagnostics).
+   Current header: ai-tools-language-v5 (includes previous diagnostics).
    For "AI service unavailable", deploy this update and retry ONCE.
    The APK now shows a GEMINI_ diagnostic code and the upstream HTTP status.
    Supabase invocation 200 means the stream opened, not that Gemini succeeded.
@@ -48,7 +48,16 @@ Deploy the current mimi.ts first, then install the new APK from green CI.
 The MiMi chat screen is removed, NOT the backend route. Do not delete mimi.
 Keep your working API key and model settings unchanged.
 No SQL or Netlify changes are needed for this update.
-AI Tools now accepts camera/gallery photos and PDFs, with send consent.
+AI Tools accepts camera/gallery photos and PDFs: attach, then run the tool.
+No manual checkbox or Gemini/Supabase banner. Picking files does not upload.
 Limit: 3 files / 3 MB combined after resizing; originals are session-local.
-Use English digits; common powers/subscripts carry through to paper export.
+Use Bengali answers with English digits for non-English subjects.
+Use English answers only for English First/Second subjects.
+Common powers/subscripts still carry through to paper export.
 Full notes: docs/AI-TOOLS-ATTACHMENTS-2026-09-25.md in GitHub.
+
+V5 LANGUAGE / ONE-TAP UPDATE
+Deploy the current mimi.ts for the answer-language correction.
+Install the new APK to remove the extra attachment checkbox.
+No API key/model/SQL/Netlify changes. Keep your working settings.
+Old saved English answers remain unchanged; regenerate or edit them.

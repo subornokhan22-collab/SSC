@@ -42,7 +42,6 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
   String level = 'mixed';
   int count = 5;
   List<TeacherAttachment> attachments = [];
-  bool attachmentConsent = false;
   bool pickingAttachment = false;
   final input = TextEditingController();
   final instruction = TextEditingController();
@@ -87,7 +86,6 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
         text: input.text.trim(),
         instruction: instruction.text.trim(),
         attachments: attachments,
-        attachmentConsent: attachmentConsent,
       );
   String label(TeacherCommand cmd) => switch (cmd) {
         TeacherCommand.create => 'Create',
@@ -233,23 +231,8 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                         setState(() => pickingAttachment = value),
                     onChanged: (files) => setState(() {
                       attachments = files;
-                      attachmentConsent = false;
                     }),
                   ),
-                  if (attachments.isNotEmpty)
-                    CheckboxListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: attachmentConsent,
-                      onChanged: c.busy
-                          ? null
-                          : (value) => setState(
-                              () => attachmentConsent = value ?? false),
-                      title: const Text(
-                          'Send these files to Google Gemini through Supabase when I run this tool.'),
-                      subtitle: const Text(
-                          'Only attach files you are allowed to share. Remove student names or other private information. Files are not saved in your paper; generated questions must stand alone.'),
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
                   const SizedBox(height: 14),
                   TextField(
                     controller: instruction,
@@ -284,12 +267,8 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
             ),
             const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: c.busy ||
-                      pickingAttachment ||
-                      chapter == null ||
-                      (attachments.isNotEmpty && !attachmentConsent)
-                  ? null
-                  : run,
+              onPressed:
+                  c.busy || pickingAttachment || chapter == null ? null : run,
               icon: c.busy
                   ? const SizedBox(
                       width: 16,

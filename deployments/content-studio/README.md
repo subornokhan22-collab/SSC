@@ -1,6 +1,6 @@
 # Content Studio — GitHub download files
 
-Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes `ai-tools-attachments-v4`, retaining mobile-safe streaming/diagnostics and adding photo/PDF reference intake plus scientific text formatting; its canonical source and regression tests are versioned alongside this package.
+Release deliverables live in GitHub, not only in chat attachments. The website and SQL snapshot comes from approved application commit `b5711ca46236253fdf494c1a83f744e53dc3c5ac`. The `mimi` bundle additionally includes `ai-tools-language-v5`, retaining photo/PDF intake and scientific formatting, enforcing subject-language prose, and using one-tap file submission; its canonical source and regression tests are versioned alongside this package.
 
 ## Downloads
 
@@ -76,12 +76,14 @@ Supabase **Logs** now records a `mimi_provider_error` warning with only our fixe
 
 All **56 local server tests** passed, including classification, oversized/malformed error bodies, network failures, safe logging, checker-stage failures and mobile-indented SSE. These tests use mocked authentication/provider services. Existing authentication, independent answer checking and publication rules remain in place. Send only the new APK error code/message if it still fails; do not send API keys or request headers.
 
-## Current release: AI Tools attachments and English digits
+## Current release: subject language, English digits and one-tap attachments
 
-Use the current bundle marked **ai-tools-attachments-v4** and the new APK from this branch's successful CI build. Deploy the backend first; old text-only APK requests remain compatible. The new APK refuses attachment results from an older backend that cannot acknowledge attachment support.
+Use the current bundle marked **ai-tools-language-v5** and the new APK from this branch's successful CI build. Deploy the backend first; old text-only APK requests remain compatible. The new APK refuses attachment results from an older backend that cannot acknowledge attachment support.
 
 The separate MiMi chat screen is removed, but **keep the existing `mimi` Supabase function**: it is the compatibility route for AI Tools. Keep your already-working API key and model overrides. No SQL or Netlify update is needed.
 
-Camera/gallery photos and PDFs now attach directly to all four tools (3 files / 3 MiB total after photo resizing), with explicit send consent, photo preview and removal. Originals stay local for the session and are not embedded as paper figures. English digits and common Unicode powers/subscripts are applied before checking and carried into paper export. Unknown math is preserved, not silently truncated.
+Camera/gallery photos and PDFs now attach directly to all four tools (3 files / 3 MiB total after photo resizing), with one-tap tool submission, photo preview and removal (no extra consent checkbox or provider banner). Originals stay local for the session and are not embedded as paper figures. English digits and common Unicode powers/subscripts are applied before checking and carried into paper export. Unknown math is preserved, not silently truncated.
 
-See [the complete release/verification notes](../../docs/AI-TOOLS-ATTACHMENTS-2026-09-25.md). Historical v2/v3 sections above describe previous repairs; the current v4 bundle includes them. For current deployment, do not paste an older revision linked in prior chat messages.
+See [the complete release/verification notes](../../docs/AI-TOOLS-ATTACHMENTS-2026-09-25.md). Historical v2/v3 sections above describe previous repairs; the current v5 bundle includes them. For current deployment, do not paste an older revision linked in prior chat messages.
+
+**Language correction:** Non-English subjects answer in Bengali; only numerals use English digits. English First/Second answer in English. This applies to all four modes and the independent checker, with a language guard and at most one corrective retry. Files remain local until the user taps the tool action. Deploy v5 for the response-language correction and install the new APK to remove the checkbox; keep working model/key settings unchanged. Previously saved English content is not automatically rewritten. See the linked release notes for limits and smoke tests.
