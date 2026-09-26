@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutors_desk/services/local_diagnostics.dart';
 import 'package:tutors_desk/services/paper_library.dart';
 
 /// Backups must survive an uninstall: the app-scoped copy Android deletes is
@@ -25,6 +27,8 @@ void main() {
     appDoc = Directory.systemTemp.createTempSync('td_app_');
     external = Directory.systemTemp.createTempSync('td_ext_');
     sdcard = Directory.systemTemp.createTempSync('td_sd_');
+    SharedPreferences.setMockInitialValues({});
+    await LocalDiagnostics.clear();
     calls = <Map<String, Object?>>[];
     sharedWritable = true;
     PaperBackup.debugBaseDir =
@@ -97,6 +101,13 @@ void main() {
         pages: 1,
       );
 
+  /// Included in failure messages so a CI failure explains itself instead of
+  /// only reporting a bare false.
+  Future<String> why() async =>
+      'calls=${calls.map((c) => c['method']).toList()} '
+      'shared=${sharedCopy().existsSync()} inApp=${inAppCopy().existsSync()} '
+      'diag=${await LocalDiagnostics.report()}';
+
   File inAppCopy() =>
       File('${external.path}/TutorsDesk/tutors_desk_backup.json');
 
@@ -136,7 +147,7 @@ void main() {
     external.createSync(recursive: true);
 
     expect(await PaperLibrary.loadEntries(), isEmpty);
-    expect(await PaperBackup.tryAutoRestore(), 1);
+    expect(await PaperBackup.tryAutoRestore(), 1, reason: await why());
 
     final entries = await PaperLibrary.loadEntries();
     expect(entries.map((e) => e.id), contains('sp_1'));
@@ -165,7 +176,8 @@ void main() {
 
     expect(await PaperBackup.exportToDownload(),
         'Download/TutorsDesk/tutors_desk_backup.json',
-        reason: 'the uninstall-safe copy must not depend on app storage');
+        reason:
+            'the uninstall-safe copy must not depend on app storage; ${await why()}');
     expect(sharedCopy().existsSync(), isTrue);
   });
 

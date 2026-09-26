@@ -7,6 +7,8 @@ import 'package:flutter/foundation.dart' show compute, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
+
+import 'local_diagnostics.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -767,12 +769,27 @@ class PaperBackup {
   /// where [tryAutoRestore] looks after a reinstall. Falls back to a temporary
   /// source file when app storage is unavailable, so the uninstall-safe copy
   /// does not depend on the in-app copy succeeding.
-  static Future<String?> _writeSharedCopy(String document) async {
+  /// Shared copies are serialized: an automatic save and a manual export can
+  /// overlap, and two writers must not race over one temporary source file.
+  static Future<void> _sharedWrites = Future.value();
+
+  static Future<String?> _writeSharedCopy(String document) {
+    final result = _sharedWrites.then((_) => _writeSharedCopyNow(document));
+    _sharedWrites = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  static Future<String?> _writeSharedCopyNow(String document) async {
     File? temporary;
     try {
       var source = await _backupPath();
       if (source == null) {
-        temporary = File('${Directory.systemTemp.path}/$_fileName');
+        // Unique per call, so a concurrent copy can never read a file another
+        // call has already deleted.
+        temporary = File(
+          '${Directory.systemTemp.path}/$_fileName.'
+          '${DateTime.now().microsecondsSinceEpoch}.tmp',
+        );
         source = temporary.path;
       }
       await File(source).writeAsString(document, flush: true);
@@ -810,7 +827,10 @@ class PaperBackup {
       final legacy = await _legacyBackupFile();
       if (legacy != null) return await restore(legacy);
       return 0;
-    } catch (_) {
+    } catch (error, stack) {
+      // A failed restore must stay silent to the teacher, but it must not be
+      // invisible to diagnosis either.
+      unawaited(LocalDiagnostics.record(error, stack, scope: 'workflow'));
       return 0;
     }
   }
