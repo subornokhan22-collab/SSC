@@ -279,7 +279,11 @@ jobs:
           # the repository's "Latest" pointer on an old build, so the newest APK
           # did not read as released on the releases page. The nature of the
           # build stays in the title and notes instead of the release type.
-          gh release create "$tag" build/app/outputs/flutter-apk/app-*-release.apk \
+          # The website bundle rides along so there is one place to download
+          # from: the APK to install and the Netlify zip to deploy.
+          gh release create "$tag" \
+            build/app/outputs/flutter-apk/app-*-release.apk \
+            deployments/content-studio/content-studio-netlify.zip \
             --repo "$GITHUB_REPOSITORY" --latest \
             --title "TEST BUILD $GITHUB_RUN_NUMBER — debug-signed, not for distribution" \
             --notes "$notes"
@@ -322,6 +326,9 @@ jobs:
             done
             echo
             echo "Release: https://github.com/$GITHUB_REPOSITORY/releases/tag/$tag"
+            echo
+            echo 'Also attached: `content-studio-netlify.zip` — the admin website bundle.'
+            echo 'Deploy that zip to Netlify; it is not part of the APK.'
             echo
             echo 'Release mode (AOT), signed with the runner debug key. Install the'
             echo 'arm64-v8a APK; uninstall first if the signature differs from the'
