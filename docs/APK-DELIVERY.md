@@ -19,8 +19,12 @@ non-tag push:
 3. Asserts with `apksigner` that every APK really carries the Android Debug
    identity — the inverse of the production rule, and the proof that no release
    key was used.
-4. Uploads the APKs as a run artifact and publishes a prerelease
-   `test-build-<run number>`.
+4. Uploads the APKs as a run artifact and publishes `test-build-<run number>`
+   as the repository's **Latest** release, so the newest APK is what the
+   releases page offers. It is a full release rather than a prerelease because a
+   prerelease left "Latest" pointing at an old build; the debug-signed nature is
+   stated in the title and notes instead. Only the three newest test builds are
+   kept — older ones are deleted with their tags.
 5. Posts a verification table on the pull request: per-APK size, SHA-256 prefix,
    signer identity and a direct download link.
 

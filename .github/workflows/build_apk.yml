@@ -249,10 +249,28 @@ jobs:
           Install the arm64-v8a APK on a modern Android phone."
           git -c user.email=ci@local -c user.name=ci tag -f "$tag"
           git -c user.email=ci@local -c user.name=ci push -f origin "refs/tags/$tag"
+          # A full release marked latest, not a prerelease: a prerelease left
+          # the repository's "Latest" pointer on an old build, so the newest APK
+          # did not read as released on the releases page. The nature of the
+          # build stays in the title and notes instead of the release type.
           gh release create "$tag" build/app/outputs/flutter-apk/app-*-release.apk \
-            --repo "$GITHUB_REPOSITORY" --prerelease \
-            --title "TEST BUILD $GITHUB_RUN_NUMBER — not production signed" \
+            --repo "$GITHUB_REPOSITORY" --latest \
+            --title "TEST BUILD $GITHUB_RUN_NUMBER — debug-signed, not for distribution" \
             --notes "$notes"
+
+      - name: Keep only the three newest test builds
+        if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+            | jq -r '[.[] | select(.tag_name | startswith("test-build-"))]
+                     | sort_by(.created_at) | reverse | .[3:][] | .tag_name' \
+            | while read -r stale; do
+                echo "deleting superseded test release $stale"
+                gh release delete "$stale" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+              done
 
       - name: Verify and report the test APK on the pull request
         if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
