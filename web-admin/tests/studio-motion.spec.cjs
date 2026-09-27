@@ -44,15 +44,39 @@ test("Ctrl+K opens the command centre and jumps to a workspace", async ({
   await expect(page.locator("#page-title")).toHaveText("Validation");
 });
 
-test("a file input becomes a drop target that answers to a hover", async ({
+test("a dropped file reaches the importer, not just the styling", async ({
   page,
 }) => {
   await page.getByRole("link", { name: "Import Center", exact: false }).click();
   const zone = page.locator(".dropzone").first();
   await expect(zone).toBeVisible();
   await expect(zone.locator('input[type="file"]')).toHaveCount(1);
-  await zone.dispatchEvent("dragover", { dataTransfer: { types: ["Files"] } });
+
+  // A DataTransfer cannot be built from a plain object, so the drag events are
+  // constructed in the page, where DataTransfer actually exists.
+  await zone.evaluate((el) =>
+    el.dispatchEvent(
+      new DragEvent("dragover", {
+        bubbles: true,
+        dataTransfer: new DataTransfer(),
+      }),
+    ),
+  );
   await expect(zone).toHaveAttribute("data-drag", "over");
+
+  const csv = "stem,answer\nA force?,B";
+  await zone.evaluate((el, text) => {
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([text], "dropped.csv", { type: "text/csv" }));
+    el.dispatchEvent(
+      new DragEvent("drop", { bubbles: true, dataTransfer: transfer }),
+    );
+  }, csv);
+
+  // The proof that matters: the dropped bytes reach the existing handler and
+  // land in the importer, rather than only repainting the border.
+  await expect(page.locator("#import-text")).toHaveValue(csv);
+  await expect(zone).toHaveAttribute("data-drag", "");
 });
 
 test("a task locks its own area and leaves unrelated buttons alone", async ({
