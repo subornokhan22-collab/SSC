@@ -43,7 +43,8 @@
       </div>
     </div>
     <div id="app" hidden>
-      <aside>
+      <div class="scrim" id="drawer-scrim"></div>
+      <aside id="studio-nav">
         <a class="brand" href="#dashboard"
           ><span class="brandmark">TD</span
           ><span>Tutor’s Desk<small>CONTENT STUDIO</small></span></a
@@ -63,6 +64,15 @@
             <h1 id="page-title">Dashboard</h1>
           </div>
           <div class="header-actions">
+            <button
+              id="menu-toggle"
+              class="ghost"
+              aria-expanded="false"
+              aria-controls="studio-nav"
+              aria-label="Open navigation"
+            >
+              ☰
+            </button>
             <span id="mode" class="badge"></span
             ><button id="quick-add" class="primary">+ Add question</button>
           </div>
@@ -109,6 +119,20 @@
         figures and wording here.
       </p>
       <div id="preview-content"></div>
+    </dialog>
+    <dialog id="command" aria-label="Jump to a workspace">
+      <input
+        id="command-input"
+        type="search"
+        placeholder="Jump to a workspace or action…"
+        autocomplete="off"
+        aria-controls="command-list"
+      />
+      <ul id="command-list" role="listbox" aria-label="Results"></ul>
+      <p class="muted" style="padding: 10px 14px; margin: 0">
+        <kbd>↑</kbd> <kbd>↓</kbd> move · <kbd>Enter</kbd> open · <kbd>Esc</kbd>
+        close
+      </p>
     </dialog>
     <script src="content-core.js"></script>
     <script type="module" src="studio.js"></script>

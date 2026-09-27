@@ -15,6 +15,16 @@ Release deliverables live in GitHub, not only in chat attachments. The website a
 
 On GitHub, open a file and use **Download raw file**. For SQL or TypeScript, use **Raw** / **Copy raw file** to obtain the actual code, not the GitHub HTML page.
 
+## Website update — 2026-09-27 (admin studio motion and fixes)
+
+Rebuilt from `web-admin/`. Redeploy `content-studio-netlify.zip` to Netlify to
+get it. Highlights: skeleton loading, dashboard counters, an off-canvas
+navigation drawer below 900px, `Ctrl`+`K` workspace jump, drop-to-upload
+feedback, a motion switch in Settings that honours the system setting, named
+session-expiry errors, and two fixes — a task no longer re-enables buttons that
+were disabled on purpose, and the figure preview no longer leaks a blob URL per
+image. No SQL, Supabase or gateway change is needed for this update.
+
 ## Deployment order
 
 1. Review backup options, then apply the SQL migration. It changes schema and permissions; it is not itself a backup. Stop if it reports an error.

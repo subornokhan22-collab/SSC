@@ -88,19 +88,38 @@ function notify(message, error = false) {
   $("notice").className = error ? "error" : "";
   $("notice").textContent = message;
 }
-async function task(fn) {
+/**
+ * Only the area being worked in is locked. Saving inside the editor must not
+ * disable the sidebar, a long bank check must not freeze an open dialog, and —
+ * the bug this replaces — finishing a task must not re-enable buttons that were
+ * disabled for a reason of their own.
+ */
+function taskScope(source) {
+  const el = source && typeof source.closest === "function" ? source : null;
+  return (el && (el.closest("dialog") || el.closest("#main"))) || document;
+}
+async function task(fn, source) {
   if (state.busy) return;
   state.busy = true;
-  document.querySelectorAll("button").forEach((b) => (b.disabled = true));
+  taskScope(source)
+    .querySelectorAll("button:not(:disabled)")
+    .forEach((b) => {
+      b.disabled = true;
+      b.dataset.taskLock = "1";
+    });
   try {
     return await fn();
   } catch (e) {
     notify(e.message || String(e), true);
     if ($("editor").open)
       $("editor-errors").textContent = e.message || String(e);
+    sessionGuard(e);
   } finally {
     state.busy = false;
-    document.querySelectorAll("button").forEach((b) => (b.disabled = false));
+    document.querySelectorAll("button[data-task-lock]").forEach((b) => {
+      delete b.dataset.taskLock;
+      b.disabled = false;
+    });
     englishUploader.refresh();
   }
 }
@@ -278,9 +297,21 @@ async function route() {
   $("page-title").textContent = nav.find((n) => n[0] === state.tab)[2];
   await render();
 }
+/**
+ * The shape of the content that is coming, rather than a blank pane or a line
+ * of text. Reduced motion keeps the shapes and drops the shimmer.
+ */
+function skeletonMarkup() {
+  return (
+    '<div class="skeleton" aria-busy="true" aria-label="Loading your content">' +
+    '<div class="skeleton-row short"></div>'.repeat(2) +
+    '<div class="skeleton-row"></div>'.repeat(3) +
+    "</div>"
+  );
+}
 async function render() {
   const version = ++state.routeVersion;
-  $("main").innerHTML = '<div class="loading">Loading your content…</div>';
+  $("main").innerHTML = skeletonMarkup();
   try {
     const html = await {
       dashboard: dashboard,
@@ -347,7 +378,7 @@ async function dashboard() {
     if (r.error) throw r.error;
     recent = r.data;
   }
-  return `<div class="intro"><div><h2>Good content starts with a careful review.</h2><p class="muted">Here’s what’s happening in your content studio.</p></div><span class="badge">SSC question bank</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published questions", "Awaiting review", "English board papers", "Subjects"][i]}</span><strong>${n.toLocaleString()}</strong><small>${[state.demo ? "Demo records only, not your live bank" : "Live server content, not bundled APK totals", "Ready for a human check", "Reading, grammar & writing", "Chapter catalogs available"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recently updated</h2><a href="#questions">View question bank →</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">Your first saved draft will appear here.</p>'}</section><section class="card"><h2>Quick actions</h2>${[
+  return `<div class="intro"><div><h2>Good content starts with a careful review.</h2><p class="muted">Here’s what’s happening in your content studio.</p></div><span class="badge">SSC question bank</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published questions", "Awaiting review", "English board papers", "Subjects"][i]}</span><strong data-count="${n}">${n.toLocaleString()}</strong><small>${[state.demo ? "Demo records only, not your live bank" : "Live server content, not bundled APK totals", "Ready for a human check", "Reading, grammar & writing", "Chapter catalogs available"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recently updated</h2><a href="#questions">View question bank →</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">Your first saved draft will appear here.</p>'}</section><section class="card"><h2>Quick actions</h2>${[
     ["+", "Add a question", "Start with a draft", "add"],
     [
       "⇥",
@@ -1272,12 +1303,18 @@ async function activityView() {
     )}</tbody></table></div><p class="muted">Showing the latest ${Math.min(200, rows.length)} of ${rows.length} audit entries.</p>`;
 }
 async function settingsView() {
-  return `<div class="columns"><section class="card"><h2>Subject & chapter catalog</h2><button class="ghost small" data-action="add-subject">+ Add subject</button><p class="muted">Save a subject’s chapter list without editing JavaScript. Existing question chapter labels are not silently renamed.</p><label>Subject<select id="catalog-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label><label>Display name<input id="catalog-name" value="${esc(catalog.SUBJECTS.physics)}"></label><label>Chapters · one per line<textarea id="catalog-chapters" rows="12">${esc(catalog.CHAPTERS.physics.join("\n"))}</textarea></label><button class="primary" data-action="save-catalog">Save catalog</button></section><section class="card"><h2>Content rules</h2><p class="muted">Required safeguards are enforced on the server; they cannot be disabled from this browser.</p>${["Require subject and chapter", "Prevent duplicate record IDs", "Require four distinct MCQ options", "Require an explicit MCQ answer and explanation", "Validate CQ parts and marks", "Block corrupted Unicode", "Keep English answers absent when not supplied", "Require Draft → Review → Published", "Record changes in a server audit trail"].map((t) => '<p class="ok" style="padding:10px">✓ ' + t + "</p>").join("")}<p class="muted">Session tokens stay in memory. A refresh of this page requires sign-in again. Only the public anon key is shipped; never add a service-role key to these files.</p></section></div>`;
+  return `<div class="columns"><section class="card"><h2>Subject & chapter catalog</h2><button class="ghost small" data-action="add-subject">+ Add subject</button><p class="muted">Save a subject’s chapter list without editing JavaScript. Existing question chapter labels are not silently renamed.</p><label>Subject<select id="catalog-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label><label>Display name<input id="catalog-name" value="${esc(catalog.SUBJECTS.physics)}"></label><label>Chapters · one per line<textarea id="catalog-chapters" rows="12">${esc(catalog.CHAPTERS.physics.join("\n"))}</textarea></label><button class="primary" data-action="save-catalog">Save catalog</button></section><section class="card"><h2>Content rules</h2><p class="muted">Required safeguards are enforced on the server; they cannot be disabled from this browser.</p>${["Require subject and chapter", "Prevent duplicate record IDs", "Require four distinct MCQ options", "Require an explicit MCQ answer and explanation", "Validate CQ parts and marks", "Block corrupted Unicode", "Keep English answers absent when not supplied", "Require Draft → Review → Published", "Record changes in a server audit trail"].map((t) => '<p class="ok" style="padding:10px">✓ ' + t + "</p>").join("")}<p class="muted">Session tokens stay in memory. A refresh of this page requires sign-in again. Only the public anon key is shipped; never add a service-role key to these files.</p></section><section class="card"><h2>Studio motion</h2><p class="muted">Entrances, skeleton shimmer and state transitions. Reduced motion is applied automatically when your system asks for it.</p><label>Motion<select id="motion-pref"><option value="system">Follow my system</option><option value="full">Full motion</option><option value="reduced">Reduced</option></select></label><p class="ok" id="motion-state" style="padding:10px"></p><p class="muted">Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to a workspace or action.</p></section></div>`;
 }
 async function figuresView() {
   return `<section class="card"><h2>Prepare a question figure</h2><p class="muted">PNG / JPEG / WebP only. Uploads use unique object names; replacing a figure does not overwrite another question’s image.</p><input id="figure-file" type="file" accept="image/png,image/jpeg,image/webp"><div class="toolbar"><label><input id="mono" type="checkbox" checked>Grayscale & contrast</label><button class="ghost" data-action="process-figure">Process</button><button class="primary" data-action="upload-figure">Upload processed figure</button><button class="ghost" data-action="storage-health">Storage health</button></div><div class="figure-grid"><div><h3>Original</h3><img id="figure-original" alt="Original preview"><p id="figure-meta"></p></div><div><h3>Processed / final</h3><canvas id="figure-canvas" style="max-width:100%"></canvas><p id="processed-meta"></p></div></div><div id="figure-output"></div><div id="health-results"></div></section>`;
 }
 let originalImage = null;
+/**
+ * The figure preview owns one blob URL at a time. Replacing the selection used
+ * to leave the previous URL alive for the lifetime of the tab, so a long review
+ * session accumulated one leaked blob per image opened.
+ */
+let figurePreviewUrl = null;
 async function processFigure() {
   if (!originalImage) throw Error("Choose an image first.");
   const canvas = $("figure-canvas"),
@@ -1401,11 +1438,19 @@ function bindActions(root = $("main")) {
     .querySelectorAll("[data-action]")
     .forEach(
       (b) =>
-        (b.onclick = () => task(() => action(b.dataset.action, b.dataset.row))),
+        (b.onclick = () =>
+          task(() => action(b.dataset.action, b.dataset.row), b)),
     );
 }
 function bind() {
   bindActions();
+  animateCounters($("main"));
+  bindDropZones($("main"));
+  if ($("motion-pref")) {
+    $("motion-pref").value = motionPref();
+    $("motion-pref").onchange = (e) => setMotion(e.target.value);
+  }
+  applyMotion();
   document.querySelectorAll("[data-select]").forEach(
     (el) =>
       (el.onchange = () => {
@@ -1474,7 +1519,9 @@ function bind() {
           !["image/png", "image/jpeg", "image/webp"].includes(file.type)
         )
           throw Error("Choose a PNG, JPEG or WebP below 15 MB.");
+        if (figurePreviewUrl) window.URL.revokeObjectURL(figurePreviewUrl);
         const url = window.URL.createObjectURL(file);
+        figurePreviewUrl = url;
         const img = new Image();
         img.src = url;
         await img.decode();
@@ -1810,3 +1857,237 @@ const englishUploader = createEnglishUploader({
   isDemo: () => state.demo,
   onDraft: (row) => openEditor(row),
 });
+
+/* ── Motion, navigation and session feedback ─────────────────────────────── */
+
+const MOTION_KEY = "studio_motion";
+function motionPref() {
+  try {
+    return localStorage.getItem(MOTION_KEY) || "system";
+  } catch (_) {
+    return "system";
+  }
+}
+/** True when the OS asks for reduced motion or the teacher asked for it here. */
+function motionOff() {
+  return C.motionReduced(
+    motionPref(),
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+}
+function applyMotion() {
+  document.documentElement.dataset.motion = motionOff() ? "reduced" : "full";
+  const row = $("motion-state");
+  if (row)
+    row.textContent = motionOff()
+      ? "Reduced — entrances, shimmer and transitions are off"
+      : "Full — motion follows your system setting";
+}
+function setMotion(pref) {
+  try {
+    localStorage.setItem(MOTION_KEY, pref);
+  } catch (_) {}
+  applyMotion();
+}
+function toggleMotion() {
+  setMotion(motionOff() ? "full" : "reduced");
+  notify(
+    motionOff()
+      ? "Reduced motion is on for this studio."
+      : "Motion follows your system setting again.",
+  );
+}
+window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener(
+  "change",
+  applyMotion,
+);
+
+/** Count the dashboard up to the real total, never past it. */
+function animateCounters(root) {
+  const reduce = motionOff();
+  root.querySelectorAll("[data-count]").forEach((el) => {
+    const target = Number(el.dataset.count) || 0;
+    if (reduce) {
+      el.textContent = target.toLocaleString();
+      return;
+    }
+    const start = performance.now();
+    const step = (now) => {
+      el.textContent = C.countUpFrame(target, now - start).toLocaleString();
+      if (now - start < 700 && el.isConnected) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/** Every file input gets a drop target that answers while a file is hovering. */
+function bindDropZones(root) {
+  root.querySelectorAll('input[type="file"]').forEach((input) => {
+    if (input.dataset.dropBound) return;
+    input.dataset.dropBound = "1";
+    const zone = document.createElement("div");
+    zone.className = "dropzone";
+    input.parentNode.insertBefore(zone, input);
+    zone.appendChild(input);
+    const hover = (on) => {
+      zone.dataset.drag = on ? "over" : "";
+    };
+    ["dragenter", "dragover"].forEach((type) =>
+      zone.addEventListener(type, (e) => {
+        e.preventDefault();
+        hover(true);
+      }),
+    );
+    ["dragleave", "dragend"].forEach((type) =>
+      zone.addEventListener(type, () => hover(false)),
+    );
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      hover(false);
+      const file = e.dataTransfer && e.dataTransfer.files[0];
+      if (!file) return;
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      input.files = transfer.files;
+      if (typeof input.onchange === "function") input.onchange({ target: input });
+    });
+  });
+}
+
+/* Off-canvas navigation on narrow screens. */
+function setDrawer(open) {
+  document.body.dataset.drawer = open ? "open" : "closed";
+  const toggle = $("menu-toggle");
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute(
+      "aria-label",
+      open ? "Close navigation" : "Open navigation",
+    );
+  }
+  if (open) {
+    const first = $("studio-nav").querySelector("a,button");
+    if (first) first.focus();
+  }
+}
+$("menu-toggle").onclick = () =>
+  setDrawer(document.body.dataset.drawer !== "open");
+$("drawer-scrim").onclick = () => setDrawer(false);
+$("studio-nav").addEventListener("click", (e) => {
+  if (e.target.closest("a")) setDrawer(false);
+});
+
+/* Command centre: one keystroke to any workspace. */
+function commandChoices() {
+  return [
+    ...nav.map(([id, , label]) => ({
+      label,
+      hint: "Workspace",
+      run: () => {
+        location.hash = id;
+      },
+    })),
+    {
+      label: "Add a question",
+      hint: "Action",
+      run: () => openEditor(newQuestion()),
+    },
+    {
+      label: "Open English editor",
+      hint: "Action",
+      run: () => action("new-english"),
+    },
+    {
+      label: "Check bank health",
+      hint: "Action",
+      run: () => {
+        location.hash = "validation";
+      },
+    },
+    {
+      label: motionOff() ? "Allow motion" : "Reduce motion",
+      hint: "Preference",
+      run: toggleMotion,
+    },
+  ];
+}
+let commandIndex = 0;
+function drawCommand() {
+  const term = $("command-input").value.trim().toLowerCase();
+  const matches = commandChoices().filter(
+    (c) => !term || c.label.toLowerCase().includes(term),
+  );
+  commandIndex = Math.min(commandIndex, Math.max(0, matches.length - 1));
+  $("command-list").innerHTML = matches
+    .map(
+      (c, i) =>
+        `<li role="option" aria-selected="${i === commandIndex}"><button type="button" data-command="${i}" aria-selected="${i === commandIndex}"><strong>${esc(c.label)}</strong> <small>${esc(c.hint)}</small></button></li>`,
+    )
+    .join("");
+  $("command-list").onclick = (e) => {
+    const button = e.target.closest("[data-command]");
+    if (!button) return;
+    const choice = matches[Number(button.dataset.command)];
+    $("command").close();
+    if (choice) choice.run();
+  };
+  $("command-list").matches_ = matches;
+}
+function openCommand() {
+  if ($("app").hidden) return;
+  commandIndex = 0;
+  $("command-input").value = "";
+  drawCommand();
+  $("command").showModal();
+  $("command-input").focus();
+}
+$("command-input").oninput = () => {
+  commandIndex = 0;
+  drawCommand();
+};
+$("command-input").onkeydown = (e) => {
+  const matches = $("command-list").matches_ || [];
+  if (e.key === "ArrowDown") {
+    commandIndex = Math.min(commandIndex + 1, matches.length - 1);
+    drawCommand();
+    e.preventDefault();
+  } else if (e.key === "ArrowUp") {
+    commandIndex = Math.max(commandIndex - 1, 0);
+    drawCommand();
+    e.preventDefault();
+  } else if (e.key === "Enter") {
+    const choice = matches[commandIndex];
+    $("command").close();
+    if (choice) choice.run();
+    e.preventDefault();
+  }
+};
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    openCommand();
+  } else if (e.key === "Escape" && document.body.dataset.drawer === "open") {
+    setDrawer(false);
+    $("menu-toggle").focus();
+  }
+});
+
+/**
+ * An expired session used to surface as a generic error under whatever the
+ * teacher was doing. Name it instead, and say what to do.
+ */
+function sessionGuard(error) {
+  const text = String((error && error.message) || error || "");
+  if (!/jwt expired|session|token|sign.?in|auth/i.test(text)) return;
+  if ($("app").hidden) return;
+  notify("Your session expired. Sign in again to continue.", true);
+  const again = document.createElement("button");
+  again.className = "ghost";
+  again.textContent = "Sign in again";
+  again.style.marginLeft = "10px";
+  again.onclick = () => location.reload();
+  $("notice").appendChild(again);
+}
+
+applyMotion();
+setDrawer(false);

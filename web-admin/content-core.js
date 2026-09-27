@@ -453,6 +453,30 @@
     row.data.source_text = raw;
     return row;
   }
+  /**
+   * One frame of the dashboard count-up: cubic ease-out, integer output, and it
+   * can never overshoot the target or report a value the server did not return.
+   */
+  function countUpFrame(target, elapsedMs, durationMs = 700) {
+    const goal = Number(target) || 0;
+    if (!(durationMs > 0)) return goal;
+    const t = Math.min(1, Math.max(0, (Number(elapsedMs) || 0) / durationMs));
+    if (t >= 1) return goal;
+    const eased = 1 - Math.pow(1 - t, 3);
+    return Math.min(goal, Math.round(goal * eased));
+  }
+
+  /**
+   * Motion is off when the operating system asks for it or the teacher turned it
+   * off in the studio. "reduced" and "full" are explicit choices and win over
+   * the system; anything else follows the system.
+   */
+  function motionReduced(preference, systemPrefersReduced) {
+    if (preference === "reduced") return true;
+    if (preference === "full") return false;
+    return Boolean(systemPrefersReduced);
+  }
+
   return {
     firstFields,
     secondFields,
@@ -467,5 +491,7 @@
     duplicates,
     health,
     draftFromText,
+    countUpFrame,
+    motionReduced,
   };
 });

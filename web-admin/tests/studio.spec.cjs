@@ -98,9 +98,13 @@ test("missing CSV answer remains a blocked draft and XSS is inert", async ({
 });
 test("responsive navigation and health fix links", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  // Navigation is an off-canvas drawer at this width, so it is opened first and
+  // closes itself on selection.
+  await page.locator("#menu-toggle").click();
   await page.getByRole("link", { name: "Validation", exact: false }).click();
   await page.locator('[data-action="health"]').click();
   await expect(page.locator("#health-results")).toContainText("8 questions");
+  await page.locator("#menu-toggle").click();
   await page.getByRole("link", { name: "Dashboard", exact: false }).click();
   await page.screenshot({
     path: "test-results/mobile-dashboard.png",

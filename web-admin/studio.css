@@ -784,3 +784,185 @@ body {
 #source-canvas{display:block;max-width:100%;height:auto;max-height:65vh;object-fit:contain;margin:auto;background:white;box-shadow:0 1px 8px #1720331a}
 #english-upload .dialog-foot{flex-wrap:wrap}#english-upload .form-grid{grid-template-columns:repeat(3,1fr)}
 @media(max-width:600px){#english-upload .form-grid{grid-template-columns:1fr}#english-upload .dialog-foot button{width:100%}}
+
+/* ── Motion layer ──────────────────────────────────────────────────────────
+   Purposeful only: entrances stagger, state changes are visible, and nothing
+   loops forever. Every rule here is neutralised by reduced motion, either from
+   the operating system or from the studio's own switch (html[data-motion]). */
+:root {
+  --motion-fast: 140ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --purple: #7c5ce0;
+  --sky: #0b84d9;
+}
+
+/* Cards and rows arrive instead of appearing. The stagger is capped so a long
+   table never takes longer to settle than to load. */
+#main .card,
+#main .stat,
+#main .banner {
+  animation: rise var(--motion-slow) var(--ease-out) backwards;
+}
+#main .stat:nth-child(2) { animation-delay: 60ms; }
+#main .stat:nth-child(3) { animation-delay: 120ms; }
+#main .stat:nth-child(4) { animation-delay: 180ms; }
+#main .card:nth-of-type(2) { animation-delay: 90ms; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* State changes you can see: badges cross-fade their colour, the notice slides
+   in, and a pressed button gives way. */
+.badge,
+#notice,
+#mode,
+button,
+a.quick {
+  transition:
+    background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out),
+    opacity var(--motion-base) var(--ease-out);
+}
+#notice:not([hidden]) {
+  animation: notice-in var(--motion-base) var(--ease-out);
+}
+@keyframes notice-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+button:active:not(:disabled) { transform: translateY(1px); }
+
+/* A working button says so without a spinner on every pixel. */
+button[data-task-lock] {
+  cursor: progress;
+  box-shadow: inset 0 0 0 999px rgb(23 32 51 / 4%);
+}
+
+/* Skeleton: the shape of the content that is coming, not a blank pane. */
+.skeleton {
+  display: grid;
+  gap: 16px;
+}
+.skeleton-row {
+  height: 74px;
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, #eef0f4 25%, #f7f8fa 37%, #eef0f4 63%) 0 0 / 400% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+.skeleton-row.short { height: 46px; }
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+/* Drop zone: the whole card answers, and it answers differently while a file
+   is actually hovering. */
+.dropzone {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  transition:
+    border-color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.dropzone[data-drag="over"] {
+  border-color: var(--indigo);
+  background: #eef2ff;
+}
+.dropzone[data-drag="over"]::after {
+  content: "Release to load this file";
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--indigo);
+}
+
+/* Off-canvas navigation on narrow screens. */
+#menu-toggle { display: none; }
+body[data-drawer="open"] .scrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(23 32 51 / 34%);
+  z-index: 20;
+}
+@media (max-width: 900px) {
+  #menu-toggle { display: inline-flex; }
+  body > #app > aside {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(84vw, 320px);
+    z-index: 30;
+    transform: translateX(-102%);
+    transition: transform var(--motion-base) var(--ease-out);
+  }
+  body[data-drawer="open"] > #app > aside { transform: none; }
+}
+
+/* Command centre. */
+dialog#command {
+  width: min(560px, 92vw);
+  padding: 0;
+  border-radius: 14px;
+}
+dialog#command::backdrop { background: rgb(23 32 51 / 38%); }
+#command-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 16px;
+  font-size: 15px;
+}
+#command-list { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow: auto; }
+#command-list button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+#command-list button[aria-selected="true"] { background: #eef2ff; color: var(--indigo); }
+#command-list small { color: var(--muted); }
+kbd {
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font: 11px ui-monospace, monospace;
+  color: var(--muted);
+}
+
+/* Reduced motion — the system's request and the studio's own switch both stop
+   the same things, so the setting is real rather than decorative. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+}
+html[data-motion="reduced"] .skeleton-row { animation: none; }
+
+/* Corrections to the pre-existing narrow-screen layout: those rules assumed the
+   sidebar stays in flow (a 180px reserved margin and a horizontal nav strip),
+   which is wrong once it is an off-canvas drawer. Later in the file, so they win. */
+@media (max-width: 900px) {
+  .workspace { margin-left: 0; }
+  body > #app > aside { width: min(84vw, 320px); padding: 22px 16px; }
+  body > #app > aside nav { display: block; overflow: visible; }
+  body > #app > aside nav a { flex: none; }
+}
