@@ -236,7 +236,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-*-release.apk
           retention-days: 14
 
-      - name: Publish test APK as a prerelease for direct download
+      - name: Publish test APK as the Latest release
         if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
