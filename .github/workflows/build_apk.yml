@@ -23,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
+      issues: write
     services:
       postgres:
         image: postgres:16
@@ -61,10 +63,34 @@ jobs:
       - name: Admin validation and browser tests
         working-directory: web-admin
         run: |
+          set -o pipefail
           npm ci --ignore-scripts
-          npm test
+          npm test 2>&1 | tee ../admin-unit.log
           npx playwright install --with-deps chromium
-          npx playwright test
+          npx playwright test 2>&1 | tee ../admin-browser.log
+
+      # Browser test output lives on blob storage that is not reachable from
+      # every client, so failures are posted where they can be read.
+      - name: Report admin test failures on the pull request
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          {
+            echo "## Admin test failure — run $GITHUB_RUN_NUMBER, ${GITHUB_SHA:0:7}"
+            for f in admin-unit.log admin-browser.log; do
+              if [ -s "$f" ]; then
+                echo
+                echo "### tail of $f"
+                echo '```'
+                tail -c 12000 "$f"
+                echo '```'
+              fi
+            done
+          } > admin-failure.md
+          head -c 60000 admin-failure.md > admin-failure-trim.md
+          gh pr comment 6 --repo "$GITHUB_REPOSITORY" --body-file admin-failure-trim.md
 
   build:
     needs: security-tests
