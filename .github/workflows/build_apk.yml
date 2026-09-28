@@ -284,6 +284,7 @@ jobs:
           gh release create "$tag" \
             build/app/outputs/flutter-apk/app-*-release.apk \
             deployments/content-studio/content-studio-netlify.zip \
+            deployments/content-studio/content-studio-update.zip \
             --repo "$GITHUB_REPOSITORY" --latest \
             --title "TEST BUILD $GITHUB_RUN_NUMBER — debug-signed, not for distribution" \
             --notes "$notes"
@@ -329,6 +330,10 @@ jobs:
             echo
             echo 'Also attached: `content-studio-netlify.zip` — the admin website bundle.'
             echo 'Deploy that zip to Netlify; it is not part of the APK.'
+            echo
+            echo '`content-studio-update.zip` is the complete package: the same website'
+            echo 'zip plus `admin-content.ts`, `mimi.ts` and the SQL, for redeploying the'
+            echo 'AI functions in Supabase. Deploy only the website zip to Netlify.'
             echo
             echo 'Release mode (AOT), signed with the runner debug key. Install the'
             echo 'arm64-v8a APK; uninstall first if the signature differs from the'
