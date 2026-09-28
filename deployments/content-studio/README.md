@@ -31,6 +31,13 @@ workspace now show the same subject → chapter ribbon. Select a subject to load
 its chapter chips; the chosen chapter is applied as the default to pasted rows
 when the source does not name one.
 
+The new **Offers & Promotions** tab manages paid-plan offers, prizes, in-app
+notification broadcasts, and popup offer ads with photo upload/preview. Run the
+new promotion SQL included at the end of `database-update.sql`; it creates the
+four tables and the separate `promotion-assets` bucket. Notification sending is
+implemented as an in-app broadcast record. OS push needs a push provider, so
+this dashboard does not pretend to deliver push notifications without one.
+
 This update has two parts, and the second one is easy to miss:
 
 1. Deploy the website ZIP to Netlify.

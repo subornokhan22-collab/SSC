@@ -4,6 +4,8 @@ CONTENT STUDIO UPDATE FILES
    Supabase > SQL Editor > New query. Paste the entire file and Run.
    This changes database structure/permissions. A backup is recommended.
    If it errors, stop before deploying the website.
+   This file now also creates the Offers & Promotions tables and the
+   promotion-assets photo bucket used by the admin tab.
 
 2. admin-content.ts
    Supabase > Edge Functions > create/update admin-content.

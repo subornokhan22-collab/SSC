@@ -53,6 +53,7 @@ const nav = [
   ["add", "+", "Add Questions"],
   ["all", "≡", "All Questions"],
   ["import", "⇥", "Import Center"],
+  ["promotions", "✦", "Offers & Promotions"],
   ["figures", "▧", "Figures"],
   ["validation", "✓", "Validation"],
   ["archived", "↶", "Archived"],
@@ -87,7 +88,49 @@ let demoRows = Array.from({ length: 8 }, (_, i) => ({
   metadata: { difficulty: "medium" },
 }));
 let demoEnglish = [],
-  demoActivity = [];
+  demoActivity = [],
+  demoPromotions = {
+    offers: [
+      {
+        id: "demo_monthly",
+        plan_id: "monthly",
+        title: "Pro Monthly",
+        description: "Full papers, PDF export and no watermark.",
+        price: 299,
+        currency: "BDT",
+        period_days: 30,
+        badge: "Popular",
+        is_active: true,
+        sort_order: 1,
+      },
+      {
+        id: "demo_lifetime",
+        plan_id: "lifetime",
+        title: "Pro Lifetime",
+        description: "One payment for permanent Pro access.",
+        price: 799,
+        currency: "BDT",
+        period_days: null,
+        badge: "Best value",
+        is_active: true,
+        sort_order: 2,
+      },
+    ],
+    prizes: [
+      {
+        id: "demo_prize",
+        title: "Monthly paper challenge",
+        description: "A reviewed teacher paper earns a classroom prize.",
+        value_text: "Prize details to announce",
+        image_url: "",
+        stock: 1,
+        is_active: true,
+        sort_order: 1,
+      },
+    ],
+    notifications: [],
+    ads: [],
+  };
 function notify(message, error = false) {
   $("notice").hidden = false;
   $("notice").className = error ? "error" : "";
@@ -199,6 +242,45 @@ function download(name, data, type = "application/json") {
   setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
 const tableFor = (english) => (english ? "english_papers" : "questions");
+const promotionTables = {
+  offers: "paid_plan_offers",
+  prizes: "prizes",
+  notifications: "app_notifications",
+  ads: "app_offer_ads",
+};
+let promotionRows = { offers: [], prizes: [], notifications: [], ads: [] };
+function promotionTable(kind) {
+  const table = promotionTables[kind];
+  if (!table) throw Error("Unknown promotion workspace.");
+  return table;
+}
+function promotionId(prefix, title) {
+  const base = String(title || prefix)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "")
+    .slice(0, 36) || prefix;
+  return `${prefix}_${base}_${crypto.randomUUID().slice(0, 6)}`;
+}
+function dateInput(value) {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.valueOf())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+}
+function dateValue(value) {
+  return value ? new Date(value).toISOString() : null;
+}
+async function loadPromotionRows(kind) {
+  if (state.demo) return structuredClone(demoPromotions[kind]);
+  const { data, error } = await client
+    .from(promotionTable(kind))
+    .select("*")
+    .order(kind === "ads" ? "priority" : "sort_order", { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
 async function all(table, includePrivate = false) {
   if (state.demo)
     return structuredClone(
@@ -379,6 +461,7 @@ async function render() {
       all: allView,
       archived: listView,
       import: importView,
+      promotions: promotionsView,
       validation: validationView,
       figures: figuresView,
       activity: activityView,
@@ -392,7 +475,7 @@ async function render() {
     $("main").innerHTML =
       '<div class="card empty"><h2>Could not load this workspace</h2><p>' +
       esc(e.message) +
-      '</p><p>Check your connection and apply the content-manager SQL migration if this is the first use.</p><button data-action="reload" class="ghost">Try again</button></div>';
+      '</p><p>Check your connection and apply the content-manager and promotion SQL migrations if this is the first use.</p><button data-action="reload" class="ghost">Try again</button></div>';
     bind();
   }
 }
@@ -1606,6 +1689,184 @@ async function activityView() {
       "",
     )}</tbody></table></div><p class="muted">Showing the latest ${Math.min(200, rows.length)} of ${rows.length} audit entries.</p>`;
 }
+function promotionBadge(row, kind) {
+  if (kind === "notifications")
+    return row.sent_at ? '<span class="badge published">Sent</span>' : '<span class="badge draft">Draft</span>';
+  return row.is_active
+    ? '<span class="badge published">Live</span>'
+    : '<span class="badge draft">Hidden</span>';
+}
+function promotionImage(row) {
+  return row.image_url && /^https:\/\//i.test(row.image_url)
+    ? `<img class="promo-thumb" src="${esc(row.image_url)}" alt="" loading="lazy">`
+    : '<span class="promo-thumb promo-no-image">Photo</span>';
+}
+function promotionRowsMarkup(kind, rows) {
+  if (!rows.length)
+    return '<p class="empty">Nothing here yet. Use the form to create the first item.</p>';
+  return `<div class="promotion-list">${rows
+    .map(
+      (row) =>
+        `<div class="promotion-row">${kind === "ads" || kind === "prizes" ? promotionImage(row) : '<span class="promo-icon">✦</span>'}<div class="promotion-row-copy"><strong>${esc(row.title)}</strong><small>${esc(kind === "offers" ? `${row.currency || "BDT"} ${row.price} · ${row.plan_id}` : kind === "notifications" ? row.message : row.description || row.body || row.value_text || "No description")}</small></div>${promotionBadge(row, kind)}<div class="actions"><button class="ghost small" data-action="promo-edit-${kind}" data-row="${esc(row.id)}">Edit</button><button class="link small" data-action="promo-toggle-${kind}" data-row="${esc(row.id)}">${row.is_active ? "Hide" : "Activate"}</button></div></div>`,
+    )
+    .join("")}</div>`;
+}
+function promotionFormFields() {
+  return `<input id="promo-offer-id" type="hidden"><label>Title<input id="promo-offer-title" placeholder="Pro Yearly"></label><label>Plan<select id="promo-offer-plan"><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="lifetime">Lifetime</option></select></label><label>Price<input id="promo-offer-price" type="number" min="0" step="0.01" placeholder="2499"></label><label>Duration days<input id="promo-offer-days" type="number" min="1" placeholder="365 · blank for lifetime"></label><label>Badge<input id="promo-offer-badge" placeholder="Best value"></label><label>Sort order<input id="promo-offer-sort" type="number" value="0"></label><label class="wide">Description<textarea id="promo-offer-description" rows="3" placeholder="What this plan unlocks"></textarea></label><label>Starts<input id="promo-offer-starts" type="datetime-local"></label><label>Ends<input id="promo-offer-ends" type="datetime-local"></label><label class="check wide"><input id="promo-offer-active" type="checkbox"> Show this offer in the app</label>`;
+}
+function promotionForm(kind) {
+  if (kind === "offers")
+    return `<form class="promotion-form" data-promotion-form="offers"><h3>Create or edit paid plan</h3><div class="form-grid">${promotionFormFields()}</div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-offers">Save plan offer</button><button type="button" class="ghost" data-action="promo-clear-offers">Clear</button></div></form>`;
+  if (kind === "prizes")
+    return `<form class="promotion-form" data-promotion-form="prizes"><h3>Create or edit prize</h3><div class="form-grid"><input id="promo-prize-id" type="hidden"><label>Prize title<input id="promo-prize-title" placeholder="Monthly paper challenge"></label><label>Value / reward<input id="promo-prize-value" placeholder="৳1,000 book voucher"></label><label>Stock<input id="promo-prize-stock" type="number" min="0" placeholder="Blank = unlimited"></label><label>Photo URL<input id="promo-prize-image" type="url" placeholder="https://…"></label><label class="wide">Description<textarea id="promo-prize-description" rows="3" placeholder="Who can win and how"></textarea></label><label>Starts<input id="promo-prize-starts" type="datetime-local"></label><label>Ends<input id="promo-prize-ends" type="datetime-local"></label><label class="check wide"><input id="promo-prize-active" type="checkbox"> Show this prize in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-prizes">Save prize</button><button type="button" class="ghost" data-action="promo-clear-prizes">Clear</button></div></form>`;
+  if (kind === "notifications")
+    return `<form class="promotion-form" data-promotion-form="notifications"><h3>Write an in-app notification</h3><p class="muted">Save as a draft, or send it immediately to the selected audience. This creates an in-app broadcast; OS push delivery needs a push provider and is not fabricated here.</p><div class="form-grid"><input id="promo-notification-id" type="hidden"><label>Title<input id="promo-notification-title" placeholder="New yearly plan available"></label><label>Audience<select id="promo-notification-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-notification-message" rows="4" placeholder="Write the message teachers will see"></textarea></label><label>Action label<input id="promo-notification-action-label" placeholder="View plans"></label><label>Action URL<input id="promo-notification-action-url" value="/plans" placeholder="/plans"></label><label>Schedule<input id="promo-notification-scheduled" type="datetime-local"></label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-send-notifications">Send now</button><button type="button" class="ghost" data-action="promo-save-notifications">Save draft</button><button type="button" class="ghost" data-action="promo-clear-notifications">Clear</button></div></form>`;
+  return `<form class="promotion-form" data-promotion-form="ads"><h3>Create or edit popup offer ad</h3><div class="form-grid"><input id="promo-ad-id" type="hidden"><label>Ad title<input id="promo-ad-title" placeholder="Save more with Pro"></label><label>Audience<select id="promo-ad-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-ad-body" rows="3" placeholder="Short text under the photo"></textarea></label><label class="wide">Photo URL<input id="promo-ad-image" type="url" placeholder="Upload a photo below or paste an https URL"></label><label class="wide">Upload photo<input id="promo-ad-file" type="file" accept="image/png,image/jpeg,image/webp"><small class="muted" id="promo-ad-upload-note">PNG, JPEG or WebP · up to 10 MB</small></label><div class="wide promo-ad-preview" id="promo-ad-preview"><span class="promo-no-image">Photo preview</span></div><label>Button label<input id="promo-ad-button" value="View offer"></label><label>Button URL<input id="promo-ad-url" value="/plans"></label><label>Linked plan<select id="promo-ad-offer"><option value="">No linked plan</option>${promotionRows.offers.map((r) => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join("")}</select></label><label>Priority<input id="promo-ad-priority" type="number" value="0"></label><label>Starts<input id="promo-ad-starts" type="datetime-local"></label><label>Ends<input id="promo-ad-ends" type="datetime-local"></label><label class="check wide"><input id="promo-ad-active" type="checkbox"> Show this popup in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-ads">Save popup ad</button><button type="button" class="ghost" data-action="promo-clear-ads">Clear</button></div></form>`;
+}
+async function promotionsView() {
+  const [offers, prizes, notifications, ads] = await Promise.all(
+    Object.keys(promotionTables).map(loadPromotionRows),
+  );
+  promotionRows = { offers, prizes, notifications, ads };
+  return `<div class="intro"><div><h2>Offers, prizes and announcements</h2><p class="muted">Manage what teachers see in the app. Photos are stored in the separate promotion-assets bucket.</p></div><span class="badge">PROMOTION CONTROL</span></div><div class="promotion-grid"><section class="card promotion-card"><div class="card-head"><h2>Paid plan offers</h2><span class="badge">${offers.length}</span></div><p class="muted">The bKash plan ID and price used for the offer display.</p>${promotionForm("offers")}${promotionRowsMarkup("offers", offers)}</section><section class="card promotion-card"><div class="card-head"><h2>Prizes</h2><span class="badge">${prizes.length}</span></div><p class="muted">Prize announcements, value and optional photo.</p>${promotionForm("prizes")}${promotionRowsMarkup("prizes", prizes)}</section><section class="card promotion-card"><div class="card-head"><h2>Send notification</h2><span class="badge">${notifications.length}</span></div>${promotionForm("notifications")}${promotionRowsMarkup("notifications", notifications)}</section><section class="card promotion-card"><div class="card-head"><h2>Popup app offer ads</h2><span class="badge">${ads.length}</span></div><p class="muted">Upload a promotional photo, link it to a plan, then activate it for the app.</p>${promotionForm("ads")}${promotionRowsMarkup("ads", ads)}</section></div>`;
+}
+function promotionField(id) {
+  return $(id)?.value.trim() || "";
+}
+function promotionNumber(id) {
+  const value = promotionField(id);
+  return value === "" ? null : Number(value);
+}
+function promotionChecked(id) {
+  return !!$(id)?.checked;
+}
+function promotionFormData(kind, send = false) {
+  if (kind === "offers")
+    return {
+      id: promotionField("promo-offer-id") || promotionId("offer", promotionField("promo-offer-title")),
+      plan_id: promotionField("promo-offer-plan"),
+      title: promotionField("promo-offer-title"),
+      description: promotionField("promo-offer-description"),
+      price: promotionNumber("promo-offer-price"),
+      currency: "BDT",
+      period_days: promotionNumber("promo-offer-days"),
+      badge: promotionField("promo-offer-badge"),
+      sort_order: promotionNumber("promo-offer-sort") ?? 0,
+      starts_at: dateValue(promotionField("promo-offer-starts")),
+      ends_at: dateValue(promotionField("promo-offer-ends")),
+      is_active: promotionChecked("promo-offer-active"),
+    };
+  if (kind === "prizes")
+    return {
+      id: promotionField("promo-prize-id") || promotionId("prize", promotionField("promo-prize-title")),
+      title: promotionField("promo-prize-title"),
+      description: promotionField("promo-prize-description"),
+      value_text: promotionField("promo-prize-value"),
+      image_url: promotionField("promo-prize-image"),
+      stock: promotionNumber("promo-prize-stock"),
+      sort_order: 0,
+      starts_at: dateValue(promotionField("promo-prize-starts")),
+      ends_at: dateValue(promotionField("promo-prize-ends")),
+      is_active: promotionChecked("promo-prize-active"),
+    };
+  if (kind === "notifications")
+    return {
+      id: promotionField("promo-notification-id") || promotionId("notification", promotionField("promo-notification-title")),
+      title: promotionField("promo-notification-title"),
+      message: promotionField("promo-notification-message"),
+      audience: promotionField("promo-notification-audience"),
+      action_label: promotionField("promo-notification-action-label"),
+      action_url: promotionField("promo-notification-action-url"),
+      scheduled_at: send ? null : dateValue(promotionField("promo-notification-scheduled")),
+      is_active: send,
+      sent_at: send ? new Date().toISOString() : null,
+    };
+  return {
+    id: promotionField("promo-ad-id") || promotionId("ad", promotionField("promo-ad-title")),
+    title: promotionField("promo-ad-title"),
+    body: promotionField("promo-ad-body"),
+    image_url: promotionField("promo-ad-image"),
+    button_text: promotionField("promo-ad-button") || "View offer",
+    button_url: promotionField("promo-ad-url") || "/plans",
+    offer_id: promotionField("promo-ad-offer") || null,
+    audience: promotionField("promo-ad-audience"),
+    priority: promotionNumber("promo-ad-priority") ?? 0,
+    starts_at: dateValue(promotionField("promo-ad-starts")),
+    ends_at: dateValue(promotionField("promo-ad-ends")),
+    is_active: promotionChecked("promo-ad-active"),
+  };
+}
+async function savePromotion(kind, row) {
+  const table = promotionTable(kind);
+  if (!row.title) throw Error("Add a title first.");
+  if (kind === "offers" && (row.price == null || !row.plan_id))
+    throw Error("Choose a plan and enter its price.");
+  if (kind === "notifications" && !row.message)
+    throw Error("Write the notification message first.");
+  if (kind === "ads" && !row.image_url)
+    throw Error("Upload or paste a promotional photo before activating the ad.");
+  if (state.demo) {
+    const list = demoPromotions[kind];
+    const i = list.findIndex((item) => item.id === row.id);
+    if (i >= 0) list[i] = { ...list[i], ...row };
+    else list.unshift(row);
+    return;
+  }
+  const exists = promotionRows[kind].some((item) => item.id === row.id);
+  const query = exists
+    ? client.from(table).update(row).eq("id", row.id)
+    : client.from(table).insert(row);
+  const { error } = await query;
+  if (error) throw error;
+}
+function fillPromotionForm(kind, id) {
+  const row = promotionRows[kind].find((item) => item.id === id);
+  if (!row) throw Error("Promotion record was not found. Reload and try again.");
+  const set = (field, value) => { if ($(field)) $(field).value = value ?? ""; };
+  const check = (field, value) => { if ($(field)) $(field).checked = !!value; };
+  if (kind === "offers") {
+    set("promo-offer-id", row.id); set("promo-offer-plan", row.plan_id); set("promo-offer-title", row.title); set("promo-offer-description", row.description); set("promo-offer-price", row.price); set("promo-offer-days", row.period_days); set("promo-offer-badge", row.badge); set("promo-offer-sort", row.sort_order); set("promo-offer-starts", dateInput(row.starts_at)); set("promo-offer-ends", dateInput(row.ends_at)); check("promo-offer-active", row.is_active);
+  } else if (kind === "prizes") {
+    set("promo-prize-id", row.id); set("promo-prize-title", row.title); set("promo-prize-description", row.description); set("promo-prize-value", row.value_text); set("promo-prize-image", row.image_url); set("promo-prize-stock", row.stock); set("promo-prize-starts", dateInput(row.starts_at)); set("promo-prize-ends", dateInput(row.ends_at)); check("promo-prize-active", row.is_active);
+  } else if (kind === "notifications") {
+    set("promo-notification-id", row.id); set("promo-notification-title", row.title); set("promo-notification-message", row.message); set("promo-notification-audience", row.audience); set("promo-notification-action-label", row.action_label); set("promo-notification-action-url", row.action_url); set("promo-notification-scheduled", dateInput(row.scheduled_at));
+  } else {
+    set("promo-ad-id", row.id); set("promo-ad-title", row.title); set("promo-ad-body", row.body); set("promo-ad-image", row.image_url); set("promo-ad-button", row.button_text); set("promo-ad-url", row.button_url); set("promo-ad-offer", row.offer_id); set("promo-ad-audience", row.audience); set("promo-ad-priority", row.priority); set("promo-ad-starts", dateInput(row.starts_at)); set("promo-ad-ends", dateInput(row.ends_at)); check("promo-ad-active", row.is_active); paintPromotionAdPreview();
+  }
+  notify(`Editing ${row.title}.`);
+}
+function clearPromotionForm(kind) {
+  const form = document.querySelector(`[data-promotion-form="${kind}"]`);
+  if (form) form.reset();
+  if (kind === "notifications") $("promo-notification-action-url").value = "/plans";
+  if (kind === "ads") { $("promo-ad-button").value = "View offer"; $("promo-ad-url").value = "/plans"; paintPromotionAdPreview(); }
+}
+function paintPromotionAdPreview() {
+  const target = $("promo-ad-preview"), url = promotionField("promo-ad-image");
+  if (!target) return;
+  target.innerHTML = url && /^https:\/\//i.test(url)
+    ? `<img src="${esc(url)}" alt="Popup offer preview">`
+    : '<span class="promo-no-image">Photo preview</span>';
+}
+async function uploadPromotionPhoto(file) {
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp)$/.test(file.type) || file.size > 10 * 1024 * 1024)
+    throw Error("Choose a PNG, JPEG or WebP photo smaller than 10 MB.");
+  if (state.demo) {
+    const reader = new FileReader();
+    reader.onload = () => { $("promo-ad-image").value = String(reader.result || ""); paintPromotionAdPreview(); };
+    reader.readAsDataURL(file);
+    return;
+  }
+  const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+  const path = `ads/${crypto.randomUUID()}.${ext}`;
+  const { error } = await client.storage.from("promotion-assets").upload(path, file, { contentType: file.type, upsert: false });
+  if (error) throw error;
+  const { data } = client.storage.from("promotion-assets").getPublicUrl(path);
+  $("promo-ad-image").value = data.publicUrl;
+  paintPromotionAdPreview();
+  $("promo-ad-upload-note").textContent = "Uploaded. Save the popup ad to keep it.";
+}
 async function settingsView() {
   return `<div class="columns"><section class="card"><h2>Subject & chapter catalog</h2><button class="ghost small" data-action="add-subject">+ Add subject</button><p class="muted">Save a subject’s chapter list without editing JavaScript. Existing question chapter labels are not silently renamed.</p><label>Subject<select id="catalog-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label><label>Display name<input id="catalog-name" value="${esc(catalog.SUBJECTS.physics)}"></label><label>Chapters · one per line<textarea id="catalog-chapters" rows="12">${esc(catalog.CHAPTERS.physics.join("\n"))}</textarea></label><button class="primary" data-action="save-catalog">Save catalog</button></section><section class="card"><h2>Content rules</h2><p class="muted">Required safeguards are enforced on the server; they cannot be disabled from this browser.</p>${["Require subject and chapter", "Prevent duplicate record IDs", "Require four distinct MCQ options", "Require an explicit MCQ answer and explanation", "Validate CQ parts and marks", "Block corrupted Unicode", "Keep English answers absent when not supplied", "Require Draft → Review → Published", "Record changes in a server audit trail"].map((t) => '<p class="ok" style="padding:10px">✓ ' + t + "</p>").join("")}<p class="muted">Session tokens stay in memory. A refresh of this page requires sign-in again. Only the public anon key is shipped; never add a service-role key to these files.</p></section><section class="card"><h2>Studio motion</h2><p class="muted">Entrances, skeleton shimmer and state transitions. Reduced motion is applied automatically when your system asks for it.</p><label>Motion<select id="motion-pref"><option value="system">Follow my system</option><option value="full">Full motion</option><option value="reduced">Reduced</option></select></label><p class="ok" id="motion-state" style="padding:10px"></p><p class="muted">Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to a workspace or action.</p></section></div>`;
 }
@@ -1862,6 +2123,11 @@ function bind() {
           await pdf.destroy();
         } else $("import-text").value = await file.text();
       });
+  if ($("promo-ad-image"))
+    $("promo-ad-image").oninput = paintPromotionAdPreview;
+  if ($("promo-ad-file"))
+    $("promo-ad-file").onchange = (e) =>
+      task(() => uploadPromotionPhoto(e.target.files[0]), e.target);
   if ($("figure-file"))
     $("figure-file").onchange = (e) =>
       task(async () => {
@@ -1892,6 +2158,38 @@ async function action(name, id) {
     table = tableFor(english),
     row = state.rows.find((r) => r.id === id);
   if (name === "reload") return render();
+  if (name.startsWith("promo-")) {
+    const parts = name.split("-");
+    const kind = parts[parts.length - 1];
+    if (name.startsWith("promo-edit-")) {
+      fillPromotionForm(kind, id);
+      return;
+    }
+    if (name.startsWith("promo-toggle-")) {
+      const row = promotionRows[kind].find((item) => item.id === id);
+      if (!row) throw Error("Promotion record was not found. Reload and try again.");
+      await savePromotion(kind, { ...row, is_active: !row.is_active });
+      notify(row.is_active ? "Hidden from the app." : "Activated in the app.");
+      return render();
+    }
+    if (name.startsWith("promo-clear-")) {
+      clearPromotionForm(kind);
+      return;
+    }
+    if (name === "promo-save-notifications" || name === "promo-send-notifications") {
+      const row = promotionFormData("notifications", name === "promo-send-notifications");
+      if (name === "promo-send-notifications" && !confirm("Send this notification to the selected audience now?")) return;
+      await savePromotion("notifications", row);
+      notify(name === "promo-send-notifications" ? "Notification sent as an in-app broadcast." : "Notification draft saved.");
+      return render();
+    }
+    if (name === "promo-save-offers" || name === "promo-save-prizes" || name === "promo-save-ads") {
+      const kindName = name.slice("promo-save-".length);
+      await savePromotion(kindName, promotionFormData(kindName));
+      notify("Promotion saved.");
+      return render();
+    }
+  }
   if (name === "upload-english" || name === "upload-files") {
     /* One upload route for every subject. The format selector decides what the
      * extracted pages become; paper photos need the AI vision step. */

@@ -1099,6 +1099,122 @@ html[data-motion="reduced"] .skeleton-row { animation: none; }
   outline-offset: 1px;
 }
 
+/* Offers & Promotions workspace. */
+.promotion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.promotion-card {
+  min-width: 0;
+}
+.promotion-card > .card-head {
+  align-items: center;
+}
+.promotion-card > .card-head .badge {
+  flex: none;
+}
+.promotion-form {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 14px 0 18px;
+  background: #fbfcff;
+}
+.promotion-form h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.promotion-form .form-grid {
+  gap: 0 12px;
+}
+.promotion-form label {
+  margin: 8px 0;
+}
+.promotion-form label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.promotion-form label.check input {
+  width: auto;
+  margin: 0;
+}
+.promotion-list {
+  display: grid;
+  gap: 8px;
+}
+.promotion-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #edf0f5;
+  border-radius: 9px;
+  background: #fff;
+}
+.promotion-row-copy {
+  min-width: 0;
+  flex: 1;
+}
+.promotion-row-copy strong,
+.promotion-row-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.promotion-row-copy small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.promo-icon,
+.promo-thumb,
+.promo-no-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: var(--indigo);
+  font-weight: 700;
+}
+.promo-thumb {
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+.promo-no-image {
+  border: 1px dashed #cbd5e1;
+  color: var(--muted);
+  background: #f8fafc;
+  font-size: 10px;
+}
+.promotion-row .actions {
+  display: flex;
+  gap: 5px;
+  flex: none;
+}
+.promo-ad-preview {
+  min-height: 150px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f8fafc;
+}
+.promo-ad-preview img {
+  display: block;
+  width: 100%;
+  max-height: 230px;
+  object-fit: cover;
+}
+
 /* Corrections to the pre-existing narrow-screen layout: those rules assumed the
    sidebar stays in flow (a 180px reserved margin and a horizontal nav strip),
    which is wrong once it is an off-canvas drawer. Later in the file, so they win. */
@@ -1110,4 +1226,7 @@ html[data-motion="reduced"] .skeleton-row { animation: none; }
   .ribbon-heading { display: block; }
   .ribbon-heading span { display: block; margin-top: 4px; }
   .ribbon-controls { grid-template-columns: 1fr; gap: 0; }
+  .promotion-grid { grid-template-columns: 1fr; }
+  .promotion-row { align-items: flex-start; flex-wrap: wrap; }
+  .promotion-row .actions { width: 100%; }
 }

@@ -92,6 +92,32 @@ test("a saved image appears beside the question on the dashboard", async ({
   expect(errors).toEqual([]);
 });
 
+test("Offers & Promotions manages plans, notifications and popup photos", async ({
+  page,
+}) => {
+  await page
+    .getByRole("link", { name: "Offers & Promotions", exact: false })
+    .click();
+  await expect(page.locator("#page-title")).toHaveText("Offers & Promotions");
+  await expect(page.locator('[data-promotion-form="offers"]')).toBeVisible();
+  await expect(page.locator('[data-promotion-form="notifications"]')).toBeVisible();
+  await expect(page.locator('[data-promotion-form="ads"]')).toBeVisible();
+  await page.locator("#promo-ad-title").fill("September Pro offer");
+  await page
+    .locator("#promo-ad-image")
+    .fill("https://example.com/promo.jpg");
+  await page.locator('[data-action="promo-save-ads"]').click();
+  await expect(page.locator(".promotion-list")).toContainText(
+    "September Pro offer",
+  );
+  await page.locator("#promo-notification-title").fill("New offer");
+  await page.locator("#promo-notification-message").fill("A new plan is available.");
+  page.on("dialog", (dialog) => dialog.accept());
+  await page.locator('[data-action="promo-send-notifications"]').click();
+  await expect(page.locator('[data-promotion-form="notifications"]')).toBeVisible();
+  await expect(page.locator('[data-promotion-form="notifications"] + .promotion-list')).toContainText("Sent");
+});
+
 test("English papers are reached from the bank's content filter", async ({
   page,
 }) => {

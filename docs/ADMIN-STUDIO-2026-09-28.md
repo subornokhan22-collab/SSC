@@ -44,11 +44,20 @@ loads its chapter chips; a selected paste chapter is sent to AI and becomes the
 default for imported rows whose source does not name a chapter. The chapter
 field remains editable for a new or source-specific chapter name.
 
+**Offers & Promotions tab.** The new workspace manages paid plan offers,
+prizes, in-app notification broadcasts, and popup offer ads. Ads accept a PNG,
+JPEG or WebP upload into the separate `promotion-assets` bucket and show a
+preview before saving. Notifications can be saved as drafts or sent now to all,
+free, or Pro tutors. This is an in-app broadcast record; OS push delivery still
+requires a configured push provider and is not claimed by the dashboard.
+
 **All Questions tab.** Every question the app can serve — the reviewed bank and
 what teachers generated in the app — filtered by subject and chapter, with a
 search box, a Bank/Teacher badge, and thumbnails. Chapter suggestions come from
-a live query once a subject is chosen. No migration was needed: the existing
-`questions_read` policy already grants `public.is_question_admin()` every row.
+a live query once a subject is chosen. No migration was needed for All Questions;
+the existing `questions_read` policy already grants `public.is_question_admin()`
+every row. The Offers & Promotions tab does require the new promotion migration
+included in the deployment package.
 
 ## Why the AI prompt changed too
 
