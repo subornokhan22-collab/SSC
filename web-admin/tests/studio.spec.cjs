@@ -69,9 +69,14 @@ test("full English JSON enters the separate editor and publishes after review", 
   );
   await page.locator("#close-preview").click();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  /* English papers are listed in the bank behind the content filter now, not on
+   * a tab of their own. */
   await page
-    .getByRole("link", { name: "English Papers", exact: false })
+    .getByRole("link", { name: "Question Bank", exact: false })
+    .first()
     .click();
+  await page.locator("#source-filter").selectOption("english");
+  await page.locator('[data-action="filter"]').click();
   await expect(page.locator("#main tbody")).toContainText("Dhaka");
   await page.locator('[data-action="review"]').click();
   page.on("dialog", (d) => d.accept());
