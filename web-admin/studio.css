@@ -957,6 +957,84 @@ html[data-motion="reduced"] *::after {
 }
 html[data-motion="reduced"] .skeleton-row { animation: none; }
 
+/* ── Content list imagery ──────────────────────────────────────────────
+   Thumbnails sit beside the question text in the bank, the dashboard's recent
+   list and the All Questions screen. A stored figure whose URL is not https
+   cannot be rendered — the database rejects it — so it is flagged instead of
+   quietly looking like a missing file. */
+.title-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.title-cell > div {
+  min-width: 0;
+}
+.thumb {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+.thumb-broken,
+.thumb-none {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--muted);
+}
+.thumb-broken {
+  border-color: #b45309;
+  color: #b45309;
+  background: #fffbeb;
+}
+.thumb-none {
+  border-style: dashed;
+}
+.badge.bank {
+  background: #eef2ff;
+  color: #3730a3;
+}
+.badge.teacher {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+/* Attaching an image to a question: the picture sits next to the field that
+   controls it, so a bad URL is visible before the record is ever saved. */
+.figure-attach {
+  display: block;
+}
+.figure-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.figure-preview {
+  width: 150px;
+  height: 150px;
+  flex: none;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.figure-controls {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.figure-controls input[type="file"] {
+  width: 100%;
+}
+
 /* Corrections to the pre-existing narrow-screen layout: those rules assumed the
    sidebar stays in flow (a 180px reserved margin and a horizontal nav strip),
    which is wrong once it is an off-canvas drawer. Later in the file, so they win. */

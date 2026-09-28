@@ -15,6 +15,32 @@ Release deliverables live in GitHub, not only in chat attachments. The website a
 
 On GitHub, open a file and use **Download raw file**. For SQL or TypeScript, use **Raw** / **Copy raw file** to obtain the actual code, not the GitHub HTML page.
 
+## Website update — 2026-09-28 (paste-to-publish, images, all-questions)
+
+Rebuilt from `web-admin/`. Redeploy `content-studio-netlify.zip` to Netlify to
+get it. Highlights: **Add Questions** is now a paste screen — drop in a block of
+mixed CQ / MCQ / short questions, or a whole English paper, and AI reformats it
+into individual drafts; the separate **English Papers tab is gone**, replaced by
+a content-type filter inside the Question Bank (the paper format itself is
+unchanged); questions take an **image attachment** — upload a file or paste an
+https URL, with a live preview that says so when a link is not a direct image
+file; images now show in the **recently updated** list and the bank; and a new
+**All Questions** tab lists every question, bank and teacher-made alike,
+filtered by subject and chapter.
+
+This update has two parts, and the second one is easy to miss:
+
+1. Deploy the website ZIP to Netlify.
+2. **Redeploy the `admin-content` function** from the `admin-content.ts` in this
+   folder. The paste-to-publish classification (CQ vs MCQ vs short) lives in
+   that function, so without it pasted text is still transcribed but not
+   classified as carefully. It reuses the existing `GEMINI_API_KEY` secret; no
+   new secret is needed.
+
+No SQL migration is required: the existing read policy already lets an
+administrator see teacher-created questions, and the `question-figures` storage
+bucket already exists.
+
 ## Website update — 2026-09-27 (admin studio motion and fixes)
 
 Rebuilt from `web-admin/`. Redeploy `content-studio-netlify.zip` to Netlify to

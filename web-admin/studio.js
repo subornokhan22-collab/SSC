@@ -35,6 +35,8 @@ const state = {
   page: 0,
   query: "",
   subject: "",
+  chapter: "",
+  source: "",
   status: "",
   paperType: "",
   board: "",
@@ -48,9 +50,9 @@ const state = {
 const nav = [
   ["dashboard", "⌂", "Dashboard"],
   ["questions", "▤", "Question Bank"],
-  ["add", "+", "Add Question"],
+  ["add", "+", "Add Questions"],
+  ["all", "≡", "All Questions"],
   ["import", "⇥", "Import Center"],
-  ["english", "En", "English Papers"],
   ["figures", "▧", "Figures"],
   ["validation", "✓", "Validation"],
   ["archived", "↶", "Archived"],
@@ -76,6 +78,9 @@ let demoRows = Array.from({ length: 8 }, (_, i) => ({
   },
   source: "original",
   review_status: i < 4 ? "published" : i < 6 ? "review" : "draft",
+  /* Every fourth demo row stands in for a question a teacher generated in the
+   * app, so the All Questions screen shows both sources without a database. */
+  owner_id: i % 4 === 3 ? "00000000-0000-4000-8000-000000000001" : null,
   is_active: true,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
@@ -276,16 +281,17 @@ $("nav").innerHTML = nav
 window.addEventListener("hashchange", route);
 async function route() {
   if ($("app").hidden) return;
-  const tab = location.hash.slice(1) || "dashboard";
-  if (tab === "add") {
-    openEditor(newQuestion());
-    location.hash = "questions";
-    return;
-  }
+  const hash = location.hash.slice(1) || "dashboard";
+  /* "Add Questions" is a real screen now, and the English-only tab folded into
+   * the Question Bank behind a content-type filter. Old bookmarks still land
+   * somewhere sensible instead of dumping the reader on the dashboard. */
+  const tab = hash === "english" ? "questions" : hash;
   state.tab = nav.some((n) => n[0] === tab) ? tab : "dashboard";
   state.page = 0;
   state.query = "";
   state.subject = "";
+  state.chapter = "";
+  state.source = "";
   state.status = "";
   state.paperType = "";
   state.board = "";
@@ -316,7 +322,8 @@ async function render() {
     const html = await {
       dashboard: dashboard,
       questions: listView,
-      english: listView,
+      add: addView,
+      all: allView,
       archived: listView,
       import: importView,
       validation: validationView,
@@ -378,7 +385,7 @@ async function dashboard() {
     if (r.error) throw r.error;
     recent = r.data;
   }
-  return `<div class="intro"><div><h2>Good content starts with a careful review.</h2><p class="muted">Here’s what’s happening in your content studio.</p></div><span class="badge">SSC question bank</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published questions", "Awaiting review", "English board papers", "Subjects"][i]}</span><strong data-count="${n}">${n.toLocaleString()}</strong><small>${[state.demo ? "Demo records only, not your live bank" : "Live server content, not bundled APK totals", "Ready for a human check", "Reading, grammar & writing", "Chapter catalogs available"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recently updated</h2><a href="#questions">View question bank →</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">Your first saved draft will appear here.</p>'}</section><section class="card"><h2>Quick actions</h2>${[
+  return `<div class="intro"><div><h2>Good content starts with a careful review.</h2><p class="muted">Here’s what’s happening in your content studio.</p></div><span class="badge">SSC question bank</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published questions", "Awaiting review", "English board papers", "Subjects"][i]}</span><strong data-count="${n}">${n.toLocaleString()}</strong><small>${[state.demo ? "Demo records only, not your live bank" : "Live server content, not bundled APK totals", "Ready for a human check", "Reading, grammar & writing", "Chapter catalogs available"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recently updated</h2><a href="#questions">View question bank →</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></div></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">Your first saved draft will appear here.</p>'}</section><section class="card"><h2>Quick actions</h2>${[
     ["+", "Add a question", "Start with a draft", "add"],
     [
       "⇥",
@@ -390,7 +397,7 @@ async function dashboard() {
       "En",
       "Import an English paper",
       "A complete board paper, not one MCQ",
-      "english",
+      "import",
     ],
     [
       "✓",
@@ -405,9 +412,26 @@ async function dashboard() {
     )
     .join(
       "",
-    )}</section></div><div class="banner"><span class="quick-icon">En</span><div><h3>A dedicated home for English papers</h3><p>Keep passages, tables and writing tasks together. Missing answers stay clearly marked.</p></div><button class="ghost" data-action="new-english">Open English editor →</button></div>`;
+    )}</section></div><div class="banner"><span class="quick-icon">En</span><div><h3>English papers keep their own format</h3><p>Upload them through the same import flow as every other subject; passages, tables and writing tasks stay together.</p></div><button class="ghost" data-action="new-english">Open English editor →</button></div>`;
 }
 const badge = (s) => `<span class="badge ${esc(s)}">${esc(s)}</span>`;
+/**
+ * A question's attached image, or an empty string when there is nothing that
+ * can actually be shown. Only https is usable: the database rejects any other
+ * figure URL, so a stored http value is reported rather than rendered as a
+ * broken image the reader would assume was a missing file.
+ */
+function figureUrl(row) {
+  const path = row?.figure?.imagePath;
+  return typeof path === "string" && /^https:\/\//i.test(path) ? path : "";
+}
+function thumb(row) {
+  const url = figureUrl(row);
+  if (url) return `<img class="thumb" src="${esc(url)}" alt="" loading="lazy">`;
+  if (row?.figure?.imagePath)
+    return '<span class="thumb thumb-broken" title="Figure URL must start with https://">!</span>';
+  return '<span class="thumb thumb-none" aria-hidden="true"></span>';
+}
 function options(object, value, allLabel = "All") {
   return (
     `<option value="">${allLabel}</option>` +
@@ -419,9 +443,11 @@ function options(object, value, allLabel = "All") {
       .join("")
   );
 }
+/* English papers no longer have a tab of their own. The Question Bank carries a
+ * content-type filter instead; the paper format itself is untouched. */
 function englishMode() {
   return (
-    state.tab === "english" ||
+    state.source === "english" ||
     (state.tab === "archived" && state.paperType === "english")
   );
 }
@@ -434,6 +460,10 @@ async function listView() {
       (r) =>
         r.is_active !== archived &&
         (!state.subject || r.subject_id === state.subject) &&
+        (!state.chapter ||
+          String(r.chapter || "")
+            .toLowerCase()
+            .includes(state.chapter.toLowerCase())) &&
         (!state.status || r.review_status === state.status) &&
         (!state.query ||
           JSON.stringify(r)
@@ -458,6 +488,11 @@ async function listView() {
       );
     if (state.status) q = q.eq("review_status", state.status);
     if (!english && state.subject) q = q.eq("subject_id", state.subject);
+    if (!english && state.chapter)
+      q = q.ilike(
+        "chapter",
+        "%" + state.chapter.replace(/[\\%_]/g, "\\$&") + "%",
+      );
     if (english && !archived && state.paperType)
       q = q.eq("paper_type", state.paperType);
     if (english && state.board)
@@ -470,7 +505,7 @@ async function listView() {
   }
   state.rows = rows;
   state.total = total;
-  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<div class="toolbar"><button class="primary" data-action="upload-english">Upload English Paper (PDF / Image)</button><button class="ghost" data-action="new-english">+ Blank English paper</button></div>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export all ${english ? "English papers" : "questions"}</button><button class="ghost small" data-action="export-subject">Export subject / chapter</button><button class="ghost small" data-action="export-selected">Export selected</button><button class="ghost small" data-action="paper-preview">Preview selected paper</button><button class="ghost small" data-action="bulk-publish">Publish selected reviewed</button><button class="ghost small" data-action="bulk-archive">Back up & ${archived ? "restore" : "archive"} selected</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell"><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete permanently</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Submit for review" : r.review_status === "review" ? "Publish" : "Review again"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
+  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<div class="toolbar"><button class="primary" data-action="upload-english">Upload English Paper (PDF / Image)</button><button class="ghost" data-action="new-english">+ Blank English paper</button></div>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>CONTENT<select id="source-filter">${options({ questions: "Questions", english: "English papers" }, state.source, "Questions")}</select></label><label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label><label>CHAPTER<input id="chapter-filter" value="${esc(state.chapter)}" placeholder="All chapters"></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export all ${english ? "English papers" : "questions"}</button><button class="ghost small" data-action="export-subject">Export subject / chapter</button><button class="ghost small" data-action="export-selected">Export selected</button><button class="ghost small" data-action="paper-preview">Preview selected paper</button><button class="ghost small" data-action="bulk-publish">Publish selected reviewed</button><button class="ghost small" data-action="bulk-archive">Back up & ${archived ? "restore" : "archive"} selected</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></div></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete permanently</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Submit for review" : r.review_status === "review" ? "Publish" : "Review again"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
 }
 function newQuestion() {
   return {
@@ -503,6 +538,35 @@ let editing = null,
   previous = null,
   editingEnglish = false,
   parseErrors = new Map();
+/**
+ * Attach a picture to a question: pick a file (uploaded to the question-figures
+ * bucket) or paste an https URL. The preview updates as you type, because a URL
+ * box with no picture beside it is exactly how broken figures go unnoticed.
+ */
+function figureField(r) {
+  const path = r.figure?.imagePath || "",
+    url = figureUrl(r);
+  return `<label class="wide figure-attach">QUESTION IMAGE · attach a file or paste an https URL<span class="figure-row"><img id="figure-preview" class="figure-preview" alt="Question image preview"${url ? ` src="${esc(url)}"` : " hidden"}><span class="figure-controls"><input type="file" id="figure-file-attach" accept="image/png,image/jpeg,image/webp"><input data-field="image" type="url" value="${esc(path)}" placeholder="https://…"><small class="muted" id="figure-note">${
+    url ? "Attached." : path ? "This URL does not start with https:// — the database will reject it." : "No image attached."
+  }</small></span></span></label>`;
+}
+/** Keeps the editor picture in step with whatever the URL field holds. */
+function paintFigurePreview() {
+  const img = document.querySelector("#figure-preview");
+  if (!img) return;
+  const url = figureUrl(editing),
+    raw = editing.figure?.imagePath || "",
+    note = document.querySelector("#figure-note");
+  if (url) img.src = url;
+  else img.removeAttribute("src");
+  img.hidden = !url;
+  if (note)
+    note.textContent = url
+      ? "Attached."
+      : raw
+        ? "This URL does not start with https:// — the database will reject it."
+        : "No image attached.";
+}
 function input(label, key, value, type = "text") {
   return `<label>${esc(label)}<input data-field="${key}" type="${type}" value="${esc(value)}"></label>`;
 }
@@ -660,7 +724,7 @@ function drawEditor() {
       html += area("Explanation", "payload.explanation", p.explanation || "");
     }
     html +=
-      input("Image URL (optional)", "image", r.figure?.imagePath || "") +
+      figureField(r) +
       input("Source label", "source_label", r.source_label || "") +
       `<label>Provenance<select data-field="source">${["original", "board", "ai", "internet"].map((v) => `<option ${r.source === v ? "selected" : ""}>${v}</option>`).join("")}</select></label><label><input type="checkbox" data-field="metadata.verified" ${r.metadata?.verified ? "checked" : ""}> Verified against the source by the reviewer</label>` +
       `<label>Difficulty<select data-field="metadata.difficulty">${["easy", "medium", "hard"].map((v) => `<option ${r.metadata?.difficulty === v ? "selected" : ""}>${v}</option>`).join("")}</select></label>` +
@@ -680,6 +744,45 @@ function drawEditor() {
   }
   html += "</div>";
   $("editor-fields").innerHTML = html;
+  const attach = document.querySelector("#figure-file-attach");
+  const preview = document.querySelector("#figure-preview");
+  if (preview)
+    preview.onerror = () => {
+      const note = document.querySelector("#figure-note");
+      if (note)
+        note.textContent =
+          "That URL did not return an image. Share links from Drive or Dropbox are pages, not files — use a direct link that ends in .png, .jpg or .webp.";
+    };
+  if (attach) {
+    const source = attach;
+    attach.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      task(async () => {
+        if (!/^image\/(png|jpeg|webp)$/.test(file.type))
+          throw Error("Use a PNG, JPEG or WebP image.");
+        if (state.demo) throw Error("Uploads are disabled in offline demo.");
+        const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1],
+          path = "questions/" + crypto.randomUUID() + "." + ext;
+        const { error } = await client.storage
+          .from("question-figures")
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (error) throw error;
+        const { data } = client.storage
+          .from("question-figures")
+          .getPublicUrl(path);
+        editing.figure = {
+          kind: "image",
+          imagePath: data.publicUrl,
+          aspect: 1.4,
+        };
+        const field = document.querySelector('[data-field="image"]');
+        if (field) field.value = data.publicUrl;
+        paintFigurePreview();
+        notify("Image uploaded. Save the question to keep it.");
+      }, source);
+    };
+  }
   if (previous) {
     document.querySelector('[data-field="id"]').disabled = true;
     if (editingEnglish)
@@ -764,9 +867,10 @@ function drawEditor() {
           return;
         }
         if (key === "image") {
-          editing.figure = value
-            ? { kind: "image", imagePath: value, aspect: 1.4 }
+          editing.figure = value.trim()
+            ? { kind: "image", imagePath: value.trim(), aspect: 1.4 }
             : null;
+          paintFigurePreview();
           return;
         }
         const [a, b, ...rest] = key.split(".");
@@ -1100,6 +1204,91 @@ $("preview-mode").onclick = () => {
 };
 $("close-preview").onclick = () => $("preview").close();
 $("print-preview").onclick = () => window.print();
+/**
+ * The paste-first screen. Everything arrives the same way whatever the subject:
+ * a block of mixed CQ / MCQ / short questions, a CSV export, or a whole English
+ * board paper. AI reformats it into publish-ready drafts; nothing is published
+ * without a human reading the review list first.
+ */
+function workspaceMarkup(heading, blurb) {
+  return `<section class="card"><h2>${heading}</h2><p class="muted">${blurb} Drop a file anywhere in the box below — PDFs and paper photos are read in the browser.</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain,image/png,image/jpeg,image/webp"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Questions — mixed CQ / MCQ / short (JSON, CSV or plain text)</option><option value="first">English 1st Paper</option><option value="second">English 2nd Paper</option></select></label><label>Default subject<select id="import-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label></div><textarea id="import-text" rows="14" placeholder="Paste everything here. Mixed question types are fine — one block, no pre-formatting needed."></textarea><div class="toolbar"><button class="primary" data-action="ai-format">Reformat with AI & review</button><button class="ghost" data-action="parse-import">Parse without AI</button><button class="ghost" data-action="upload-files">Upload PDF / paper photos</button><button class="link" data-action="csv-template">Download CSV template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
+}
+async function addView() {
+  return `<p class="muted">Paste as much as you like. AI turns it into individual questions, keeps the type it detects, and leaves anything it could not read blank for you to fill.</p>${workspaceMarkup(
+    "Paste your questions",
+    "Mixed CQ, MCQ and short questions in one block, or a complete English paper. Every result lands as a draft.",
+  )}<section class="card" style="margin-top:24px"><h2>Or start from a blank form</h2><div class="toolbar"><button class="ghost" data-action="new-question">+ Blank question</button><button class="ghost" data-action="new-english">+ Blank English paper</button></div></section>`;
+}
+/**
+ * Every question the app can serve, bank content and teacher-created records
+ * alike, narrowed by subject and chapter. The read policy already lets an
+ * administrator see teacher rows, so this needs no schema change.
+ */
+async function chapterChoices() {
+  if (state.demo)
+    return [
+      ...new Set(demoRows.map((r) => r.chapter).filter(Boolean)),
+    ].sort();
+  if (!state.subject) return [];
+  const { data, error } = await client
+    .from("questions")
+    .select("chapter")
+    .eq("subject_id", state.subject)
+    .limit(1000);
+  if (error) return [];
+  return [...new Set(data.map((r) => r.chapter).filter(Boolean))].sort();
+}
+async function allView() {
+  const chapters = await chapterChoices();
+  let rows, total;
+  if (state.demo) {
+    rows = demoRows.filter(
+      (r) =>
+        (!state.subject || r.subject_id === state.subject) &&
+        (!state.chapter ||
+          String(r.chapter || "")
+            .toLowerCase()
+            .includes(state.chapter.toLowerCase())) &&
+        (!state.query ||
+          JSON.stringify(r)
+            .toLowerCase()
+            .includes(state.query.toLowerCase())),
+    );
+    total = rows.length;
+    rows = rows.slice(state.page * 25, state.page * 25 + 25);
+  } else {
+    let q = client
+      .from("questions")
+      .select("*", { count: "exact" })
+      .eq("is_active", true);
+    if (state.subject) q = q.eq("subject_id", state.subject);
+    if (state.query)
+      q = q.ilike(
+        "search_text",
+        "%" + state.query.replace(/[\\%_]/g, "\\$&") + "%",
+      );
+    if (state.chapter)
+      q = q.ilike(
+        "chapter",
+        "%" + state.chapter.replace(/[\\%_]/g, "\\$&") + "%",
+      );
+    const r = await q
+      .order("updated_at", { ascending: false })
+      .range(state.page * 25, state.page * 25 + 24);
+    if (r.error) throw r.error;
+    rows = r.data;
+    total = r.count;
+  }
+  state.rows = rows;
+  state.total = total;
+  const shown = rows.filter(figureUrl).length;
+  return `<div class="intro"><p class="muted">Every question in the app — the reviewed bank and what teachers generated themselves — filtered by subject and chapter. ${shown ? shown + " on this page carry an image." : ""}</p></div><div class="filters"><label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label><label>CHAPTER<input id="chapter-filter" list="chapter-options" value="${esc(state.chapter)}" placeholder="All chapters">${state.subject ? `<datalist id="chapter-options">${chapters.map((c) => `<option value="${esc(c)}">`).join("")}</datalist>` : ""}</label><label class="search">SEARCH<input id="search" value="${esc(state.query)}" placeholder="Question text or ID…"></label><button class="ghost" data-action="filter">Apply</button></div><div class="table-wrap"><table><thead><tr><th>IMAGE</th><th>QUESTION / CHAPTER</th><th>TYPE</th><th>SOURCE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows
+    .map(
+      (r) =>
+        `<tr><td>${thumb(r)}</td><td class="title-cell"><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.id)}${r.chapter ? " · " + esc(r.chapter) : ""}${r.subject_id ? " · " + esc(catalog.SUBJECTS[r.subject_id] || r.subject_id) : ""}</small></td><td>${esc(String(r.type || "").toUpperCase())}</td><td>${r.owner_id ? '<span class="badge teacher" title="' + esc(r.owner_id) + '">Teacher</span>' : '<span class="badge bank">Bank</span>'}</td><td>${badge(r.review_status)}</td><td class="actions"><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button></td></tr>`,
+    )
+    .join("")}</tbody></table>${rows.length ? "" : '<div class="empty">Nothing matches. Pick a subject first — the chapter list fills in from it.</div>'}</div><div class="pager"><span>${total.toLocaleString()} questions · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
+}
 async function importView() {
   return `<p class="muted">Bring your material in. Review every record before it reaches a teacher.</p><div class="import-grid">${[
     [
@@ -1121,10 +1310,10 @@ async function importView() {
       "A spreadsheet with questions, options and answers.",
     ],
     [
-      "english",
-      "En",
-      "English board paper",
-      "Upload PDF or paper photos, extract and review.",
+      "files",
+      "⇪",
+      "Upload paper files",
+      "PDF or paper photos — any subject, including English.",
     ],
     [
       "figures",
@@ -1139,7 +1328,7 @@ async function importView() {
     )
     .join(
       "",
-    )}</div><section class="card" style="margin-top:24px"><h2>Import workspace</h2><p class="muted">JSON and CSV are deterministic. AI cleanup is optional and always produces drafts.</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Generic questions (JSON / CSV)</option><option value="first">English 1st Paper</option><option value="second">English 2nd Paper</option></select></label><label>Default subject<select id="import-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label></div><textarea id="import-text" rows="12" placeholder="Paste JSON, CSV, or the source paper text here…"></textarea><div class="toolbar"><button class="primary" data-action="parse-import">Parse & review</button><button class="ghost" data-action="ai-format">Structure with AI</button><button class="link" data-action="csv-template">Download CSV template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
+    )}</div>${workspaceMarkup("Import workspace", "JSON and CSV are deterministic. AI cleanup is optional and always produces drafts.")}`;
 }
 let importRows = [];
 async function parseImport(ai = false) {
@@ -1539,8 +1728,21 @@ async function action(name, id) {
     table = tableFor(english),
     row = state.rows.find((r) => r.id === id);
   if (name === "reload") return render();
-  if (name === "upload-english") {
-    englishUploader.open(state.paperType);
+  if (name === "upload-english" || name === "upload-files") {
+    /* One upload route for every subject. The format selector decides what the
+     * extracted pages become; paper photos need the AI vision step. */
+    const format = document.querySelector("#import-format")?.value;
+    englishUploader.open(
+      format === "second"
+        ? "second"
+        : format === "first"
+          ? "first"
+          : state.paperType,
+    );
+    return;
+  }
+  if (name === "new-question") {
+    openEditor(newQuestion());
     return;
   }
   if (name === "new-english") {
@@ -1548,9 +1750,11 @@ async function action(name, id) {
     return;
   }
   if (name === "filter") {
-    state.query = $("search").value.trim();
+    state.query = $("search")?.value.trim() || "";
     state.subject = $("subject-filter")?.value || "";
-    state.status = $("status-filter").value;
+    state.chapter = $("chapter-filter")?.value.trim() || "";
+    state.source = $("source-filter")?.value || "";
+    state.status = $("status-filter")?.value || "";
     state.paperType =
       $("archive-type")?.value || $("paper-filter")?.value || "";
     state.board = $("board-filter")?.value || "";
@@ -1725,8 +1929,17 @@ async function action(name, id) {
       location.hash = "figures";
       return;
     }
-    if (kind === "english") {
-      englishUploader.open();
+    if (kind === "files") {
+      /* One upload route for every subject; the format selector decides what the
+       * extracted pages become. */
+      const format = $("import-format")?.value;
+      englishUploader.open(
+        format === "second"
+          ? "second"
+          : format === "first"
+            ? "first"
+            : state.paperType,
+      );
       return;
     } else $("import-format").value = "questions";
     if (kind === "csv" || kind === "json") $("import-file").click();
