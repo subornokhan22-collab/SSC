@@ -22,7 +22,7 @@ test("Add Questions is a paste screen, not a redirect into the bank", async ({
   await expect(page.locator("#import-subject")).toBeVisible();
   await expect(page.locator("#import-chapter")).toBeVisible();
   await page.locator("#import-subject").selectOption("biology");
-  await expect(page.locator("#import-chapter option")).toHaveCount(14);
+  await expect(page.locator("#import-chapter option")).toHaveCount(15);
   await page.locator("#import-chapter-chips [data-chapter-chip]").first().click();
   await expect(page.locator("#import-chapter")).not.toHaveValue("");
   // The manual form is still one click away and carries the same ribbon.
