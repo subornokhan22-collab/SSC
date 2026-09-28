@@ -587,6 +587,52 @@ function newQuestion() {
     owner_id: null,
   };
 }
+function questionSubjects(includeEnglish = false) {
+  return Object.fromEntries(
+    Object.entries(catalog.SUBJECTS).filter(
+      ([id]) => includeEnglish || !id.startsWith("english_"),
+    ),
+  );
+}
+/**
+ * The same subject → chapter ribbon is used by the blank editor and the paste
+ * workspace. A chapter chip is a quick choice; the field remains editable so
+ * a newly added catalog chapter or a source-specific name is not blocked.
+ */
+function subjectChapterRibbon({
+  prefix,
+  subject,
+  chapter,
+  includeEnglish = false,
+  editor = false,
+}) {
+  const subjects = questionSubjects(includeEnglish),
+    subjectId = subjects[subject] ? subject : Object.keys(subjects)[0] || "",
+    chapters = catalog.CHAPTERS[subjectId] || [],
+    subjectOptions = Object.entries(subjects)
+      .map(
+        ([id, name]) =>
+          `<option value="${esc(id)}" ${id === subjectId ? "selected" : ""}>${esc(name)}</option>`,
+      )
+      .join(""),
+    chapterOptions = chapters
+      .map(
+        (name) =>
+          `<option value="${esc(name)}" ${name === chapter ? "selected" : ""}>${esc(name)}</option>`,
+      )
+      .join(""),
+    chips = chapters
+      .map(
+        (name) =>
+          `<button type="button" class="chapter-chip${name === chapter ? " active" : ""}" data-chapter-chip="${esc(name)}" aria-pressed="${name === chapter ? "true" : "false"}">${esc(name)}</button>`,
+      )
+      .join(""),
+    subjectControl = `<select id="${prefix}-subject" ${editor ? 'data-field="subject_id"' : ""} data-ribbon-subject>${subjectOptions}</select>`,
+    chapterControl = editor
+      ? `<input id="${prefix}-chapter" data-field="chapter" data-ribbon-chapter list="${prefix}-chapter-list" value="${esc(chapter)}" placeholder="Choose or type a chapter"><datalist id="${prefix}-chapter-list">${chapterOptions}</datalist>`
+      : `<select id="${prefix}-chapter" data-ribbon-chapter><option value="">Use chapter from source if present</option>${chapterOptions}</select>`;
+  return `<section class="subject-chapter-ribbon" data-subject-chapter-ribbon data-ribbon-prefix="${prefix}" aria-label="Subject and chapter selection"><div class="ribbon-heading"><strong>SUBJECT → CHAPTER</strong><span>Choose the subject first, then tap a chapter.</span></div><div class="ribbon-controls"><label>SUBJECT${subjectControl}</label><label>CHAPTER${chapterControl}</label></div><div class="chapter-chip-row" id="${prefix}-chapter-chips" aria-label="Chapters for selected subject">${chips || '<span class="muted">No chapters have been added for this subject yet.</span>'}</div></section>`;
+}
 let editing = null,
   previous = null,
   editingEnglish = false,
@@ -738,7 +784,7 @@ function drawEditor() {
         d.answers?.["q" + i] || "",
       );
   } else {
-    html += `<label>Type<select data-field="type">${["mcq", "saq", "cq"].map((t) => `<option ${r.type === t ? "selected" : ""}>${t}</option>`).join("")}</select></label><label>Subject<select data-field="subject_id">${options(Object.fromEntries(Object.entries(catalog.SUBJECTS).filter(([k]) => !k.startsWith("english_"))), r.subject_id, "Choose")}</select></label><label>Chapter<input data-field="chapter" list="chapters" value="${esc(r.chapter)}"><datalist id="chapters">${(catalog.CHAPTERS[r.subject_id] || []).map((ch) => `<option value="${esc(ch)}">`).join("")}</datalist></label>`;
+    html += `<label>Type<select data-field="type">${["mcq", "saq", "cq"].map((t) => `<option ${r.type === t ? "selected" : ""}>${t}</option>`).join("")}</select></label>${subjectChapterRibbon({ prefix: "editor", subject: r.subject_id, chapter: r.chapter, editor: true })}`;
     if (r.type === "cq") {
       for (const k of [
         "stem",
@@ -951,6 +997,25 @@ function drawEditor() {
           editing.chapter = catalog.CHAPTERS[value]?.[0] || "";
           drawEditor();
         }
+      }),
+  );
+  $("editor-fields").querySelectorAll("[data-chapter-chip]").forEach(
+    (button) =>
+      (button.onclick = () => {
+        const field = $("editor-fields").querySelector(
+          "[data-ribbon-chapter]",
+        );
+        if (!field) return;
+        field.value = button.dataset.chapterChip;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        button
+          .closest(".chapter-chip-row")
+          .querySelectorAll("[data-chapter-chip]")
+          .forEach((chip) => {
+            const active = chip === button;
+            chip.classList.toggle("active", active);
+            chip.setAttribute("aria-pressed", String(active));
+          });
       }),
   );
 }
@@ -1261,7 +1326,7 @@ $("print-preview").onclick = () => window.print();
  * without a human reading the review list first.
  */
 function workspaceMarkup(heading, blurb) {
-  return `<section class="card"><h2>${heading}</h2><p class="muted">${blurb} Drop a file anywhere in the box below — PDFs and paper photos are read in the browser.</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain,image/png,image/jpeg,image/webp"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Questions — mixed CQ / MCQ / short (JSON, CSV or plain text)</option><option value="first">English 1st Paper</option><option value="second">English 2nd Paper</option></select></label><label>Default subject<select id="import-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label></div><textarea id="import-text" rows="14" placeholder="Paste everything here. Mixed question types are fine — one block, no pre-formatting needed."></textarea><div class="toolbar"><button class="primary" data-action="ai-format">Reformat with AI & review</button><button class="ghost" data-action="parse-import">Parse without AI</button><button class="ghost" data-action="upload-files">Upload PDF / paper photos</button><button class="link" data-action="csv-template">Download CSV template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
+  return `<section class="card"><h2>${heading}</h2><p class="muted">${blurb} Drop a file anywhere in the box below — PDFs and paper photos are read in the browser.</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain,image/png,image/jpeg,image/webp"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Questions — mixed CQ / MCQ / short (JSON, CSV or plain text)</option><option value="first">English 1st Paper</option><option value="second">English 2nd Paper</option></select></label></div>${subjectChapterRibbon({ prefix: "import", subject: "physics", chapter: "", includeEnglish: true })}<textarea id="import-text" rows="14" placeholder="Paste everything here. Mixed question types are fine — one block, no pre-formatting needed."></textarea><div class="toolbar"><button class="primary" data-action="ai-format">Reformat with AI & review</button><button class="ghost" data-action="parse-import">Parse without AI</button><button class="ghost" data-action="upload-files">Upload PDF / paper photos</button><button class="link" data-action="csv-template">Download CSV template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
 }
 async function addView() {
   return `<p class="muted">Paste as much as you like. AI turns it into individual questions, keeps the type it detects, and leaves anything it could not read blank for you to fill.</p>${workspaceMarkup(
@@ -1383,7 +1448,9 @@ async function importView() {
 let importRows = [];
 async function parseImport(ai = false) {
   const raw = $("import-text").value.trim(),
-    format = $("import-format").value;
+    format = $("import-format").value,
+    defaultSubject = $("import-subject")?.value || "",
+    defaultChapter = $("import-chapter")?.value || "";
   if (!raw) throw Error("Add source text or upload a file first.");
   if (raw.length > 5000000)
     throw Error("Import is too large. Split it into smaller files.");
@@ -1395,7 +1462,8 @@ async function parseImport(ai = false) {
     const data = await invokeAdminContent({
       action: "structure",
       format,
-      subject_id: $("import-subject").value,
+      subject_id: defaultSubject,
+      chapter: defaultChapter,
       text: raw,
     });
     $("import-text").value = JSON.stringify(data.result, null, 2);
@@ -1439,7 +1507,8 @@ async function parseImport(ai = false) {
   importRows = importRows.map((r, i) => ({
     ...r,
     id: r.id || "import_" + Date.now() + "_" + i,
-    subject_id: r.subject_id || r.subjectId || $("import-subject").value,
+    subject_id: r.subject_id || r.subjectId || defaultSubject,
+    chapter: r.chapter || defaultChapter,
     payload: r.payload || r,
     review_status: "draft",
     is_active: true,
@@ -1677,10 +1746,59 @@ function bindActions(root = $("main")) {
           task(() => action(b.dataset.action, b.dataset.row), b)),
     );
 }
+function bindPasteSubjectChapter() {
+  const ribbon = document.querySelector(
+      '[data-subject-chapter-ribbon][data-ribbon-prefix="import"]',
+    ),
+    subject = $("import-subject"),
+    chapter = $("import-chapter"),
+    chips = $("import-chapter-chips");
+  if (!ribbon || !subject || !chapter || !chips) return;
+  const paint = () => {
+    const names = catalog.CHAPTERS[subject.value] || [],
+      current = chapter.value;
+    chapter.innerHTML =
+      '<option value="">Use chapter from source if present</option>' +
+      names
+        .map(
+          (name) =>
+            `<option value="${esc(name)}">${esc(name)}</option>`,
+        )
+        .join("");
+    if (names.includes(current)) chapter.value = current;
+    chips.innerHTML = names.length
+      ? names
+          .map(
+            (name) =>
+              `<button type="button" class="chapter-chip${name === chapter.value ? " active" : ""}" data-chapter-chip="${esc(name)}" aria-pressed="${name === chapter.value ? "true" : "false"}">${esc(name)}</button>`,
+          )
+          .join("")
+      : '<span class="muted">No chapters have been added for this subject yet.</span>';
+    chips.querySelectorAll("[data-chapter-chip]").forEach(
+      (button) =>
+        (button.onclick = () => {
+          chapter.value = button.dataset.chapterChip;
+          chapter.dispatchEvent(new Event("change", { bubbles: true }));
+        }),
+    );
+  };
+  subject.onchange = () => {
+    chapter.value = "";
+    paint();
+  };
+  chapter.onchange = () =>
+    chips.querySelectorAll("[data-chapter-chip]").forEach((button) => {
+      const active = button.dataset.chapterChip === chapter.value;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  paint();
+}
 function bind() {
   bindActions();
   animateCounters($("main"));
   bindDropZones($("main"));
+  bindPasteSubjectChapter();
   if ($("motion-pref")) {
     $("motion-pref").value = motionPref();
     $("motion-pref").onchange = (e) => setMotion(e.target.value);

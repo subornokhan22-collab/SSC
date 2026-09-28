@@ -17,11 +17,22 @@ test("Add Questions is a paste screen, not a redirect into the bank", async ({
   await expect(page.locator('[data-action="ai-format"]')).toContainText(
     "Reformat with AI",
   );
-  // One paste box serves every format, English included.
+  // One paste box serves every format, with a subject-wise chapter ribbon.
   await expect(page.locator("#import-format option")).toHaveCount(3);
-  // The manual form is still one click away.
+  await expect(page.locator("#import-subject")).toBeVisible();
+  await expect(page.locator("#import-chapter")).toBeVisible();
+  await page.locator("#import-subject").selectOption("biology");
+  await expect(page.locator("#import-chapter option")).toHaveCount(14);
+  await page.locator("#import-chapter-chips [data-chapter-chip]").first().click();
+  await expect(page.locator("#import-chapter")).not.toHaveValue("");
+  // The manual form is still one click away and carries the same ribbon.
   await page.locator('[data-action="new-question"]').click();
   await expect(page.locator("#editor")).toBeVisible();
+  await expect(page.locator("#editor .subject-chapter-ribbon")).toBeVisible();
+  await page.locator('#editor [data-field="subject_id"]').selectOption("chemistry");
+  await expect(
+    page.locator("#editor .subject-chapter-ribbon [data-chapter-chip]"),
+  ).toHaveCount(12);
 });
 
 test("All Questions lists bank and teacher rows and narrows by chapter", async ({

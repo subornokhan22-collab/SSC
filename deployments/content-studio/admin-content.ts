@@ -568,6 +568,8 @@ Deno.serve(async (req) => {
       if (typeof row.answer !== "string" || !p.text.includes(row.answer))
         row.answer = "";
       row.subject_id = typeof p.subject_id === "string" ? p.subject_id : "";
+      if (!row.chapter && typeof p.chapter === "string")
+        row.chapter = p.chapter;
     }
     return reply({ result: parsed.records });
   } catch (e) {

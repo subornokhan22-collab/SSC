@@ -26,7 +26,10 @@ unchanged); questions take an **image attachment** — upload a file or paste an
 https URL, with a live preview that says so when a link is not a direct image
 file; images now show in the **recently updated** list and the bank; and a new
 **All Questions** tab lists every question, bank and teacher-made alike,
-filtered by subject and chapter.
+filtered by subject and chapter. Both the blank question editor and the paste
+workspace now show the same subject → chapter ribbon. Select a subject to load
+its chapter chips; the chosen chapter is applied as the default to pasted rows
+when the source does not name one.
 
 This update has two parts, and the second one is easy to miss:
 

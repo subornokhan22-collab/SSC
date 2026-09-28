@@ -1035,6 +1035,70 @@ html[data-motion="reduced"] .skeleton-row { animation: none; }
   width: 100%;
 }
 
+/* Subject → chapter selection ribbon used by both entry routes. */
+.subject-chapter-ribbon {
+  grid-column: 1 / -1;
+  border: 1px solid #cfd8f4;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 8px 0 16px;
+  background: linear-gradient(135deg, #f8faff, #eef2ff);
+}
+.ribbon-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--indigo);
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.ribbon-heading span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ribbon-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.5fr);
+  gap: 12px;
+  align-items: end;
+}
+.ribbon-controls label {
+  margin: 10px 0 0;
+}
+.chapter-chip-row {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 4px 2px 2px;
+  margin-top: 4px;
+  scrollbar-width: thin;
+}
+.chapter-chip {
+  flex: 0 0 auto;
+  border: 1px solid #c9d3ef;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #fff;
+  color: #4b5872;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.chapter-chip:hover,
+.chapter-chip.active {
+  border-color: var(--indigo);
+  background: var(--indigo);
+  color: #fff;
+}
+.chapter-chip:focus-visible {
+  outline: 3px solid rgb(79 70 229 / 28%);
+  outline-offset: 1px;
+}
+
 /* Corrections to the pre-existing narrow-screen layout: those rules assumed the
    sidebar stays in flow (a 180px reserved margin and a horizontal nav strip),
    which is wrong once it is an off-canvas drawer. Later in the file, so they win. */
@@ -1043,4 +1107,7 @@ html[data-motion="reduced"] .skeleton-row { animation: none; }
   body > #app > aside { width: min(84vw, 320px); padding: 22px 16px; }
   body > #app > aside nav { display: block; overflow: visible; }
   body > #app > aside nav a { flex: none; }
+  .ribbon-heading { display: block; }
+  .ribbon-heading span { display: block; margin-top: 4px; }
+  .ribbon-controls { grid-template-columns: 1fr; gap: 0; }
 }

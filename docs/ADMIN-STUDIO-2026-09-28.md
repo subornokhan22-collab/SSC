@@ -38,6 +38,12 @@ they are:
 Attached images also render as thumbnails in the Question Bank rows and in the
 dashboard's "Recently updated" list.
 
+**Subject → chapter ribbon.** The blank question editor and both paste entry
+routes now share a visible subject-wise chapter ribbon. Choosing a subject
+loads its chapter chips; a selected paste chapter is sent to AI and becomes the
+default for imported rows whose source does not name a chapter. The chapter
+field remains editable for a new or source-specific chapter name.
+
 **All Questions tab.** Every question the app can serve — the reviewed bank and
 what teachers generated in the app — filtered by subject and chapter, with a
 search box, a Bank/Teacher badge, and thumbnails. Chapter suggestions come from
