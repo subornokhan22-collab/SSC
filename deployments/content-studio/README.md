@@ -41,6 +41,13 @@ No SQL migration is required: the existing read policy already lets an
 administrator see teacher-created questions, and the `question-figures` storage
 bucket already exists.
 
+If AI review or paste formatting fails, this build shows the Edge Function's
+HTTP status and safe response reason instead of only the Supabase SDK text
+"Edge Function returned a non-2xx status code". The function also passes
+through a short, non-secret Gemini error detail when the upstream service
+rejects a request. Redeploy both the website ZIP and `admin-content` so this
+troubleshooting message is present in the browser.
+
 ## Website update — 2026-09-27 (admin studio motion and fixes)
 
 Rebuilt from `web-admin/`. Redeploy `content-studio-netlify.zip` to Netlify to

@@ -94,6 +94,59 @@ function notify(message, error = false) {
   $("notice").textContent = message;
 }
 /**
+ * The Supabase Functions client keeps the response body on context when an
+ * Edge Function returns non-2xx. Its default error message drops the useful
+ * part, leaving admins with only "Edge Function returned a non-2xx status
+ * code". Read the safe JSON error that the function returned and include the
+ * HTTP status, without ever exposing request headers or credentials.
+ */
+async function edgeFunctionMessage(name, error, data) {
+  let detail =
+    typeof data?.error === "string"
+      ? data.error
+      : typeof data?.message === "string"
+        ? data.message
+        : "";
+  const response = error?.context;
+  const status = Number(response?.status) || 0;
+  if (!detail && response && typeof response.clone === "function") {
+    try {
+      const text = await response.clone().text();
+      if (text.trim()) {
+        try {
+          const body = JSON.parse(text);
+          const value = body?.error ?? body?.message ?? body?.detail;
+          detail =
+            typeof value === "string"
+              ? value
+              : typeof value?.message === "string"
+                ? value.message
+                : text.trim().slice(0, 600);
+        } catch {
+          detail = text.trim().slice(0, 600);
+        }
+      }
+    } catch {
+      // The SDK's message below is still useful when the response body is
+      // unavailable, for example after a network failure.
+    }
+  }
+  const prefix = status
+    ? `${name} returned HTTP ${status}`
+    : `${name} request failed`;
+  return detail
+    ? `${prefix}: ${detail}`
+    : `${prefix}. ${error?.message || "Try again or contact the administrator."}`;
+}
+async function invokeAdminContent(body) {
+  const { data, error } = await client.functions.invoke("admin-content", {
+    body,
+  });
+  if (error || data?.error)
+    throw Error(await edgeFunctionMessage("admin-content", error, data));
+  return data;
+}
+/**
  * Only the area being worked in is locked. Saving inside the editor must not
  * disable the sidebar, a long bank check must not freeze an open dialog, and —
  * the bug this replaces — finishing a task must not re-enable buttons that were
@@ -931,14 +984,11 @@ $("editor-form").onsubmit = (e) => {
 $("ai-review-editor").onclick = () =>
   task(async () => {
     if (state.demo) throw Error("AI review requires a live admin session.");
-    const { data, error } = await client.functions.invoke("admin-content", {
-      body: {
-        action: "review",
-        format: editingEnglish ? editing.paper_type : "questions",
-        text: JSON.stringify(editing),
-      },
+    const data = await invokeAdminContent({
+      action: "review",
+      format: editingEnglish ? editing.paper_type : "questions",
+      text: JSON.stringify(editing),
     });
-    if (error || data?.error) throw Error(data?.error || error.message);
     $("editor-errors").textContent =
       "AI suggestions — verify against your source; nothing was changed.\n" +
       data.result.summary +
@@ -1342,16 +1392,12 @@ async function parseImport(ai = false) {
       throw Error(
         "AI requires an authenticated server session; demo mode never contacts an AI service.",
       );
-    const { data, error } = await client.functions.invoke("admin-content", {
-      body: {
-        action: "structure",
-        format,
-        subject_id: $("import-subject").value,
-        text: raw,
-      },
+    const data = await invokeAdminContent({
+      action: "structure",
+      format,
+      subject_id: $("import-subject").value,
+      text: raw,
     });
-    if (error) throw Error(data?.error || error.message);
-    if (data?.error) throw Error(data.error);
     $("import-text").value = JSON.stringify(data.result, null, 2);
     return parseImport(false);
   }

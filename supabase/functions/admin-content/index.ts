@@ -159,16 +159,31 @@ Deno.serve(async (req) => {
         }),
       },
     );
-    if (!response.ok)
+    if (!response.ok) {
+      let upstream = "";
+      try {
+        const body = await response.clone().json();
+        const value = body?.error?.message ?? body?.message ?? body?.error;
+        if (typeof value === "string") upstream = value;
+      } catch {
+        // Keep the response safe and useful even when Gemini returned non-JSON.
+        try {
+          upstream = (await response.clone().text()).trim().slice(0, 400);
+        } catch {
+          upstream = "";
+        }
+      }
+      const detail = upstream ? ` ${upstream}` : "";
       return reply(
         {
           error:
             response.status === 429
               ? "AI quota reached. Try later."
-              : "AI formatting service unavailable.",
+              : `AI formatting service returned ${response.status}.${detail}`,
         },
-        502,
+        response.status === 429 ? 429 : 502,
       );
+    }
     const result = await response.json(),
       candidate = result.candidates?.[0];
     if (candidate?.finishReason !== "STOP")

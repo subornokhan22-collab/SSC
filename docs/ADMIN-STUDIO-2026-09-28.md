@@ -73,6 +73,20 @@ and both copies were checked to contain it; the bundle still parses.
 - Playwright cannot run in this sandbox (no `node_modules`, no network for
   `npm ci`), so the browser tests run in CI; results are reported on PR 6.
 
+## Follow-up: the earlier generic Edge Function error
+
+The attached screenshot was from the older website bundle. When AI review
+returned a non-2xx response, the Supabase browser SDK exposed only its generic
+message, `Edge Function returned a non-2xx status code`, so the actual reason
+was hidden. The website now reads the safe response body from the SDK error
+context and displays the function name, HTTP status and returned reason. The
+`admin-content` function also includes a short non-secret Gemini error detail
+when the upstream request is rejected. This does not hide authentication,
+quota or configuration failures behind one message anymore.
+
+To receive this fix, redeploy both `content-studio-netlify.zip` and the
+`admin-content` function from the matching `content-studio-update.zip`.
+
 ## Still open
 
 - The chapter list on All Questions reads up to 1,000 rows for the selected

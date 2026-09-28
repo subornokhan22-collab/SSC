@@ -27,6 +27,43 @@ export function createEnglishUploader({ client, isDemo, onDraft }) {
     $("upload-status").textContent = text;
     $("upload-status").className = error ? "warn" : "muted";
   };
+  async function edgeMessage(error, data) {
+    let detail =
+      typeof data?.error === "string"
+        ? data.error
+        : typeof data?.message === "string"
+          ? data.message
+          : "";
+    const response = error?.context;
+    const statusCode = Number(response?.status) || 0;
+    if (!detail && response && typeof response.clone === "function") {
+      try {
+        const text = await response.clone().text();
+        if (text.trim()) {
+          try {
+            const body = JSON.parse(text);
+            const value = body?.error ?? body?.message ?? body?.detail;
+            detail =
+              typeof value === "string"
+                ? value
+                : typeof value?.message === "string"
+                  ? value.message
+                  : text.trim().slice(0, 600);
+          } catch {
+            detail = text.trim().slice(0, 600);
+          }
+        }
+      } catch {
+        // Keep the SDK's transport message when no response body is available.
+      }
+    }
+    const prefix = statusCode
+      ? `admin-content returned HTTP ${statusCode}`
+      : "admin-content request failed";
+    return detail
+      ? `${prefix}: ${detail}`
+      : `${prefix}. ${error?.message || "Try again or use manual transcription."}`;
+  }
   function controls() {
     dialog
       .querySelectorAll("button,input,select,textarea")
@@ -306,20 +343,10 @@ export function createEnglishUploader({ client, isDemo, onDraft }) {
           attachments,
         },
       });
-      if (error || data?.error) {
-        let message = data?.error;
-        if (!message && error?.context?.json) {
-          try {
-            message = (await error.context.json()).error;
-          } catch {
-            /* Keep generic transport error below. */
-          }
-        }
+      if (error || data?.error)
         throw Error(
-          message ||
-            "AI extraction failed. Check that the updated admin-content function and its AI secret are deployed. You can still use manual transcription.",
+          await edgeMessage(error, data),
         );
-      }
       finish(draft(data.result));
     });
   $("upload-close").onclick = () => {
