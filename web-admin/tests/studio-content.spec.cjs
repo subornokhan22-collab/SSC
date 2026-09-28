@@ -107,9 +107,7 @@ test("Offers & Promotions manages plans, notifications and popup photos", async 
     .locator("#promo-ad-image")
     .fill("https://example.com/promo.jpg");
   await page.locator('[data-action="promo-save-ads"]').click();
-  await expect(page.locator(".promotion-list")).toContainText(
-    "September Pro offer",
-  );
+  await expect(page.getByText("September Pro offer", { exact: true })).toBeVisible();
   await page.locator("#promo-notification-title").fill("New offer");
   await page.locator("#promo-notification-message").fill("A new plan is available.");
   page.on("dialog", (dialog) => dialog.accept());
