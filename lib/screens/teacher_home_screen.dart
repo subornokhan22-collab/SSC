@@ -102,9 +102,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   Future<void> _showOfferPopup(PromotionFeed feed) async {
-    final ads = feed.ads
-        .where((item) => item.imageUrl.startsWith('https://'))
-        .toList();
+    final ads =
+        feed.ads.where((item) => item.imageUrl.startsWith('https://')).toList();
     if (ads.isEmpty) return;
     final ad = ads.first;
     final prefs = await SharedPreferences.getInstance();
@@ -255,7 +254,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               color: AppColors.ai),
           title: Text(item.title,
               style: const TextStyle(fontWeight: FontWeight.w800)),
-          subtitle: Text(item.message, maxLines: 3, overflow: TextOverflow.ellipsis),
+          subtitle:
+              Text(item.message, maxLines: 3, overflow: TextOverflow.ellipsis),
           trailing: item.actionUrl == '/plans'
               ? const Icon(Icons.chevron_right)
               : null,
