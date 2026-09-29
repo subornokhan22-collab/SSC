@@ -51,6 +51,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _load() async {
+    // Refresh the account entitlement before deciding whether to show the
+    // purchase screen. This keeps a purchase made on another device from
+    // being mistaken for a free account.
+    if (AuthService.isLoggedIn) {
+      try {
+        await AuthService.syncProFromServer();
+      } catch (_) {
+        // Keep the cached licence when the account is temporarily offline.
+      }
+    }
     final pro = await PaperLicense.isPro();
     final feed = await PromotionService.load();
     final configuredByPlan = <String, BkashPlan>{};

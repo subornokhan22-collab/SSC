@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refresh() async {
-    final pro = await PaperLicense.isPro();
+    final cachedPro = await PaperLicense.isPro();
     Map<String, dynamic>? p;
     var synced = false;
     if (AuthService.isLoggedIn) {
@@ -58,12 +58,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Offline — keep whatever is cached locally.
       }
     }
-    final proNow = synced ? true : pro;
+    // Re-read after sync: a server-side expiry/revocation may have removed a
+    // stale local unlock. If the server could not be reached, retain cache.
+    final proNow = synced ? true : await PaperLicense.isPro();
     if (!mounted) return;
     setState(() {
       _profile = p;
       _devicePro = proNow;
-      if (synced && !pro) _msg = 'Pro is now active on this device.';
+      if (synced && !cachedPro) _msg = 'Pro is now active on this device.';
     });
   }
 
@@ -248,6 +250,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     phoneCtrl.dispose();
   }
 
+  Future<void> _openPlans() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+    );
+    if (mounted) await _refresh();
+  }
+
   Future<void> _syncPro() async {
     setState(() {
       _busy = true;
@@ -261,7 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(
         () => _msg = ok
             ? 'Pro is now active on this device.'
-            : 'Pro is not enabled for this account yet.',
+            : 'No active Pro purchase was found for this account.',
       );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
@@ -476,28 +486,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text('Edit details'),
                 ),
               ),
-              // Once Pro is active on the server there is nothing left to
-              // pull, so the button retires rather than sitting there
-              // inviting a pointless tap.
               if (!serverPro) ...[
                 const SizedBox(width: 10),
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _busy ? null : _syncPro,
-                    icon: _busy
-                        ? const SizedBox(
-                            width: 15,
-                            height: 15,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.sync_rounded, size: 18),
-                    label: const Text('Sync Pro'),
+                  child: FilledButton.icon(
+                    onPressed: _busy ? null : _openPlans,
+                    icon: const Icon(Icons.workspace_premium_rounded, size: 18),
+                    label: const Text('Buy Pro plan'),
                   ),
                 ),
               ],
             ],
           ),
-          const SizedBox(height: 10),
+          if (!serverPro)
+            Center(
+              child: TextButton.icon(
+                onPressed: _busy ? null : _syncPro,
+                icon: _busy
+                    ? const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.sync_rounded, size: 17),
+                label: const Text('Already paid? Refresh Pro access'),
+              ),
+            ),
+          const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
             child: TextButton.icon(

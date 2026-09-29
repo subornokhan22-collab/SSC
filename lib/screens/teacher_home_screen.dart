@@ -72,46 +72,53 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     } catch (_) {
       // A corrupt draft must not hide the saved-paper library.
     }
+    // Keep promotions independent from the local paper library. A slow or
+    // corrupt paper index must not prevent a newly signed-in account from
+    // receiving an active in-app offer popup.
+    List<PaperEntry> entries = const [];
+    var libraryFailed = false;
     try {
-      final entries = await PaperLibrary.loadEntries();
-      PromotionFeed feed = const PromotionFeed();
-      try {
-        feed = await PromotionService.load();
-      } catch (_) {
-        // Promotions are optional network content; they must never hide papers.
-      }
-      if (mounted && generation == loadGeneration) {
-        setState(() {
-          draftTitle = storedTitle;
-          recent = entries.take(4).toList();
-          promotions = feed;
-          loading = false;
-          error = null;
-        });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && generation == loadGeneration) _showOfferPopup(feed);
-        });
-      }
+      entries = await PaperLibrary.loadEntries();
     } catch (_) {
-      if (mounted && generation == loadGeneration)
-        setState(() {
-          loading = false;
-          error = 'Your papers could not be loaded. Pull down to retry.';
-        });
+      libraryFailed = true;
+    }
+    PromotionFeed feed = const PromotionFeed();
+    try {
+      feed = await PromotionService.load();
+    } catch (_) {
+      // Promotions are optional network content; they must never hide papers.
+    }
+    if (mounted && generation == loadGeneration) {
+      setState(() {
+        draftTitle = storedTitle;
+        recent = entries.take(4).toList();
+        promotions = feed;
+        loading = false;
+        error = libraryFailed
+            ? 'Your papers could not be loaded. Pull down to retry.'
+            : null;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && generation == loadGeneration) _showOfferPopup(feed);
+      });
     }
   }
 
   Future<void> _showOfferPopup(PromotionFeed feed) async {
-    final ads =
-        feed.ads.where((item) => item.imageUrl.startsWith('https://')).toList();
-    if (ads.isEmpty) return;
-    final ad = ads.first;
+    // A promotion may be text-only. Requiring an image here made valid active
+    // ads silently disappear even though the database and RLS query succeeded.
+    if (feed.ads.isEmpty) return;
+    final ad = feed.ads.first;
     final prefs = await SharedPreferences.getInstance();
-    final seenKey = 'promotion_ad_seen_${ad.id}';
+    // Seen state belongs to the account, not only the physical device: a new
+    // tutor signing in on a shared phone must still receive the offer.
+    final account = AuthService.userId ?? 'signed_out';
+    final safeAccount = account.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+    final seenKey = 'promotion_ad_seen_${safeAccount}_${ad.id}';
     if (prefs.getBool(seenKey) == true || !mounted) return;
-    await prefs.setBool(seenKey, true);
     await Future<void>.delayed(const Duration(milliseconds: 350));
     if (!mounted) return;
+    await prefs.setBool(seenKey, true);
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -121,22 +128,25 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Image.network(
-                  ad.imageUrl,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox(
-                    height: 120,
-                    child: Center(child: Icon(Icons.image_not_supported)),
+              if (ad.imageUrl.startsWith('https://')) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.network(
+                    ad.imageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      height: 120,
+                      child: Center(child: Icon(Icons.image_not_supported)),
+                    ),
                   ),
                 ),
-              ),
-              if (ad.body.trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
-                Text(ad.body),
               ],
+              if (ad.body.trim().isNotEmpty)
+                Text(ad.body)
+              else
+                const Text('Open this offer to learn more.'),
             ],
           ),
         ),

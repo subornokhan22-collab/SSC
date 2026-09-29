@@ -52,6 +52,9 @@ class AuthService {
 
   static String? get email => isLoggedIn ? _c.auth.currentUser?.email : null;
 
+  /// Stable account identity for account-scoped local caches and promotions.
+  static String? get userId => isLoggedIn ? _c.auth.currentUser?.id : null;
+
   /// The signed-in user's Supabase JWT — what the `mimi` edge function
   /// (server-side AI) needs to identify the caller. Null when signed out.
   static String? get currentUserToken {
@@ -291,11 +294,19 @@ class AuthService {
   static Future<bool> syncProFromServer() async {
     if (!isLoggedIn) return false;
     final p = await fetchProfile();
-    if (p == null || p['is_pro'] != true) return false;
+    if (p == null) return false;
     DateTime? until;
     final raw = p['pro_until']?.toString();
     if (raw != null && raw.isNotEmpty) {
       until = DateTime.tryParse(raw.replaceFirst('Z', '+00:00'));
+    }
+    final active = p['is_pro'] == true &&
+        (until == null || until.isAfter(DateTime.now()));
+    if (!active) {
+      // The server is authoritative. Do not leave a stale local unlock on a
+      // device after an expired/revoked account is refreshed.
+      await PaperLicense.deactivate();
+      return false;
     }
     await PaperLicense.markProFromServer(until: until);
     return true;

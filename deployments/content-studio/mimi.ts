@@ -3,7 +3,7 @@
 // Deploy as function name: mimi (compatibility endpoint for AI Tools).
 // Canonical source: supabase/functions/mimi/index.ts and local imports.
 // Keep the existing GEMINI_API_KEY and working model overrides.
-// Bundle revision: ai-tools-language-v5 (Bengali prose, English digits).
+// Bundle revision: model-fallback-2026-09.
 // supabase/functions/mimi/index.ts
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
@@ -355,9 +355,9 @@ function providerTransportError(error, stage) {
 // supabase/functions/mimi/index.ts
 var GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 var MODELS = [
-  "gemini-3.6-flash",
   "gemini-3.8-flash",
   "gemini-3.7-flash",
+  "gemini-3.6-flash",
   "gemini-3.5-flash",
   "gemini-2.5-flash"
 ];
@@ -435,7 +435,7 @@ Deno.serve(async (req) => {
         };
         try {
           const result = await runTeacherTool(command, async (system, input, schema, validator = false) => {
-            const model = Deno.env.get(validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL") || "gemini-2.5-flash";
+            const model = Deno.env.get(validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL") || MODELS[0];
             if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new ToolError("The server model configuration is invalid.");
             const stage = validator ? "validator" : "generator";
             const remaining = commandDeadline - Date.now();
