@@ -159,9 +159,9 @@ class PromotionService {
     if (!_isLiveWindow(row)) return false;
     final now = DateTime.now().toUtc();
     final sent = DateTime.tryParse(row['sent_at']?.toString() ?? '');
-    final scheduled =
-        DateTime.tryParse(row['scheduled_at']?.toString() ?? '');
-    return sent != null && !sent.isAfter(now) &&
+    final scheduled = DateTime.tryParse(row['scheduled_at']?.toString() ?? '');
+    return sent != null &&
+        !sent.isAfter(now) &&
         (scheduled == null || !scheduled.isAfter(now));
   }
 
