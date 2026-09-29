@@ -23,7 +23,6 @@ const GEMINI_MODELS = [
   "gemini-3.7-flash",
   "gemini-3.6-flash",
   "gemini-3.5-flash",
-  "gemini-2.5-flash",
 ].filter((model, index, all): model is string =>
   !!model && /^[a-zA-Z0-9._-]+$/.test(model) && all.indexOf(model) === index
 );
@@ -172,6 +171,7 @@ Deno.serve(async (req) => {
     });
     let response: Response | undefined;
     let lastModelError = "";
+    let lastTransientError = "";
     let sawTransientProviderError = false;
     for (const model of GEMINI_MODELS) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -216,6 +216,7 @@ Deno.serve(async (req) => {
         }
         if ([500, 502, 503, 504].includes(response.status)) {
           sawTransientProviderError = true;
+          lastTransientError = upstream;
           if (attempt === 0) {
             await new Promise((resolve) => setTimeout(resolve, 750));
             continue;
@@ -238,7 +239,7 @@ Deno.serve(async (req) => {
     }
     if (!response?.ok) {
       if (sawTransientProviderError) {
-        const detail = lastModelError ? ` ${lastModelError}` : "";
+        const detail = lastTransientError ? ` ${lastTransientError}` : "";
         return reply(
           { error: `Gemini is temporarily overloaded. Try again shortly.${detail}` },
           503,
