@@ -37,7 +37,7 @@ begin
  if TG_TABLE_NAME='questions' then
    if TG_OP='UPDATE' and new.owner_id is distinct from old.owner_id then raise exception 'Question ownership is immutable';end if;
    if TG_OP='INSERT' and new.owner_id is not null and new.owner_id is distinct from auth.uid() and not public.is_question_admin() then raise exception 'Cannot assign another user as owner';end if;
-   if new.review_status='published' and new.owner_id is null and not public.is_question_admin() then raise exception 'Only an administrator can publish official questions';end if;
+   if new.review_status='published' and (TG_OP='INSERT' or old.review_status is distinct from 'published') and new.owner_id is null and not public.is_question_admin() then raise exception 'Only an administrator can publish official questions';end if;
  end if;
  if new.id !~ '^[a-zA-Z0-9_-]+$' then raise exception 'Invalid record ID';end if;
  new.updated_at=clock_timestamp();
