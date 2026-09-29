@@ -277,7 +277,14 @@ async function loadPromotionRows(kind) {
   const { data, error } = await client
     .from(promotionTable(kind))
     .select("*")
-    .order(kind === "ads" ? "priority" : "sort_order", { ascending: true });
+    .order(
+      kind === "ads"
+        ? "priority"
+        : kind === "notifications"
+          ? "created_at"
+          : "sort_order",
+      { ascending: kind !== "notifications" },
+    );
   if (error) throw error;
   return data || [];
 }
