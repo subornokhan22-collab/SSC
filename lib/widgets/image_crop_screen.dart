@@ -24,11 +24,16 @@ class ImageCropScreen extends StatefulWidget {
   /// Opens the cropper. Returns a JPEG (longest side ≤ 1024px) of the area
   /// inside the frame, or null when the user chose "Use as is" / went back.
   static Future<Uint8List?> open(
-      BuildContext context, ui.Image image, Uint8List bytes) {
+    BuildContext context,
+    ui.Image image,
+    Uint8List bytes,
+  ) {
     return Navigator.push<Uint8List?>(
-        context,
-        MaterialPageRoute(
-            builder: (_) => ImageCropScreen(image: image, bytes: bytes)));
+      context,
+      MaterialPageRoute(
+        builder: (_) => ImageCropScreen(image: image, bytes: bytes),
+      ),
+    );
   }
 
   @override
@@ -70,8 +75,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     final w = _view.width, h = _view.height;
     if (w <= 0 || h <= 0) return;
     final s = math.min(w, h) * 0.82;
-    _rect = Rect.fromCenter(
-        center: Offset(w / 2, h / 2), width: s, height: s);
+    _rect = Rect.fromCenter(center: Offset(w / 2, h / 2), width: s, height: s);
   }
 
   @override
@@ -82,93 +86,114 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text('Crop photo',
-            style: TextStyle(
-                fontSize: 17, fontWeight: FontWeight.w900, color: Colors.white)),
+        title: const Text(
+          'Crop photo',
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+          ),
+        ),
         actions: [
           // "Use as is" — keep the original photo, skip the crop.
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Use as is',
-                style: TextStyle(
-                    color: Color(0xFF7FE7DC), fontWeight: FontWeight.w700)),
+            child: const Text(
+              'Use as is',
+              style: TextStyle(
+                color: Color(0xFF7FE7DC),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
-      body: LayoutBuilder(builder: (context, box) {
-        _view = box.biggest;
-        if (_rect.isEmpty) _initRect();
-        final w = _view.width, h = _view.height;
-        final base = math.max(w / _img.width, h / _img.height);
-        final dw = _img.width * base;
-        final dh = _img.height * base;
+      body: LayoutBuilder(
+        builder: (context, box) {
+          _view = box.biggest;
+          if (_rect.isEmpty) _initRect();
+          final w = _view.width, h = _view.height;
+          final base = math.max(w / _img.width, h / _img.height);
+          final dw = _img.width * base;
+          final dh = _img.height * base;
 
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onPanStart: (d) => _onPanStart(d.localPosition),
-          onPanUpdate: (d) => _onPanUpdate(d.localPosition),
-          child: Stack(fit: StackFit.expand, children: [
-            // The photo, still — the frame moves, not the photo.
-            Center(
-              child: RawImage(
-                  image: _img,
-                  width: dw,
-                  height: dh,
-                  filterQuality: FilterQuality.high),
-            ),
-            // Dimmed outside + white frame + grid + drag handles. Drawn
-            // from the same [ _rect ] the crop math uses: visible == out.
-            IgnorePointer(
-                child: CustomPaint(painter: _CropOverlay(rect: _rect))),
-            // Floating controls at the bottom of the photo.
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 14,
-              child: Column(children: [
-                const Text(
-                  'Drag the corners or edges to fit the question • drag inside to move',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: Colors.white70,
-                    shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onPanStart: (d) => _onPanStart(d.localPosition),
+            onPanUpdate: (d) => _onPanUpdate(d.localPosition),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // The photo, still — the frame moves, not the photo.
+                Center(
+                  child: RawImage(
+                    image: _img,
+                    width: dw,
+                    height: dh,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Row(children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white70,
-                        side: const BorderSide(color: Colors.white24),
+                // Dimmed outside + white frame + grid + drag handles. Drawn
+                // from the same [ _rect ] the crop math uses: visible == out.
+                IgnorePointer(
+                  child: CustomPaint(painter: _CropOverlay(rect: _rect)),
+                ),
+                // Floating controls at the bottom of the photo.
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 14,
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Drag the corners or edges to fit the question • drag inside to move',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: Colors.white70,
+                          shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _initRect();
-                        });
-                      },
-                      child: const Text('Reset'),
-                    ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.white70,
+                                side: const BorderSide(color: Colors.white24),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _initRect();
+                                });
+                              },
+                              child: const Text('Reset'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: FilledButton.icon(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF3D5AFE),
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: _crop,
+                              icon: const Icon(Icons.crop_rounded, size: 18),
+                              label: const Text('Crop'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF3D5AFE),
-                          foregroundColor: Colors.white),
-                      onPressed: _crop,
-                      icon: const Icon(Icons.crop_rounded, size: 18),
-                      label: const Text('Crop'),
-                    ),
-                  ),
-                ]),
-              ]),
+                ),
+              ],
             ),
-          ]),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 
@@ -313,10 +338,14 @@ class _CropOverlay extends CustomPainter {
     final dim = Paint()..color = const Color(0xB3000000);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, r.top), dim);
     canvas.drawRect(
-        Rect.fromLTWH(0, r.bottom, size.width, size.height - r.bottom), dim);
+      Rect.fromLTWH(0, r.bottom, size.width, size.height - r.bottom),
+      dim,
+    );
     canvas.drawRect(Rect.fromLTWH(0, r.top, r.left, r.height), dim);
     canvas.drawRect(
-        Rect.fromLTWH(r.right, r.top, size.width - r.right, r.height), dim);
+      Rect.fromLTWH(r.right, r.top, size.width - r.right, r.height),
+      dim,
+    );
 
     // Rule-of-thirds grid inside the window.
     final grid = Paint()
@@ -325,13 +354,15 @@ class _CropOverlay extends CustomPainter {
       ..color = Colors.white.withOpacity(0.45);
     for (final f in const [1.0 / 3, 2.0 / 3]) {
       canvas.drawLine(
-          Offset(r.left + r.width * f, r.top),
-          Offset(r.left + r.width * f, r.bottom),
-          grid);
+        Offset(r.left + r.width * f, r.top),
+        Offset(r.left + r.width * f, r.bottom),
+        grid,
+      );
       canvas.drawLine(
-          Offset(r.left, r.top + r.height * f),
-          Offset(r.right, r.top + r.height * f),
-          grid);
+        Offset(r.left, r.top + r.height * f),
+        Offset(r.right, r.top + r.height * f),
+        grid,
+      );
     }
 
     // White frame.
@@ -352,11 +383,26 @@ class _CropOverlay extends CustomPainter {
     canvas.drawLine(Offset(r.left, r.top), Offset(r.left + L, r.top), tick);
     canvas.drawLine(Offset(r.right - L, r.top), Offset(r.right, r.top), tick);
     canvas.drawLine(Offset(r.right, r.top), Offset(r.right, r.top + L), tick);
-    canvas.drawLine(Offset(r.left, r.bottom - L), Offset(r.left, r.bottom), tick);
-    canvas.drawLine(Offset(r.left, r.bottom), Offset(r.left + L, r.bottom), tick);
-    canvas.drawLine(Offset(r.right - L, r.bottom), Offset(r.right, r.bottom), tick);
     canvas.drawLine(
-        Offset(r.right, r.bottom), Offset(r.right, r.bottom - L), tick);
+      Offset(r.left, r.bottom - L),
+      Offset(r.left, r.bottom),
+      tick,
+    );
+    canvas.drawLine(
+      Offset(r.left, r.bottom),
+      Offset(r.left + L, r.bottom),
+      tick,
+    );
+    canvas.drawLine(
+      Offset(r.right - L, r.bottom),
+      Offset(r.right, r.bottom),
+      tick,
+    );
+    canvas.drawLine(
+      Offset(r.right, r.bottom),
+      Offset(r.right, r.bottom - L),
+      tick,
+    );
 
     // Drag handles: white squares at the 4 corners + 4 edge midpoints.
     final pts = <Offset>[
@@ -375,14 +421,16 @@ class _CropOverlay extends CustomPainter {
     for (final p in pts) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromCenter(center: p, width: hs + 5, height: hs + 5),
-            const Radius.circular(6)),
+          Rect.fromCenter(center: p, width: hs + 5, height: hs + 5),
+          const Radius.circular(6),
+        ),
         halo,
       );
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromCenter(center: p, width: hs, height: hs),
-            const Radius.circular(4)),
+          Rect.fromCenter(center: p, width: hs, height: hs),
+          const Radius.circular(4),
+        ),
         white,
       );
     }

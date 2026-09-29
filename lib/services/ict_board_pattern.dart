@@ -10,16 +10,15 @@ class IctBoardPatternGenerator {
   static const int fullMarks = 25;
   static const int timeMinutes = 60;
 
-  static List<Question> generate(
-    Iterable<Question> bank, {
-    Random? random,
-  }) {
+  static List<Question> generate(Iterable<Question> bank, {Random? random}) {
     final rng = random ?? Random();
     final pool = bank
-        .where((q) =>
-            q.subjectId == 'ict' &&
-            q.source == QuestionSource.original &&
-            q.sourceLabel == 'Original chapter practice')
+        .where(
+          (q) =>
+              q.subjectId == 'ict' &&
+              q.source == QuestionSource.original &&
+              q.sourceLabel == 'Original chapter practice',
+        )
         .toList()
       ..shuffle(rng);
     if (pool.length < mcqCount) {

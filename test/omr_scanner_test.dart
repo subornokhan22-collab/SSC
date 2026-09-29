@@ -132,8 +132,14 @@ img.Image _buildOmPage({
 
   for (var i = 0; i < 4; i++) {
     final t = OMrGeometry.markTopLeft(i);
-    _fillRect(im, t[0].round(), t[1].round(), OMrGeometry.markSize.round(),
-        OMrGeometry.markSize.round(), 26);
+    _fillRect(
+      im,
+      t[0].round(),
+      t[1].round(),
+      OMrGeometry.markSize.round(),
+      OMrGeometry.markSize.round(),
+      26,
+    );
   }
 
   for (var no = 1; no <= total; no++) {
@@ -192,16 +198,17 @@ img.Image _buildOmPage({
     final col = (i / geo.perColumn).floor();
     final row = i % geo.perColumn;
     _strokeRect(
-        im,
-        geo.columnX(col).round(),
-        (OMrGeometry.questionsTop +
-                OMrGeometry.boxHeaderH +
-                row * OMrGeometry.rowH)
-            .round(),
-        geo.questionWidth.round(),
-        OMrGeometry.rowH.round(),
-        2,
-        90);
+      im,
+      geo.columnX(col).round(),
+      (OMrGeometry.questionsTop +
+              OMrGeometry.boxHeaderH +
+              row * OMrGeometry.rowH)
+          .round(),
+      geo.questionWidth.round(),
+      OMrGeometry.rowH.round(),
+      2,
+      90,
+    );
   }
   for (final panel in <List<double>>[
     [geo.rollPanelX, geo.rollPanelW],
@@ -254,11 +261,15 @@ void main() {
   final answers = List<int>.generate(total, (i) => i % 4);
   answers[4] = -1; // q5 blank
   answers[9] = -1; // q10 blank
-  final doubles = {8: [0, 1]}; // q9 double-marked
+  final doubles = {
+    8: [0, 1],
+  }; // q9 double-marked
   answers[8] = -2; // the scanner reports a double-mark as -2
 
-  final expectedKey =
-      List<int>.generate(total, (i) => (i == 4 || i == 9) ? 0 : i % 4);
+  final expectedKey = List<int>.generate(
+    total,
+    (i) => (i == 4 || i == 9) ? 0 : i % 4,
+  );
 
   group('geometry', () {
     test('bubble layout stays sane for every sheet size', () {
@@ -276,13 +287,20 @@ void main() {
         // Adjacent bubbles in a row must not overlap.
         final a = g.questionBubble(1, 0);
         final b = g.questionBubble(1, 1);
-        expect((b.dx - a.dx).abs(),
-            greaterThan(2 * OMrGeometry.bubbleRadiusPx));
+        expect(
+          (b.dx - a.dx).abs(),
+          greaterThan(2 * OMrGeometry.bubbleRadiusPx),
+        );
         // Identity panels below the question grid.
         expect(g.identityTop, greaterThan(g.questionsBottom));
-        expect(g.identityBottom, lessThan(OMrGeometry.pageH - OMrGeometry.margin));
-        expect(g.setTop + OMrGeometry.setH,
-            lessThan(OMrGeometry.pageH - OMrGeometry.margin));
+        expect(
+          g.identityBottom,
+          lessThan(OMrGeometry.pageH - OMrGeometry.margin),
+        );
+        expect(
+          g.setTop + OMrGeometry.setH,
+          lessThan(OMrGeometry.pageH - OMrGeometry.margin),
+        );
       }
     });
 
@@ -291,8 +309,14 @@ void main() {
         final t = OMrGeometry.markTopLeft(i);
         expect(t[0], greaterThanOrEqualTo(0));
         expect(t[1], greaterThanOrEqualTo(0));
-        expect(t[0] + OMrGeometry.markSize, lessThanOrEqualTo(OMrGeometry.pageW));
-        expect(t[1] + OMrGeometry.markSize, lessThanOrEqualTo(OMrGeometry.pageH));
+        expect(
+          t[0] + OMrGeometry.markSize,
+          lessThanOrEqualTo(OMrGeometry.pageW),
+        );
+        expect(
+          t[1] + OMrGeometry.markSize,
+          lessThanOrEqualTo(OMrGeometry.pageH),
+        );
       }
     });
   });
@@ -301,9 +325,7 @@ void main() {
     test('solves a known 4-point transform', () {
       final p = _pageMarks();
       // Simple: scale 0.5 + translate.
-      final q = [
-        for (final m in p) Offset(m.dx * 0.5 + 50, m.dy * 0.5 + 80),
-      ];
+      final q = [for (final m in p) Offset(m.dx * 0.5 + 50, m.dy * 0.5 + 80)];
       final h = OMrScanner.homographyFrom4(p, q);
       expect(h, isNotNull);
       for (var i = 0; i < 4; i++) {
@@ -317,12 +339,13 @@ void main() {
   group('scan (synthetic photo)', () {
     test('upright sheet with mild perspective', () async {
       final page = _buildOmPage(
-          total: total,
-          answers: answers,
-          doubles: doubles,
-          roll: '001234',
-          subject: '109',
-          setOption: 1);
+        total: total,
+        answers: answers,
+        doubles: doubles,
+        roll: '001234',
+        subject: '109',
+        setOption: 1,
+      );
       final h = OMrScanner.homographyFrom4(_pageMarks(), [
         const Offset(180, 260), // TL
         const Offset(1440, 200), // TR
@@ -334,6 +357,18 @@ void main() {
 
       final res = await OMrScanner.scan(bytes, total: total);
       expect(res.ok, isTrue, reason: res.error);
+      final correctedAnswers = List<int>.of(res.answers)..[4] = expectedKey[4];
+      final corrected =
+          res.corrected(answers: correctedAnswers, roll: '999999');
+      expect(corrected.answers[4], expectedKey[4]);
+      expect(res.answers[4], -1);
+      expect(corrected.correctedIndices, [4]);
+      expect(corrected.inks, res.inks);
+      expect(corrected.roll, '999999');
+      expect(OMrScanner.grade(corrected, expectedKey).score,
+          OMrScanner.grade(res, expectedKey).score + 1);
+      expect(() => res.corrected(answers: [0]), throwsArgumentError);
+
       expect(res.answers, answers);
       expect(res.roll, '001234');
       expect(res.subjectCode, '109');
@@ -349,12 +384,13 @@ void main() {
 
     test('sheet rotated 90° clockwise in a landscape photo', () async {
       final page = _buildOmPage(
-          total: total,
-          answers: answers,
-          doubles: doubles,
-          roll: '001234',
-          subject: '109',
-          setOption: 1);
+        total: total,
+        answers: answers,
+        doubles: doubles,
+        roll: '001234',
+        subject: '109',
+        setOption: 1,
+      );
       // Page TL → photo TR, TR → BR, BR → BL, BL → TL. _pageMarks() is in
       // [TL, TR, BL, BR] order, so the list below is [TR, BR, TL, BL]:
       // a cyclic photo order keeps the map an honest rotation (a non-cyclic
@@ -378,12 +414,13 @@ void main() {
 
     test('sheet rotated 180° in a portrait photo', () async {
       final page = _buildOmPage(
-          total: total,
-          answers: answers,
-          doubles: doubles,
-          roll: '001234',
-          subject: '109',
-          setOption: 1);
+        total: total,
+        answers: answers,
+        doubles: doubles,
+        roll: '001234',
+        subject: '109',
+        setOption: 1,
+      );
       // Page TL → photo BR, TR → BL, BL → TR, BR → TL.
       final h = OMrScanner.homographyFrom4(_pageMarks(), [
         const Offset(1420, 1930), // page TL → photo BR

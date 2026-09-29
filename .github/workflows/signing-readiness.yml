@@ -1,0 +1,207 @@
+name: Signing readiness diagnostics (one-off)
+
+# Answers two questions that cannot be answered from a workstation without the
+# Android SDK and Java:
+#   1. Can Java 17 read a PKCS12 keystore produced by OpenSSL 3 with the
+#      PBE-SHA1-3DES schemes? (A throwaway key is used; no real key is touched.)
+#   2. Which key signed the APK already installed on the owner's phone, and can
+#      another CI build reproduce it? This decides whether the saved paper
+#      library can be migrated in place or is lost on uninstall.
+#
+# Results are published as a pull request comment because workflow logs live on
+# blob storage that some clients cannot reach. Nothing is distributed and no
+# signing material leaves this workflow.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [arena/01a0ce12-ssc]
+    paths:
+      - '.github/workflows/signing-readiness.yml'
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+jobs:
+  keystore-format:
+    name: Java can read the OpenSSL PKCS12 format
+    runs-on: ubuntu-latest
+    outputs:
+      report: ${{ steps.probe.outputs.report }}
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Create a throwaway keystore with the same OpenSSL flags
+        run: |
+          set -eu
+          openssl req -x509 -newkey rsa:2048 -sha256 -days 10000 -nodes \
+            -keyout probe-key.pem -out probe-cert.pem \
+            -subj "/CN=Format Probe/O=Tutors Desk/OU=Mobile/C=BD" \
+            -addext "basicConstraints=critical,CA:FALSE" \
+            -addext "keyUsage=critical,digitalSignature,keyEncipherment" 2>/dev/null
+          openssl pkcs12 -export -inkey probe-key.pem -in probe-cert.pem \
+            -name tutors-desk -out probe.p12 -passout pass:probe-password \
+            -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1
+          rm -f probe-key.pem probe-cert.pem
+
+      - name: Load it exactly the way validateProductionSigning does
+        id: probe
+        run: |
+          set -eu
+          cat > StoreCheck.java <<'JAVA'
+          import java.io.FileInputStream;
+          import java.io.InputStream;
+          import java.security.KeyStore;
+          import java.security.MessageDigest;
+          import java.security.PrivateKey;
+          import java.security.cert.X509Certificate;
+
+          public class StoreCheck {
+            public static void main(String[] args) throws Exception {
+              KeyStore ks = KeyStore.getInstance("PKCS12");
+              try (InputStream in = new FileInputStream(args[0])) {
+                ks.load(in, args[1].toCharArray());
+              }
+              String alias = "tutors-desk";
+              System.out.println("containsAlias=" + ks.containsAlias(alias));
+              System.out.println("isKeyEntry=" + ks.isKeyEntry(alias));
+              System.out.println("privateKeyReadable="
+                  + (ks.getKey(alias, args[2].toCharArray()) instanceof PrivateKey));
+              X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
+              cert.checkValidity();
+              System.out.println("subject=" + cert.getSubjectX500Principal().getName());
+              System.out.println("notAndroidDebug="
+                  + !cert.getSubjectX500Principal().getName().contains("Android Debug"));
+              byte[] digest = MessageDigest.getInstance("SHA-256").digest(cert.getEncoded());
+              StringBuilder hex = new StringBuilder();
+              for (byte b : digest) hex.append(String.format("%02x", b));
+              System.out.println("sha256HexDigits=" + hex.length());
+            }
+          }
+          JAVA
+          java StoreCheck.java probe.p12 probe-password probe-password > java-read.txt
+          cat java-read.txt
+          keytool -list -keystore probe.p12 -storetype PKCS12 -storepass probe-password \
+            > keytool-read.txt
+          grep -E 'tutors-desk|PrivateKeyEntry' keytool-read.txt | head -3
+          {
+            echo 'report<<REPORT_EOF'
+            echo 'Java 17 read of an OpenSSL 3 PKCS12 store (PBE-SHA1-3DES, SHA-1 MAC),'
+            echo 'loaded with `KeyStore.getInstance("PKCS12")` exactly as'
+            echo '`validateProductionSigning` does:'
+            echo
+            echo '```'
+            cat java-read.txt
+            echo '```'
+            echo
+            echo '`keytool` agrees the entry is a `PrivateKeyEntry` under alias `tutors-desk`.'
+            echo 'REPORT_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  installed-apk-key:
+    name: Identify the key that signed the installed APK
+    runs-on: ubuntu-latest
+    outputs:
+      report: ${{ steps.verdict.outputs.report }}
+    steps:
+      - name: Record the debug keystore state BEFORE any build tool runs
+        id: state
+        run: |
+          if [ -f "$HOME/.android/debug.keystore" ]; then
+            echo 'This runner image already contains ~/.android/debug.keystore:'
+            fp=$(keytool -list -v -keystore "$HOME/.android/debug.keystore" -storepass android 2>/dev/null \
+              | sed -n 's/^SHA256: //p' | head -1)
+            echo "runner debug SHA-256: $fp"
+            echo 'prebaked=yes' >> "$GITHUB_OUTPUT"
+            echo "runner_fp=$fp" >> "$GITHUB_OUTPUT"
+          else
+            echo 'This runner has NO pre-existing ~/.android/debug.keystore.'
+            echo 'prebaked=no' >> "$GITHUB_OUTPUT"
+            echo 'runner_fp=(none - the file does not exist)' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download the APK the owner has installed (build 347)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          curl -sSL -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/10897601043/zip" \
+            -o installed.zip
+          test -s installed.zip
+          mkdir -p installed && (cd installed && unzip -o -q ../installed.zip)
+          find installed -name '*.apk' -print
+
+      - name: Print that APK's signing certificate
+        id: cert
+        run: |
+          set -eu
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          apk=$(find installed -name '*.apk' | head -1)
+          "$signer" verify --verbose --print-certs "$apk" > installed-certs.txt
+          sha=$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' installed-certs.txt)
+          echo "installed SHA-256: $sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          if grep -qi 'Android Debug' installed-certs.txt; then
+            echo 'identity=Android Debug certificate' >> "$GITHUB_OUTPUT"
+          else
+            echo 'identity=not the Android debug certificate' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verdict on migrating the saved papers
+        id: verdict
+        run: |
+          set -eu
+          {
+            echo 'report<<REPORT_EOF'
+            echo '**APK installed on the phone** (artifact 10897601043, built from `4b535e7`)'
+            echo
+            echo '- signer certificate SHA-256: `${{ steps.cert.outputs.sha }}`'
+            echo '- identity: ${{ steps.cert.outputs.identity }}'
+            echo '- `~/.android/debug.keystore` on a fresh runner: **${{ steps.state.outputs.prebaked }}** (${{ steps.state.outputs.runner_fp }})'
+            echo
+            if [ '${{ steps.state.outputs.prebaked }}' = 'yes' ]; then
+              echo 'The runner image ships a debug keystore, so compare the two fingerprints above.'
+              echo 'If they match, a debug-signed build from this branch installs over the current'
+              echo 'app without uninstalling, which would allow exporting the paper library first.'
+            else
+              echo 'The runner image ships **no** debug keystore, so the key that signed the'
+              echo 'installed build existed only on the runner that built it and no longer exists.'
+              echo 'No future build can reproduce that signature, so **no new APK can be installed'
+              echo 'over the current one** — one uninstall is unavoidable.'
+              echo
+              echo 'That build writes its auto-backup only to app-private storage (deleted on'
+              echo 'uninstall) and ships no Dart caller for `copyToDownloads`, and its paper'
+              echo 'library has no Supabase sync, so papers saved in it do not survive the switch.'
+            fi
+            echo 'REPORT_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  report:
+    name: Publish the verdict
+    runs-on: ubuntu-latest
+    needs: [keystore-format, installed-apk-key]
+    steps:
+      - name: Comment on the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          {
+            echo '## Signing readiness diagnostics'
+            echo
+            echo '### 1. Keystore format compatibility'
+            echo
+            echo '${{ needs.keystore-format.outputs.report }}'
+            echo
+            echo '### 2. The key that signed the installed APK'
+            echo
+            echo '${{ needs.installed-apk-key.outputs.report }}'
+          } > body.md
+          gh pr comment 6 --repo "$GITHUB_REPOSITORY" --body-file body.md

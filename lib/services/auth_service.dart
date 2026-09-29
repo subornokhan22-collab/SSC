@@ -52,6 +52,17 @@ class AuthService {
 
   static String? get email => isLoggedIn ? _c.auth.currentUser?.email : null;
 
+  /// The signed-in user's Supabase JWT — what the `mimi` edge function
+  /// (server-side AI) needs to identify the caller. Null when signed out.
+  static String? get currentUserToken {
+    if (!isLoggedIn) return null;
+    try {
+      return _c.auth.currentSession?.accessToken;
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Map<String, dynamic>? _profileCache;
 
   /// Cached profile, if one has already been fetched this session.
@@ -88,7 +99,8 @@ class AuthService {
     final e = _validEmail(email);
     if (password.length < minPasswordLength) {
       throw AuthException(
-          'Password must be at least $minPasswordLength characters');
+        'Password must be at least $minPasswordLength characters',
+      );
     }
     final res = await _c.auth.signUp(email: e, password: password);
     // When email confirmation is disabled in the Supabase project the session
@@ -111,8 +123,7 @@ class AuthService {
     AuthResponse? res;
     // Newer projects issue a `signup` token; older ones fall back to `email`.
     try {
-      res = await _c.auth
-          .verifyOTP(type: OtpType.signup, token: c, email: e);
+      res = await _c.auth.verifyOTP(type: OtpType.signup, token: c, email: e);
     } on AuthException {
       res = await _c.auth.verifyOTP(type: OtpType.email, token: c, email: e);
     }
@@ -142,7 +153,8 @@ class AuthService {
     _requireReady();
     if (password.length < minPasswordLength) {
       throw AuthException(
-          'Password must be at least $minPasswordLength characters');
+        'Password must be at least $minPasswordLength characters',
+      );
     }
     await _c.auth.updateUser(UserAttributes(password: password));
   }
@@ -183,7 +195,9 @@ class AuthService {
   }
 
   // ── Reading the profile ───────────────────────────────────────────
-  static Future<Map<String, dynamic>?> fetchProfile({bool refresh = true}) async {
+  static Future<Map<String, dynamic>?> fetchProfile({
+    bool refresh = true,
+  }) async {
     if (!isLoggedIn) return null;
     if (!refresh && _profileCache != null) return _profileCache;
     final u = _c.auth.currentUser;
@@ -213,15 +227,13 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c.from('profiles')
-            .insert({
-              'id': u.id,
-              'email': u.email ?? '',
-              'role': teacherRole,
-              'name': name,
-              'phone': phone,
-            })
-            .timeout(const Duration(seconds: 6));
+        await _c.from('profiles').insert({
+          'id': u.id,
+          'email': u.email ?? '',
+          'role': teacherRole,
+          'name': name,
+          'phone': phone,
+        }).timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -234,7 +246,8 @@ class AuthService {
           patch['role'] = teacherRole;
         }
         if (patch.isNotEmpty) {
-          await _c.from('profiles')
+          await _c
+              .from('profiles')
               .update(patch)
               .eq('id', u.id)
               .timeout(const Duration(seconds: 6));
@@ -264,7 +277,8 @@ class AuthService {
     if (name != null) patch['name'] = name.trim();
     if (phone != null) patch['phone'] = phone.trim();
     if (patch.isEmpty) return;
-    await _c.from('profiles')
+    await _c
+        .from('profiles')
         .update(patch)
         .eq('id', u.id)
         .timeout(const Duration(seconds: 6));
@@ -297,7 +311,8 @@ class AuthService {
   static void _requireReady() {
     if (!ready) {
       throw const AuthException(
-          'Sign-in is not configured yet — offline features still work');
+        'Sign-in is not configured yet — offline features still work',
+      );
     }
   }
 

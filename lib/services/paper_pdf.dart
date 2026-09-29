@@ -10,6 +10,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import 'ai/ai_text_formatter.dart';
+
 import '../data/bangla_1st/bangla_1st_literature_questions.dart';
 import '../data/bangla_2nd/bangla_2nd_written_questions.dart';
 import '../data/question_figure.dart';
@@ -192,57 +194,13 @@ class PaperPdf {
   // DejaVu-তে থাকা সব চিহ্ন এখন আর বদলানো হয় না — সরাসরি ছাপে।
   // শুধু যেগুলো কোনো ফন্টেই নেই/ভগ্নাংশে রূপান্তর দরকার সেগুলোই বদলায়।
   static String _safe(String s, {bool preserveSpaces = false}) {
-    // ইউজার-চাহিদা: সব পেপারে সংখ্যা English (0-9) — বাংলা অঙ্ক → Latin অঙ্ক।
-    const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-    for (var i = 0; i < 10; i++) {
-      s = s.replaceAll(bnDigits[i], '$i');
-    }
+    s = AiTextFormatter.format(s, trim: false);
     const single = <String, String>{
       '½': '1/2', '¼': '1/4', '¾': '3/4', // ভগ্নাংশ রেন্ডারারে যাবে
       '⟂': '⊥', // U+27C2 কোনো ফন্টেই নেই — সমার্থক ⊥ (লম্ব) দিয়ে
     };
     single.forEach((k, v) => s = s.replaceAll(k, v));
-    s = _caretToSup(s);
     return preserveSpaces ? s : s.replaceAll(RegExp(' +'), ' ');
-  }
-
-  /// টাইপ করা/AI লেখা "x^2", "y^-2", "10^(n+1)", "x∧2" → আসল সুপারস্ক্রিপ্ট
-  static String _caretToSup(String s) {
-    const sup = {
-      '0': '⁰',
-      '1': '¹',
-      '2': '²',
-      '3': '³',
-      '4': '⁴',
-      '5': '⁵',
-      '6': '⁶',
-      '7': '⁷',
-      '8': '⁸',
-      '9': '⁹',
-      '০': '⁰',
-      '১': '¹',
-      '২': '²',
-      '৩': '³',
-      '৪': '⁴',
-      '৫': '⁵',
-      '৬': '⁶',
-      '৭': '⁷',
-      '৮': '⁸',
-      '৯': '⁹',
-      '-': '⁻',
-      '+': '⁺',
-      '−': '⁻',
-      'n': 'ⁿ',
-      'm': 'ᵐ',
-    };
-    String mapRun(String run) => run.split('').map((c) => sup[c] ?? '').join();
-    // ^(n+1) ধরনের বন্ধনী-ঘাত আগে
-    s = s.replaceAllMapped(
-        RegExp(r'[\^∧]\(([^()]{1,15})\)'), (m) => mapRun(m.group(1)!));
-    // তারপর ^2, ^-2, ^১০ ধরনের সাধারণ ঘাত
-    s = s.replaceAllMapped(
-        RegExp(r'[\^∧]\s*(-?[0-9০-৯nm]{1,6})'), (m) => mapRun(m.group(1)!));
-    return s;
   }
 
   // ═══════════ স্ট্যাকড ভগ্নাংশ বিভাজক ═══════════
@@ -664,11 +622,13 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v25',
-            style: TextStyle(
-                fontFamily: _regular,
-                fontSize: 7 * _k,
-                color: const Color(0xFFAAAAAA))),
+          text: 'AL·v25',
+          style: TextStyle(
+            fontFamily: _regular,
+            fontSize: 7 * _k,
+            color: const Color(0xFFAAAAAA),
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       stamp.paint(canvas, Offset(_margin, sh - 6 * _k));
@@ -687,10 +647,13 @@ class PaperPdf {
           color: const Color(0xFF000000),
         );
 
-    TextPainter makePainter(String text, double size,
-        {bool isBold = false,
-        TextAlign align = TextAlign.left,
-        double lineHeight = 1.4}) {
+    TextPainter makePainter(
+      String text,
+      double size, {
+      bool isBold = false,
+      TextAlign align = TextAlign.left,
+      double lineHeight = 1.4,
+    }) {
       return TextPainter(
         text: TextSpan(text: text, style: st(size, isBold, lineHeight)),
         textDirection: TextDirection.ltr,
@@ -717,8 +680,13 @@ class PaperPdf {
         final safe = _safe(text, preserveSpaces: preserveSpaces);
         final segs = _splitFractions(safe);
         if (segs.length == 1 && segs.first is String) {
-          final tp = makePainter(segs.first as String, size,
-              isBold: isBold, align: align, lineHeight: lineHeight);
+          final tp = makePainter(
+            segs.first as String,
+            size,
+            isBold: isBold,
+            align: align,
+            lineHeight: lineHeight,
+          );
           tp.layout(maxWidth: maxWidth);
           return (tp: tp, fr: const []);
         }
@@ -741,15 +709,19 @@ class PaperPdf {
             final w = mx(tn.width, td.width) + 1.6 * _k;
             final h = tn.height + td.height + 2.0 * _k;
             frs.add((n: tn, d: td, w: w, h: h));
-            children.add(const WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: SizedBox.shrink(),
-            ));
+            children.add(
+              const WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: SizedBox.shrink(),
+              ),
+            );
           }
         }
         final tp = TextPainter(
-          text:
-              TextSpan(style: st(size, isBold, lineHeight), children: children),
+          text: TextSpan(
+            style: st(size, isBold, lineHeight),
+            children: children,
+          ),
           textDirection: TextDirection.ltr,
           textAlign: align,
         );
@@ -763,8 +735,13 @@ class PaperPdf {
         tp.layout(maxWidth: maxWidth);
         return (tp: tp, fr: frs);
       } catch (_) {
-        final tp = makePainter(_safe(text), size,
-            isBold: isBold, align: align, lineHeight: lineHeight);
+        final tp = makePainter(
+          _safe(text),
+          size,
+          isBold: isBold,
+          align: align,
+          lineHeight: lineHeight,
+        );
         tp.layout(maxWidth: maxWidth);
         return (tp: tp, fr: const []);
       }
@@ -839,10 +816,7 @@ class PaperPdf {
 
       if (f.kind == FigureKind.table) {
         final headerRow = f.headers.isNotEmpty;
-        final grid = <List<String>>[
-          if (headerRow) f.headers,
-          ...f.rows,
-        ];
+        final grid = <List<String>>[if (headerRow) f.headers, ...f.rows];
         if (grid.isNotEmpty) {
           final nCol = grid.first.length;
           final cellH = 15 * _k;
@@ -851,8 +825,11 @@ class PaperPdf {
           for (int c = 0; c < nCol; c++) {
             for (int r = 0; r < grid.length; r++) {
               if (c >= grid[r].length) continue;
-              final tp = makePainter(_safe(grid[r][c]), 9.5,
-                  isBold: headerRow && r == 0);
+              final tp = makePainter(
+                _safe(grid[r][c]),
+                9.5,
+                isBold: headerRow && r == 0,
+              );
               tp.layout();
               if (tp.width > colW[c]) colW[c] = tp.width;
             }
@@ -878,19 +855,27 @@ class PaperPdf {
           for (int r = 1; r < grid.length; r++) {
             final hy = y0 + r * cellH;
             canvas.drawLine(
-                Offset(startX, hy), Offset(startX + totalW, hy), line);
+              Offset(startX, hy),
+              Offset(startX + totalW, hy),
+              line,
+            );
           }
           for (int r = 0; r < grid.length; r++) {
             double cx = startX;
             for (int c = 0; c < nCol; c++) {
               if (c >= grid[r].length) break;
-              final tp = makePainter(_safe(grid[r][c]), 9.5,
-                  isBold: headerRow && r == 0);
+              final tp = makePainter(
+                _safe(grid[r][c]),
+                9.5,
+                isBold: headerRow && r == 0,
+              );
               tp.layout(maxWidth: colW[c] - 4 * _k);
               tp.paint(
                 canvas,
-                Offset(cx + (colW[c] - tp.width) / 2,
-                    y0 + r * cellH + (cellH - tp.height) / 2),
+                Offset(
+                  cx + (colW[c] - tp.width) / 2,
+                  y0 + r * cellH + (cellH - tp.height) / 2,
+                ),
               );
               cx += colW[c];
             }
@@ -921,7 +906,9 @@ class PaperPdf {
           final tp = makePainter(_safe(v[0]), 10.5, isBold: true);
           tp.layout();
           tp.paint(
-              canvas, Offset(a.dx - tp.width / 2, a.dy - tp.height - 1.5 * _k));
+            canvas,
+            Offset(a.dx - tp.width / 2, a.dy - tp.height - 1.5 * _k),
+          );
         }
         if (v.length > 1 && v[1].isNotEmpty) {
           final tp = makePainter(_safe(v[1]), 10.5, isBold: true);
@@ -940,7 +927,9 @@ class PaperPdf {
           final mx2 = (a.dx + b.dx) / 2;
           final my2 = (a.dy + b.dy) / 2;
           tp.paint(
-              canvas, Offset(mx2 - tp.width - 2.5 * _k, my2 - tp.height / 2));
+            canvas,
+            Offset(mx2 - tp.width - 2.5 * _k, my2 - tp.height / 2),
+          );
         }
         if (s.length > 1 && s[1].isNotEmpty) {
           final tp = makePainter(_safe(s[1]), 9.5);
@@ -970,8 +959,10 @@ class PaperPdf {
         if (an.length > 2 && an[2].isNotEmpty) {
           final tp = makePainter(_safe(an[2]), 9);
           tp.layout();
-          tp.paint(canvas,
-              Offset(c.dx - tp.width - 3.5 * _k, c.dy - tp.height - 2 * _k));
+          tp.paint(
+            canvas,
+            Offset(c.dx - tp.width - 3.5 * _k, c.dy - tp.height - 2 * _k),
+          );
         }
         // সমকোণ চিহ্ন
         final ra = f.rightAngleAt;
@@ -979,19 +970,37 @@ class PaperPdf {
           final sz = 7 * _k;
           if (v.length > 1 && ra == v[1]) {
             canvas.drawLine(
-                Offset(b.dx + sz, b.dy), Offset(b.dx + sz, b.dy - sz), tri);
+              Offset(b.dx + sz, b.dy),
+              Offset(b.dx + sz, b.dy - sz),
+              tri,
+            );
             canvas.drawLine(
-                Offset(b.dx + sz, b.dy - sz), Offset(b.dx, b.dy - sz), tri);
+              Offset(b.dx + sz, b.dy - sz),
+              Offset(b.dx, b.dy - sz),
+              tri,
+            );
           } else if (v.length > 2 && ra == v[2]) {
             canvas.drawLine(
-                Offset(c.dx - sz, c.dy), Offset(c.dx - sz, c.dy - sz), tri);
+              Offset(c.dx - sz, c.dy),
+              Offset(c.dx - sz, c.dy - sz),
+              tri,
+            );
             canvas.drawLine(
-                Offset(c.dx - sz, c.dy - sz), Offset(c.dx, c.dy - sz), tri);
+              Offset(c.dx - sz, c.dy - sz),
+              Offset(c.dx, c.dy - sz),
+              tri,
+            );
           } else if (v.isNotEmpty && ra == v[0]) {
             canvas.drawLine(
-                Offset(a.dx - sz, a.dy + sz), Offset(a.dx, a.dy + sz), tri);
+              Offset(a.dx - sz, a.dy + sz),
+              Offset(a.dx, a.dy + sz),
+              tri,
+            );
             canvas.drawLine(
-                Offset(a.dx, a.dy + sz), Offset(a.dx + sz, a.dy + sz), tri);
+              Offset(a.dx, a.dy + sz),
+              Offset(a.dx + sz, a.dy + sz),
+              tri,
+            );
           }
         }
       } else if (f.kind == FigureKind.barChart) {
@@ -1008,10 +1017,16 @@ class PaperPdf {
           if (chartW > maxCw) chartW = maxCw;
           if (chartW > w) chartW = w;
           final startX = x + (w - chartW) / 2;
-          canvas.drawLine(Offset(startX - 4 * _k, top - 2 * _k),
-              Offset(startX - 4 * _k, base), line); // y-অক্ষ
-          canvas.drawLine(Offset(startX - 4 * _k, base),
-              Offset(startX + chartW, base), line); // x-অক্ষ
+          canvas.drawLine(
+            Offset(startX - 4 * _k, top - 2 * _k),
+            Offset(startX - 4 * _k, base),
+            line,
+          ); // y-অক্ষ
+          canvas.drawLine(
+            Offset(startX - 4 * _k, base),
+            Offset(startX + chartW, base),
+            line,
+          ); // x-অক্ষ
           final n = f.values.length;
           final slot = chartW / n;
           final barW = slot * 0.5;
@@ -1025,16 +1040,22 @@ class PaperPdf {
             final vt = makePainter(_bn(f.values[i]), 9);
             vt.layout();
             vt.paint(
-                canvas,
-                Offset(bx + (barW - vt.width) / 2,
-                    base - bh - vt.height - 1 * _k));
+              canvas,
+              Offset(
+                bx + (barW - vt.width) / 2,
+                base - bh - vt.height - 1 * _k,
+              ),
+            );
             if (i < f.headers.length) {
               final lt = makePainter(_safe(f.headers[i]), 8.5);
               lt.layout(maxWidth: slot);
               lt.paint(
-                  canvas,
-                  Offset(startX + slot * i + (slot - lt.width) / 2,
-                      base + 2 * _k));
+                canvas,
+                Offset(
+                  startX + slot * i + (slot - lt.width) / 2,
+                  base + 2 * _k,
+                ),
+              );
             }
           }
         }
@@ -1064,10 +1085,16 @@ class PaperPdf {
           // Missing file: leave a labelled placeholder rather than a blank
           // gap, so the problem is obvious on the printed page.
           canvas.drawRect(Rect.fromLTWH(dx, y0, drawW, drawH), line);
-          final tp = makePainter('[ছবি পাওয়া যায়নি]', 9.5, align: TextAlign.center);
+          final tp = makePainter(
+            '[ছবি পাওয়া যায়নি]',
+            9.5,
+            align: TextAlign.center,
+          );
           tp.layout(maxWidth: drawW);
-          tp.paint(canvas,
-              Offset(dx + (drawW - tp.width) / 2, y0 + drawH / 2 - tp.height / 2));
+          tp.paint(
+            canvas,
+            Offset(dx + (drawW - tp.width) / 2, y0 + drawH / 2 - tp.height / 2),
+          );
         }
       }
 
@@ -1090,11 +1117,14 @@ class PaperPdf {
       bool preserveSpaces = false,
     }) async {
       await PaperPdf._yieldToUi();
-      final line = rich(text, size,
-          isBold: isBold,
-          align: align,
-          preserveSpaces: preserveSpaces,
-          maxWidth: contentW - indent * _k);
+      final line = rich(
+        text,
+        size,
+        isBold: isBold,
+        align: align,
+        preserveSpaces: preserveSpaces,
+        maxWidth: contentW - indent * _k,
+      );
       if (y + gapBefore * _k + line.tp.height > bottomY + 1) {
         await commit();
         begin();
@@ -1115,8 +1145,12 @@ class PaperPdf {
     }) async {
       await PaperPdf._yieldToUi();
       final markW = 26 * _k; // মান কলাম ≈ ৯ মিমি
-      final line = rich(text, size,
-          isBold: isBold, maxWidth: contentW - indent * _k - markW);
+      final line = rich(
+        text,
+        size,
+        isBold: isBold,
+        maxWidth: contentW - indent * _k - markW,
+      );
       final tm = makePainter(_safe(mark), size);
       tm.layout(maxWidth: markW);
       final h = mx(line.tp.height, tm.height);
@@ -1131,8 +1165,11 @@ class PaperPdf {
     }
 
     // ── অনুভূমিক রেখা ──
-    Future<void> rule(
-        {double gapBefore = 0, double gapAfter = 0, double thick = 1.2}) async {
+    Future<void> rule({
+      double gapBefore = 0,
+      double gapAfter = 0,
+      double thick = 1.2,
+    }) async {
       final need = (gapBefore + gapAfter + 4) * _k;
       if (y + need > bottomY + 1) {
         await commit();
@@ -1155,8 +1192,13 @@ class PaperPdf {
     }
 
     // ── বাম-ডান দুই টেক্সট এক লাইনে ──
-    Future<void> row2(String left, String right, double size,
-        {double gapBefore = 0, bool isBold = false}) async {
+    Future<void> row2(
+      String left,
+      String right,
+      double size, {
+      double gapBefore = 0,
+      bool isBold = false,
+    }) async {
       final tl = makePainter(_safe(left), size, isBold: isBold);
       tl.layout(maxWidth: contentW / 2);
       final tr = makePainter(_safe(right), size, isBold: isBold);
@@ -1197,9 +1239,12 @@ class PaperPdf {
         final c1 = makePainter(_safe(subjectCode!), 9.5, isBold: true);
         c1.layout();
         c1.paint(
-            canvas,
-            Offset(rx + 6 * _k + t2.width,
-                y + 4 * _k + (t2.height - c1.height) / 2));
+          canvas,
+          Offset(
+            rx + 6 * _k + t2.width,
+            y + 4 * _k + (t2.height - c1.height) / 2,
+          ),
+        );
       }
       final t3 = makePainter('সেট কোডঃ', 9);
       t3.layout(maxWidth: rightW - 10 * _k);
@@ -1208,9 +1253,12 @@ class PaperPdf {
         final c2 = makePainter(_safe(setCode!), 10.5, isBold: true);
         c2.layout();
         c2.paint(
-            canvas,
-            Offset(rx + 6 * _k + t3.width,
-                y + h - t3.height - 4 * _k + (t3.height - c2.height) / 2));
+          canvas,
+          Offset(
+            rx + 6 * _k + t3.width,
+            y + h - t3.height - 4 * _k + (t3.height - c2.height) / 2,
+          ),
+        );
       }
       y += h;
     }
@@ -1275,8 +1323,13 @@ class PaperPdf {
     }) async {
       await para(headerLine1, 17, isBold: true, align: TextAlign.center);
       await para(headerLine2, 12, align: TextAlign.center, gapBefore: 1);
-      await para(subjLine, 11.5,
-          isBold: true, align: TextAlign.center, gapBefore: 3);
+      await para(
+        subjLine,
+        11.5,
+        isBold: true,
+        align: TextAlign.center,
+        gapBefore: 3,
+      );
       if (mcqStyle) await codeBoxes();
       await row2(tLeft, tRight, 10.5, gapBefore: 5, isBold: true);
       if (mcqStyle) await nameRollLine();
@@ -1284,10 +1337,18 @@ class PaperPdf {
     }
 
     // ── সেকশন টাইটেল ──
-    Future<void> sectionTitle(String title2, String? note,
-        {double gapBefore = 8}) async {
-      await para(title2, 12.5,
-          isBold: true, align: TextAlign.center, gapBefore: gapBefore);
+    Future<void> sectionTitle(
+      String title2,
+      String? note, {
+      double gapBefore = 8,
+    }) async {
+      await para(
+        title2,
+        12.5,
+        isBold: true,
+        align: TextAlign.center,
+        gapBefore: gapBefore,
+      );
       if (note != null) {
         await para(note, 9.5, align: TextAlign.center, gapBefore: 2);
       }
@@ -1306,39 +1367,42 @@ class PaperPdf {
     if (hasWritten) {
       begin();
       await partHeader(
-          subjLine: subj, tLeft: 'সময়ঃ $wt', tRight: 'পূর্ণমানঃ $wm');
+        subjLine: subj,
+        tLeft: 'সময়ঃ $wt',
+        tRight: 'পূর্ণমানঃ $wm',
+      );
 
       if (bangla2WrittenQuestions.isNotEmpty) {
         const writtenSections = <(Bangla2WrittenType, String, String)>[
           (
             Bangla2WrittenType.paragraph,
             'অনুচ্ছেদ রচনা',
-            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।',
           ),
           (
             Bangla2WrittenType.letterOrReport,
             'চিঠিপত্র / সংবাদ প্রতিবেদন',
-            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।',
           ),
           (
             Bangla2WrittenType.summaryOrGist,
             'সারাংশ / সারমর্ম',
-            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।',
           ),
           (
             Bangla2WrittenType.thoughtExpansion,
             'ভাব-সম্প্রসারণ',
-            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।',
           ),
           (
             Bangla2WrittenType.translation,
             'বাংলায় অনুবাদ',
-            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+            'দুইটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।',
           ),
           (
             Bangla2WrittenType.composition,
             'প্রবন্ধ / রচনা',
-            'তিনটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।'
+            'তিনটি প্রশ্ন থেকে যেকোনো একটি প্রশ্নের উত্তর দাও।',
           ),
         ];
         var writtenNumber = 0;
@@ -1370,9 +1434,10 @@ class PaperPdf {
 
       if (cqs.isNotEmpty) {
         await sectionTitle(
-            'সৃজনশীল প্রশ্ন',
-            cqNote ??
-                '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)');
+          'সৃজনশীল প্রশ্ন',
+          cqNote ??
+              '(যেকোনো ${_bn(cqAnswerCount)}টি প্রশ্নের উত্তর দাও। প্রতিটি প্রশ্নের মান ১০)',
+        );
         for (int i = 0; i < cqs.length; i++) {
           final cq = cqs[i];
           await para('${_bn(i + 1)}। ${cq.stem}', 11, gapBefore: 9);
@@ -1389,33 +1454,40 @@ class PaperPdf {
           // গণিত/উচ্চতর গণিত (নতুন নিয়ম): ক(২) খ(৪) গ(৪) — ৩ ভাগ;
           // অন্য বিষয়: আগের মতো ব্যাংকের মান হিসেবে ৪ ভাগ পর্যন্ত।
           await paraMark(
-              'ক) ${cq.questionK}',
-              10.5,
-              mathCqThreePart
-                  ? '২'
-                  : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
-              indent: 10,
-              gapBefore: 2.5);
+            'ক) ${cq.questionK}',
+            10.5,
+            cq.marks.length == 3
+                ? '২'
+                : _bn(cq.marks.isNotEmpty ? cq.marks[0] : 1),
+            indent: 10,
+            gapBefore: 2.5,
+          );
           await paraMark(
-              'খ) ${cq.questionKh}',
-              10.5,
-              mathCqThreePart
-                  ? '৪'
-                  : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
-              indent: 10,
-              gapBefore: 1.5);
+            'খ) ${cq.questionKh}',
+            10.5,
+            cq.marks.length == 3
+                ? '৪'
+                : _bn(cq.marks.length > 1 ? cq.marks[1] : 2),
+            indent: 10,
+            gapBefore: 1.5,
+          );
           await paraMark(
-              'গ) ${cq.questionG}',
+            'গ) ${cq.questionG}',
+            10.5,
+            cq.marks.length == 3
+                ? '৪'
+                : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
+            indent: 10,
+            gapBefore: 1.5,
+          );
+          if (cq.marks.length != 3) {
+            await paraMark(
+              'ঘ) ${cq.questionGh}',
               10.5,
-              mathCqThreePart
-                  ? '৪'
-                  : _bn(cq.marks.length > 2 ? cq.marks[2] : 3),
+              _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
               indent: 10,
-              gapBefore: 1.5);
-          if (!mathCqThreePart) {
-            await paraMark('ঘ) ${cq.questionGh}', 10.5,
-                _bn(cq.marks.length > 3 ? cq.marks[3] : 4),
-                indent: 10, gapBefore: 1.5);
+              gapBefore: 1.5,
+            );
           }
         }
       }
@@ -1480,7 +1552,8 @@ class PaperPdf {
         mcqStyle: true,
       );
       await noteBox(
-          'বিশেষ দ্রষ্টব্যঃ সবগুলো প্রশ্নের উত্তর দিতে হবে। প্রতিটি প্রশ্নের মান ১। উত্তরপত্রে প্রশ্নের ক্রমিক নম্বরের বিপরীতে প্রদত্ত বর্ণ সন্নিবেশিত বৃত্তসমূহ ভরাট করতে হবে।');
+        'বিশেষ দ্রষ্টব্যঃ সবগুলো প্রশ্নের উত্তর দিতে হবে। প্রতিটি প্রশ্নের মান ১। উত্তরপত্রে প্রশ্নের ক্রমিক নম্বরের বিপরীতে প্রদত্ত বর্ণ সন্নিবেশিত বৃত্তসমূহ ভরাট করতে হবে।',
+      );
       y += 6 * _k;
 
       final double gutter = 16 * _k;
@@ -1494,8 +1567,14 @@ class PaperPdf {
         final qt = rich('${_bn(no)}। ${q.questionText}', 10.5, maxWidth: colW);
         final opts = <_RichLine>[];
         for (int o = 0; o < q.options.length; o++) {
-          opts.add(rich('${_optionLetters[o]}) ${q.options[o]}', 10,
-              preserveSpaces: true, maxWidth: colW - 7 * _k));
+          opts.add(
+            rich(
+              '${_optionLetters[o]}) ${q.options[o]}',
+              10,
+              preserveSpaces: true,
+              maxWidth: colW - 7 * _k,
+            ),
+          );
         }
         final half = (colW - 7 * _k) / 2;
         final bool grid = q.options.length == 4 &&
@@ -1558,14 +1637,15 @@ class PaperPdf {
     // The sheet is drawn from OMrGeometry — the exact same coordinates the
     // OMR scanner samples — so every printed sheet can be scanned.
     if (mcqs.isNotEmpty) {
-      pages.addAll(await renderOmrSheetPages(
-        title: title,
-        total: mcqs.length,
-        subjectCode: subjectCode,
-        setCode: setCode,
-      ));
+      pages.addAll(
+        await renderOmrSheetPages(
+          title: title,
+          total: mcqs.length,
+          subjectCode: subjectCode,
+          setCode: setCode,
+        ),
+      );
     }
-
 
     return pages;
   }
@@ -1627,8 +1707,9 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v25',
-            style: st(7, false, 1.0).copyWith(color: const Color(0xFFAAAAAA))),
+          text: 'AL·v25',
+          style: st(7, false, 1.0).copyWith(color: const Color(0xFFAAAAAA)),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       stamp.paint(canvas, Offset(_margin, sh - 6 * _k));
@@ -1637,12 +1718,15 @@ class PaperPdf {
       pages.add(bd!.buffer.asUint8List());
     }
 
-    Future<void> para(String text, double size,
-        {bool isBold = false,
-        double indent = 0,
-        double gapBefore = 0,
-        double gapAfter = 2,
-        TextAlign align = TextAlign.left}) async {
+    Future<void> para(
+      String text,
+      double size, {
+      bool isBold = false,
+      double indent = 0,
+      double gapBefore = 0,
+      double gapAfter = 2,
+      TextAlign align = TextAlign.left,
+    }) async {
       await PaperPdf._yieldToUi();
       final tp = TextPainter(
         text: TextSpan(text: _safe(text), style: st(size, isBold, 1.45)),
@@ -1677,14 +1761,29 @@ class PaperPdf {
     // ── হেডার (অন্যান্য বিষয়ের মতোই স্টাইল) ──
     begin();
     if (setCode.isNotEmpty) {
-      await para('Set Code:  $setCode', 11,
-          isBold: true, align: TextAlign.right, gapAfter: 1);
+      await para(
+        'Set Code:  $setCode',
+        11,
+        isBold: true,
+        align: TextAlign.right,
+        gapAfter: 1,
+      );
     }
-    await para(paperTitle.isEmpty ? 'Model Test' : paperTitle, 17,
-        isBold: true, align: TextAlign.center, gapAfter: 1);
+    await para(
+      paperTitle.isEmpty ? 'Model Test' : paperTitle,
+      17,
+      isBold: true,
+      align: TextAlign.center,
+      gapAfter: 1,
+    );
     await para(classLine, 12, align: TextAlign.center, gapAfter: 1);
-    await para(subTitle, 12.5,
-        isBold: true, align: TextAlign.center, gapAfter: 2);
+    await para(
+      subTitle,
+      12.5,
+      isBold: true,
+      align: TextAlign.center,
+      gapAfter: 2,
+    );
     final tl = TextPainter(
       text: TextSpan(text: _safe(time), style: st(10.5, true, 1.2)),
       textDirection: TextDirection.ltr,
@@ -1708,8 +1807,11 @@ class PaperPdf {
     }
 
     // ── বর্ডারওয়ালা আসল টেবিল (Q2/Q4/Q6 ম্যাচিং-টেবিলের জন্য) ──
-    Future<void> drawTable(List<List<String>> rows,
-        {double indent = 10, bool centered = false}) async {
+    Future<void> drawTable(
+      List<List<String>> rows, {
+      double indent = 10,
+      bool centered = false,
+    }) async {
       if (rows.isEmpty) return;
       var cols = 0;
       for (final r in rows) {
@@ -1743,7 +1845,9 @@ class PaperPdf {
           begin();
         }
         canvas.drawRect(
-            Rect.fromLTWH(_margin + indent, y, tableW, rowH), border);
+          Rect.fromLTWH(_margin + indent, y, tableW, rowH),
+          border,
+        );
         for (var ci = 0; ci < cols; ci++) {
           final x = _margin + indent + colW * ci;
           if (ci > 0) {
@@ -1759,8 +1863,14 @@ class PaperPdf {
     // ── সেকশনগুলো ──
     for (final s in sections) {
       if (s.lines.isEmpty && s.table == null) {
-        await para(s.head, 12.5,
-            isBold: true, align: TextAlign.center, gapBefore: 8, gapAfter: 3);
+        await para(
+          s.head,
+          12.5,
+          isBold: true,
+          align: TextAlign.center,
+          gapBefore: 8,
+          gapAfter: 3,
+        );
         continue;
       }
       await para(s.head, 11.3, isBold: true, gapBefore: 8, gapAfter: 2);
@@ -1838,9 +1948,11 @@ class PaperPdf {
   /// Keep the channel signature in sync with the scanner's drop-out test:
   /// `r > g + 25 && r > b + 10`.
   static const Color omrTemplateInk = Color(0xFFB03060);
+
   /// Light maroon tint for the template's soft bands (header/zebra) — a
   /// background, not ink, so it never enters the scanner's ink mask.
   static const Color omrTemplateSoft = Color(0xFFF7E9EF);
+
   /// Pre-filled code discs (subject code / set code) are printed "answers"
   /// the scanner must *read*, so they stay a neutral dark ink — NOT the
   /// drop-out maroon — otherwise the subject/set codes would be excluded
@@ -1885,11 +1997,13 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v25',
-            style: TextStyle(
-                fontFamily: _regular,
-                fontSize: 7 * _k,
-                color: const Color(0xFFAAAAAA))),
+          text: 'AL·v25',
+          style: TextStyle(
+            fontFamily: _regular,
+            fontSize: 7 * _k,
+            color: const Color(0xFFAAAAAA),
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       stamp.paint(canvas, Offset(OMrGeometry.margin, sh - 6 * _k));
@@ -1898,8 +2012,7 @@ class PaperPdf {
       pages.add(bd!.buffer.asUint8List());
     }
 
-    TextStyle st(double size, bool isBold, double lineHeight,
-            {Color? color}) =>
+    TextStyle st(double size, bool isBold, double lineHeight, {Color? color}) =>
         TextStyle(
           fontFamily: isBold ? (_bold ?? _regular) : _regular,
           fontFamilyFallback: _fb(isBold),
@@ -1910,12 +2023,18 @@ class PaperPdf {
           color: color ?? omrTemplateInk,
         );
 
-    TextPainter makePainter(String text, double size,
-            {bool isBold = false,
-            TextAlign align = TextAlign.left,
-            Color? color}) =>
+    TextPainter makePainter(
+      String text,
+      double size, {
+      bool isBold = false,
+      TextAlign align = TextAlign.left,
+      Color? color,
+    }) =>
         TextPainter(
-          text: TextSpan(text: text, style: st(size, isBold, 1.4, color: color)),
+          text: TextSpan(
+            text: text,
+            style: st(size, isBold, 1.4, color: color),
+          ),
           textDirection: TextDirection.ltr,
           textAlign: align,
         );
@@ -1946,11 +2065,13 @@ class PaperPdf {
           ..style = PaintingStyle.stroke
           ..strokeWidth = .8 * _k,
       );
-      final t = makePainter(value, 6.4,
-              isBold: selected,
-              align: TextAlign.center,
-              color: selected ? Colors.white : null)
-          ..layout();
+      final t = makePainter(
+        value,
+        6.4,
+        isBold: selected,
+        align: TextAlign.center,
+        color: selected ? Colors.white : null,
+      )..layout();
       t.paint(canvas, Offset(x - t.width / 2, yy - t.height / 2));
     }
 
@@ -1968,20 +2089,22 @@ class PaperPdf {
     // Header band — fixed geometry, title shrinks to fit one line.
     final titleText = title.trim().isEmpty ? 'Question Paper' : title.trim();
     var titleSize = 14.0;
-    var titlePainter = makePainter(titleText, titleSize, isBold: true)..layout();
+    var titlePainter = makePainter(titleText, titleSize, isBold: true)
+      ..layout();
     while (titlePainter.width > OMrGeometry.contentW && titleSize > 9.5) {
       titleSize -= 0.5;
-      titlePainter =
-          makePainter(titleText, titleSize, isBold: true)..layout();
+      titlePainter = makePainter(titleText, titleSize, isBold: true)..layout();
     }
-    titlePainter.paint(canvas, Offset(OMrGeometry.margin, OMrGeometry.titleTop));
+    titlePainter.paint(
+      canvas,
+      Offset(OMrGeometry.margin, OMrGeometry.titleTop),
+    );
     final subtitle = makePainter(
-            'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
-            8.2,
-            isBold: true)
-        ..layout(maxWidth: OMrGeometry.contentW);
-    subtitle.paint(
-        canvas, Offset(OMrGeometry.margin, OMrGeometry.subtitleTop));
+      'নির্ধারিত স্থান ব্যতীত কোনো দাগ বা লেখা করা যাবে না। কালো বল-পয়েন্ট কলমে বৃত্ত ভরাট করো।',
+      8.2,
+      isBold: true,
+    )..layout(maxWidth: OMrGeometry.contentW);
+    subtitle.paint(canvas, Offset(OMrGeometry.margin, OMrGeometry.subtitleTop));
     canvas.drawLine(
       Offset(OMrGeometry.margin, OMrGeometry.ruleY),
       Offset(sw - OMrGeometry.margin, OMrGeometry.ruleY),
@@ -1999,24 +2122,32 @@ class PaperPdf {
       final x = geo.columnX(column);
       final top = OMrGeometry.questionsTop;
       final width = geo.questionWidth;
-      final h =
-          OMrGeometry.boxHeaderH + count * OMrGeometry.rowH + 4 * _k;
+      final h = OMrGeometry.boxHeaderH + count * OMrGeometry.rowH + 4 * _k;
       canvas.drawRect(Rect.fromLTWH(x, top, width, h), borderAccent);
       canvas.drawRect(
         Rect.fromLTWH(x, top, width, OMrGeometry.boxHeaderH),
         Paint()..color = accentSoft,
       );
       final head = makePainter('প্রশ্ন', 7.4, isBold: true)..layout();
-      head.paint(canvas,
-          Offset(x + 4 * _k, top + (OMrGeometry.boxHeaderH - head.height) / 2));
+      head.paint(
+        canvas,
+        Offset(x + 4 * _k, top + (OMrGeometry.boxHeaderH - head.height) / 2),
+      );
       for (var option = 0; option < 4; option++) {
-        final letter = makePainter(_optionLetters[option], 7.0,
-                isBold: true, align: TextAlign.center)
-            ..layout();
+        final letter = makePainter(
+          _optionLetters[option],
+          7.0,
+          isBold: true,
+          align: TextAlign.center,
+        )..layout();
         final cx = x + OMrGeometry.bubbleLeft + option * geo.bubbleStep;
-        letter.paint(canvas,
-            Offset(cx - letter.width / 2,
-                top + (OMrGeometry.boxHeaderH - letter.height) / 2));
+        letter.paint(
+          canvas,
+          Offset(
+            cx - letter.width / 2,
+            top + (OMrGeometry.boxHeaderH - letter.height) / 2,
+          ),
+        );
       }
       for (var i = 0; i < count; i++) {
         final rowTop = top + OMrGeometry.boxHeaderH + i * OMrGeometry.rowH;
@@ -2061,14 +2192,20 @@ class PaperPdf {
           cols = 6;
       }
       final top = geo.identityTop;
-      canvas.drawRect(Rect.fromLTWH(x, top, w, OMrGeometry.panelH), borderAccent);
+      canvas.drawRect(
+        Rect.fromLTWH(x, top, w, OMrGeometry.panelH),
+        borderAccent,
+      );
       canvas.drawRect(
         Rect.fromLTWH(x, top, w, OMrGeometry.labelBand),
         Paint()..color = accentSoft,
       );
-      final label = makePainter(panelTitle, 8.5, isBold: true,
-              align: TextAlign.center)
-          ..layout(maxWidth: w - 6 * _k);
+      final label = makePainter(
+        panelTitle,
+        8.5,
+        isBold: true,
+        align: TextAlign.center,
+      )..layout(maxWidth: w - 6 * _k);
       label.paint(canvas, Offset(x + (w - label.width) / 2, top + 2 * _k));
       for (var c = 0; c < cols; c++) {
         final wanted = c < digits.length ? digits[c] : '';
@@ -2081,22 +2218,39 @@ class PaperPdf {
 
     digitPanel(0, 'রোল নম্বর');
     digitPanel(1, 'রেজিস্ট্রেশন নম্বর');
-    digitPanel(2, 'বিষয় কোড',
-        digits: prefill ? _toLatinDigits(subjectCode ?? '') : '');
+    digitPanel(
+      2,
+      'বিষয় কোড',
+      digits: prefill ? _toLatinDigits(subjectCode ?? '') : '',
+    );
 
     // ── Set code + instructions ────────────────────────────────────
     final setTop = geo.setTop;
     canvas.drawRect(
-        Rect.fromLTWH(OMrGeometry.margin, setTop, OMrGeometry.setW, OMrGeometry.setH),
-        borderAccent);
+      Rect.fromLTWH(
+        OMrGeometry.margin,
+        setTop,
+        OMrGeometry.setW,
+        OMrGeometry.setH,
+      ),
+      borderAccent,
+    );
     final setTitle = makePainter('সেট কোড', 8.2, isBold: true)..layout();
-    setTitle.paint(canvas,
-        Offset(OMrGeometry.margin + 5 * _k,
-            setTop + (OMrGeometry.setH - setTitle.height) / 2));
+    setTitle.paint(
+      canvas,
+      Offset(
+        OMrGeometry.margin + 5 * _k,
+        setTop + (OMrGeometry.setH - setTitle.height) / 2,
+      ),
+    );
     for (var i = 0; i < 4; i++) {
       final p = geo.setBubble(i);
-      bubble(p.dx, p.dy, _optionLetters[i],
-          selected: prefill && setCode == _optionLetters[i]);
+      bubble(
+        p.dx,
+        p.dy,
+        _optionLetters[i],
+        selected: prefill && setCode == _optionLetters[i],
+      );
     }
 
     final rulesX = OMrGeometry.margin + OMrGeometry.setW + 12 * _k;
@@ -2126,7 +2280,10 @@ class PaperPdf {
     final signWidth = OMrGeometry.contentW * .34;
     for (final entry in [
       ('পরীক্ষার্থীর স্বাক্ষর', OMrGeometry.margin),
-      ('পরিদর্শকের স্বাক্ষর', OMrGeometry.margin + OMrGeometry.contentW - signWidth),
+      (
+        'পরিদর্শকের স্বাক্ষর',
+        OMrGeometry.margin + OMrGeometry.contentW - signWidth,
+      ),
     ]) {
       canvas.drawLine(
         Offset(entry.$2, signatureY),
@@ -2169,7 +2326,8 @@ class PaperPdf {
       total: total,
       subjectCode: subjectCode,
       setCode: setCode,
-    )).first;
+    ))
+        .first;
     final doc = pw.Document();
     final n = copies.clamp(1, 200).toInt();
     for (var i = 0; i < n; i++) {
@@ -2237,11 +2395,13 @@ class PaperPdf {
     Future<void> commit() async {
       final stamp = TextPainter(
         text: TextSpan(
-            text: 'AL·v25',
-            style: TextStyle(
-                fontFamily: _regular,
-                fontSize: 7 * _k,
-                color: const Color(0xFFAAAAAA))),
+          text: 'AL·v25',
+          style: TextStyle(
+            fontFamily: _regular,
+            fontSize: 7 * _k,
+            color: const Color(0xFFAAAAAA),
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       stamp.paint(canvas, Offset(margin, sh - 6 * _k));
@@ -2260,21 +2420,27 @@ class PaperPdf {
           color: const Color(0xFF16203A),
         );
 
-    TextPainter makePainter(String text, double size,
-            {bool isBold = false, TextAlign align = TextAlign.left}) =>
+    TextPainter makePainter(
+      String text,
+      double size, {
+      bool isBold = false,
+      TextAlign align = TextAlign.left,
+    }) =>
         TextPainter(
           text: TextSpan(text: text, style: st(size, isBold, 1.4)),
           textDirection: TextDirection.ltr,
           textAlign: align,
         );
 
-    Future<void> para(String text, double size,
-            {bool isBold = false,
-            TextAlign align = TextAlign.center,
-            double gapBefore = 0}) async {
-      final tp =
-          makePainter(text, size, isBold: isBold, align: align)
-            ..layout(maxWidth: contentW);
+    Future<void> para(
+      String text,
+      double size, {
+      bool isBold = false,
+      TextAlign align = TextAlign.center,
+      double gapBefore = 0,
+    }) async {
+      final tp = makePainter(text, size, isBold: isBold, align: align)
+        ..layout(maxWidth: contentW);
       if (y + gapBefore * _k + tp.height > bottomY + 1) {
         await commit();
         begin();
@@ -2311,16 +2477,18 @@ class PaperPdf {
     await para('OMR স্কোর কার্ড', 16, isBold: true);
     await para(title, 12.5, isBold: true, gapBefore: 2);
     await para(
-        'বিষয়ঃ ${subject.isEmpty ? '—' : subject}   •   সেটঃ $setCode   •   তারিখঃ $dateStr',
-        10.5,
-        gapBefore: 2);
+      'বিষয়ঃ ${subject.isEmpty ? '—' : subject}   •   সেটঃ $setCode   •   তারিখঃ $dateStr',
+      10.5,
+      gapBefore: 2,
+    );
     rule(gapBefore: 5);
     rule(gapBefore: 2, thick: .8);
 
     await para(
-        'রোল নংঃ ${roll.isEmpty ? '—' : roll}      রেজিস্ট্রেশন নংঃ ${registration.isEmpty ? '—' : registration}      বিষয় কোডঃ ${subjectCode.isEmpty ? '—' : subjectCode}',
-        10.5,
-        gapBefore: 6);
+      'রোল নংঃ ${roll.isEmpty ? '—' : roll}      রেজিস্ট্রেশন নংঃ ${registration.isEmpty ? '—' : registration}      বিষয় কোডঃ ${subjectCode.isEmpty ? '—' : subjectCode}',
+      10.5,
+      gapBefore: 6,
+    );
 
     // Score strip: six cells.
     final cells = <(String, String)>[
@@ -2342,12 +2510,22 @@ class PaperPdf {
     for (var i = 0; i < cells.length; i++) {
       final cx = margin + i * (cellW + cellGap);
       canvas.drawRect(Rect.fromLTWH(cx, stripY, cellW, cellH), cell);
-      final cap = makePainter(cells[i].$1, 8.5)..layout(maxWidth: cellW - 6 * _k);
+      final cap = makePainter(cells[i].$1, 8.5)
+        ..layout(maxWidth: cellW - 6 * _k);
       cap.paint(canvas, Offset(cx + (cellW - cap.width) / 2, stripY + 4 * _k));
-      final val = makePainter(cells[i].$2, 11.5, isBold: true,
-          align: TextAlign.center)..layout(maxWidth: cellW - 6 * _k);
+      final val = makePainter(
+        cells[i].$2,
+        11.5,
+        isBold: true,
+        align: TextAlign.center,
+      )..layout(maxWidth: cellW - 6 * _k);
       val.paint(
-          canvas, Offset(cx + (cellW - val.width) / 2, stripY + cellH - val.height - 4 * _k));
+        canvas,
+        Offset(
+          cx + (cellW - val.width) / 2,
+          stripY + cellH - val.height - 4 * _k,
+        ),
+      );
     }
     y = stripY + cellH;
 
@@ -2365,13 +2543,14 @@ class PaperPdf {
       }
       final col = i % cols;
       final gx = margin + (contentW / cols) * col;
-      final status =
-          i < key.length ? (answers.isNotEmpty ? _statusOf(i, answers, key) : 2) : 2;
+      final status = i < key.length
+          ? (answers.isNotEmpty ? _statusOf(i, answers, key) : 2)
+          : 2;
       final tp = makePainter(
-          '${_bn(i + 1)}.${letterOf(i < answers.length ? answers[i] : -1)}${glyphOf(status)}',
-          10,
-          isBold: i < key.length && status == 0)
-        ..layout(maxWidth: contentW / cols - 3 * _k);
+        '${_bn(i + 1)}.${letterOf(i < answers.length ? answers[i] : -1)}${glyphOf(status)}',
+        10,
+        isBold: i < key.length && status == 0,
+      )..layout(maxWidth: contentW / cols - 3 * _k);
       tp.paint(canvas, Offset(gx + 2 * _k, y));
       if (col == cols - 1) y += rowH;
     }
@@ -2437,6 +2616,10 @@ class EnglishSection {
 
   /// word-box (Q1/Q3)-এর মতো টেবিলে লেখা মাঝখানে রাখতে true করুন।
   final bool centerTable;
-  const EnglishSection(this.head, this.lines,
-      {this.table, this.centerTable = false});
+  const EnglishSection(
+    this.head,
+    this.lines, {
+    this.table,
+    this.centerTable = false,
+  });
 }
