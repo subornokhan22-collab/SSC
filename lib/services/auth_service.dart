@@ -300,8 +300,8 @@ class AuthService {
     if (raw != null && raw.isNotEmpty) {
       until = DateTime.tryParse(raw.replaceFirst('Z', '+00:00'));
     }
-    final active = p['is_pro'] == true &&
-        (until == null || until.isAfter(DateTime.now()));
+    final active =
+        p['is_pro'] == true && (until == null || until.isAfter(DateTime.now()));
     if (!active) {
       // The server is authoritative. Do not leave a stale local unlock on a
       // device after an expired/revoked account is refreshed.
