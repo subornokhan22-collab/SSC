@@ -13,6 +13,7 @@ import '../widgets/motion_policy.dart';
 import '../navigation/app_routes.dart';
 import '../services/auth_service.dart';
 import '../services/paper_library.dart';
+import '../services/paper_license.dart';
 import '../services/promotion_service.dart';
 import '../theme/app_theme.dart';
 import 'ai_tools_screen.dart';
@@ -38,6 +39,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   List<PaperEntry> recent = [];
   PromotionFeed promotions = const PromotionFeed();
   bool loading = true;
+  bool devicePro = false;
   String? error;
   @override
   void initState() {
@@ -59,6 +61,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
 
   Future<void> load() async {
     final generation = ++loadGeneration;
+    final localPro = await PaperLicense.isPro();
     String? storedTitle;
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -93,6 +96,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         draftTitle = storedTitle;
         recent = entries.take(4).toList();
         promotions = feed;
+        devicePro = localPro;
         loading = false;
         error = libraryFailed
             ? 'Your papers could not be loaded. Pull down to retry.'
@@ -392,6 +396,67 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   ),
                 ),
               ),
+              if (!devicePro) ...[
+                const SizedBox(height: 14),
+                Card(
+                  color: const Color(0xFFF4F1FF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    side: BorderSide(
+                      color: AppTheme.primary.withOpacity(.22),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 15, 16, 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.workspace_premium_rounded,
+                              color: AppTheme.accent,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Unlock Tutor\'s Desk Pro',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          'Full papers, PDF export, printing and no watermark.',
+                          style: TextStyle(color: AppTheme.muted),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () async {
+                              await Navigator.pushNamed(
+                                context,
+                                AppRoutes.plans,
+                              );
+                              if (mounted) load();
+                            },
+                            icon: const Icon(
+                              Icons.account_balance_wallet_rounded,
+                              size: 19,
+                            ),
+                            label: const Text('Buy Pro plan'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               if (promotions.notifications.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 for (final item in promotions.notifications.take(3))
