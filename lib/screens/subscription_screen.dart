@@ -7,6 +7,7 @@ import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/bkash_service.dart';
 import '../services/paper_license.dart';
+import '../services/promotion_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
@@ -30,6 +31,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   bool _isPro = false;
   bool _loading = true;
 
+  List<BkashPlan> _plans = List<BkashPlan>.from(BkashService.plans);
   BkashPlan _plan = BkashService.plans.first;
   bool _buying = false;
   Timer? _poll;
@@ -50,9 +52,29 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Future<void> _load() async {
     final pro = await PaperLicense.isPro();
+    final feed = await PromotionService.load();
+    final configuredByPlan = <String, BkashPlan>{};
+    for (final offer in feed.offers) {
+      if (!const {'monthly', 'yearly', 'lifetime'}.contains(offer.planId) ||
+          offer.price <= 0 ||
+          configuredByPlan.containsKey(offer.planId)) {
+        continue;
+      }
+      configuredByPlan[offer.planId] = BkashPlan(
+        offer.planId,
+        offer.price,
+        offer.title,
+        offer.periodText,
+      );
+    }
+    final configured = configuredByPlan.values.toList();
     if (mounted) {
       setState(() {
         _isPro = pro;
+        if (configured.isNotEmpty) {
+          _plans = configured;
+          _plan = configured.first;
+        }
         _loading = false;
       });
     }
@@ -556,7 +578,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           title: 'Choose a plan',
           icon: Icons.receipt_long_rounded,
         ),
-        for (final plan in BkashService.plans) _planCard(plan),
+        for (final plan in _plans) _planCard(plan),
         const SizedBox(height: 16),
         PressableScale(
           onTap: _buying ? null : _buy,

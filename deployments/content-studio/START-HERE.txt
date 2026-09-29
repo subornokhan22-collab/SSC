@@ -33,7 +33,13 @@ CONTENT STUDIO UPDATE FILES
    Do not change model/key/billing settings merely because of the old generic error.
    This improves diagnosis; it does not prove the live provider issue is fixed.
 
-4. content-studio-netlify.zip
+4. bkash.ts
+   Supabase > Edge Functions > open the existing function named bkash.
+   Replace its index.ts with this file and Deploy updates. The app's active
+   paid-plan offer price is then the same price used for bKash checkout.
+   Keep all existing bKash secrets unchanged.
+
+5. content-studio-netlify.zip
    This contains the website runtime, with index.html at its root.
    Upload THIS inner ZIP to your existing Netlify site's manual-deploy option.
    Do not upload the outer content-studio-update.zip as your website.

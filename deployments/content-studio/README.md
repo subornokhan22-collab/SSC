@@ -8,6 +8,7 @@ Release deliverables live in GitHub, not only in chat attachments. The website a
 - [Website-only ZIP for Netlify](content-studio-netlify.zip) — deploy this ZIP, **not** the complete update package.
 - [Supabase database update](database-update.sql) — paste the entire file into the SQL Editor.
 - [Website English-import AI function](admin-content.ts) — use as `index.ts` for the function named `admin-content`.
+- [bKash payment function](bkash.ts) — redeploy the existing function named `bkash` so active paid-plan prices match the Offers & Promotions tab.
 - [APK AI Tools function](mimi.ts) — use as `index.ts` for the **separate** function named `mimi`. Both functions are required if you use both features.
 - [Short dashboard instructions](START-HERE.txt).
 - [Detailed instructions included with this release](SOURCE-README.md).
@@ -38,6 +39,23 @@ four tables and the separate `promotion-assets` bucket. Notification sending is
 implemented as an in-app broadcast record. OS push needs a push provider, so
 this dashboard does not pretend to deliver push notifications without one.
 
+## Mobile promotion integration
+
+The compatible APK reads active rows from `paid_plan_offers`, `prizes`,
+`app_notifications`, and `app_offer_ads` after sign-in. It shows notifications
+inside the teacher home feed, shows the first active prize there, opens the
+highest-priority active popup ad once per device/ad ID, and uses active paid-plan
+offers in the subscription screen. If the promotion tables are empty or
+unavailable, the existing static subscription plans remain as a safe display
+fallback.
+
+After deploying the APK, deploy `bkash.ts` to the existing `bkash` Edge Function.
+The function resolves the selected offer again server-side and keeps bKash
+verification and `profiles.is_pro` entitlement updates authoritative on the
+server. The APK never grants Pro and never relies on a browser-supplied price.
+These notifications are in-app only; this release does not claim Android system
+push delivery.
+
 This update has two parts, and the second one is easy to miss:
 
 1. Deploy the website ZIP to Netlify.
@@ -47,9 +65,11 @@ This update has two parts, and the second one is easy to miss:
    classified as carefully. It reuses the existing `GEMINI_API_KEY` secret; no
    new secret is needed.
 
-No SQL migration is required: the existing read policy already lets an
-administrator see teacher-created questions, and the `question-figures` storage
-bucket already exists.
+The included promotion SQL migration is required for the Offers & Promotions
+workflow if it has not already been applied. It creates the four promotion
+tables and `promotion-assets` bucket without changing the existing
+`question-figures` bucket or question workflows. The existing read policy still
+lets an administrator see teacher-created questions.
 
 If AI review or paste formatting fails, this build shows the Edge Function's
 HTTP status and safe response reason instead of only the Supabase SDK text

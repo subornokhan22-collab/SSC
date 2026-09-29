@@ -13,6 +13,7 @@ import '../widgets/motion_policy.dart';
 import '../navigation/app_routes.dart';
 import '../services/auth_service.dart';
 import '../services/paper_library.dart';
+import '../services/promotion_service.dart';
 import '../theme/app_theme.dart';
 import 'ai_tools_screen.dart';
 import 'omr_scanner_screen.dart';
@@ -35,6 +36,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   int loadGeneration = 0;
   final visited = <int>{0};
   List<PaperEntry> recent = [];
+  PromotionFeed promotions = const PromotionFeed();
   bool loading = true;
   String? error;
   @override
@@ -72,13 +74,24 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     }
     try {
       final entries = await PaperLibrary.loadEntries();
-      if (mounted && generation == loadGeneration)
+      PromotionFeed feed = const PromotionFeed();
+      try {
+        feed = await PromotionService.load();
+      } catch (_) {
+        // Promotions are optional network content; they must never hide papers.
+      }
+      if (mounted && generation == loadGeneration) {
         setState(() {
           draftTitle = storedTitle;
           recent = entries.take(4).toList();
+          promotions = feed;
           loading = false;
           error = null;
         });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && generation == loadGeneration) _showOfferPopup(feed);
+        });
+      }
     } catch (_) {
       if (mounted && generation == loadGeneration)
         setState(() {
@@ -86,6 +99,64 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           error = 'Your papers could not be loaded. Pull down to retry.';
         });
     }
+  }
+
+  Future<void> _showOfferPopup(PromotionFeed feed) async {
+    final ads = feed.ads
+        .where((item) => item.imageUrl.startsWith('https://'))
+        .toList();
+    if (ads.isEmpty) return;
+    final ad = ads.first;
+    final prefs = await SharedPreferences.getInstance();
+    final seenKey = 'promotion_ad_seen_${ad.id}';
+    if (prefs.getBool(seenKey) == true || !mounted) return;
+    await prefs.setBool(seenKey, true);
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(ad.title),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.network(
+                  ad.imageUrl,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox(
+                    height: 120,
+                    child: Center(child: Icon(Icons.image_not_supported)),
+                  ),
+                ),
+              ),
+              if (ad.body.trim().isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(ad.body),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Later'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              if (ad.buttonUrl == '/plans' && mounted)
+                Navigator.pushNamed(context, AppRoutes.plans);
+            },
+            child: Text(ad.buttonText),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> create({bool quick = false}) async {
@@ -177,6 +248,50 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           ),
         ),
       );
+  Widget _notificationCard(AppNotificationItem item) => Card(
+        color: const Color(0xFFF5F3FF),
+        child: ListTile(
+          leading: const Icon(Icons.notifications_active_outlined,
+              color: AppColors.ai),
+          title: Text(item.title,
+              style: const TextStyle(fontWeight: FontWeight.w800)),
+          subtitle: Text(item.message, maxLines: 3, overflow: TextOverflow.ellipsis),
+          trailing: item.actionUrl == '/plans'
+              ? const Icon(Icons.chevron_right)
+              : null,
+          onTap: item.actionUrl == '/plans'
+              ? () => Navigator.pushNamed(context, AppRoutes.plans)
+              : null,
+        ),
+      );
+
+  Widget _prizeCard(PromotionPrize prize) => Card(
+        color: const Color(0xFFFFFBEB),
+        child: ListTile(
+          leading: prize.imageUrl.startsWith('https://')
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(prize.imageUrl,
+                      width: 44,
+                      height: 44,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(
+                          Icons.emoji_events_outlined,
+                          color: Colors.amber)),
+                )
+              : const Icon(Icons.emoji_events_outlined, color: Colors.amber),
+          title: Text(prize.title,
+              style: const TextStyle(fontWeight: FontWeight.w800)),
+          subtitle: Text(
+            [prize.valueText, prize.description]
+                .where((text) => text.trim().isNotEmpty)
+                .join(' · '),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
+
   Widget home() => Scaffold(
         appBar: AppBar(
           title: const Text("Tutor’s Desk"),
@@ -267,6 +382,15 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   ),
                 ),
               ),
+              if (promotions.notifications.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                for (final item in promotions.notifications.take(3))
+                  _notificationCard(item),
+              ],
+              if (promotions.prizes.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                _prizeCard(promotions.prizes.first),
+              ],
               if (draftTitle != null)
                 Card(
                     child: ListTile(
