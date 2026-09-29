@@ -30,6 +30,7 @@ language plpgsql as $$begin
   raise exception 'FAIL: query unexpectedly accepted: %', query;
 end$$;
 
+begin;
 insert into auth.users values
   ('11111111-1111-4111-8111-111111111111', 'admin'),
   ('22222222-2222-4222-8222-222222222222', 'teacher');
