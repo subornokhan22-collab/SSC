@@ -279,7 +279,7 @@ class OMrScanner {
 
     // Box-average the photo straight to the working grid. Both luma AND
     // the colour channels are kept: the channels let the ink mask below
-    // reject the sheet's maroon drop-out template by hue (see `dropout`).
+    // reject the sheet's bright-pink drop-out template by hue (see `dropout`).
     final pixels = Uint8List(w * h);
     final dropout = Uint8List(w * h);
     for (var dy = 0; dy < h; dy++) {
@@ -316,7 +316,7 @@ class OMrScanner {
         }
         pixels[p] = sum ~/ n;
         // Drop-out signature of the printed template
-        // (PaperPdf.omrTemplateInk, maroon 0xFFB03060): strongly
+        // (PaperPdf.omrTemplateInk, bright pink 0xFFEB3897): strongly
         // red-dominant — r far above g AND above b. No black/blue pen ink
         // carries it (pen ink is neutral or blue-dominant). A pixel is
         // *student ink* only when it is dark and not drop-out. Keep the
@@ -358,11 +358,11 @@ class OMrScanner {
     for (var i = 0; i < w * h; i++) {
       final darkPx = pixels[i] < otsuT;
       ink[i] = darkPx && dropout[i] == 0 ? 1 : 0;
-      // Paper = "not student ink": on a drop-out sheet the maroon template
+      // Paper = "not student ink": on a drop-out sheet the pink template
       // behaves as paper, so the paper component stays the whole sheet.
       paper[i] = ink[i] == 0 ? 1 : 0;
       // Corner-mark masks stay luma-based on purpose: a mark must be found
-      // regardless of its ink colour (printed maroon OR pen-drawn black).
+      // regardless of its ink colour (printed pink OR pen-drawn black).
       dark[i] = pixels[i] < darkT ? 1 : 0;
       dark1[i] = pixels[i] < darkT1 ? 1 : 0;
       dark2[i] = pixels[i] < darkT2 ? 1 : 0;

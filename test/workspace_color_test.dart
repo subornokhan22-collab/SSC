@@ -26,6 +26,11 @@ void main() {
   });
 
   group('workspace colour language', () {
+    test('OMR uses the requested sheet and scanner colours', () {
+      expect(AppColors.omr, const Color(0xFFEB3897));
+      expect(AppColors.omrSoft, const Color(0xFFFCDEEE));
+    });
+
     test('every area owns a distinct token instead of the primary indigo', () {
       AppStyle.mood.value = WorkspaceMood.papers;
       expect(AppStyle.moodColor, AppColors.science);

@@ -19,7 +19,11 @@ abstract final class AppColors {
   static const appBar = Color(0xFFFFFFFF);
 
   // Workspace roles; do not change persisted preset ordering.
-  static const omr = Color(0xFF087F8C);
+  // OMR uses the same pink as the printed sheet so the scanner workflow has
+  // one recognizable visual identity. The soft tint is reserved for the
+  // sheet's bands/backgrounds.
+  static const omr = Color(0xFFEB3897);
+  static const omrSoft = Color(0xFFFCDEEE);
   static const ai = Color(0xFF7C5CE0);
   static const writing = Color(0xFFB93F66);
   static const science = Color(0xFF0B84D9);

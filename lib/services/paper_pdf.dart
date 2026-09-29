@@ -18,6 +18,7 @@ import '../data/question_figure.dart';
 import '../data/questions_data.dart';
 import 'app_settings.dart';
 import 'omr/omr_geometry.dart';
+import '../theme/design_tokens.dart';
 
 /// একটি স্ট্যাকড ভগ্নাংশ (লব উপরে, দাগ মাঝে, হর নিচে)
 class _Frac {
@@ -1938,25 +1939,23 @@ class PaperPdf {
   // ══════════════ OMR answer sheet — standalone render & print ══════════════
   /// Drop-out template ink. The OMR sheet's printed *template* (bubble
   /// circles, grid/box borders, question numbers, option letters, labels,
-  /// corner marks, rules) is drawn in this maroon so the scanner can tell
-  /// it apart from the student's black/blue pen by hue: a pixel is treated
-  /// as student ink only when it is dark AND neutral (see the drop-out
-  /// test in `OMrScanner`). A uniformly dark template (the old near-black)
-  /// raised every blank bubble's ink ratio and let noise cross the fill
-  /// threshold on genuinely blank rows.
+  /// corner marks, rules) uses the requested bright pink. The scanner can
+  /// tell it apart from the student's black/blue pen by hue: a pixel is
+  /// treated as student ink only when it is dark AND neutral (see the
+  /// drop-out test in `OMrScanner`).
   ///
   /// Keep the channel signature in sync with the scanner's drop-out test:
   /// `r > g + 25 && r > b + 10`.
-  static const Color omrTemplateInk = Color(0xFFB03060);
+  static const Color omrTemplateInk = AppColors.omr;
 
-  /// Light maroon tint for the template's soft bands (header/zebra) — a
-  /// background, not ink, so it never enters the scanner's ink mask.
-  static const Color omrTemplateSoft = Color(0xFFF7E9EF);
+  /// Requested pale pink tint for the template's soft bands (header/zebra) —
+  /// a background, not answer ink, so it never enters the scanner's mask.
+  static const Color omrTemplateSoft = AppColors.omrSoft;
 
   /// Pre-filled code discs (subject code / set code) are printed "answers"
   /// the scanner must *read*, so they stay a neutral dark ink — NOT the
-  /// drop-out maroon — otherwise the subject/set codes would be excluded
-  /// as template and come back blank.
+  /// drop-out pink — otherwise the subject/set codes would be excluded as
+  /// template and come back blank.
   static const Color omrCodeInk = Color(0xFF1A1A1A);
 
   /// Renders the OMR answer sheet from [OMrGeometry].
@@ -2050,8 +2049,8 @@ class PaperPdf {
     void bubble(double x, double yy, String value, {bool selected = false}) {
       final r = OMrGeometry.bubbleRadiusPx;
       // A pre-filled code disc is a printed "answer": neutral dark ink the
-      // scanner reads like a pen mark (the drop-out maroon would be
-      // excluded as template). The rest of the template is maroon.
+      // scanner reads like a pen mark (the drop-out pink would be excluded
+      // as template). The rest of the template uses the bright pink.
       canvas.drawCircle(
         Offset(x, yy),
         r,
