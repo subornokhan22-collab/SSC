@@ -12,9 +12,11 @@ CONTENT STUDIO UPDATE FILES
    Paste this whole single-file bundle into index.ts and deploy.
    Its shared parser, attachment validator and JSON schema are included.
    Keep GEMINI_API_KEY in Supabase Edge Function secrets, never frontend code/chat.
-   The bundle starts with gemini-3.8-flash and falls back when an alias is
-   unavailable; optionally set the server-only GEMINI_ADMIN_MODEL secret.
-   Without that server configuration, automatic photo/scan extraction will not work.
+   The bundle starts with gemini-3.8-flash, briefly retries transient provider
+   overloads and falls back when an alias is unavailable; optionally set the
+   server-only GEMINI_ADMIN_MODEL secret to a model ID (a leading models/
+   prefix is accepted). Without that server configuration, automatic photo/scan
+   extraction will not work.
 
 3. mimi.ts — REQUIRED FOR APK AI TOOLS
    Supabase > Edge Functions > create/update a SEPARATE function named mimi.

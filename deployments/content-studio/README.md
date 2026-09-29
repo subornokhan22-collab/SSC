@@ -76,11 +76,14 @@ If AI review or paste formatting fails, this build shows the Edge Function's
 HTTP status and safe response reason instead of only the Supabase SDK text
 "Edge Function returned a non-2xx status code". The `admin-content` function
 starts with current Gemini Flash aliases, including `gemini-3.8-flash`, and
-falls back when an older alias is unavailable to a new key. You may set the
-server-only `GEMINI_ADMIN_MODEL` secret to pin a model available to your key.
-The function also passes through a short, non-secret Gemini error detail when
-the upstream service rejects a request. Redeploy both the website ZIP and
-`admin-content` so this troubleshooting message is present in the browser.
+falls back when an older alias is unavailable to a new key. It retries transient
+Gemini 500/502/503/504 overload responses briefly before trying the next
+fallback. You may set the server-only `GEMINI_ADMIN_MODEL` secret to pin a
+model available to your key; use only the model ID, with or without a leading
+`models/` prefix. The function also passes through a short, non-secret Gemini
+error detail when the upstream service rejects a request. Redeploy both the
+website ZIP and `admin-content` so this troubleshooting message is present in
+the browser.
 
 ## Website update — 2026-09-27 (admin studio motion and fixes)
 

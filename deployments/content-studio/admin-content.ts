@@ -388,8 +388,9 @@ var cors = {
   "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-client-info",
   "Access-Control-Allow-Methods": "POST,OPTIONS"
 };
+var configuredModel = Deno.env.get("GEMINI_ADMIN_MODEL")?.trim().replace(/^models\//i, "");
 var GEMINI_MODELS = [
-  Deno.env.get("GEMINI_ADMIN_MODEL")?.trim(),
+  configuredModel,
   "gemini-3.8-flash",
   "gemini-3.7-flash",
   "gemini-3.6-flash",
@@ -517,48 +518,71 @@ Deno.serve(async (req) => {
     });
     let response;
     let lastModelError = "";
+    let sawTransientProviderError = false;
     for (const model of GEMINI_MODELS) {
-      try {
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": key
-            },
-            signal: AbortSignal.timeout(1e5),
-            body: requestBody
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": key
+              },
+              signal: AbortSignal.timeout(1e5),
+              body: requestBody
+            }
+          );
+        } catch (_) {
+          return reply(
+            { error: "Could not reach the AI formatting service. Try again." },
+            502
+          );
+        }
+        if (response.ok) break;
+        let upstream = "";
+        try {
+          const body = await response.json();
+          const value = body?.error?.message ?? body?.message ?? body?.error;
+          if (typeof value === "string") upstream = value;
+        } catch (_) {
+        }
+        lastModelError = upstream;
+        const unavailable = response.status === 404 || /model.{0,80}(?:not found|unavailable|no longer available)/i.test(
+          upstream
+        );
+        if (unavailable) {
+          response = void 0;
+          break;
+        }
+        if ([500, 502, 503, 504].includes(response.status)) {
+          sawTransientProviderError = true;
+          if (attempt === 0) {
+            await new Promise((resolve) => setTimeout(resolve, 750));
+            continue;
           }
-        );
-      } catch (_) {
+          response = void 0;
+          break;
+        }
+        const detail = upstream ? ` ${upstream}` : "";
         return reply(
-          { error: "Could not reach the AI formatting service. Try again." },
-          502
+          {
+            error: response.status === 429 ? "AI quota reached. Try later." : `AI formatting service returned ${response.status}.${detail}`
+          },
+          response.status === 429 ? 429 : 502
         );
       }
-      if (response.ok) break;
-      let upstream = "";
-      try {
-        const body = await response.json();
-        const value = body?.error?.message ?? body?.message ?? body?.error;
-        if (typeof value === "string") upstream = value;
-      } catch (_) {
-      }
-      lastModelError = upstream;
-      const unavailable = response.status === 404 || /model.{0,80}(?:not found|unavailable|no longer available)/i.test(
-        upstream
-      );
-      if (unavailable) continue;
-      const detail = upstream ? ` ${upstream}` : "";
-      return reply(
-        {
-          error: response.status === 429 ? "AI quota reached. Try later." : `AI formatting service returned ${response.status}.${detail}`
-        },
-        response.status === 429 ? 429 : 502
-      );
+      if (response?.ok) break;
     }
     if (!response?.ok) {
+      if (sawTransientProviderError) {
+        const detail2 = lastModelError ? ` ${lastModelError}` : "";
+        return reply(
+          { error: `Gemini is temporarily overloaded. Try again shortly.${detail2}` },
+          503
+        );
+      }
       const detail = lastModelError ? ` ${lastModelError}` : "";
       return reply(
         {
