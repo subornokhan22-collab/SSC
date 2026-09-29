@@ -1,0 +1,25 @@
+name: Temporary Dart formatter
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Format promotion integration files
+        run: dart format lib/services/promotion_service.dart lib/screens/teacher_home_screen.dart lib/screens/subscription_screen.dart
+      - name: Package formatted source
+        run: tar -czf formatted-dart.tar.gz lib/services/promotion_service.dart lib/screens/teacher_home_screen.dart lib/screens/subscription_screen.dart
+      - uses: actions/upload-artifact@v4
+        with:
+          name: formatted-dart
+          path: formatted-dart.tar.gz
