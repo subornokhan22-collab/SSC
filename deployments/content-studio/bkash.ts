@@ -104,21 +104,34 @@ async function configuredPlan(
   const fallback = PLANS[planId];
   if (!fallback) return undefined;
   try {
-    const { data } = await supa
+    const { data, error } = await supa
       .from("paid_plan_offers")
-      .select("plan_id,title,price,period_days")
+      .select("plan_id,title,price,period_days,starts_at,ends_at")
       .eq("plan_id", planId)
       .eq("is_active", true)
       .order("sort_order")
-      .limit(1)
-      .maybeSingle();
-    const amount = Number(data?.price);
-    if (!data || !Number.isFinite(amount) || amount <= 0) return fallback;
+      .limit(20);
+    if (error) return fallback;
+    const now = Date.now();
+    const row = (data ?? []).find((candidate) => {
+      const startsAt = candidate.starts_at == null
+        ? null
+        : Date.parse(String(candidate.starts_at));
+      const endsAt = candidate.ends_at == null
+        ? null
+        : Date.parse(String(candidate.ends_at));
+      return (
+        (startsAt == null || Number.isFinite(startsAt) && startsAt <= now) &&
+        (endsAt == null || Number.isFinite(endsAt) && endsAt > now)
+      );
+    });
+    const amount = Number(row?.price);
+    if (!row || !Number.isFinite(amount) || amount <= 0) return fallback;
     return {
       amount: Math.round(amount),
       periodDays:
-        data.period_days == null ? fallback.periodDays : Number(data.period_days),
-      label: String(data.title || fallback.label),
+        row.period_days == null ? fallback.periodDays : Number(row.period_days),
+      label: String(row.title || fallback.label),
     };
   } catch (_) {
     return fallback;
