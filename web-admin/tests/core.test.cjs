@@ -95,3 +95,16 @@ test("text detection preserves source, no pretend complete paper or answers", ()
   assert.equal(p.data.answers.q1, null);
   assert.ok(C.validateEnglish(p).errors.length);
 });
+test("error formatting keeps safe Supabase diagnostics and rejects generic Error", () => {
+  assert.equal(
+    C.errorMessage({
+      message: "permission denied",
+      details: "row policy rejected the request",
+      hint: "check admin membership",
+      code: "42501",
+    }),
+    "permission denied · row policy rejected the request · check admin membership · 42501",
+  );
+  assert.equal(C.errorMessage(new Error("")), "The request failed. Try again.");
+  assert.equal(C.errorMessage("Error"), "The request failed. Try again.");
+});

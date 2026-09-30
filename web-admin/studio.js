@@ -47,19 +47,50 @@ const state = {
   busy: false,
   routeVersion: 0,
 };
+// Local Lucide-style SVG paths keep the admin crisp, accessible and usable
+// offline; they inherit the four-color theme through currentColor.
+const ICONS = Object.freeze({
+  dashboard:
+    '<path d="m3 10 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/>',
+  questions:
+    '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+  add: '<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>',
+  all: '<path d="M5 6h14M5 12h14M5 18h14"/><circle cx="3" cy="6" r=".5"/><circle cx="3" cy="12" r=".5"/><circle cx="3" cy="18" r=".5"/>',
+  import:
+    '<path d="M4 4h16v16H4z"/><path d="M12 7v10M8 13l4 4 4-4"/>',
+  promotions:
+    '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z"/>',
+  figures:
+    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m4 17 5-5 3 3 2-2 6 5"/>',
+  validation:
+    '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+  archived:
+    '<path d="M4 7h16v13H4zM3 4h18v3H3z"/><path d="M9 12h6"/>',
+  activity:
+    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  settings:
+    '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="4"/>',
+  arrow: '<path d="M5 12h13M13 6l6 6-6 6"/>',
+  spark: '<path d="m12 3 1.7 6.3L20 11l-6.3 1.7L12 19l-1.7-6.3L4 11l6.3-1.7L12 3Z"/>',
+  book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v15M8 7h8M8 11h8"/>',
+});
+function icon(name, className = "ui-icon") {
+  return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.spark}</svg>`;
+}
 const nav = [
-  ["dashboard", "⌂", "Dashboard"],
-  ["questions", "▤", "Question Bank"],
-  ["add", "+", "Add Questions"],
-  ["all", "≡", "All Questions"],
-  ["import", "⇥", "Import Center"],
-  ["promotions", "✦", "Offers & Promotions"],
-  ["figures", "▧", "Figures"],
-  ["validation", "✓", "Validation"],
-  ["archived", "↶", "Archived"],
-  ["activity", "◷", "Activity"],
-  ["settings", "⚙", "Settings"],
+  ["dashboard", "dashboard", "Dashboard"],
+  ["questions", "questions", "Questions"],
+  ["add", "add", "Add"],
+  ["all", "all", "All"],
+  ["import", "import", "Import"],
+  ["promotions", "promotions", "Promotions"],
+  ["figures", "figures", "Figures"],
+  ["validation", "validation", "Validate"],
+  ["archived", "archived", "Archive"],
+  ["activity", "activity", "Activity"],
+  ["settings", "settings", "Settings"],
 ];
+
 let demoRows = Array.from({ length: 8 }, (_, i) => ({
   id: `demo_physics_${i + 1}`,
   type: "mcq",
@@ -211,9 +242,9 @@ async function task(fn, source) {
   try {
     return await fn();
   } catch (e) {
-    notify(e.message || String(e), true);
-    if ($("editor").open)
-      $("editor-errors").textContent = e.message || String(e);
+    const message = C.errorMessage(e);
+    notify(message, true);
+    if ($("editor").open) $("editor-errors").textContent = message;
     sessionGuard(e);
   } finally {
     state.busy = false;
@@ -395,7 +426,7 @@ async function enter(demo = false) {
     }
   } catch (e) {
     notify(
-      "Apply the content-manager migration before publishing: " + e.message,
+      "Catalog unavailable: " + C.errorMessage(e, "check the database setup"),
       true,
     );
   }
@@ -432,8 +463,8 @@ $("signout").onclick = async () => {
 $("quick-add").onclick = () => openEditor(newQuestion());
 $("nav").innerHTML = nav
   .map(
-    ([id, icon, label]) =>
-      `<a href="#${id}" data-nav="${id}"><span class="icon">${icon}</span>${label}</a>`,
+    ([id, iconName, label]) =>
+      `<a href="#${id}" data-nav="${id}"><span class="icon">${icon(iconName)}</span><span>${label}</span></a>`,
   )
   .join("");
 window.addEventListener("hashchange", route);
@@ -497,8 +528,8 @@ async function render() {
     if (version !== state.routeVersion) return;
     $("main").innerHTML =
       '<div class="card empty"><h2>Could not load this workspace</h2><p>' +
-      esc(e.message) +
-      '</p><p>Check your connection and apply the content-manager and promotion SQL migrations if this is the first use.</p><button data-action="reload" class="ghost">Try again</button></div>';
+      esc(C.errorMessage(e)) +
+      '</p><p>Check your connection and database setup.</p><button data-action="reload" class="ghost">Retry</button></div>';
     bind();
   }
 }
@@ -544,34 +575,19 @@ async function dashboard() {
     if (r.error) throw r.error;
     recent = r.data;
   }
-  return `<div class="intro"><div><h2>Good content starts with a careful review.</h2><p class="muted">Here’s what’s happening in your content studio.</p></div><span class="badge">SSC question bank</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published questions", "Awaiting review", "English board papers", "Subjects"][i]}</span><strong data-count="${n}">${n.toLocaleString()}</strong><small>${[state.demo ? "Demo records only, not your live bank" : "Live server content, not bundled APK totals", "Ready for a human check", "Reading, grammar & writing", "Chapter catalogs available"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recently updated</h2><a href="#questions">View question bank →</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></div></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">Your first saved draft will appear here.</p>'}</section><section class="card"><h2>Quick actions</h2>${[
-    ["+", "Add a question", "Start with a draft", "add"],
-    [
-      "⇥",
-      "Import a question bank",
-      "CSV, JSON or pasted source text",
-      "import",
-    ],
-    [
-      "En",
-      "Import an English paper",
-      "A complete board paper, not one MCQ",
-      "import",
-    ],
-    [
-      "✓",
-      "Check bank health",
-      "Find missing fields and duplicates",
-      "validation",
-    ],
+  return `<div class="intro"><div><h2>Review before publish.</h2><p class="muted">${state.demo ? "Demo workspace" : "Live content"}</p></div><span class="badge">SSC BANK</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published", "Review", "English", "Subjects"][i]}</span><strong data-count="${n}">${n.toLocaleString()}</strong><small>${[state.demo ? "Demo only" : "Live content", "Human check", "Reading and writing", "Chapter lists"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recent</h2><a href="#questions">Questions</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></div></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">No drafts yet.</p>'}</section><section class="card"><h2>Actions</h2>${[
+    ["add", "Add", "Start a draft", "add"],
+    ["import", "Import", "CSV, JSON or text", "import"],
+    ["book", "English", "Board paper", "import"],
+    ["validation", "Health", "Fields and duplicates", "validation"],
   ]
     .map(
-      ([icon, title, sub, tab]) =>
-        `<a class="quick" href="#${tab}"><span class="quick-icon">${icon}</span><span><strong>${title}</strong><p>${sub}</p></span><span class="arrow">↗</span></a>`,
+      ([iconName, title, sub, tab]) =>
+        `<a class="quick" href="#${tab}"><span class="quick-icon">${icon(iconName)}</span><span><strong>${title}</strong><p>${sub}</p></span><span class="arrow">${icon("arrow")}</span></a>`,
     )
     .join(
       "",
-    )}</section></div><div class="banner"><span class="quick-icon">En</span><div><h3>English papers keep their own format</h3><p>Upload them through the same import flow as every other subject; passages, tables and writing tasks stay together.</p></div><button class="ghost" data-action="new-english">Open English editor →</button></div>`;
+    )}</section></div><div class="banner"><span class="quick-icon">${icon("book")}</span><div><h3>English papers stay separate.</h3><p>Use the same import flow for passages, tables and writing.</p></div><button class="ghost" data-action="new-english">Open</button></div>`;
 }
 const badge = (s) => `<span class="badge ${esc(s)}">${esc(s)}</span>`;
 /**
@@ -664,7 +680,7 @@ async function listView() {
   }
   state.rows = rows;
   state.total = total;
-  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<div class="toolbar"><button class="primary" data-action="upload-english">Upload English Paper (PDF / Image)</button><button class="ghost" data-action="new-english">+ Blank English paper</button></div>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>CONTENT<select id="source-filter">${options({ questions: "Questions", english: "English papers" }, state.source, "Questions")}</select></label><label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label><label>CHAPTER<input id="chapter-filter" value="${esc(state.chapter)}" placeholder="All chapters"></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export all ${english ? "English papers" : "questions"}</button><button class="ghost small" data-action="export-subject">Export subject / chapter</button><button class="ghost small" data-action="export-selected">Export selected</button><button class="ghost small" data-action="paper-preview">Preview selected paper</button><button class="ghost small" data-action="bulk-publish">Publish selected reviewed</button><button class="ghost small" data-action="bulk-archive">Back up & ${archived ? "restore" : "archive"} selected</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></div></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete permanently</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Submit for review" : r.review_status === "review" ? "Publish" : "Review again"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
+  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<div class="toolbar"><button class="primary" data-action="upload-english">Upload</button><button class="ghost" data-action="new-english">Blank</button></div>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>CONTENT<select id="source-filter">${options({ questions: "Questions", english: "English papers" }, state.source, "Questions")}</select></label><label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label><label>CHAPTER<input id="chapter-filter" value="${esc(state.chapter)}" placeholder="All chapters"></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export</button><button class="ghost small" data-action="export-subject">Export</button><button class="ghost small" data-action="export-selected">Export</button><button class="ghost small" data-action="paper-preview">Preview</button><button class="ghost small" data-action="bulk-publish">Publish</button><button class="ghost small" data-action="bulk-archive">${archived ? "Restore" : "Archive"}</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></div></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Review" : r.review_status === "review" ? "Publish" : "Review"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next</button></span></div>`;
 }
 function newQuestion() {
   return {
@@ -1229,7 +1245,7 @@ $("preview-editor").onclick = () => {
     ].join("\n");
     showPreview([editing], editingEnglish, report);
   } catch (e) {
-    $("editor-errors").textContent = e.message;
+    $("editor-errors").textContent = C.errorMessage(e);
   }
 };
 function rich(value) {
@@ -1486,13 +1502,13 @@ $("print-preview").onclick = () => window.print();
  * without a human reading the review list first.
  */
 function workspaceMarkup(heading, blurb) {
-  return `<section class="card"><h2>${heading}</h2><p class="muted">${blurb} Drop a file anywhere in the box below — PDFs and paper photos are read in the browser.</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain,image/png,image/jpeg,image/webp"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Questions — mixed CQ / MCQ / short (JSON, CSV or plain text)</option><option value="first">English 1st Paper</option><option value="second">English 2nd Paper</option></select></label></div>${subjectChapterRibbon({ prefix: "import", subject: "physics", chapter: "", includeEnglish: true })}<textarea id="import-text" rows="14" placeholder="Paste everything here. Mixed question types are fine — one block, no pre-formatting needed."></textarea><div class="toolbar"><button class="primary" data-action="ai-format">Reformat with AI & review</button><button class="ghost" data-action="parse-import">Parse without AI</button><button class="ghost" data-action="upload-files">Upload PDF / paper photos</button><button class="link" data-action="csv-template">Download CSV template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
+  return `<section class="card"><h2>${heading}</h2><p class="muted">${blurb}</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain,image/png,image/jpeg,image/webp"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Questions</option><option value="first">English 1st</option><option value="second">English 2nd</option></select></label></div>${subjectChapterRibbon({ prefix: "import", subject: "physics", chapter: "", includeEnglish: true })}<textarea id="import-text" rows="14" placeholder="Paste text here."></textarea><div class="toolbar"><button class="primary" data-action="ai-format">Reformat</button><button class="ghost" data-action="parse-import">Parse</button><button class="ghost" data-action="upload-files">Upload</button><button class="link" data-action="csv-template">Template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
 }
 async function addView() {
-  return `<p class="muted">Paste as much as you like. AI turns it into individual questions, keeps the type it detects, and leaves anything it could not read blank for you to fill.</p>${workspaceMarkup(
-    "Paste your questions",
-    "Mixed CQ, MCQ and short questions in one block, or a complete English paper. Every result lands as a draft.",
-  )}<section class="card" style="margin-top:24px"><h2>Or start from a blank form</h2><div class="toolbar"><button class="ghost" data-action="new-question">+ Blank question</button><button class="ghost" data-action="new-english">+ Blank English paper</button></div></section>`;
+  return `<p class="muted">Paste text or upload a file.</p>${workspaceMarkup(
+    "Paste",
+    "AI creates drafts. Review before publish.",
+  )}<section class="card" style="margin-top:24px"><h2>Blank</h2><div class="toolbar"><button class="ghost" data-action="new-question">Question</button><button class="ghost" data-action="new-english">English</button></div></section>`;
 }
 /**
  * Every question the app can serve, bank content and teacher-created records
@@ -1562,48 +1578,23 @@ async function allView() {
       (r) =>
         `<tr><td>${thumb(r)}</td><td class="title-cell"><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.id)}${r.chapter ? " · " + esc(r.chapter) : ""}${r.subject_id ? " · " + esc(catalog.SUBJECTS[r.subject_id] || r.subject_id) : ""}</small></td><td>${esc(String(r.type || "").toUpperCase())}</td><td>${r.owner_id ? '<span class="badge teacher" title="' + esc(r.owner_id) + '">Teacher</span>' : '<span class="badge bank">Bank</span>'}</td><td>${badge(r.review_status)}</td><td class="actions"><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button></td></tr>`,
     )
-    .join("")}</tbody></table>${rows.length ? "" : '<div class="empty">Nothing matches. Pick a subject first — the chapter list fills in from it.</div>'}</div><div class="pager"><span>${total.toLocaleString()} questions · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">← Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next →</button></span></div>`;
+    .join("")}</tbody></table>${rows.length ? "" : '<div class="empty">Nothing matches. Pick a subject first — the chapter list fills in from it.</div>'}</div><div class="pager"><span>${total.toLocaleString()} questions · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next</button></span></div>`;
 }
 async function importView() {
-  return `<p class="muted">Bring your material in. Review every record before it reaches a teacher.</p><div class="import-grid">${[
-    [
-      "paste",
-      "✎",
-      "Paste source text",
-      "Structure text with AI; missing answers stay missing.",
-    ],
-    [
-      "json",
-      "{ }",
-      "Import JSON",
-      "Your question-bank export or an English board set.",
-    ],
-    [
-      "csv",
-      "▦",
-      "Import CSV",
-      "A spreadsheet with questions, options and answers.",
-    ],
-    [
-      "files",
-      "⇪",
-      "Upload paper files",
-      "PDF or paper photos — any subject, including English.",
-    ],
-    [
-      "figures",
-      "▧",
-      "Question figures",
-      "Inspect, process and upload diagrams.",
-    ],
+  return `<div class="import-grid">${[
+    ["paste", "add", "Paste", "AI drafts; blanks stay visible."],
+    ["json", "questions", "JSON", "Question or board-paper export."],
+    ["csv", "all", "CSV", "Questions, options and answers."],
+    ["files", "import", "Upload", "PDF or paper photos."],
+    ["figures", "figures", "Figures", "Inspect and process diagrams."],
   ]
     .map(
-      ([id, icon, title, sub]) =>
-        `<button class="card" data-action="import-${id}" style="text-align:left"><span class="quick-icon">${icon}</span><h2>${title}</h2><p>${sub}</p></button>`,
+      ([id, iconName, title, sub]) =>
+        `<button class="card" data-action="import-${id}" aria-label="${title}" style="text-align:left"><span class="quick-icon">${icon(iconName)}</span><strong class="card-action">${title}</strong><p>${sub}</p></button>`,
     )
     .join(
       "",
-    )}</div>${workspaceMarkup("Import workspace", "JSON and CSV are deterministic. AI cleanup is optional and always produces drafts.")}`;
+    )}</div>${workspaceMarkup("Import", "JSON and CSV stay deterministic; AI only creates drafts.")}`;
 }
 let importRows = [];
 async function parseImport(ai = false) {
@@ -1694,7 +1685,7 @@ async function parseImport(ai = false) {
     `${importRows.length} records · ${errors.length} validation issues · ${duplicateCount} exact duplicate pairs. Imported records remain drafts.`;
   $("import-results").innerHTML =
     errors.map((e) => '<p class="warn">' + esc(e) + "</p>").join("") +
-    `<div class="toolbar"><button class="ghost" data-action="preview-import">Preview all</button><button class="primary" data-action="save-import">Save ${importRows.length} drafts</button></div>` +
+    `<div class="toolbar"><button class="ghost" data-action="preview-import">Preview</button><button class="primary" data-action="save-import">Save</button></div>` +
     importRows
       .slice(0, 10)
       .map((r, i) => questionPreview(r, i, true))
@@ -1709,7 +1700,7 @@ async function parseImport(ai = false) {
     importRows = [];
 }
 async function validationView() {
-  return `<div class="card"><h2>Question bank health</h2><p class="muted">Checks all server records, including drafts and archived records. Nothing is deleted automatically.</p><div class="toolbar"><button class="primary" data-action="health">Run bank check</button><button class="ghost" data-action="duplicates">Find similar questions</button><button class="ghost" data-action="storage-health">Check storage references</button></div><div id="health-results" class="empty">Choose a check to see actionable issues.</div></div>`;
+  return `<div class="card"><h2>Question bank health</h2><p class="muted">Checks all server records, including drafts and archived records. Nothing is deleted automatically.</p><div class="toolbar"><button class="primary" data-action="health">Health</button><button class="ghost" data-action="duplicates">Similar</button><button class="ghost" data-action="storage-health">Storage</button></div><div id="health-results" class="empty">Choose a check to see actionable issues.</div></div>`;
 }
 let healthRows = [],
   healthEnglish = [];
@@ -1736,7 +1727,7 @@ async function runHealth(kind) {
         .slice(0, 200)
         .map(
           ({ a, b, score }) =>
-            `<div class="card" style="margin:12px 0"><span class="badge review">${Math.round(score * 100)}% token similarity</span><p>${esc(C.text(a))}</p><p>${esc(C.text(b))}</p><button class="ghost small" data-fix="${esc(a.id)}">Review ${esc(a.id)}</button> <button class="ghost small" data-fix="${esc(b.id)}">Review ${esc(b.id)}</button></div>`,
+            `<div class="card" style="margin:12px 0"><span class="badge review">${Math.round(score * 100)}% token similarity</span><p>${esc(C.text(a))}</p><p>${esc(C.text(b))}</p><button class="ghost small" data-fix="${esc(a.id)}">Review</button> <button class="ghost small" data-fix="${esc(b.id)}">Review</button></div>`,
         )
         .join("");
   } else {
@@ -1788,7 +1779,7 @@ function promotionRowsMarkup(kind, rows) {
   return `<div class="promotion-list">${rows
     .map(
       (row) =>
-        `<div class="promotion-row">${kind === "ads" || kind === "prizes" ? promotionImage(row) : '<span class="promo-icon">✦</span>'}<div class="promotion-row-copy"><strong>${esc(row.title)}</strong><small>${esc(kind === "offers" ? `${row.currency || "BDT"} ${row.price} · ${row.plan_id}` : kind === "notifications" ? row.message : row.description || row.body || row.value_text || "No description")}</small></div>${promotionBadge(row, kind)}<div class="actions"><button class="ghost small" data-action="promo-edit-${kind}" data-row="${esc(row.id)}">Edit</button><button class="danger small" data-action="promo-delete-${kind}" data-row="${esc(row.id)}">Delete</button></div></div>`,
+        `<div class="promotion-row">${kind === "ads" || kind === "prizes" ? promotionImage(row) : `<span class="promo-icon">${icon(kind === "notifications" ? "activity" : "promotions")}</span>`}<div class="promotion-row-copy"><strong>${esc(row.title)}</strong><small>${esc(kind === "offers" ? `${row.currency || "BDT"} ${row.price} · ${row.plan_id}` : kind === "notifications" ? row.message : row.description || row.body || row.value_text || "No description")}</small></div>${promotionBadge(row, kind)}<div class="actions"><button class="ghost small" data-action="promo-edit-${kind}" data-row="${esc(row.id)}">Edit</button><button class="danger small" data-action="promo-delete-${kind}" data-row="${esc(row.id)}">Delete</button></div></div>`,
     )
     .join("")}</div>`;
 }
@@ -1797,12 +1788,12 @@ function promotionFormFields() {
 }
 function promotionForm(kind) {
   if (kind === "offers")
-    return `<form class="promotion-form" data-promotion-form="offers"><h3>Create or edit paid plan</h3><div class="form-grid">${promotionFormFields()}</div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-offers">Save plan offer</button><button type="button" class="ghost" data-action="promo-clear-offers">Clear</button></div></form>`;
+    return `<form class="promotion-form" data-promotion-form="offers"><h3>Create or edit paid plan</h3><div class="form-grid">${promotionFormFields()}</div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-offers">Save</button><button type="button" class="ghost" data-action="promo-clear-offers">Clear</button></div></form>`;
   if (kind === "prizes")
-    return `<form class="promotion-form" data-promotion-form="prizes"><h3>Create or edit prize</h3><div class="form-grid"><input id="promo-prize-id" type="hidden"><label>Prize title<input id="promo-prize-title" placeholder="Monthly paper challenge"></label><label>Value / reward<input id="promo-prize-value" placeholder="৳1,000 book voucher"></label><label>Stock<input id="promo-prize-stock" type="number" min="0" placeholder="Blank = unlimited"></label><label>Photo URL<input id="promo-prize-image" type="url" placeholder="https://…"></label><label class="wide">Description<textarea id="promo-prize-description" rows="3" placeholder="Who can win and how"></textarea></label><label>Starts<input id="promo-prize-starts" type="datetime-local"></label><label>Ends<input id="promo-prize-ends" type="datetime-local"></label><label class="check wide"><input id="promo-prize-active" type="checkbox"> Show this prize in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-prizes">Save prize</button><button type="button" class="ghost" data-action="promo-clear-prizes">Clear</button></div></form>`;
+    return `<form class="promotion-form" data-promotion-form="prizes"><h3>Create or edit prize</h3><div class="form-grid"><input id="promo-prize-id" type="hidden"><label>Prize title<input id="promo-prize-title" placeholder="Monthly paper challenge"></label><label>Value / reward<input id="promo-prize-value" placeholder="৳1,000 book voucher"></label><label>Stock<input id="promo-prize-stock" type="number" min="0" placeholder="Blank = unlimited"></label><label>Photo URL<input id="promo-prize-image" type="url" placeholder="https://…"></label><label class="wide">Description<textarea id="promo-prize-description" rows="3" placeholder="Who can win and how"></textarea></label><label>Starts<input id="promo-prize-starts" type="datetime-local"></label><label>Ends<input id="promo-prize-ends" type="datetime-local"></label><label class="check wide"><input id="promo-prize-active" type="checkbox"> Show this prize in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-prizes">Save</button><button type="button" class="ghost" data-action="promo-clear-prizes">Clear</button></div></form>`;
   if (kind === "notifications")
-    return `<form class="promotion-form" data-promotion-form="notifications"><h3>Write an in-app notification</h3><p class="muted">Save as a draft, or publish it immediately to the selected audience. This creates an in-app broadcast; OS push delivery needs a push provider and is not fabricated here.</p><div class="form-grid"><input id="promo-notification-id" type="hidden"><label>Title<input id="promo-notification-title" placeholder="New yearly plan available"></label><label>Audience<select id="promo-notification-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-notification-message" rows="4" placeholder="Write the message teachers will see"></textarea></label><label>Action label<input id="promo-notification-action-label" placeholder="View plans"></label><label>Action URL<input id="promo-notification-action-url" value="/plans" placeholder="/plans"></label><label>Schedule<input id="promo-notification-scheduled" type="datetime-local"></label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-send-notifications">Publish in app</button><button type="button" class="ghost" data-action="promo-save-notifications">Save draft</button><button type="button" class="ghost" data-action="promo-clear-notifications">Clear</button></div></form>`;
-  return `<form class="promotion-form" data-promotion-form="ads"><h3>Create or edit popup offer ad</h3><div class="form-grid"><input id="promo-ad-id" type="hidden"><label>Ad title<input id="promo-ad-title" placeholder="Save more with Pro"></label><label>Audience<select id="promo-ad-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-ad-body" rows="3" placeholder="Short text under the photo"></textarea></label><label class="wide">Photo URL<input id="promo-ad-image" type="url" placeholder="Upload a photo below or paste an https URL"></label><label class="wide">Upload photo<input id="promo-ad-file" type="file" accept="image/png,image/jpeg,image/webp"><small class="muted" id="promo-ad-upload-note">PNG, JPEG or WebP · up to 10 MB</small></label><div class="wide promo-ad-preview" id="promo-ad-preview"><span class="promo-no-image">Photo preview</span></div><label>Button label<input id="promo-ad-button" value="View offer"></label><label>Button URL<input id="promo-ad-url" value="/plans"></label><label>Linked plan<select id="promo-ad-offer"><option value="">No linked plan</option>${promotionRows.offers.map((r) => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join("")}</select></label><label>Priority<input id="promo-ad-priority" type="number" value="0"></label><label>Starts<input id="promo-ad-starts" type="datetime-local"></label><label>Ends<input id="promo-ad-ends" type="datetime-local"></label><label class="check wide"><input id="promo-ad-active" type="checkbox"> Show this popup in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-ads">Save popup ad</button><button type="button" class="ghost" data-action="promo-clear-ads">Clear</button></div></form>`;
+    return `<form class="promotion-form" data-promotion-form="notifications"><h3>Write an in-app notification</h3><p class="muted">Save as a draft, or publish it immediately to the selected audience. This creates an in-app broadcast; OS push delivery needs a push provider and is not fabricated here.</p><div class="form-grid"><input id="promo-notification-id" type="hidden"><label>Title<input id="promo-notification-title" placeholder="New yearly plan available"></label><label>Audience<select id="promo-notification-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-notification-message" rows="4" placeholder="Write the message teachers will see"></textarea></label><label>Action label<input id="promo-notification-action-label" placeholder="View plans"></label><label>Action URL<input id="promo-notification-action-url" value="/plans" placeholder="/plans"></label><label>Schedule<input id="promo-notification-scheduled" type="datetime-local"></label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-send-notifications" aria-label="Publish in app" title="Publish in app">Publish</button><button type="button" class="ghost" data-action="promo-save-notifications">Save</button><button type="button" class="ghost" data-action="promo-clear-notifications">Clear</button></div></form>`;
+  return `<form class="promotion-form" data-promotion-form="ads"><h3>Create or edit popup offer ad</h3><div class="form-grid"><input id="promo-ad-id" type="hidden"><label>Ad title<input id="promo-ad-title" placeholder="Save more with Pro"></label><label>Audience<select id="promo-ad-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-ad-body" rows="3" placeholder="Short text under the photo"></textarea></label><label class="wide">Photo URL<input id="promo-ad-image" type="url" placeholder="Upload a photo below or paste an https URL"></label><label class="wide">Upload photo<input id="promo-ad-file" type="file" accept="image/png,image/jpeg,image/webp"><small class="muted" id="promo-ad-upload-note">PNG, JPEG or WebP · up to 10 MB</small></label><div class="wide promo-ad-preview" id="promo-ad-preview"><span class="promo-no-image">Photo preview</span></div><label>Button label<input id="promo-ad-button" value="View offer"></label><label>Button URL<input id="promo-ad-url" value="/plans"></label><label>Linked plan<select id="promo-ad-offer"><option value="">No linked plan</option>${promotionRows.offers.map((r) => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join("")}</select></label><label>Priority<input id="promo-ad-priority" type="number" value="0"></label><label>Starts<input id="promo-ad-starts" type="datetime-local"></label><label>Ends<input id="promo-ad-ends" type="datetime-local"></label><label class="check wide"><input id="promo-ad-active" type="checkbox"> Show this popup in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-ads">Save</button><button type="button" class="ghost" data-action="promo-clear-ads">Clear</button></div></form>`;
 }
 async function promotionsView() {
   const [offers, prizes, notifications, ads] = await Promise.all(
@@ -1950,10 +1941,10 @@ async function uploadPromotionPhoto(file) {
   $("promo-ad-upload-note").textContent = "Uploaded. Save the popup ad to keep it.";
 }
 async function settingsView() {
-  return `<div class="columns"><section class="card"><h2>Subject & chapter catalog</h2><button class="ghost small" data-action="add-subject">+ Add subject</button><p class="muted">Save a subject’s chapter list without editing JavaScript. Existing question chapter labels are not silently renamed.</p><label>Subject<select id="catalog-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label><label>Display name<input id="catalog-name" value="${esc(catalog.SUBJECTS.physics)}"></label><label>Chapters · one per line<textarea id="catalog-chapters" rows="12">${esc(catalog.CHAPTERS.physics.join("\n"))}</textarea></label><button class="primary" data-action="save-catalog">Save catalog</button></section><section class="card"><h2>Content rules</h2><p class="muted">Required safeguards are enforced on the server; they cannot be disabled from this browser.</p>${["Require subject and chapter", "Prevent duplicate record IDs", "Require four distinct MCQ options", "Require an explicit MCQ answer and explanation", "Validate CQ parts and marks", "Block corrupted Unicode", "Keep English answers absent when not supplied", "Require Draft → Review → Published", "Record changes in a server audit trail"].map((t) => '<p class="ok" style="padding:10px">✓ ' + t + "</p>").join("")}<p class="muted">Session tokens stay in memory. A refresh of this page requires sign-in again. Only the public anon key is shipped; never add a service-role key to these files.</p></section><section class="card"><h2>Studio motion</h2><p class="muted">Entrances, skeleton shimmer and state transitions. Reduced motion is applied automatically when your system asks for it.</p><label>Motion<select id="motion-pref"><option value="system">Follow my system</option><option value="full">Full motion</option><option value="reduced">Reduced</option></select></label><p class="ok" id="motion-state" style="padding:10px"></p><p class="muted">Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to a workspace or action.</p></section></div>`;
+  return `<div class="columns"><section class="card"><h2>Subject & chapter catalog</h2><button class="ghost small" data-action="add-subject">Add</button><p class="muted">Save a subject’s chapter list without editing JavaScript. Existing question chapter labels are not silently renamed.</p><label>Subject<select id="catalog-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label><label>Display name<input id="catalog-name" value="${esc(catalog.SUBJECTS.physics)}"></label><label>Chapters · one per line<textarea id="catalog-chapters" rows="12">${esc(catalog.CHAPTERS.physics.join("\n"))}</textarea></label><button class="primary" data-action="save-catalog">Save</button></section><section class="card"><h2>Content rules</h2><p class="muted">Required safeguards are enforced on the server; they cannot be disabled from this browser.</p>${["Require subject and chapter", "Prevent duplicate record IDs", "Require four distinct MCQ options", "Require an explicit MCQ answer and explanation", "Validate CQ parts and marks", "Block corrupted Unicode", "Keep English answers absent when not supplied", "Require Draft → Review → Published", "Record changes in a server audit trail"].map((t) => '<p class="ok" style="padding:10px">✓ ' + t + "</p>").join("")}<p class="muted">Session tokens stay in memory. A refresh of this page requires sign-in again. Only the public anon key is shipped; never add a service-role key to these files.</p></section><section class="card"><h2>Studio motion</h2><p class="muted">Entrances, skeleton shimmer and state transitions. Reduced motion is applied automatically when your system asks for it.</p><label>Motion<select id="motion-pref"><option value="system">Follow my system</option><option value="full">Full motion</option><option value="reduced">Reduced</option></select></label><p class="ok" id="motion-state" style="padding:10px"></p><p class="muted">Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to a workspace or action.</p></section></div>`;
 }
 async function figuresView() {
-  return `<section class="card"><h2>Prepare a question figure</h2><p class="muted">PNG / JPEG / WebP only. Uploads use unique object names; replacing a figure does not overwrite another question’s image.</p><input id="figure-file" type="file" accept="image/png,image/jpeg,image/webp"><div class="toolbar"><label><input id="mono" type="checkbox" checked>Grayscale & contrast</label><button class="ghost" data-action="process-figure">Process</button><button class="primary" data-action="upload-figure">Upload processed figure</button><button class="ghost" data-action="storage-health">Storage health</button></div><div class="figure-grid"><div><h3>Original</h3><img id="figure-original" alt="Original preview"><p id="figure-meta"></p></div><div><h3>Processed / final</h3><canvas id="figure-canvas" style="max-width:100%"></canvas><p id="processed-meta"></p></div></div><div id="figure-output"></div><div id="health-results"></div></section>`;
+  return `<section class="card"><h2>Prepare a question figure</h2><p class="muted">PNG / JPEG / WebP only. Uploads use unique object names; replacing a figure does not overwrite another question’s image.</p><input id="figure-file" type="file" accept="image/png,image/jpeg,image/webp"><div class="toolbar"><label><input id="mono" type="checkbox" checked>Grayscale & contrast</label><button class="ghost" data-action="process-figure">Process</button><button class="primary" data-action="upload-figure">Upload</button><button class="ghost" data-action="storage-health">Health</button></div><div class="figure-grid"><div><h3>Original</h3><img id="figure-original" alt="Original preview"><p id="figure-meta"></p></div><div><h3>Processed / final</h3><canvas id="figure-canvas" style="max-width:100%"></canvas><p id="processed-meta"></p></div></div><div id="figure-output"></div><div id="health-results"></div></section>`;
 }
 let originalImage = null;
 /**
@@ -2040,12 +2031,12 @@ async function storageHealth(target) {
   const unused = files.filter((f) => !referenced.has(f)),
     missing = [...referenced].filter((f) => !files.includes(f));
   target.innerHTML =
-    `<h3>Storage health</h3><p>${files.length - unused.length} used · ${unused.length} unreferenced server files · ${missing.length} missing references</p><p class="warn">Bundled APK figures and external clients may still use an apparently unreferenced file. Download a backup and verify before deleting.</p>` +
+    `<h3>Health</h3><p>${files.length - unused.length} used · ${unused.length} unreferenced server files · ${missing.length} missing references</p><p class="warn">Bundled APK figures and external clients may still use an apparently unreferenced file. Download a backup and verify before deleting.</p>` +
     missing.map((p) => '<p class="warn">Missing: ' + esc(p) + "</p>").join("") +
     unused
       .map(
         (path) =>
-          `<div class="issue"><span>${esc(path)}</span><button class="danger small" data-unused="${esc(path)}">Review / delete</button></div>`,
+          `<div class="issue"><span>${esc(path)}</span><button class="danger small" data-unused="${esc(path)}">Review</button></div>`,
       )
       .join("");
   target.querySelectorAll("[data-unused]").forEach(
@@ -2454,7 +2445,7 @@ async function action(name, id) {
       }
     } catch (e) {
       throw Error(
-        `${done}/${rows.length} published. Refresh before retrying. ${e.message}`,
+        `${done}/${rows.length} published. Refresh before retrying. ${C.errorMessage(e)}`,
       );
     }
     state.selected.clear();
@@ -2479,7 +2470,7 @@ async function action(name, id) {
       }
     } catch (e) {
       throw Error(
-        `${done}/${rows.length} changed before an error. Your backup contains every selected row. ${e.message}`,
+        `${done}/${rows.length} changed before an error. Your backup contains every selected row. ${C.errorMessage(e)}`,
       );
     }
     state.selected.clear();
@@ -2516,7 +2507,7 @@ async function action(name, id) {
       throw Error("No importable rows. Fix duplicate IDs and parse again.");
     if (
       !confirm(
-        `Save ${importRows.length} drafts? Nothing will be published yet.`,
+        `Save? Nothing will be published yet.`,
       )
     )
       return;
@@ -2574,7 +2565,7 @@ async function action(name, id) {
     $("catalog-name").value = label;
     $("catalog-chapters").value = "";
     notify(
-      "Add the chapter list, then Save catalog. Custom subjects use custom paper counts, not a new official board pattern.",
+      "Add the chapter list, then Save. Custom subjects use custom paper counts, not a new official board pattern.",
     );
     return;
   }

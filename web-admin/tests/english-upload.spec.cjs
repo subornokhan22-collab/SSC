@@ -38,17 +38,17 @@ async function image(page, name = "page.png") {
   return { name, mimeType: "image/png", buffer: Buffer.from(data, "base64") };
 }
 async function open(page) {
-  /* English papers no longer have a tab of their own: the Question Bank's
+  /* English papers no longer have a tab of their own: the Questions's
    * content filter selects them, and uploading works like any other subject. */
   await page
-    .getByRole("link", { name: "Question Bank", exact: false })
+    .getByRole("link", { name: "Questions", exact: false })
     .first()
     .click();
   await page.locator("#source-filter").selectOption("english");
   await page.locator('[data-action="filter"]').click();
   await page
     .getByRole("button", {
-      name: "Upload English Paper (PDF / Image)",
+      name: "Upload",
       exact: true,
     })
     .click();

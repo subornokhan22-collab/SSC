@@ -100,12 +100,12 @@ test("supported SDK uses server counts, paginates and keeps session out of local
   await page.locator("#email").fill("admin@example.test");
   await page.locator("#password").fill("test-only-password");
   await page
-    .getByRole("button", { name: "Sign in to content studio", exact: false })
+    .getByRole("button", { name: "Login", exact: false })
     .click();
   await expect(page.locator(".stats .stat").first()).toContainText("80");
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
   await page
-    .getByRole("link", { name: "Question Bank", exact: false })
+    .getByRole("link", { name: "Questions", exact: false })
     .first()
     .click();
   await expect(page.locator(".pager")).toContainText("80 matching records");
@@ -129,7 +129,7 @@ test("supported SDK uses server counts, paginates and keeps session out of local
   await page
     .locator('[data-field="payload.questionText"]')
     .fill("A changed server record");
-  await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.locator("#notice")).toContainText("Draft saved");
   expect(calls.some((c) => c.method === "PATCH")).toBe(true);
 });

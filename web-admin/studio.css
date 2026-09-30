@@ -151,9 +151,33 @@ nav a:hover {
   background: var(--paper);
 }
 nav .icon {
-  font-size: 18px;
+  display: inline-grid;
+  place-items: center;
   width: 22px;
-  text-align: center;
+  height: 22px;
+  flex: 0 0 22px;
+}
+.ui-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.quick-icon {
+  display: inline-grid;
+  place-items: center;
+}
+.quick-icon .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+.arrow .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+.card-action {
+  display: block;
+  margin: 4px 0;
+  font-size: 16px;
 }
 .sidebar-bottom {
   margin-top: auto;

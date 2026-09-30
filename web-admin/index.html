@@ -30,12 +30,10 @@
               type="password"
               autocomplete="current-password"
               required /></label
-          ><button class="primary" type="submit">
-            Sign in to content studio →
-          </button>
+          ><button class="primary" type="submit">Login</button>
         </form>
         <p id="login-error" role="alert"></p>
-        <button id="demo" class="link">Explore an offline demo</button
+        <button id="demo" class="link">Demo</button
         ><small
           >Administrator access is verified by the server. Your session stays in
           this tab’s memory.</small
@@ -53,8 +51,8 @@
         <nav id="nav"></nav>
         <div class="sidebar-bottom">
           <span class="status-dot"></span
-          ><span id="connection">Connected to Supabase</span
-          ><button id="signout" class="link">Sign out</button>
+          ><span id="connection">Connected</span
+          ><button id="signout" class="link">Exit</button>
         </div>
       </aside>
       <div class="workspace">
@@ -74,7 +72,7 @@
               ☰
             </button>
             <span id="mode" class="badge"></span
-            ><button id="quick-add" class="primary">+ Add question</button>
+            ><button id="quick-add" class="primary">Add</button>
           </div>
         </header>
         <div id="notice" role="status" hidden></div>
@@ -92,16 +90,14 @@
             <span class="eyebrow" id="editor-kind">CONTENT EDITOR</span>
             <h2 id="editor-title">New question</h2>
           </div>
-          <button type="button" id="close-editor" class="ghost">Close ✕</button>
+          <button type="button" id="close-editor" class="ghost">Close</button>
         </div>
         <div id="editor-fields"></div>
         <div id="editor-errors" role="alert"></div>
         <div class="dialog-foot">
-          <button type="button" id="ai-review-editor" class="ghost">
-            AI review</button
-          ><button type="button" id="preview-editor" class="ghost">
-            Preview & validate</button
-          ><button type="submit" class="primary">Save draft</button>
+          <button type="button" id="ai-review-editor" class="ghost">Review</button
+          ><button type="button" id="preview-editor" class="ghost">Preview</button
+          ><button type="submit" class="primary">Save</button>
         </div>
       </form>
     </dialog>
@@ -109,9 +105,9 @@
       <div class="dialog-head">
         <h2 id="preview-heading">Teacher paper preview</h2>
         <div>
-          <button id="preview-mode" class="ghost">Switch to student view</button
-          ><button id="print-preview" class="ghost">Print / Save PDF</button
-          ><button id="close-preview" class="ghost">Close ✕</button>
+          <button id="preview-mode" class="ghost">Student</button
+          ><button id="print-preview" class="ghost">Print</button
+          ><button id="close-preview" class="ghost">Close</button>
         </div>
       </div>
       <p class="muted">

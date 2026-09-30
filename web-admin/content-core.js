@@ -514,6 +514,23 @@
     return Boolean(systemPrefersReduced);
   }
 
+  /**
+   * Supabase and browser APIs do not always throw native Error objects. Keep
+   * every safe diagnostic field visible, but never show an empty "Error" or
+   * stringify a response object into an unusable message.
+   */
+  function errorMessage(error, fallback = "The request failed. Try again.") {
+    if (typeof error === "string") {
+      const text = error.trim();
+      return text && text.toLowerCase() !== "error" ? text : fallback;
+    }
+    const parts = [error?.message, error?.details, error?.hint, error?.code]
+      .filter((value) => typeof value === "string" && value.trim())
+      .map((value) => value.trim());
+    const unique = [...new Set(parts)];
+    return unique.length ? unique.join(" · ").slice(0, 1200) : fallback;
+  }
+
   return {
     firstFields,
     secondFields,
@@ -532,5 +549,6 @@
     draftFromText,
     countUpFrame,
     motionReduced,
+    errorMessage,
   };
 });

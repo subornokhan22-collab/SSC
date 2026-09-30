@@ -2,21 +2,19 @@ const { test, expect } = require("@playwright/test");
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Explore an offline demo" }).click();
+  await page.getByRole("button", { name: "Demo" }).click();
   await expect(page.locator("#page-title")).toHaveText("Dashboard");
 });
 
-test("Add Questions is a paste screen, not a redirect into the bank", async ({
+test("Add is a paste screen, not a redirect into the bank", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "Add Questions", exact: false }).click();
+  await page.getByRole("link", { name: "Add", exact: false }).click();
   await expect(page).toHaveURL(/#add$/);
-  await expect(page.locator("#page-title")).toHaveText("Add Questions");
+  await expect(page.locator("#page-title")).toHaveText("Add");
   await expect(page.locator("#import-text")).toBeVisible();
   await expect(page.locator("#import-format")).toBeVisible();
-  await expect(page.locator('[data-action="ai-format"]')).toContainText(
-    "Reformat with AI",
-  );
+  await expect(page.locator('[data-action="ai-format"]')).toHaveText("Reformat");
   // One paste box serves every format, with a subject-wise chapter ribbon.
   await expect(page.locator("#import-format option")).toHaveCount(3);
   await expect(page.locator("#import-subject")).toBeVisible();
@@ -35,11 +33,11 @@ test("Add Questions is a paste screen, not a redirect into the bank", async ({
   ).toHaveCount(12);
 });
 
-test("All Questions lists bank and teacher rows and narrows by chapter", async ({
+test("All lists bank and teacher rows and narrows by chapter", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "All Questions", exact: false }).click();
-  await expect(page.locator("#page-title")).toHaveText("All Questions");
+  await page.getByRole("link", { name: "All", exact: false }).click();
+  await expect(page.locator("#page-title")).toHaveText("All");
   await expect(page.locator("#subject-filter")).toBeVisible();
   await expect(page.locator("#chapter-filter")).toBeVisible();
   expect(await page.locator("tbody tr").count()).toBeGreaterThan(0);
@@ -55,7 +53,7 @@ test("the editor renders the attached picture and flags a non-https URL", async 
   page,
 }) => {
   await page
-    .getByRole("link", { name: "Question Bank", exact: false })
+    .getByRole("link", { name: "Questions", exact: false })
     .first()
     .click();
   await page.locator('[data-action="edit"]').first().click();
@@ -76,13 +74,13 @@ test("a saved image appears beside the question on the dashboard", async ({
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page
-    .getByRole("link", { name: "Question Bank", exact: false })
+    .getByRole("link", { name: "Questions", exact: false })
     .first()
     .click();
   await page.locator('[data-action="edit"]').first().click();
   const url = "https://example.com/figure.png";
   await page.locator('[data-field="image"]').fill(url);
-  await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByText("Draft saved.", { exact: false })).toBeVisible();
   await page
     .getByRole("link", { name: "Dashboard", exact: false })
@@ -92,13 +90,13 @@ test("a saved image appears beside the question on the dashboard", async ({
   expect(errors).toEqual([]);
 });
 
-test("Offers & Promotions manages plans, notifications and popup photos", async ({
+test("Promotions manages plans, notifications and popup photos", async ({
   page,
 }) => {
   await page
-    .getByRole("link", { name: "Offers & Promotions", exact: false })
+    .getByRole("link", { name: "Promotions", exact: false })
     .click();
-  await expect(page.locator("#page-title")).toHaveText("Offers & Promotions");
+  await expect(page.locator("#page-title")).toHaveText("Promotions");
   await expect(page.locator('[data-promotion-form="offers"]')).toBeVisible();
   await expect(page.locator('[data-promotion-form="notifications"]')).toBeVisible();
   await expect(page.locator('[data-promotion-form="ads"]')).toBeVisible();
@@ -123,7 +121,7 @@ test("English papers are reached from the bank's content filter", async ({
   page,
 }) => {
   await page
-    .getByRole("link", { name: "Question Bank", exact: false })
+    .getByRole("link", { name: "Questions", exact: false })
     .first()
     .click();
   await page.locator("#source-filter").selectOption("english");
@@ -131,7 +129,7 @@ test("English papers are reached from the bank's content filter", async ({
   await expect(page.locator("#paper-filter")).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "Upload English Paper (PDF / Image)",
+      name: "Upload",
       exact: true,
     }),
   ).toBeVisible();
