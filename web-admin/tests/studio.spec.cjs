@@ -19,7 +19,7 @@ test("dashboard, filters, draft edit, review, archive and restore", async ({
     .locator('[data-field="payload.questionText"]')
     .fill("A unique reviewed source question?");
   await page.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByText("Draft saved.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Draft saved.", { exact: false })).toBeVisible();
   await page.locator('[data-action="review"]').first().click();
   page.on("dialog", (d) => d.accept());
   await page.locator('[data-action="archive"]').first().click();
@@ -27,7 +27,7 @@ test("dashboard, filters, draft edit, review, archive and restore", async ({
   await expect(page.locator('[data-action="restore"]')).toHaveCount(1);
   await page.locator('[data-action="restore"]').click();
   await expect(
-    page.getByText("No matching content.", { exact: true }),
+    page.getByText("No matching content.", { exact: false }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });

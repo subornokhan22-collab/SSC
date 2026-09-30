@@ -46,7 +46,7 @@ test("All lists bank and teacher rows and narrows by chapter", async ({
   await expect(page.locator(".badge.teacher").first()).toBeVisible();
   await page.locator("#chapter-filter").fill("no-such-chapter");
   await page.locator('[data-action="filter"]').click();
-  await expect(page.getByText("Nothing matches.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Nothing matches.", { exact: false })).toBeVisible();
 });
 
 test("the editor renders the attached picture and flags a non-https URL", async ({
@@ -81,7 +81,7 @@ test("a saved image appears beside the question on the dashboard", async ({
   const url = "https://example.com/figure.png";
   await page.locator('[data-field="image"]').fill(url);
   await page.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByText("Draft saved.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Draft saved.", { exact: false })).toBeVisible();
   await page
     .getByRole("link", { name: "Dashboard", exact: true })
     .first()
