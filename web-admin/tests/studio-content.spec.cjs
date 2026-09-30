@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 test("Add is a paste screen, not a redirect into the bank", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "Add", exact: false }).click();
+  await page.getByRole("link", { name: "Add", exact: true }).click();
   await expect(page).toHaveURL(/#add$/);
   await expect(page.locator("#page-title")).toHaveText("Add");
   await expect(page.locator("#import-text")).toBeVisible();
@@ -36,7 +36,7 @@ test("Add is a paste screen, not a redirect into the bank", async ({
 test("All lists bank and teacher rows and narrows by chapter", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "All", exact: false }).click();
+  await page.getByRole("link", { name: "All", exact: true }).click();
   await expect(page.locator("#page-title")).toHaveText("All");
   await expect(page.locator("#subject-filter")).toBeVisible();
   await expect(page.locator("#chapter-filter")).toBeVisible();
@@ -46,14 +46,14 @@ test("All lists bank and teacher rows and narrows by chapter", async ({
   await expect(page.locator(".badge.teacher").first()).toBeVisible();
   await page.locator("#chapter-filter").fill("no-such-chapter");
   await page.locator('[data-action="filter"]').click();
-  await expect(page.getByText("Nothing matches.", { exact: false })).toBeVisible();
+  await expect(page.getByText("Nothing matches.", { exact: true })).toBeVisible();
 });
 
 test("the editor renders the attached picture and flags a non-https URL", async ({
   page,
 }) => {
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await page.locator('[data-action="edit"]').first().click();
@@ -74,16 +74,16 @@ test("a saved image appears beside the question on the dashboard", async ({
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await page.locator('[data-action="edit"]').first().click();
   const url = "https://example.com/figure.png";
   await page.locator('[data-field="image"]').fill(url);
   await page.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByText("Draft saved.", { exact: false })).toBeVisible();
+  await expect(page.getByText("Draft saved.", { exact: true })).toBeVisible();
   await page
-    .getByRole("link", { name: "Dashboard", exact: false })
+    .getByRole("link", { name: "Dashboard", exact: true })
     .first()
     .click();
   await expect(page.locator(`img.thumb[src="${url}"]`)).toHaveCount(1);
@@ -94,7 +94,7 @@ test("Promotions manages plans, notifications and popup photos", async ({
   page,
 }) => {
   await page
-    .getByRole("link", { name: "Promotions", exact: false })
+    .getByRole("link", { name: "Promotions", exact: true })
     .click();
   await expect(page.locator("#page-title")).toHaveText("Promotions");
   await expect(page.locator('[data-promotion-form="offers"]')).toBeVisible();
@@ -121,7 +121,7 @@ test("English papers are reached from the bank's content filter", async ({
   page,
 }) => {
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await page.locator("#source-filter").selectOption("english");

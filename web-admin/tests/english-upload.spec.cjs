@@ -41,7 +41,7 @@ async function open(page) {
   /* English papers no longer have a tab of their own: the Questions's
    * content filter selects them, and uploading works like any other subject. */
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await page.locator("#source-filter").selectOption("english");

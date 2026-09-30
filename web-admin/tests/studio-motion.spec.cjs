@@ -29,7 +29,7 @@ test("narrow screens get a drawer that opens, navigates and closes", async ({
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("body")).toHaveAttribute("data-drawer", "open");
-  await page.getByRole("link", { name: "Validate", exact: false }).click();
+  await page.getByRole("link", { name: "Validate", exact: true }).click();
   await expect(page.locator("#page-title")).toHaveText("Validate");
   await expect(page.locator("body")).toHaveAttribute("data-drawer", "closed");
 });
@@ -47,7 +47,7 @@ test("Ctrl+K opens the command centre and jumps to a workspace", async ({
 test("a dropped file reaches the importer, not just the styling", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "Import", exact: false }).click();
+  await page.getByRole("link", { name: "Import", exact: true }).click();
   const zone = page.locator(".dropzone").first();
   await expect(zone).toBeVisible();
   await expect(zone.locator('input[type="file"]')).toHaveCount(1);
@@ -87,7 +87,7 @@ test("a task locks its own area and leaves unrelated buttons alone", async ({
   await page.evaluate(() => {
     document.querySelector("#quick-add").disabled = true;
   });
-  await page.getByRole("link", { name: "Validate", exact: false }).click();
+  await page.getByRole("link", { name: "Validate", exact: true }).click();
   await page.locator('[data-action="health"]').click();
   await expect(page.locator("#health-results")).toContainText("8 questions");
   await expect(page.locator("#quick-add")).toBeDisabled();
@@ -95,7 +95,7 @@ test("a task locks its own area and leaves unrelated buttons alone", async ({
 });
 
 test("the motion switch really stops motion", async ({ page }) => {
-  await page.getByRole("link", { name: "Settings", exact: false }).click();
+  await page.getByRole("link", { name: "Settings", exact: true }).click();
   await expect(page.locator("#motion-pref")).toBeVisible();
   await page.locator("#motion-pref").selectOption("reduced");
   await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");

@@ -11,7 +11,7 @@ test("dashboard, filters, draft edit, review, archive and restore", async ({
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await page.locator('[data-action="edit"]').first().click();
@@ -19,22 +19,22 @@ test("dashboard, filters, draft edit, review, archive and restore", async ({
     .locator('[data-field="payload.questionText"]')
     .fill("A unique reviewed source question?");
   await page.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByText("Draft saved.", { exact: false })).toBeVisible();
+  await expect(page.getByText("Draft saved.", { exact: true })).toBeVisible();
   await page.locator('[data-action="review"]').first().click();
   page.on("dialog", (d) => d.accept());
   await page.locator('[data-action="archive"]').first().click();
-  await page.getByRole("link", { name: "Archive", exact: false }).click();
+  await page.getByRole("link", { name: "Archive", exact: true }).click();
   await expect(page.locator('[data-action="restore"]')).toHaveCount(1);
   await page.locator('[data-action="restore"]').click();
   await expect(
-    page.getByText("No matching content.", { exact: false }),
+    page.getByText("No matching content.", { exact: true }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
 test("full English JSON enters the separate editor and publishes after review", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "Import", exact: false }).click();
+  await page.getByRole("link", { name: "Import", exact: true }).click();
   const row = JSON.parse(
     fs.readFileSync(require.resolve("./fixtures/english-first.json")),
   );
@@ -72,7 +72,7 @@ test("full English JSON enters the separate editor and publishes after review", 
   /* English papers are listed in the bank behind the content filter now, not on
    * a tab of their own. */
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await page.locator("#source-filter").selectOption("english");
@@ -86,7 +86,7 @@ test("full English JSON enters the separate editor and publishes after review", 
 test("missing CSV answer remains a blocked draft and XSS is inert", async ({
   page,
 }) => {
-  await page.getByRole("link", { name: "Import", exact: false }).click();
+  await page.getByRole("link", { name: "Import", exact: true }).click();
   await page
     .locator("#import-text")
     .fill(
@@ -106,11 +106,11 @@ test("responsive navigation and health fix links", async ({ page }) => {
   // Navigation is an off-canvas drawer at this width, so it is opened first and
   // closes itself on selection.
   await page.locator("#menu-toggle").click();
-  await page.getByRole("link", { name: "Validate", exact: false }).click();
+  await page.getByRole("link", { name: "Validate", exact: true }).click();
   await page.locator('[data-action="health"]').click();
   await expect(page.locator("#health-results")).toContainText("8 questions");
   await page.locator("#menu-toggle").click();
-  await page.getByRole("link", { name: "Dashboard", exact: false }).click();
+  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
   await page.screenshot({
     path: "test-results/mobile-dashboard.png",
     fullPage: true,

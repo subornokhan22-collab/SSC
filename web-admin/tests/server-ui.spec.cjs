@@ -100,12 +100,12 @@ test("supported SDK uses server counts, paginates and keeps session out of local
   await page.locator("#email").fill("admin@example.test");
   await page.locator("#password").fill("test-only-password");
   await page
-    .getByRole("button", { name: "Login", exact: false })
+    .getByRole("button", { name: "Login", exact: true })
     .click();
   await expect(page.locator(".stats .stat").first()).toContainText("80");
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
   await page
-    .getByRole("link", { name: "Questions", exact: false })
+    .getByRole("link", { name: "Questions", exact: true })
     .first()
     .click();
   await expect(page.locator(".pager")).toContainText("80 matching records");
