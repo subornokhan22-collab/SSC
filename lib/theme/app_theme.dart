@@ -4,15 +4,15 @@ import 'package:flutter/services.dart';
 import '../widgets/animations.dart';
 import 'design_tokens.dart';
 
-/// Tutor's Desk blue design system. White text is used on every dark/blue
-/// brand surface while white cards keep long reading sessions comfortable.
+/// Tutor's Desk rich classroom system. Navy anchors the chrome, saturated
+/// accents identify actions, and white cards keep long reading sessions clear.
 class AppTheme {
   // ── Brand ────────────────────────────────────────────────────────
   static const Color onColor = AppColors.onColor;
-  static const Color primary = AppColors.primary; // blue
+  static const Color primary = AppColors.primary; // indigo
   static const Color primaryDark = AppColors.primaryDark;
-  static const Color secondary = AppColors.secondary; // blue
-  static const Color accent = AppColors.accent; // blue highlight
+  static const Color secondary = AppColors.secondary; // cyan
+  static const Color accent = AppColors.accent; // coral highlight
 
   // ── Surfaces ─────────────────────────────────────────────────────
   static const Color canvas = AppColors.canvas; // page background
@@ -32,12 +32,13 @@ class AppTheme {
 
   /// Brand gradient reused by buttons, chips and headings.
   static const LinearGradient brandGradient = LinearGradient(
-    colors: [primary, AppColors.gradientEnd],
+    colors: [primary, secondary, AppColors.gradientEnd],
+    stops: [0, .56, 1],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Blue status-bar / nav-bar styling with white system icons.
+  /// Navy status-bar / nav-bar styling with white system icons.
   static const SystemUiOverlayStyle overlayStyle = SystemUiOverlayStyle(
     statusBarColor: primaryDark,
     statusBarIconBrightness: Brightness.light,

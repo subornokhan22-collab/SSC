@@ -10,14 +10,15 @@ void main() {
   test('existing theme API delegates to semantic palette tokens', () {
     expect(AppTheme.onColor, Colors.white);
     expect(AppColors.onColor, Colors.white);
-    expect(AppTheme.primary, const Color(0xFF2196F3));
-    expect(AppTheme.primaryDark, const Color(0xFF2196F3));
+    expect(AppTheme.primary, const Color(0xFF5B4BDB));
+    expect(AppTheme.primaryDark, const Color(0xFF312E81));
     expect(AppTheme.primary, AppColors.primary);
     expect(AppTheme.canvas, AppColors.canvas);
     expect(AppTheme.textDark, AppColors.text);
     expect(AppTheme.danger, AppColors.danger);
     expect(AppTheme.brandGradient.colors, [
       AppColors.primary,
+      AppColors.secondary,
       AppColors.gradientEnd,
     ]);
   });
@@ -28,8 +29,8 @@ void main() {
       expect(AppStyle.colors, AppColors.workspaceBackgrounds);
       expect(AppStyle.accents, AppColors.workspaceAccents);
       expect(AppStyle.colors.length, 8);
-      expect(AppStyle.colors.first, const Color(0xFFE3F2FD));
-      expect(AppStyle.accents.first, const Color(0xFF2196F3));
+      expect(AppStyle.colors.first, const Color(0xFFF6F7FC));
+      expect(AppStyle.accents.first, const Color(0xFF5B4BDB));
       expect(AppStyle.labels.length, AppStyle.colors.length);
     },
   );
@@ -48,7 +49,7 @@ void main() {
     }
     expect(theme.textTheme.titleMedium?.color, AppColors.text);
     expect(theme.textTheme.bodyMedium?.color, AppColors.text);
-    expect(theme.appBarTheme.backgroundColor, AppColors.primaryDark);
+    expect(theme.appBarTheme.backgroundColor, AppColors.appBar);
     expect(theme.appBarTheme.foregroundColor, AppColors.onColor);
     expect(theme.navigationBarTheme.backgroundColor, AppColors.primaryDark);
   });

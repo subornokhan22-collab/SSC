@@ -78,13 +78,13 @@ class _PaperWashPainter extends CustomPainter {
       canvas,
       Offset(size.width * .18 + drift, size.height * .12),
       size.width * .8,
-      accent.withOpacity(.075),
+      accent.withOpacity(.11),
     );
     _wash(
       canvas,
       Offset(size.width * .86 - drift, size.height * .92),
       size.width * .7,
-      accent.withOpacity(.05),
+      accent.withOpacity(.075),
     );
   }
 

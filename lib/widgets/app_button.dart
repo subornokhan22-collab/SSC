@@ -56,6 +56,7 @@ class _AppButtonState extends State<AppButton> {
         ),
       ],
     );
+    final filled = !disabled && !widget.outlined;
     final button = AnimatedScale(
       scale: pressed ? .97 : 1,
       duration: MotionPolicy.duration(context, 100),
@@ -65,16 +66,25 @@ class _AppButtonState extends State<AppButton> {
         padding: AppSpacing.buttonPadding,
         decoration: BoxDecoration(
           borderRadius: radius,
-          color: disabled
-              ? AppColors.disabled
-              : (widget.outlined ? AppColors.surface : AppColors.primary),
+          color: filled
+              ? null
+              : (disabled ? AppColors.disabled : AppColors.surface),
+          gradient: filled ? AppTheme.brandGradient : null,
           border: _focused && !disabled
               ? Border.all(color: AppTheme.textDark, width: 2)
               : widget.outlined
                   ? Border.all(
                       color: AppTheme.primary.withOpacity(.45), width: 1.3)
                   : null,
-          boxShadow: const [],
+          boxShadow: filled
+              ? [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(.22),
+                    blurRadius: 16,
+                    offset: const Offset(0, 7),
+                  ),
+                ]
+              : const [],
         ),
         child: child,
       ),

@@ -69,18 +69,18 @@ class _AuroraPainter extends CustomPainter {
   static final _bands = <List<Color>>[
     [
       AppColors.primary.withOpacity(.20),
+      AppColors.secondary.withOpacity(.34),
+      Colors.white.withOpacity(.16),
+    ],
+    [
+      AppColors.ai.withOpacity(.16),
+      AppColors.accent.withOpacity(.27),
+      Colors.white.withOpacity(.14),
+    ],
+    [
+      AppColors.gradientEnd.withOpacity(.22),
       AppColors.primary.withOpacity(.34),
-      Colors.white.withOpacity(.13),
-    ],
-    [
-      AppColors.primaryDark.withOpacity(.15),
-      AppColors.primaryDark.withOpacity(.27),
-      Colors.white.withOpacity(.13),
-    ],
-    [
-      AppColors.light.withOpacity(.28),
-      AppColors.light.withOpacity(.46),
-      Colors.white.withOpacity(.13),
+      Colors.white.withOpacity(.16),
     ],
   ];
 

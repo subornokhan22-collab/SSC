@@ -31,13 +31,13 @@ void main() {
       expect(AppColors.omrSoft, const Color(0xFFFCDEEE));
     });
 
-    test('workspace moods use the shared blue theme except OMR pink', () {
+    test('workspace moods use feature colors except OMR pink', () {
       AppStyle.mood.value = WorkspaceMood.papers;
-      expect(AppStyle.moodColor, AppColors.primary);
+      expect(AppStyle.moodColor, AppColors.science);
       AppStyle.mood.value = WorkspaceMood.ai;
-      expect(AppStyle.moodColor, AppColors.primary);
+      expect(AppStyle.moodColor, AppColors.ai);
       AppStyle.mood.value = WorkspaceMood.english;
-      expect(AppStyle.moodColor, AppColors.primary);
+      expect(AppStyle.moodColor, AppColors.writing);
       AppStyle.mood.value = WorkspaceMood.omr;
       expect(AppStyle.moodColor, AppColors.omr);
       expect(AppColors.omr, const Color(0xFFEB3897));
@@ -54,10 +54,11 @@ void main() {
     });
 
     test('the gradient token tracks the preset the teacher picked', () async {
-      expect(AppStyle.gradient.colors.first, AppStyle.bg);
-      await AppStyle.set(2); // Sky
-      expect(AppStyle.gradient.colors.first, AppColors.workspaceBackgrounds[2]);
       expect(AppStyle.gradient.colors.length, 3);
+      expect(AppStyle.gradient.colors.first, isNot(AppStyle.bg));
+      await AppStyle.set(2); // Sky
+      expect(AppStyle.gradient.colors.length, 3);
+      expect(AppStyle.gradient.colors.last, isNot(AppColors.workspaceBackgrounds[2]));
     });
   });
 

@@ -1,42 +1,53 @@
 import 'package:flutter/material.dart';
 
-/// Tutor's Desk blue theme. White is the foreground on brand surfaces;
-/// the OMR pink pair remains reserved for the printed-sheet workflow.
+/// Tutor's Desk — a richer classroom palette.
+///
+/// Deep navy anchors the workspace, indigo gives the product its identity,
+/// cyan keeps actions energetic, and coral adds a warm human touch. Long-form
+/// content remains on white cards for comfortable reading. OMR keeps its
+/// exact pink pair because the printed-sheet workflow depends on it.
 abstract final class AppColors {
   static const onColor = Colors.white;
-  static const light = Color(0xFF90CAF9);
-  static const primary = Color(0xFF2196F3);
-  static const primaryDark = Color(0xFF2196F3);
-  static const secondary = Color(0xFF2196F3);
-  static const accent = Color(0xFF2196F3);
-  static const gradientEnd = Color(0xFF90CAF9);
 
-  static const canvas = Color(0xFFE3F2FD);
+  // Brand: midnight navy, electric indigo, cyan and a warm coral spark.
+  static const primary = Color(0xFF5B4BDB);
+  static const primaryDark = Color(0xFF312E81);
+  static const secondary = Color(0xFF0EA5E9);
+  static const accent = Color(0xFFF97360);
+  static const gradientEnd = Color(0xFF14B8A6);
+  static const light = Color(0xFFB9B2FF);
+
+  // Calm reading surfaces with enough contrast against the saturated brand.
+  static const canvas = Color(0xFFF6F7FC);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceAlt = Color(0xFFE3F2FD);
-  static const border = Color(0xFF90CAF9);
-  static const text = Color(0xFF2196F3);
-  static const muted = Color(0xFF2196F3);
-  static const disabled = Color(0xFF90CAF9);
-  static const progressTrack = Color(0xFF90CAF9);
-  static const appBar = Color(0xFF2196F3);
+  static const surfaceAlt = Color(0xFFEEF1FF);
+  static const heroSurface = Color(0xFFEAE8FF);
+  static const warmSurface = Color(0xFFFFF1E8);
+  static const cyanSurface = Color(0xFFE3F8FC);
+  static const border = Color(0xFFD9E1F0);
+  static const text = Color(0xFF17213C);
+  static const muted = Color(0xFF65718C);
+  static const disabled = Color(0xFFB8C3D8);
+  static const progressTrack = Color(0xFFDDE6F5);
+  static const appBar = Color(0xFF172554);
 
-  // Workspace roles share the blue theme; do not change persisted preset ordering.
-  // OMR uses the same pink as the printed sheet so the scanner workflow has
-  // one recognizable visual identity. The soft tint is reserved for the
-  // sheet's bands/backgrounds.
+  // OMR uses the requested pink pair exactly; never replace these with blue.
   static const omr = Color(0xFFEB3897);
   static const omrSoft = Color(0xFFFCDEEE);
-  static const ai = Color(0xFF2196F3);
-  static const writing = Color(0xFF2196F3);
-  static const science = Color(0xFF2196F3);
 
-  static const success = Color(0xFF2196F3);
-  static const warning = Color(0xFF2196F3);
-  static const danger = Color(0xFF2196F3);
+  // Feature colors make the home dashboard easier to scan at a glance.
+  static const ai = Color(0xFF7C3AED);
+  static const writing = Color(0xFFF97360);
+  static const science = Color(0xFF0891B2);
+
+  // Real status semantics are more useful than painting every state blue.
+  static const success = Color(0xFF16A34A);
+  static const warning = Color(0xFFF59E0B);
+  static const danger = Color(0xFFE5484D);
 
   // Preserve this order: the workspace preset index is saved on the device.
-  // Presets intentionally share one visible palette; the picker is hidden.
+  // Presets intentionally share one visible base palette; the picker remains
+  // hidden while the saved indices stay compatible with existing devices.
   static const workspaceBackgrounds = <Color>[
     canvas,
     canvas,

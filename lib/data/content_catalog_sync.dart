@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/subject_info.dart';
 import '../services/chapter_catalog.dart';
 import '../services/supabase_config.dart';
+import '../theme/design_tokens.dart';
 
 class ContentCatalogSync {
   static const _key = 'content_catalog_v1';
@@ -22,7 +23,7 @@ class ContentCatalogSync {
             name: name,
             bengaliName: name,
             icon: old?.icon ?? '📘',
-            colorHex: old?.colorHex ?? 0xFF2196F3,
+            colorHex: old?.colorHex ?? AppColors.primary.value,
             group: old?.group ?? SubjectGroup.general));
         chapters[id] = list;
       } catch (e) {

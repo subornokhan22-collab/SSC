@@ -264,7 +264,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         ),
       );
   Widget _notificationCard(AppNotificationItem item) => Card(
-        color: const Color(0xFFF5F3FF),
+        color: AppColors.surfaceAlt,
         child: ListTile(
           leading: const Icon(PhosphorIcons.bellRinging, color: AppColors.ai),
           title: Text(item.title,
@@ -281,7 +281,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
       );
 
   Widget _prizeCard(PromotionPrize prize) => Card(
-        color: const Color(0xFFFFFBEB),
+        color: AppColors.warmSurface,
         child: ListTile(
           leading: prize.imageUrl.startsWith('https://')
               ? ClipRRect(
@@ -340,7 +340,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               ),
               const SizedBox(height: 24),
               Card(
-                color: const Color(0xFFEEF2FF),
+                color: AppColors.heroSurface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                   side: BorderSide(color: AppTheme.primary.withOpacity(.18)),
@@ -402,7 +402,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               if (!devicePro) ...[
                 const SizedBox(height: 14),
                 Card(
-                  color: const Color(0xFFF4F1FF),
+                  color: AppColors.cyanSurface,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                     side: BorderSide(

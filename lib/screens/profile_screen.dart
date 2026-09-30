@@ -320,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
               _proCard(),
               // Workspace presets remain stored for compatibility, but the
-              // shared four-color theme makes the old picker redundant.
+              // shared rich theme makes the old picker redundant.
               const SizedBox(height: 20),
               const Center(
                 child: Text(

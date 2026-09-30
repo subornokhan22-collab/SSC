@@ -11,7 +11,7 @@ import '../theme/design_tokens.dart';
 enum WorkspaceMood { home, papers, omr, ai, english }
 
 /// 🎨 Workspace theme — persisted for compatibility with existing devices.
-/// The visible app now uses one shared four-color palette, so the old picker is
+/// The visible app now uses one richer semantic palette, so the old picker is
 /// hidden while its saved index remains safe to load.
 class AppStyle {
   AppStyle._();
@@ -47,8 +47,8 @@ class AppStyle {
   static final ValueNotifier<WorkspaceMood> mood =
       ValueNotifier<WorkspaceMood>(WorkspaceMood.home);
 
-  /// Accent for the area on screen. All non-OMR areas use the shared blue
-  /// theme; OMR keeps the printed-sheet pink.
+  /// Accent for the area on screen. Each productive area gets a distinct
+  /// readable accent; OMR keeps the printed-sheet pink.
   static Color get moodColor {
     switch (mood.value) {
       case WorkspaceMood.papers:
@@ -64,11 +64,16 @@ class AppStyle {
     }
   }
 
-  /// Soft vertical gradient for screen backdrops.
+  /// Soft but colourful gradient for screen backdrops. The middle remains
+  /// quiet enough for reading while the edges carry the current mood.
   static LinearGradient get gradient => LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [bg, Color.alphaBlend(accent.withOpacity(.06), bg), bg],
+        colors: [
+          Color.alphaBlend(moodColor.withOpacity(.10), bg),
+          Color.alphaBlend(AppColors.secondary.withOpacity(.035), bg),
+          Color.alphaBlend(moodColor.withOpacity(.13), bg),
+        ],
       );
 
   static Future<void> load() async {
