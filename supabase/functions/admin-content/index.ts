@@ -282,13 +282,19 @@ Deno.serve(async (req) => {
       parsed.source_text = p.text;
       return reply({ result: parsed });
     }
-    if (
-      !Array.isArray(parsed.records) ||
-      parsed.records.length < 1 ||
-      parsed.records.length > 100
-    )
+    // Some Gemini models honor the object schema but collapse a one-question
+    // response to the question object itself. Accept that safe shape as one
+    // record; also accept a direct array from a model that omits the wrapper.
+    const records = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed.records)
+        ? parsed.records
+        : parsed && typeof parsed.type === "string"
+          ? [parsed]
+          : [];
+    if (records.length < 1 || records.length > 100)
       return reply({ error: "Invalid question count from AI." }, 422);
-    for (const row of parsed.records) {
+    for (const row of records) {
       const evidence =
         typeof row.answerEvidence === "string" ? row.answerEvidence : "";
       const marker =
@@ -315,7 +321,7 @@ Deno.serve(async (req) => {
       if (!row.chapter && typeof p.chapter === "string")
         row.chapter = p.chapter;
     }
-    return reply({ result: parsed.records });
+    return reply({ result: records });
   } catch (e) {
     return reply(
       {
