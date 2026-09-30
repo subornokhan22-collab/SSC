@@ -58,7 +58,8 @@ void main() {
       expect(AppStyle.gradient.colors.first, isNot(AppStyle.bg));
       await AppStyle.set(2); // Sky
       expect(AppStyle.gradient.colors.length, 3);
-      expect(AppStyle.gradient.colors.last, isNot(AppColors.workspaceBackgrounds[2]));
+      expect(AppStyle.gradient.colors.last,
+          isNot(AppColors.workspaceBackgrounds[2]));
     });
   });
 
