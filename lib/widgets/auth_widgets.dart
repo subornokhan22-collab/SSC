@@ -142,8 +142,7 @@ class DeskWelcome extends StatelessWidget {
   Widget feature(IconData icon, String label, Color color) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(20)),
+            color: color, borderRadius: BorderRadius.circular(20)),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, size: 15, color: AppColors.onColor),
           const SizedBox(width: 6),
