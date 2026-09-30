@@ -932,7 +932,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           ),
                         ),
                         onPressed: _busy ? null : _pickSavedPaper,
-                        icon: const Icon(PhosphorIcons.bookmarksSimple, size: 18),
+                        icon:
+                            const Icon(PhosphorIcons.bookmarksSimple, size: 18),
                         label: const Text(
                           'Use saved paper (key auto-loads)',
                           style: TextStyle(

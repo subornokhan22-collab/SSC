@@ -294,9 +294,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
                 icon: Icon(
-                  _obscure
-                      ? PhosphorIcons.eye
-                      : PhosphorIcons.eyeSlash,
+                  _obscure ? PhosphorIcons.eye : PhosphorIcons.eyeSlash,
                 ),
               ),
             ),

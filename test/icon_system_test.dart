@@ -13,8 +13,8 @@ void main() {
       final usesPhosphor = source.contains('PhosphorIcons.');
       final hasStandaloneMaterialIcon = source
           .split('\n')
-          .where((line) => line.contains('Icons.') &&
-              !line.contains('PhosphorIcons.'))
+          .where((line) =>
+              line.contains('Icons.') && !line.contains('PhosphorIcons.'))
           .isNotEmpty;
 
       if (hasStandaloneMaterialIcon) materialIconUsages.add(entity.path);

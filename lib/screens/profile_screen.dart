@@ -371,9 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
                 icon: Icon(
-                  _obscure
-                      ? PhosphorIcons.eye
-                      : PhosphorIcons.eyeSlash,
+                  _obscure ? PhosphorIcons.eye : PhosphorIcons.eyeSlash,
                 ),
               ),
             ),

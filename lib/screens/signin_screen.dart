@@ -145,8 +145,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             onSubmitted: (_) => _busy ? null : _signIn(),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              prefixIcon:
-                                  const Icon(PhosphorIcons.lock),
+                              prefixIcon: const Icon(PhosphorIcons.lock),
                               suffixIcon: IconButton(
                                 tooltip: _obscure
                                     ? 'Show password'
@@ -199,8 +198,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   ),
                                 ),
-                        icon: const Icon(PhosphorIcons.userPlus,
-                            size: 18),
+                        icon: const Icon(PhosphorIcons.userPlus, size: 18),
                         label: const Text('No account yet? Create one'),
                       ),
                     ),

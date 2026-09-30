@@ -132,10 +132,8 @@ class DeskWelcome extends StatelessWidget {
               style: TextStyle(color: AppTheme.muted, height: 1.6)),
           const SizedBox(height: 18),
           Wrap(spacing: 8, runSpacing: 8, children: [
-            feature(
-                PhosphorIcons.fileText, 'Paper builder', AppTheme.primary),
-            feature(
-                PhosphorIcons.scan, 'OMR review', AppColors.omr),
+            feature(PhosphorIcons.fileText, 'Paper builder', AppTheme.primary),
+            feature(PhosphorIcons.scan, 'OMR review', AppColors.omr),
             feature(PhosphorIcons.magicWand, 'AI Tools', AppColors.ai),
           ]),
         ],

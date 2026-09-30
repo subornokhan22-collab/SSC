@@ -266,8 +266,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   Widget _notificationCard(AppNotificationItem item) => Card(
         color: const Color(0xFFF5F3FF),
         child: ListTile(
-          leading: const Icon(PhosphorIcons.bellRinging,
-              color: AppColors.ai),
+          leading: const Icon(PhosphorIcons.bellRinging, color: AppColors.ai),
           title: Text(item.title,
               style: const TextStyle(fontWeight: FontWeight.w800)),
           subtitle:
@@ -473,7 +472,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               if (draftTitle != null)
                 Card(
                     child: ListTile(
-                  leading: const Icon(PhosphorIcons.notePencil, color: AppTheme.primary),
+                  leading: const Icon(PhosphorIcons.notePencil,
+                      color: AppTheme.primary),
                   title: const Text('Continue your draft'),
                   subtitle: Text(
                       '${draftTitle!.isEmpty ? 'Untitled paper' : draftTitle!} · On this device',

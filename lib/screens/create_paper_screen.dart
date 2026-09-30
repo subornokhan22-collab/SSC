@@ -299,13 +299,13 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                         children: [
                             FilledButton.icon(
                                 onPressed: c.busy ? null : () => export('pdf'),
-                                icon: const Icon(PhosphorIcons.filePdf,
-                                    size: 18),
+                                icon:
+                                    const Icon(PhosphorIcons.filePdf, size: 18),
                                 label: const Text('Export PDF')),
                             OutlinedButton.icon(
                                 onPressed: c.busy ? null : () => export('save'),
-                                icon:
-                                    const Icon(PhosphorIcons.bookmarkSimple, size: 18),
+                                icon: const Icon(PhosphorIcons.bookmarkSimple,
+                                    size: 18),
                                 label: const Text('Save')),
                             IconButton(
                                 tooltip: 'Print',
