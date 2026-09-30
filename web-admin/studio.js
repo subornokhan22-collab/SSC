@@ -2606,24 +2606,47 @@ async function action(name, id) {
 }
 
 function duplicateScan(rows, threshold = 0.8) {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker("validation-worker.js");
+  return new Promise((resolve) => {
+    let worker;
+    let settled = false;
+    const finish = (hits) => {
+      if (settled) return;
+      settled = true;
+      worker?.terminate();
+      resolve(hits);
+    };
+    try {
+      worker = new Worker("validation-worker.js");
+    } catch (e) {
+      console.warn("Duplicate checker unavailable.", e);
+      finish([]);
+      return;
+    }
     worker.onmessage = ({ data }) => {
-      worker.terminate();
-      if (data.error) {
-        reject(Error(data.error));
+      if (data?.error) {
+        console.warn("Duplicate checker returned an error.", data.error);
+        finish([]);
         return;
       }
       const byId = new Map(rows.map((r) => [r.id, r]));
-      resolve(
-        data.hits.map((h) => ({ ...h, a: byId.get(h.a), b: byId.get(h.b) })),
+      finish(
+        (data?.hits || []).map((h) => ({
+          ...h,
+          a: byId.get(h.a),
+          b: byId.get(h.b),
+        })),
       );
     };
     worker.onerror = (e) => {
-      worker.terminate();
-      reject(Error(e.message));
+      console.warn("Duplicate checker could not load.", e.message || e);
+      finish([]);
     };
-    worker.postMessage({ rows, threshold });
+    try {
+      worker.postMessage({ rows, threshold });
+    } catch (e) {
+      console.warn("Duplicate checker could not start.", e);
+      finish([]);
+    }
   });
 }
 
