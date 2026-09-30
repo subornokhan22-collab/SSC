@@ -8,6 +8,9 @@ import 'package:flutter/services.dart';
 
 import '../services/omr/omr_quality.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
+import '../services/local_diagnostics.dart';
+import '../widgets/motion_policy.dart';
 
 /// Full-screen guided OMR capture.
 ///
@@ -28,10 +31,14 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     with WidgetsBindingObserver {
   CameraController? _controller;
   bool _starting = true;
+  bool _foreground = true;
+  int _cameraGeneration = 0;
+  Future<void> _cameraWork = Future.value();
   String? _error;
   bool _capturing = false;
 
   OmFrameQuality? _quality;
+
   /// Leaky-bucket confidence toward auto-capture: +1 on a ready frame,
   /// -[_confidenceLoss] on a not-ready one (clamped to 0). A single
   /// tremor/blur frame no longer wipes all progress; a genuinely shaky
@@ -68,66 +75,78 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     _start();
   }
 
-  Future<void> _start() async {
+  Future<void> _start() {
+    final generation = ++_cameraGeneration;
+    // Serialize open/dispose so a fast background/resume cannot create two
+    // controllers or dispose the replacement while its stream is starting.
+    _cameraWork = _cameraWork.then((_) => _open(generation));
+    return _cameraWork;
+  }
+
+  bool _current(int generation) =>
+      mounted && _foreground && generation == _cameraGeneration;
+
+  Future<void> _open(int generation) async {
+    if (!_current(generation)) return;
     setState(() {
       _starting = true;
       _error = null;
       _framesSeen = 0;
       _streamDead = false;
+      _capturing = false;
+      _quality = null;
+      _confidence = 0;
     });
     _streamWatchdog?.cancel();
+    CameraController? opening;
     try {
       final cameras = await availableCameras();
+      if (!_current(generation)) return;
+      if (cameras.isEmpty) throw CameraException('CameraUnavailable', '');
       final back = cameras.firstWhere(
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
-      final controller = CameraController(
-        back,
-        ResolutionPreset.high,
-        enableAudio: false,
-      );
+      final controller =
+          CameraController(back, ResolutionPreset.high, enableAudio: false);
+      opening = controller;
       await controller.initialize();
-      if (!mounted) {
-        await controller.dispose();
+      if (!_current(generation)) {
+        await _teardown(controller);
         return;
       }
       _controller = controller;
       if (controller.supportsImageStreaming()) {
-        // Quality analysis on each delivered frame drives the guide +
-        // auto-capture. (The stream carries previews; the final photo
-        // comes from takePicture at full resolution.)
         try {
-          await controller.startImageStream(_onFrame);
+          await controller.startImageStream((frame) {
+            if (_current(generation)) _onFrame(frame);
+          });
         } catch (_) {
-          // Preview keeps working; auto-capture just won't kick in.
+          // Actual stream absence is shown by the watchdog, not a fake scan.
         }
-        // If no frame has arrived within a couple of seconds, this phone
-        // isn't streaming — say so instead of showing a frozen guide.
+        if (!_current(generation)) return; // lifecycle queued teardown
         _streamWatchdog = Timer(_streamDeadline, () {
-          if (!mounted || _framesSeen > 0) return;
+          if (!_current(generation) || _framesSeen > 0) return;
           setState(() => _streamDead = true);
         });
       } else {
         _streamDead = true;
       }
-      setState(() => _starting = false);
-    } catch (e) {
-      String msg = 'Camera could not start. Use the system camera instead.';
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            msg = 'Camera permission is off. Allow it in settings, or use the system camera.';
-          case 'CameraUnavailable':
-            msg = 'No camera found on this device.';
-          default:
-            msg = 'Camera error (${e.code}). Use the system camera instead.';
-        }
+      if (_current(generation)) setState(() => _starting = false);
+    } catch (error, stack) {
+      unawaited(LocalDiagnostics.record(error, stack, scope: 'camera'));
+      if (opening != null) {
+        if (identical(_controller, opening)) _controller = null;
+        await _teardown(opening);
       }
-      if (!mounted) return;
+      if (!_current(generation)) return;
+      final denied =
+          error is CameraException && error.code == 'CameraAccessDenied';
       setState(() {
         _starting = false;
-        _error = msg;
+        _error = denied
+            ? 'Camera permission is off. Allow it in settings, or use the system camera.'
+            : 'Camera could not start. Use the system camera instead.';
       });
     }
   }
@@ -137,7 +156,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   void _onFrame(CameraImage frame) {
     // While a capture is being processed the guidance can't change the
     // outcome — skip the analysis instead of burning CPU on every frame.
-    if (_capturing) return;
+    if (!mounted || !_foreground || _capturing) return;
     final now = DateTime.now();
     // Analyse every 66 ms while the sheet is locked (the capture streak
     // needs the cadence) and every ~90 ms while hunting (the box is a
@@ -186,13 +205,17 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
 
   Future<void> _capture() async {
     final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
+    if (!_foreground ||
+        _capturing ||
+        controller == null ||
+        !controller.value.isInitialized) return;
+    final generation = _cameraGeneration;
     setState(() => _capturing = true);
     try {
       final file = await controller.takePicture();
-      if (mounted) Navigator.of(context).pop(file.path);
+      if (_current(generation)) Navigator.of(context).pop(file.path);
     } catch (_) {
-      if (mounted) {
+      if (_current(generation)) {
         setState(() => _capturing = false);
         HapticFeedback.mediumImpact();
       }
@@ -211,13 +234,21 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
-    if (state == AppLifecycleState.inactive) {
-      _teardown(controller);
+    final resumed = state == AppLifecycleState.resumed;
+    if (resumed == _foreground) return;
+    _foreground = resumed;
+    if (resumed) {
+      // Restart even when pause cleared the controller.
+      unawaited(_start());
+    } else {
+      _cameraGeneration++;
+      _streamWatchdog?.cancel();
+      final controller = _controller;
       _controller = null;
-    } else if (state == AppLifecycleState.resumed) {
-      _start();
+      if (mounted) setState(() => _starting = true);
+      if (controller != null) {
+        _cameraWork = _cameraWork.then((_) => _teardown(controller));
+      }
     }
   }
 
@@ -233,10 +264,14 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _foreground = false;
+    _cameraGeneration++;
     _streamWatchdog?.cancel();
     final controller = _controller;
     _controller = null;
-    if (controller != null) unawaited(_teardown(controller));
+    if (controller != null) {
+      _cameraWork = _cameraWork.then((_) => _teardown(controller));
+    }
     super.dispose();
   }
 
@@ -246,134 +281,165 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Stack(fit: StackFit.expand, children: [
-          if (_starting)
-            const Center(
-              child: CircularProgressIndicator(color: Colors.white70),
-            )
-          else if (_error != null)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.no_photography_outlined,
-                      size: 44, color: Colors.white70),
-                  const SizedBox(height: 12),
-                  Text(_error!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (_starting)
+              const Center(
+                child: ActivityIndicator(size: 26, color: Colors.white70),
+              )
+            else if (_error != null)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.no_photography_outlined,
+                        size: 44,
+                        color: Colors.white70,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _error!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
                           fontSize: 14,
                           height: 1.4,
-                          color: Colors.white70)),
-                ]),
-              ),
-            )
-          else if (controller != null && controller.value.isInitialized) ...[
-            CameraPreview(controller),
-            Positioned.fill(
-                child: CustomPaint(
-                    painter: _GuidePainter(
-                        quality: _quality,
-                        streak: _confidence,
-                        readyStreak: _confidenceTarget,
-                        streamDead: _streamDead,
-                        autoCapture: _autoCapture),
-                    child: const SizedBox.expand())),
-          ],
-          // Top bar.
-          Positioned(
-            top: 8,
-            left: 8,
-            right: 8,
-            child: Row(children: [
-              _round(Icons.close_rounded, _close),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(20),
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: const Text('OMR live scan',
-                    style: TextStyle(
+              )
+            else if (controller != null && controller.value.isInitialized) ...[
+              CameraPreview(controller),
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _GuidePainter(
+                    quality: _quality,
+                    streak: _confidence,
+                    readyStreak: _confidenceTarget,
+                    streamDead: _streamDead,
+                    autoCapture: _autoCapture,
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ],
+            // Top bar.
+            Positioned(
+              top: 8,
+              left: 8,
+              right: 8,
+              child: Row(
+                children: [
+                  _round(Icons.close_rounded, _close),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'OMR live scan',
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 12.5,
-                        fontWeight: FontWeight.w700)),
-              ),
-            ]),
-          ),
-          // Bottom controls.
-          if (!_starting && _error == null)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 18,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: _useSystem,
-                    child: const Text('System camera',
-                        style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w600)),
-                  ),
-                  const SizedBox(width: 18),
-                  GestureDetector(
-                    onTap: _capturing ? null : _capture,
-                    child: Container(
-                      width: 74,
-                      height: 74,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
                       ),
-                      child: _capturing
-                          ? const Padding(
-                              padding: EdgeInsets.all(20),
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: AppTheme.primary),
-                            )
-                          : const Icon(Icons.photo_camera_outlined,
-                              color: AppTheme.primary, size: 34),
-                    ),
-                  ),
-                  const SizedBox(width: 18),
-                  GestureDetector(
-                    onTap: () =>
-                        setState(() => _autoCapture = !_autoCapture),
-                    child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-                      decoration: BoxDecoration(
-                        color: _autoCapture
-                            ? AppTheme.primary
-                            : Colors.black54,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                            color: _autoCapture
-                                ? AppTheme.primary
-                                : Colors.white54),
-                      ),
-                      child: Text(_autoCapture ? 'Auto: ON' : 'Auto: OFF',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ],
               ),
             ),
-          if (_capturing)
-            const Positioned.fill(
-              child: Center(
-                child: CircularProgressIndicator(color: Colors.white),
+            // Bottom controls.
+            if (!_starting && _error == null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 18,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _useSystem,
+                      child: const Text(
+                        'System camera',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 18),
+                    GestureDetector(
+                      onTap: _capturing ? null : _capture,
+                      child: Container(
+                        width: 74,
+                        height: 74,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: _capturing
+                            ? const Padding(
+                                padding: EdgeInsets.all(20),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: AppColors.omr,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.photo_camera_outlined,
+                                color: AppColors.omr,
+                                size: 34,
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 18),
+                    GestureDetector(
+                      onTap: () => setState(() => _autoCapture = !_autoCapture),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 13,
+                          vertical: 11,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _autoCapture ? AppColors.omr : Colors.black54,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color:
+                                _autoCapture ? AppColors.omr : Colors.white54,
+                          ),
+                        ),
+                        child: Text(
+                          _autoCapture ? 'Auto: ON' : 'Auto: OFF',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-        ]),
+            if (_capturing)
+              const Positioned.fill(
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -401,12 +467,13 @@ class _GuidePainter extends CustomPainter {
   final bool streamDead;
   final bool autoCapture;
 
-  _GuidePainter(
-      {required this.quality,
-      required this.streak,
-      required this.readyStreak,
-      required this.streamDead,
-      this.autoCapture = true});
+  _GuidePainter({
+    required this.quality,
+    required this.streak,
+    required this.readyStreak,
+    required this.streamDead,
+    this.autoCapture = true,
+  });
 
   static const double _aspect = 1654 / 2339; // A4 (page width / height)
 
@@ -431,10 +498,11 @@ class _GuidePainter extends CustomPainter {
         ..addPolygon(pts, true);
       path.fillType = PathFillType.evenOdd;
       canvas.drawPath(path, Paint()..color = const Color(0x73000000));
-      // Green = a real OMR sheet is detected, red = it isn't. That's the
-      // whole rule.
+      // Teal = a real OMR sheet is detected and readable, amber = it is still
+      // being aligned. Red stays reserved for a genuine fault, so the colour
+      // alone tells the teacher whether to hold still or stop.
       final color =
-          q!.ready ? const Color(0xFF57D9A3) : const Color(0xFFFF5252);
+          q!.ready ? const Color(0xFF087F8C) : const Color(0xFFE8B23A);
       final edge = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
@@ -449,8 +517,10 @@ class _GuidePainter extends CustomPainter {
       }
       // Status above the sheet (its bottom edge is usually near the
       // screen bottom).
-      final topY = math.min(math.min(pts[0].dy, pts[1].dy),
-          math.min(pts[2].dy, pts[3].dy));
+      final topY = math.min(
+        math.min(pts[0].dy, pts[1].dy),
+        math.min(pts[2].dy, pts[3].dy),
+      );
       final textY = topY - 46;
       if (textY > 70) {
         _statusRow(canvas, w, q, textY);
@@ -480,15 +550,19 @@ class _GuidePainter extends CustomPainter {
     final border = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = const Color(0xD9FF5252);
-    canvas.drawRRect(RRect.fromRectAndRadius(guide, Radius.circular(r)), border);
+      ..color =
+          streamDead ? const Color(0xD9FF5252) : AppColors.omr.withOpacity(.85);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(guide, Radius.circular(r)),
+      border,
+    );
 
     // Corner brackets.
     final bracket = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
-    bracket.color = const Color(0xFFFF5252);
+    bracket.color = streamDead ? const Color(0xFFFF5252) : AppColors.omr;
     final L = gw * 0.10;
     final tl = Offset(gx, gy);
     final tr = Offset(gx + gw, gy);
@@ -511,9 +585,10 @@ class _GuidePainter extends CustomPainter {
         // it and fall back to manual framing with the static guide.
         final tp = TextPainter(
           text: const TextSpan(
-              text: 'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
-              style: TextStyle(
-                  color: Colors.white, fontSize: 12.5, height: 1.35)),
+            text:
+                'Live detection is unavailable on this phone — line the sheet up inside the guide, then press the shutter.',
+            style: TextStyle(color: Colors.white, fontSize: 12.5, height: 1.35),
+          ),
           textDirection: TextDirection.ltr,
         )..layout(maxWidth: w - 24);
         tp.paint(canvas, Offset((w - tp.width) / 2, textY));
@@ -530,33 +605,34 @@ class _GuidePainter extends CustomPainter {
     final marks = q?.marks ?? 0;
     final sharpOk = (q?.sharpness ?? 0) >= 40;
     final ty = TextPainter(
-      text: TextSpan(children: [
-        TextSpan(
-          text: '${sheetOk ? '✓' : '•'} Sheet',
-          style: TextStyle(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '${sheetOk ? '✓' : '•'} Sheet',
+            style: TextStyle(
               color: sheetOk ? const Color(0xFF57D9A3) : Colors.white70,
               fontSize: 13,
-              fontWeight: FontWeight.w700),
-        ),
-        TextSpan(
-          text: '      ${marks >= 2 ? '✓' : '•'} Marks $marks/4',
-          style: TextStyle(
-              color: marks >= 2
-                  ? const Color(0xFF57D9A3)
-                  : Colors.white70,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          TextSpan(
+            text: '      ${marks >= 2 ? '✓' : '•'} Marks $marks/4',
+            style: TextStyle(
+              color: marks >= 2 ? const Color(0xFF57D9A3) : Colors.white70,
               fontSize: 13,
-              fontWeight: FontWeight.w700),
-        ),
-        TextSpan(
-          text: '      ${sharpOk ? '✓' : '•'} Sharp',
-          style: TextStyle(
-              color: sharpOk
-                  ? const Color(0xFF57D9A3)
-                  : Colors.white70,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          TextSpan(
+            text: '      ${sharpOk ? '✓' : '•'} Sharp',
+            style: TextStyle(
+              color: sharpOk ? const Color(0xFF57D9A3) : Colors.white70,
               fontSize: 13,
-              fontWeight: FontWeight.w700),
-        ),
-      ]),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: w - 16);
     ty.paint(canvas, Offset((w - ty.width) / 2, textY));
@@ -566,9 +642,14 @@ class _GuidePainter extends CustomPainter {
     final progress = (streak / readyStreak).clamp(0.0, 1.0);
     if (reason != null) {
       final tp = TextPainter(
-        text: TextSpan(text: reason,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 13, height: 1.3)),
+        text: TextSpan(
+          text: reason,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+            height: 1.3,
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: w - 32);
       tp.paint(canvas, Offset((w - tp.width) / 2, textY + 26));
@@ -579,21 +660,29 @@ class _GuidePainter extends CustomPainter {
       final barY = textY + 30.0;
       final bg = Paint()..color = Colors.white24;
       canvas.drawRRect(
-          RRect.fromRectAndRadius(
-              Rect.fromLTWH(barX, barY, barW, 6),
-              const Radius.circular(3)),
-          bg);
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(barX, barY, barW, 6),
+          const Radius.circular(3),
+        ),
+        bg,
+      );
       final fg = Paint()..color = const Color(0xFF57D9A3);
       canvas.drawRRect(
-          RRect.fromRectAndRadius(
-              Rect.fromLTWH(barX, barY, barW * progress, 6),
-              const Radius.circular(3)),
-          fg);
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(barX, barY, barW * progress, 6),
+          const Radius.circular(3),
+        ),
+        fg,
+      );
       final tp = TextPainter(
         text: TextSpan(
-            text: autoCapture ? 'Capturing when ready…' : 'Sheet locked',
-            style:
-                const TextStyle(color: Colors.white, fontSize: 12, height: 1.3)),
+          text: autoCapture ? 'Capturing when ready…' : 'Sheet locked',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            height: 1.3,
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: w - 32);
       tp.paint(canvas, Offset((w - tp.width) / 2, barY + 12));

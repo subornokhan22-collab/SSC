@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 
 /// The Tutor's Desk mark, drawn from the real launcher icon.
 ///
@@ -19,7 +20,12 @@ class AppLogo extends StatelessWidget {
   /// Ring / glow colour. Defaults to the brand primary.
   final Color? ringColor;
 
-  const AppLogo({super.key, this.size = 44, this.framed = true, this.ringColor});
+  const AppLogo({
+    super.key,
+    this.size = 44,
+    this.framed = true,
+    this.ringColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +48,9 @@ class AppLogo extends StatelessWidget {
             gradient: AppTheme.brandGradient,
           ),
           child: Text(
-            'MC',
+            'TD',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.onColor,
               fontWeight: FontWeight.w900,
               fontSize: size * .34,
               letterSpacing: .5,
@@ -61,7 +67,7 @@ class AppLogo extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white,
+        color: AppColors.onColor,
         border: Border.all(color: ring.withOpacity(.35), width: 1.4),
         boxShadow: [
           BoxShadow(
@@ -72,10 +78,7 @@ class AppLogo extends StatelessWidget {
         ],
       ),
       // Inset a hair so the artwork does not touch the ring.
-      child: Padding(
-        padding: EdgeInsets.all(size * .04),
-        child: image,
-      ),
+      child: Padding(padding: EdgeInsets.all(size * .04), child: image),
     );
   }
 }

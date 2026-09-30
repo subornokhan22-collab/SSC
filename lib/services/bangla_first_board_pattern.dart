@@ -35,10 +35,7 @@ class BanglaFirstBoardPatternGenerator {
     return values.take(count).toList(growable: false);
   }
 
-  static CreativeQuestion _labelCq(
-    CreativeQuestion q,
-    String section,
-  ) =>
+  static CreativeQuestion _labelCq(CreativeQuestion q, String section) =>
       CreativeQuestion(
         id: q.id,
         subjectId: q.subjectId,
@@ -73,40 +70,52 @@ class BanglaFirstBoardPatternGenerator {
         .toSet();
 
     final goddoMcqs = mcqBank
-        .where((q) =>
-            q.subjectId == 'bangla_1st' &&
-            goddoChapters.contains(q.chapter) &&
-            original(q.sourceLabel, q.source))
+        .where(
+          (q) =>
+              q.subjectId == 'bangla_1st' &&
+              goddoChapters.contains(q.chapter) &&
+              original(q.sourceLabel, q.source),
+        )
         .toList();
     final kobitaMcqs = mcqBank
-        .where((q) =>
-            q.subjectId == 'bangla_1st' &&
-            kobitaChapters.contains(q.chapter) &&
-            original(q.sourceLabel, q.source))
+        .where(
+          (q) =>
+              q.subjectId == 'bangla_1st' &&
+              kobitaChapters.contains(q.chapter) &&
+              original(q.sourceLabel, q.source),
+        )
         .toList();
     final goddoCqs = cqBank
-        .where((q) =>
-            q.subjectId == 'bangla_1st' &&
-            goddoChapters.contains(q.chapter) &&
-            original(q.sourceLabel, q.source))
+        .where(
+          (q) =>
+              q.subjectId == 'bangla_1st' &&
+              goddoChapters.contains(q.chapter) &&
+              original(q.sourceLabel, q.source),
+        )
         .toList();
     final kobitaCqs = cqBank
-        .where((q) =>
-            q.subjectId == 'bangla_1st' &&
-            kobitaChapters.contains(q.chapter) &&
-            original(q.sourceLabel, q.source))
+        .where(
+          (q) =>
+              q.subjectId == 'bangla_1st' &&
+              kobitaChapters.contains(q.chapter) &&
+              original(q.sourceLabel, q.source),
+        )
         .toList();
     final novel = literatureBank
-        .where((q) =>
-            q.subjectId == 'bangla_1st' &&
-            q.section == 'উপন্যাস' &&
-            original(q.sourceLabel, q.source))
+        .where(
+          (q) =>
+              q.subjectId == 'bangla_1st' &&
+              q.section == 'উপন্যাস' &&
+              original(q.sourceLabel, q.source),
+        )
         .toList();
     final drama = literatureBank
-        .where((q) =>
-            q.subjectId == 'bangla_1st' &&
-            q.section == 'নাটক' &&
-            original(q.sourceLabel, q.source))
+        .where(
+          (q) =>
+              q.subjectId == 'bangla_1st' &&
+              q.section == 'নাটক' &&
+              original(q.sourceLabel, q.source),
+        )
         .toList();
 
     final mcqs = <Question>[

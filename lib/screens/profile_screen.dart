@@ -5,6 +5,7 @@ import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/paper_license.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import '../widgets/animations.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
@@ -47,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refresh() async {
-    final pro = await PaperLicense.isPro();
+    final cachedPro = await PaperLicense.isPro();
     Map<String, dynamic>? p;
     var synced = false;
     if (AuthService.isLoggedIn) {
@@ -58,12 +59,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Offline — keep whatever is cached locally.
       }
     }
-    final proNow = synced ? true : pro;
+    // Re-read after sync: a server-side expiry/revocation may have removed a
+    // stale local unlock. If the server could not be reached, retain cache.
+    final proNow = synced ? true : await PaperLicense.isPro();
     if (!mounted) return;
     setState(() {
       _profile = p;
       _devicePro = proNow;
-      if (synced && !pro) _msg = 'Pro is now active on this device.';
+      if (synced && !cachedPro) _msg = 'Pro is now active on this device.';
     });
   }
 
@@ -94,7 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _forgotPassword() async {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
-      setState(() => _err = 'Type your email first, then tap "Forgot password".');
+      setState(
+        () => _err = 'Type your email first, then tap "Forgot password".',
+      );
       return;
     }
     setState(() {
@@ -105,8 +110,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       await AuthService.sendPasswordReset(email);
       if (mounted) {
-        setState(() =>
-            _msg = 'Password reset link sent to $email — check your inbox.');
+        setState(
+          () => _msg = 'Password reset link sent to $email — check your inbox.',
+        );
       }
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
@@ -121,14 +127,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Sign out?'),
         content: const Text(
-            'Your papers stay on this device. You can sign back in any time with your email.'),
+          'Your papers stay on this device. You can sign back in any time with your email.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Sign out')),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Sign out'),
+          ),
         ],
       ),
     );
@@ -147,10 +156,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _editDetails() async {
-    final nameCtrl =
-        TextEditingController(text: _profile?['name']?.toString() ?? '');
+    final nameCtrl = TextEditingController(
+      text: _profile?['name']?.toString() ?? '',
+    );
     final phoneCtrl = TextEditingController(
-        text: _localPhone(_profile?['phone']?.toString() ?? ''));
+      text: _localPhone(_profile?['phone']?.toString() ?? ''),
+    );
     String? err;
 
     final saved = await showDialog<bool>(
@@ -181,7 +192,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   counterText: '',
                   prefixText: '+880  ',
                   prefixStyle: TextStyle(
-                      fontWeight: FontWeight.bold, color: AppTheme.accent),
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.accent,
+                  ),
                 ),
               ),
               if (err != null) ...[
@@ -192,15 +205,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
               onPressed: () {
                 if (nameCtrl.text.trim().length < 3) {
                   setD(() => err = 'Enter your full name (min 3 characters).');
                   return;
                 }
-                if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(phoneCtrl.text))) {
+                if (!RegExp(r'^1\d{9}$')
+                    .hasMatch(_localPhone(phoneCtrl.text))) {
                   setD(() => err = 'Enter a valid number, e.g. 1XXXXXXXXX.');
                   return;
                 }
@@ -236,6 +251,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     phoneCtrl.dispose();
   }
 
+  Future<void> _openPlans() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+    );
+    if (mounted) await _refresh();
+  }
+
   Future<void> _syncPro() async {
     setState(() {
       _busy = true;
@@ -246,9 +269,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final ok = await AuthService.syncProFromServer();
       await _refresh();
       if (!mounted) return;
-      setState(() => _msg = ok
-          ? 'Pro is now active on this device.'
-          : 'Pro is not enabled for this account yet.');
+      setState(
+        () => _msg = ok
+            ? 'Pro is now active on this device.'
+            : 'No active Pro purchase was found for this account.',
+      );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
@@ -268,7 +293,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: AppTheme.card,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics()),
+              parent: BouncingScrollPhysics(),
+            ),
             padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
             children: Stagger.list([
               if (!AuthService.ready)
@@ -292,8 +318,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
               const SizedBox(height: 16),
               _proCard(),
-              const SizedBox(height: 16),
-              _themeCard(),
+              // Workspace presets remain stored for compatibility, but the
+              // shared four-color theme makes the old picker redundant.
               const SizedBox(height: 20),
               const Center(
                 child: Text(
@@ -343,9 +369,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(_obscure
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded),
+                icon: Icon(
+                  _obscure
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_rounded,
+                ),
               ),
             ),
           ),
@@ -374,7 +402,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // true means the plan ran out).
     DateTime? pu;
     final puRaw = _profile?['pro_until']?.toString() ?? '';
-    if (puRaw.isNotEmpty) pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
+    if (puRaw.isNotEmpty)
+      pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
     final serverPro = _profile?['is_pro'] == true &&
         (pu == null || pu.isAfter(DateTime.now()));
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
@@ -396,7 +425,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   gradient: AppTheme.brandGradient,
                   boxShadow: [
                     BoxShadow(
-                        color: AppTheme.primary.withOpacity(.3), blurRadius: 16),
+                      color: AppTheme.primary.withOpacity(.3),
+                      blurRadius: 16,
+                    ),
                   ],
                 ),
                 child: Text(
@@ -416,23 +447,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       name.isEmpty ? 'Tutor' : name,
                       style: const TextStyle(
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.textDark),
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textDark,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       AuthService.email ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:
-                          const TextStyle(fontSize: 12.5, color: AppTheme.muted),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppTheme.muted,
+                      ),
                     ),
                     if (phone.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(phone,
-                          style: const TextStyle(
-                              fontSize: 12.5, color: AppTheme.muted)),
+                      Text(
+                        phone,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          color: AppTheme.muted,
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -449,27 +487,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text('Edit details'),
                 ),
               ),
-              // Once Pro is active on the server there is nothing left to
-              // pull, so the button retires rather than sitting there
-              // inviting a pointless tap.
               if (!serverPro) ...[
                 const SizedBox(width: 10),
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _busy ? null : _syncPro,
-                    icon: _busy
-                        ? const SizedBox(
-                            width: 15,
-                            height: 15,
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.sync_rounded, size: 18),
-                    label: const Text('Sync Pro'),
+                  child: FilledButton.icon(
+                    onPressed: _busy ? null : _openPlans,
+                    icon: const Icon(Icons.workspace_premium_rounded, size: 18),
+                    label: const Text('Buy Pro plan'),
                   ),
                 ),
               ],
             ],
           ),
-          const SizedBox(height: 10),
+          if (!serverPro)
+            Center(
+              child: TextButton.icon(
+                onPressed: _busy ? null : _syncPro,
+                icon: _busy
+                    ? const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.sync_rounded, size: 17),
+                label: const Text('Already paid? Refresh Pro access'),
+              ),
+            ),
+          const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
             child: TextButton.icon(
@@ -494,23 +538,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
               min: .95,
               max: 1.07,
               period: const Duration(milliseconds: 2200),
-              child: const Icon(Icons.workspace_premium_rounded,
-                  color: AppTheme.accent, size: 30),
+              child: const Icon(
+                Icons.workspace_premium_rounded,
+                color: AppTheme.accent,
+                size: 30,
+              ),
             ),
             const SizedBox(width: 14),
             const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Pro is active',
-                      style: TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 15.5,
-                          fontWeight: FontWeight.w800)),
+                  Text(
+                    'Pro is active',
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   SizedBox(height: 3),
-                  Text('Full papers, no watermark, PDF export and printing.',
-                      style: TextStyle(
-                          color: AppTheme.muted, fontSize: 12, height: 1.4)),
+                  Text(
+                    'Full papers, no watermark, PDF export and printing.',
+                    style: TextStyle(
+                      color: AppTheme.muted,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -521,28 +576,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GlassCard(
       highlighted: true,
       onTap: () async {
-        await Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+        );
         if (mounted) _refresh();
       },
       child: Row(
         children: [
-          const Icon(Icons.workspace_premium_rounded,
-              color: AppTheme.accent, size: 30),
+          const Icon(
+            Icons.workspace_premium_rounded,
+            color: AppTheme.accent,
+            size: 30,
+          ),
           const SizedBox(width: 14),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Upgrade to Pro',
-                    style: TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w800)),
+                Text(
+                  'Upgrade to Pro',
+                  style: TextStyle(
+                    color: AppTheme.accent,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 SizedBox(height: 3),
-                Text('Unlock every question, remove the watermark, print freely.',
-                    style: TextStyle(
-                        color: AppTheme.muted, fontSize: 12, height: 1.4)),
+                Text(
+                  'Unlock every question, remove the watermark, print freely.',
+                  style: TextStyle(
+                    color: AppTheme.muted,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
               ],
             ),
           ),
@@ -552,77 +620,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _themeCard() {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionTitle(
-            title: 'Workspace theme',
-            subtitle: 'Sets the backdrop tone across the whole app.',
-            icon: Icons.palette_outlined,
-          ),
-          ValueListenableBuilder<int>(
-            valueListenable: AppStyle.bgIndex,
-            builder: (context, index, _) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: List.generate(AppStyle.colors.length, (i) {
-                    final selected = i == index;
-                    return PressableScale(
-                      onTap: () => AppStyle.set(i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOut,
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppStyle.colors[i],
-                              Color.alphaBlend(
-                                  AppStyle.accents[i].withOpacity(.35),
-                                  AppStyle.colors[i]),
-                            ],
-                          ),
-                          border: Border.all(
-                            color: selected
-                                ? AppStyle.accents[i]
-                                : AppTheme.border,
-                            width: selected ? 2 : 1,
-                          ),
-                          boxShadow: selected
-                              ? [
-                                  BoxShadow(
-                                      color: AppStyle.accents[i].withOpacity(.28),
-                                      blurRadius: 14)
-                                ]
-                              : null,
-                        ),
-                        child: selected
-                            ? Icon(Icons.check_rounded,
-                                size: 20, color: AppStyle.accents[i])
-                            : null,
-                      ),
-                    );
-                  }),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  AppStyle.labels[index % AppStyle.labels.length],
-                  style: const TextStyle(fontSize: 12.5, color: AppTheme.muted),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

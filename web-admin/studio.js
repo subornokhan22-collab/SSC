@@ -1,0 +1,2882 @@
+import { createClient } from "./vendor/supabase.mjs";
+import { createEnglishUploader } from "./english-upload.js";
+const C = window.ContentCore,
+  $ = (id) => document.getElementById(id),
+  esc = (s) =>
+    String(s ?? "").replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
+    );
+const URL = "https://vxexidxdoghdmzvkvgqk.supabase.co";
+const KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4ZXhpZHhkb2doZG16dmt2Z3FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODYzMTcsImV4cCI6MjEwMTU2MjMxN30.hp1ZatmQpCXDFClWlOQEpSJhUwh8bfvspWYKXnXcMY4";
+// Official SDK owns refresh. No JWT or refresh token is persisted to web storage.
+for (const key of ["sb_token", "sb_refresh", "sb_uid"])
+  localStorage.removeItem(key);
+const client = createClient(URL, KEY, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: true,
+    detectSessionInUrl: false,
+  },
+});
+let catalog = await (await fetch("./catalog.json")).json();
+const state = {
+  demo: false,
+  user: null,
+  tab: "dashboard",
+  page: 0,
+  query: "",
+  subject: "",
+  chapter: "",
+  source: "",
+  status: "",
+  paperType: "",
+  board: "",
+  year: "",
+  selected: new Set(),
+  rows: [],
+  total: 0,
+  busy: false,
+  routeVersion: 0,
+};
+// Local Lucide-style SVG paths keep the admin crisp, accessible and usable
+// offline; they inherit the four-color theme through currentColor.
+const ICONS = Object.freeze({
+  dashboard:
+    '<path d="m3 10 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/>',
+  questions:
+    '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+  add: '<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>',
+  all: '<path d="M5 6h14M5 12h14M5 18h14"/><circle cx="3" cy="6" r=".5"/><circle cx="3" cy="12" r=".5"/><circle cx="3" cy="18" r=".5"/>',
+  import:
+    '<path d="M4 4h16v16H4z"/><path d="M12 7v10M8 13l4 4 4-4"/>',
+  promotions:
+    '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z"/>',
+  figures:
+    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m4 17 5-5 3 3 2-2 6 5"/>',
+  validation:
+    '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+  archived:
+    '<path d="M4 7h16v13H4zM3 4h18v3H3z"/><path d="M9 12h6"/>',
+  activity:
+    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  settings:
+    '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="4"/>',
+  arrow: '<path d="M5 12h13M13 6l6 6-6 6"/>',
+  spark: '<path d="m12 3 1.7 6.3L20 11l-6.3 1.7L12 19l-1.7-6.3L4 11l6.3-1.7L12 3Z"/>',
+  book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v15M8 7h8M8 11h8"/>',
+});
+function icon(name, className = "ui-icon") {
+  return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.spark}</svg>`;
+}
+const nav = [
+  ["dashboard", "dashboard", "Dashboard"],
+  ["questions", "questions", "Questions"],
+  ["add", "add", "Add"],
+  ["all", "all", "All"],
+  ["import", "import", "Import"],
+  ["promotions", "promotions", "Promotions"],
+  ["figures", "figures", "Figures"],
+  ["validation", "validation", "Validate"],
+  ["archived", "archived", "Archive"],
+  ["activity", "activity", "Activity"],
+  ["settings", "settings", "Settings"],
+];
+
+let demoRows = Array.from({ length: 8 }, (_, i) => ({
+  id: `demo_physics_${i + 1}`,
+  type: "mcq",
+  subject_id: "physics",
+  chapter: catalog.CHAPTERS.physics[i % 3],
+  payload: {
+    questionText: [
+      "What is the SI unit of force?",
+      "Which quantity measures distance per unit time?",
+      "What is the SI unit of energy?",
+      "Which instrument measures electric current?",
+    ][i % 4],
+    options: ["Newton", "Metre", "Second", "Kilogram"],
+    correctIndex: 0,
+    explanation:
+      "Demonstration content only. Replace with reviewed source material.",
+  },
+  source: "original",
+  review_status: i < 4 ? "published" : i < 6 ? "review" : "draft",
+  /* Every fourth demo row stands in for a question a teacher generated in the
+   * app, so the All Questions screen shows both sources without a database. */
+  owner_id: i % 4 === 3 ? "00000000-0000-4000-8000-000000000001" : null,
+  is_active: true,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  metadata: { difficulty: "medium" },
+}));
+let demoEnglish = [],
+  demoActivity = [],
+  demoPromotions = {
+    offers: [
+      {
+        id: "demo_monthly",
+        plan_id: "monthly",
+        title: "Pro Monthly",
+        description: "Full papers, PDF export and no watermark.",
+        price: 299,
+        currency: "BDT",
+        period_days: 30,
+        badge: "Popular",
+        is_active: true,
+        sort_order: 1,
+      },
+      {
+        id: "demo_lifetime",
+        plan_id: "lifetime",
+        title: "Pro Lifetime",
+        description: "One payment for permanent Pro access.",
+        price: 799,
+        currency: "BDT",
+        period_days: null,
+        badge: "Best value",
+        is_active: true,
+        sort_order: 2,
+      },
+    ],
+    prizes: [
+      {
+        id: "demo_prize",
+        title: "Monthly paper challenge",
+        description: "A reviewed teacher paper earns a classroom prize.",
+        value_text: "Prize details to announce",
+        image_url: "",
+        stock: 1,
+        is_active: true,
+        sort_order: 1,
+      },
+    ],
+    notifications: [],
+    ads: [],
+  };
+function notify(message, error = false) {
+  $("notice").hidden = false;
+  $("notice").className = error ? "error" : "";
+  $("notice").textContent = message;
+}
+/**
+ * The Supabase Functions client keeps the response body on context when an
+ * Edge Function returns non-2xx. Its default error message drops the useful
+ * part, leaving admins with only "Edge Function returned a non-2xx status
+ * code". Read the safe JSON error that the function returned and include the
+ * HTTP status, without ever exposing request headers or credentials.
+ */
+async function edgeFunctionMessage(name, error, data) {
+  let detail =
+    typeof data?.error === "string"
+      ? data.error
+      : typeof data?.message === "string"
+        ? data.message
+        : "";
+  const response = error?.context;
+  const status = Number(response?.status) || 0;
+  if (!detail && response && typeof response.clone === "function") {
+    try {
+      const text = await response.clone().text();
+      if (text.trim()) {
+        try {
+          const body = JSON.parse(text);
+          const value = body?.error ?? body?.message ?? body?.detail;
+          detail =
+            typeof value === "string"
+              ? value
+              : typeof value?.message === "string"
+                ? value.message
+                : text.trim().slice(0, 600);
+        } catch {
+          detail = text.trim().slice(0, 600);
+        }
+      }
+    } catch {
+      // The SDK's message below is still useful when the response body is
+      // unavailable, for example after a network failure.
+    }
+  }
+  const prefix = status
+    ? `${name} returned HTTP ${status}`
+    : `${name} request failed`;
+  return detail
+    ? `${prefix}: ${detail}`
+    : `${prefix}. ${error?.message || "Try again or contact the administrator."}`;
+}
+async function invokeAdminContent(body) {
+  const { data, error } = await client.functions.invoke("admin-content", {
+    body,
+  });
+  if (error || data?.error)
+    throw Error(await edgeFunctionMessage("admin-content", error, data));
+  return data;
+}
+/**
+ * Only the area being worked in is locked. Saving inside the editor must not
+ * disable the sidebar, a long bank check must not freeze an open dialog, and —
+ * the bug this replaces — finishing a task must not re-enable buttons that were
+ * disabled for a reason of their own.
+ */
+function taskScope(source) {
+  const el = source && typeof source.closest === "function" ? source : null;
+  return (el && (el.closest("dialog") || el.closest("#main"))) || document;
+}
+async function task(fn, source) {
+  if (state.busy) return;
+  state.busy = true;
+  taskScope(source)
+    .querySelectorAll("button:not(:disabled)")
+    .forEach((b) => {
+      b.disabled = true;
+      b.dataset.taskLock = "1";
+    });
+  try {
+    return await fn();
+  } catch (e) {
+    const message = C.errorMessage(e);
+    notify(message, true);
+    if ($("editor").open) $("editor-errors").textContent = message;
+    sessionGuard(e);
+  } finally {
+    state.busy = false;
+    document.querySelectorAll("button[data-task-lock]").forEach((b) => {
+      delete b.dataset.taskLock;
+      b.disabled = false;
+    });
+    englishUploader.refresh();
+  }
+}
+function download(name, data, type = "application/json") {
+  const url = window.URL.createObjectURL(
+    new Blob(
+      [
+        data instanceof Blob || typeof data === "string"
+          ? data
+          : JSON.stringify(data, null, 2),
+      ],
+      { type },
+    ),
+  );
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+}
+const tableFor = (english) => (english ? "english_papers" : "questions");
+const promotionTables = {
+  offers: "paid_plan_offers",
+  prizes: "prizes",
+  notifications: "app_notifications",
+  ads: "app_offer_ads",
+};
+let promotionRows = { offers: [], prizes: [], notifications: [], ads: [] };
+function promotionTable(kind) {
+  const table = promotionTables[kind];
+  if (!table) throw Error("Unknown promotion workspace.");
+  return table;
+}
+function promotionId(prefix, title) {
+  const base = String(title || prefix)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "")
+    .slice(0, 36) || prefix;
+  return `${prefix}_${base}_${crypto.randomUUID().slice(0, 6)}`;
+}
+function dateInput(value) {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.valueOf())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+}
+function dateValue(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.valueOf())) throw Error("Enter a valid date and time.");
+  return date.toISOString();
+}
+function validatePromotionWindow(kind, row) {
+  if (!["offers", "prizes", "ads"].includes(kind)) return;
+  const starts = row.starts_at ? new Date(row.starts_at) : null;
+  const ends = row.ends_at ? new Date(row.ends_at) : null;
+  if (starts && Number.isNaN(starts.valueOf()))
+    throw Error("Start time is invalid.");
+  if (ends && Number.isNaN(ends.valueOf()))
+    throw Error("End time is invalid.");
+  if (starts && ends && starts >= ends)
+    throw Error("End time must be after start time.");
+  if (row.is_active && ends && ends <= new Date())
+    throw Error("An expired promotion cannot be activated.");
+}
+async function loadPromotionRows(kind) {
+  if (state.demo) return structuredClone(demoPromotions[kind]);
+  const { data, error } = await client
+    .from(promotionTable(kind))
+    .select("*")
+    .order(
+      kind === "ads"
+        ? "priority"
+        : kind === "notifications"
+          ? "created_at"
+          : "sort_order",
+      { ascending: kind !== "notifications" },
+    );
+  if (error) throw error;
+  return data || [];
+}
+async function all(table, includePrivate = false) {
+  if (state.demo)
+    return structuredClone(
+      table === "questions"
+        ? demoRows
+        : table === "english_papers"
+          ? demoEnglish
+          : table === "admin_activity"
+            ? demoActivity
+            : [],
+    );
+  const rows = [];
+  for (let start = 0; ; start += 500) {
+    let query = client.from(table).select("*");
+    if (table === "questions" && !includePrivate)
+      query = query.is("owner_id", null);
+    const { data, error } = await query
+      .order(table === "admin_activity" ? "created_at" : "id")
+      .range(start, start + 499);
+    if (error) throw error;
+    rows.push(...data);
+    if (data.length < 500) break;
+  }
+  return rows;
+}
+function writable(row) {
+  const copy = structuredClone(row);
+  for (const key of [
+    "search_text",
+    "created_by",
+    "created_at",
+    "archived_at",
+    "updated_at",
+  ])
+    delete copy[key];
+  return copy;
+}
+async function save(table, row, previous) {
+  const body = writable(row);
+  if (!/^[a-zA-Z0-9_-]+$/.test(body.id || ""))
+    throw Error("Enter a stable record ID using letters, digits, _ or -.");
+  if (state.demo) {
+    const pool = table === "questions" ? demoRows : demoEnglish;
+    const i = pool.findIndex((x) => x.id === body.id);
+    if (!previous && i >= 0)
+      throw Error("This ID already exists. Choose a new ID.");
+    body.created_at = previous?.created_at || new Date().toISOString();
+    body.updated_at = new Date().toISOString();
+    if (i >= 0) pool[i] = body;
+    else pool.unshift(body);
+    demoActivity.unshift({
+      record_id: body.id,
+      entity: table,
+      action: body.review_status,
+      created_at: body.updated_at,
+      admin_id: "Offline demo",
+    });
+    return;
+  }
+  let q = previous
+    ? client
+        .from(table)
+        .update(body)
+        .eq("id", previous.id)
+        .eq("updated_at", previous.updated_at)
+    : client.from(table).insert(body);
+  const { data, error } = await q.select();
+  if (error) throw error;
+  if (!data?.length)
+    throw Error(
+      "This record changed in another session. Reload before editing.",
+    );
+}
+async function enter(demo = false) {
+  state.demo = demo;
+  $("login").hidden = true;
+  $("app").hidden = false;
+  $("mode").textContent = demo ? "OFFLINE DEMO · NOT LIVE" : "ADMIN SESSION";
+  $("connection").textContent = demo
+    ? "Demo data · never published"
+    : "Supabase · authenticated";
+  try {
+    if (!demo) {
+      const rows = await all("content_subjects");
+      for (const r of rows) {
+        catalog.SUBJECTS[r.id] = r.name;
+        catalog.CHAPTERS[r.id] = r.chapters;
+      }
+    }
+  } catch (e) {
+    notify(
+      "Catalog unavailable: " + C.errorMessage(e, "check the database setup"),
+      true,
+    );
+  }
+  route();
+}
+$("login-form").onsubmit = (e) => {
+  e.preventDefault();
+  task(async () => {
+    const { data, error } = await client.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value,
+    });
+    $("password").value = "";
+    if (error) {
+      $("login-error").textContent = error.message;
+      return;
+    }
+    const check = await client.rpc("is_question_admin");
+    if (check.error || !check.data) {
+      await client.auth.signOut();
+      $("login-error").textContent =
+        "This account is not a content administrator.";
+      return;
+    }
+    state.user = data.user;
+    await enter();
+  });
+};
+$("demo").onclick = () => enter(true);
+$("signout").onclick = async () => {
+  await client.auth.signOut();
+  location.reload();
+};
+$("quick-add").onclick = () => openEditor(newQuestion());
+$("nav").innerHTML = nav
+  .map(
+    ([id, iconName, label]) =>
+      `<a href="#${id}" data-nav="${id}"><span class="icon">${icon(iconName)}</span><span>${label}</span></a>`,
+  )
+  .join("");
+window.addEventListener("hashchange", route);
+async function route() {
+  if ($("app").hidden) return;
+  const hash = location.hash.slice(1) || "dashboard";
+  /* "Add Questions" is a real screen now, and the English-only tab folded into
+   * the Question Bank behind a content-type filter. Old bookmarks still land
+   * somewhere sensible instead of dumping the reader on the dashboard. */
+  const tab = hash === "english" ? "questions" : hash;
+  state.tab = nav.some((n) => n[0] === tab) ? tab : "dashboard";
+  state.page = 0;
+  state.query = "";
+  state.subject = "";
+  state.chapter = "";
+  state.source = "";
+  state.status = "";
+  state.paperType = "";
+  state.board = "";
+  state.year = "";
+  state.selected.clear();
+  document
+    .querySelectorAll("[data-nav]")
+    .forEach((a) => a.classList.toggle("active", a.dataset.nav === state.tab));
+  $("page-title").textContent = nav.find((n) => n[0] === state.tab)[2];
+  await render();
+}
+/**
+ * The shape of the content that is coming, rather than a blank pane or a line
+ * of text. Reduced motion keeps the shapes and drops the shimmer.
+ */
+function skeletonMarkup() {
+  return (
+    '<div class="skeleton" aria-busy="true" aria-label="Loading your content">' +
+    '<div class="skeleton-row short"></div>'.repeat(2) +
+    '<div class="skeleton-row"></div>'.repeat(3) +
+    "</div>"
+  );
+}
+async function render() {
+  const version = ++state.routeVersion;
+  $("main").innerHTML = skeletonMarkup();
+  try {
+    const html = await {
+      dashboard: dashboard,
+      questions: listView,
+      add: addView,
+      all: allView,
+      archived: listView,
+      import: importView,
+      promotions: promotionsView,
+      validation: validationView,
+      figures: figuresView,
+      activity: activityView,
+      settings: settingsView,
+    }[state.tab]();
+    if (version !== state.routeVersion) return;
+    $("main").innerHTML = html;
+    bind();
+  } catch (e) {
+    if (version !== state.routeVersion) return;
+    $("main").innerHTML =
+      '<div class="card empty"><h2>Could not load this workspace</h2><p>' +
+      esc(C.errorMessage(e)) +
+      '</p><p>Check your connection and database setup.</p><button data-action="reload" class="ghost">Retry</button></div>';
+    bind();
+  }
+}
+async function count(table, filter) {
+  if (state.demo)
+    return (table === "questions" ? demoRows : demoEnglish).filter(
+      filter || (() => true),
+    ).length;
+  let q = client.from(table).select("id", { count: "exact", head: true });
+  if (table === "questions") q = q.is("owner_id", null);
+  if (filter === "published")
+    q = q.eq("is_active", true).eq("review_status", "published");
+  if (filter === "review")
+    q = q.eq("is_active", true).eq("review_status", "review");
+  const { count, error } = await q;
+  if (error) throw error;
+  return count;
+}
+async function dashboard() {
+  let counts, recent;
+  if (state.demo) {
+    counts = [
+      demoRows.filter((r) => r.is_active && r.review_status === "published")
+        .length,
+      demoRows.filter((r) => r.review_status === "review").length,
+      demoEnglish.length,
+      Object.keys(catalog.SUBJECTS).length,
+    ];
+    recent = demoRows.slice(0, 5);
+  } else {
+    counts = await Promise.all([
+      count("questions", "published"),
+      count("questions", "review"),
+      count("english_papers"),
+      Promise.resolve(Object.keys(catalog.SUBJECTS).length),
+    ]);
+    const r = await client
+      .from("questions")
+      .select("*")
+      .is("owner_id", null)
+      .order("updated_at", { ascending: false })
+      .limit(5);
+    if (r.error) throw r.error;
+    recent = r.data;
+  }
+  return `<div class="intro"><div><h2>Review before publish.</h2><p class="muted">${state.demo ? "Demo workspace" : "Live content"}</p></div><span class="badge">SSC BANK</span></div><div class="stats">${counts.map((n, i) => `<div class="stat"><span>${["Published", "Review", "English", "Subjects"][i]}</span><strong data-count="${n}">${n.toLocaleString()}</strong><small>${[state.demo ? "Demo only" : "Live content", "Human check", "Reading and writing", "Chapter lists"][i]}</small></div>`).join("")}</div><div class="columns"><section class="card"><div class="card-head"><h2>Recent</h2><a href="#questions">Questions</a></div>${recent.length ? `<table><thead><tr><th>QUESTION</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>${recent.map((r) => `<tr><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.chapter)}</small></div></td><td>${r.type.toUpperCase()}</td><td>${badge(r.review_status)}</td></tr>`).join("")}</tbody></table>` : '<p class="empty">No drafts yet.</p>'}</section><section class="card"><h2>Actions</h2>${[
+    ["add", "Add", "Start a draft", "add"],
+    ["import", "Import", "CSV, JSON or text", "import"],
+    ["book", "English", "Board paper", "import"],
+    ["validation", "Health", "Fields and duplicates", "validation"],
+  ]
+    .map(
+      ([iconName, title, sub, tab]) =>
+        `<a class="quick" href="#${tab}"><span class="quick-icon">${icon(iconName)}</span><span><strong>${title}</strong><p>${sub}</p></span><span class="arrow">${icon("arrow")}</span></a>`,
+    )
+    .join(
+      "",
+    )}</section></div><div class="banner"><span class="quick-icon">${icon("book")}</span><div><h3>English papers stay separate.</h3><p>Use the same import flow for passages, tables and writing.</p></div><button class="ghost" data-action="new-english">Open</button></div>`;
+}
+const badge = (s) => `<span class="badge ${esc(s)}">${esc(s)}</span>`;
+/**
+ * A question's attached image, or an empty string when there is nothing that
+ * can actually be shown. Only https is usable: the database rejects any other
+ * figure URL, so a stored http value is reported rather than rendered as a
+ * broken image the reader would assume was a missing file.
+ */
+function figureUrl(row) {
+  const path = row?.figure?.imagePath;
+  return typeof path === "string" && /^https:\/\//i.test(path) ? path : "";
+}
+function thumb(row) {
+  const url = figureUrl(row);
+  if (url) return `<img class="thumb" src="${esc(url)}" alt="" loading="lazy">`;
+  if (row?.figure?.imagePath)
+    return '<span class="thumb thumb-broken" title="Figure URL must start with https://">!</span>';
+  return '<span class="thumb thumb-none" aria-hidden="true"></span>';
+}
+function options(object, value, allLabel = "All") {
+  return (
+    `<option value="">${allLabel}</option>` +
+    Object.entries(object)
+      .map(
+        ([k, v]) =>
+          `<option value="${esc(k)}" ${k === value ? "selected" : ""}>${esc(v)}</option>`,
+      )
+      .join("")
+  );
+}
+/* English papers no longer have a tab of their own. The Question Bank carries a
+ * content-type filter instead; the paper format itself is untouched. */
+function englishMode() {
+  return (
+    state.source === "english" ||
+    (state.tab === "archived" && state.paperType === "english")
+  );
+}
+async function listView() {
+  const english = englishMode(),
+    archived = state.tab === "archived";
+  let rows, total;
+  if (state.demo) {
+    rows = (english ? demoEnglish : demoRows).filter(
+      (r) =>
+        r.is_active !== archived &&
+        (!state.subject || r.subject_id === state.subject) &&
+        (!state.chapter ||
+          String(r.chapter || "")
+            .toLowerCase()
+            .includes(state.chapter.toLowerCase())) &&
+        (!state.status || r.review_status === state.status) &&
+        (!state.query ||
+          JSON.stringify(r)
+            .toLowerCase()
+            .includes(state.query.toLowerCase())) &&
+        (!state.board || r.board === state.board) &&
+        (!state.year || r.year === Number(state.year)) &&
+        (!state.paperType || archived || r.paper_type === state.paperType),
+    );
+    total = rows.length;
+    rows = rows.slice(state.page * 25, state.page * 25 + 25);
+  } else {
+    let q = client
+      .from(tableFor(english))
+      .select("*", { count: "exact" })
+      .eq("is_active", !archived);
+    if (!english) q = q.is("owner_id", null);
+    if (state.query)
+      q = q.ilike(
+        "search_text",
+        "%" + state.query.replace(/[\\%_]/g, "\\$&") + "%",
+      );
+    if (state.status) q = q.eq("review_status", state.status);
+    if (!english && state.subject) q = q.eq("subject_id", state.subject);
+    if (!english && state.chapter)
+      q = q.ilike(
+        "chapter",
+        "%" + state.chapter.replace(/[\\%_]/g, "\\$&") + "%",
+      );
+    if (english && !archived && state.paperType)
+      q = q.eq("paper_type", state.paperType);
+    if (english && state.board)
+      q = q.ilike("board", state.board.replace(/[\\%_]/g, "\\$&"));
+    if (english && state.year) q = q.eq("year", Number(state.year));
+    const r = await q.order("id").range(state.page * 25, state.page * 25 + 24);
+    if (r.error) throw r.error;
+    rows = r.data;
+    total = r.count;
+  }
+  state.rows = rows;
+  state.total = total;
+  return `<div class="intro"><p class="muted">${english ? "Complete English board sets with their own structure and app sync." : archived ? "Archived content stays recoverable. Restore it or back it up before permanent deletion." : "Draft → Review → Published. Every change has an audit trail."}</p>${english ? '<div class="toolbar"><button class="primary" data-action="upload-english">Upload</button><button class="ghost" data-action="new-english">Blank</button></div>' : ""}</div><div class="filters"><label class="search">SEARCH ALL CONTENT<input id="search" value="${esc(state.query)}" placeholder="Question, CQ subpart, answer, ID…"></label>${archived ? `<label>CONTENT<select id="archive-type">${options({ questions: "Questions", english: "English papers" }, state.paperType, "Questions")}</select></label>` : ""}${english ? `<label>PAPER<select id="paper-filter">${options({ first: "English 1st", second: "English 2nd" }, archived ? "" : state.paperType)}</select></label><label>BOARD<input id="board-filter" value="${esc(state.board)}" placeholder="e.g. Dhaka"></label><label>YEAR<input id="year-filter" type="number" value="${esc(state.year)}" placeholder="All years"></label>` : `<label>CONTENT<select id="source-filter">${options({ questions: "Questions", english: "English papers" }, state.source, "Questions")}</select></label><label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label><label>CHAPTER<input id="chapter-filter" value="${esc(state.chapter)}" placeholder="All chapters"></label>`}<label>WORKFLOW<select id="status-filter">${options({ draft: "Draft", review: "In review", published: "Published" }, state.status, "All statuses")}</select></label><button class="ghost" data-action="filter">Apply</button></div><div class="toolbar"><button class="ghost small" data-action="export-all">Export</button><button class="ghost small" data-action="export-subject">Export</button><button class="ghost small" data-action="export-selected">Export</button><button class="ghost small" data-action="paper-preview">Preview</button><button class="ghost small" data-action="bulk-publish">Publish</button><button class="ghost small" data-action="bulk-archive">${archived ? "Restore" : "Archive"}</button><span class="muted">${state.selected.size} selected</span></div><div class="table-wrap"><table><thead><tr><th><input id="select-page" type="checkbox" aria-label="Select this page"></th><th>${english ? "BOARD PAPER" : "QUESTION / CHAPTER"}</th><th>${english ? "YEAR" : "TYPE"}</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows.map((r) => `<tr><td><input type="checkbox" data-select="${esc(r.id)}" ${state.selected.has(r.id) ? "checked" : ""} aria-label="Select ${esc(r.id)}"></td><td class="title-cell">${thumb(r)}<div><div class="truncate">${esc(english ? r.board + " · English " + (r.paper_type === "first" ? "1st" : "2nd") : C.text(r))}</div><small>${esc(r.id)}${english ? "" : " · " + esc(r.chapter)}</small></div></td><td>${english ? r.year : esc(r.type.toUpperCase())}</td><td>${badge(r.review_status)}</td><td class="actions">${archived ? `<button class="ghost small" data-row="${esc(r.id)}" data-action="restore">Restore</button><button class="danger small" data-row="${esc(r.id)}" data-action="delete">Delete</button>` : `<button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button><button class="ghost small" data-row="${esc(r.id)}" data-action="duplicate">Duplicate</button><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="${r.review_status === "draft" ? "review" : "publish"}">${r.review_status === "draft" ? "Review" : r.review_status === "review" ? "Publish" : "Review"}</button><button class="link small" data-row="${esc(r.id)}" data-action="archive">Archive</button>`}</td></tr>`).join("")}</tbody></table>${rows.length ? "" : '<div class="empty">No matching content. Try another filter or create a draft.</div>'}</div><div class="pager"><span>${total.toLocaleString()} matching records · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next</button></span></div>`;
+}
+function newQuestion() {
+  return {
+    id: "q_" + crypto.randomUUID().slice(0, 12),
+    type: "mcq",
+    subject_id: "physics",
+    chapter: catalog.CHAPTERS.physics[0],
+    payload: {
+      questionText: "",
+      options: ["", "", "", ""],
+      correctIndex: null,
+      explanation: "",
+    },
+    source: "original",
+    source_label: "",
+    metadata: {
+      difficulty: "medium",
+      topic: "",
+      tags: [],
+      source_board: "",
+      source_year: null,
+      verified: false,
+    },
+    review_status: "draft",
+    is_active: true,
+    owner_id: null,
+  };
+}
+function questionSubjects(includeEnglish = false) {
+  return Object.fromEntries(
+    Object.entries(catalog.SUBJECTS).filter(
+      ([id]) => includeEnglish || !id.startsWith("english_"),
+    ),
+  );
+}
+/**
+ * The same subject → chapter ribbon is used by the blank editor and the paste
+ * workspace. A chapter chip is a quick choice; the field remains editable so
+ * a newly added catalog chapter or a source-specific name is not blocked.
+ */
+function subjectChapterRibbon({
+  prefix,
+  subject,
+  chapter,
+  includeEnglish = false,
+  editor = false,
+}) {
+  const subjects = questionSubjects(includeEnglish),
+    subjectId = subjects[subject] ? subject : Object.keys(subjects)[0] || "",
+    chapters = catalog.CHAPTERS[subjectId] || [],
+    subjectOptions = Object.entries(subjects)
+      .map(
+        ([id, name]) =>
+          `<option value="${esc(id)}" ${id === subjectId ? "selected" : ""}>${esc(name)}</option>`,
+      )
+      .join(""),
+    chapterOptions = chapters
+      .map(
+        (name) =>
+          `<option value="${esc(name)}" ${name === chapter ? "selected" : ""}>${esc(name)}</option>`,
+      )
+      .join(""),
+    chips = chapters
+      .map(
+        (name) =>
+          `<button type="button" class="chapter-chip${name === chapter ? " active" : ""}" data-chapter-chip="${esc(name)}" aria-pressed="${name === chapter ? "true" : "false"}">${esc(name)}</button>`,
+      )
+      .join(""),
+    subjectControl = `<select id="${prefix}-subject" ${editor ? 'data-field="subject_id"' : ""} data-ribbon-subject>${subjectOptions}</select>`,
+    chapterControl = editor
+      ? `<input id="${prefix}-chapter" data-field="chapter" data-ribbon-chapter list="${prefix}-chapter-list" value="${esc(chapter)}" placeholder="Choose or type a chapter"><datalist id="${prefix}-chapter-list">${chapterOptions}</datalist>`
+      : `<select id="${prefix}-chapter" data-ribbon-chapter><option value="">Use chapter from source if present</option>${chapterOptions}</select>`;
+  return `<section class="subject-chapter-ribbon" data-subject-chapter-ribbon data-ribbon-prefix="${prefix}" aria-label="Subject and chapter selection"><div class="ribbon-heading"><strong>SUBJECT → CHAPTER</strong><span>Choose the subject first, then tap a chapter.</span></div><div class="ribbon-controls"><label>SUBJECT${subjectControl}</label><label>CHAPTER${chapterControl}</label></div><div class="chapter-chip-row" id="${prefix}-chapter-chips" aria-label="Chapters for selected subject">${chips || '<span class="muted">No chapters have been added for this subject yet.</span>'}</div></section>`;
+}
+let editing = null,
+  previous = null,
+  editingEnglish = false,
+  parseErrors = new Map();
+/**
+ * Attach a picture to a question: pick a file (uploaded to the question-figures
+ * bucket) or paste an https URL. The preview updates as you type, because a URL
+ * box with no picture beside it is exactly how broken figures go unnoticed.
+ */
+function figureField(r) {
+  const path = r.figure?.imagePath || "",
+    url = figureUrl(r);
+  return `<label class="wide figure-attach">QUESTION IMAGE · attach a file or paste an https URL<span class="figure-row"><img id="figure-preview" class="figure-preview" alt="Question image preview"${url ? ` src="${esc(url)}"` : " hidden"}><span class="figure-controls"><input type="file" id="figure-file-attach" accept="image/png,image/jpeg,image/webp"><input data-field="image" type="url" value="${esc(path)}" placeholder="https://…"><small class="muted" id="figure-note">${
+    url ? "Attached." : path ? "This URL does not start with https:// — the database will reject it." : "No image attached."
+  }</small></span></span></label>`;
+}
+/** Keeps the editor picture in step with whatever the URL field holds. */
+function paintFigurePreview() {
+  const img = document.querySelector("#figure-preview");
+  if (!img) return;
+  const url = figureUrl(editing),
+    raw = editing.figure?.imagePath || "",
+    note = document.querySelector("#figure-note");
+  if (url) img.src = url;
+  else img.removeAttribute("src");
+  img.hidden = !url;
+  if (note)
+    note.textContent = url
+      ? "Attached."
+      : raw
+        ? "This URL does not start with https:// — the database will reject it."
+        : "No image attached.";
+}
+function input(label, key, value, type = "text") {
+  return `<label>${esc(label)}<input data-field="${key}" type="${type}" value="${esc(value)}"></label>`;
+}
+function area(label, key, value, json = false) {
+  return `<label class="wide">${esc(label)}${json ? " · JSON structure" : ""}<textarea data-field="${key}" ${json ? 'data-json="true"' : ""}>${esc(json ? JSON.stringify(value, null, 2) : value)}</textarea></label>`;
+}
+function englishField(k, t, d) {
+  const label = C.fieldLabel(k, editing.paper_type),
+    v = d[k];
+  if (["text", "optional"].includes(t))
+    return area(label, "data." + k, v || "");
+  if (["lines", "optionalLines"].includes(t))
+    return area(
+      label + " · one item per line",
+      "data." + k,
+      (v || []).join("\n"),
+    ).replace("<textarea ", '<textarea data-lines="true" ');
+  if (t === "indices") return area(label, "data." + k, v || [], true);
+  if (!Array.isArray(d[k]) || !d[k].length) {
+    const configuredCount =
+      C.englishSchemas[editing.paper_type]?.fixedCounts?.[k];
+    d[k] =
+      t === "mcqs"
+        ? Array.from({ length: configuredCount || 7 }, () => ({
+            stem: "",
+            options: ["", "", "", ""],
+          }))
+        : t === "transformations"
+          ? Array.from({
+              length: configuredCount || 10,
+            }, () => ({ sentence: "", direction: "" }))
+          : t === "matching"
+            ? Array.from({ length: configuredCount || 5 }, () => ({
+                a: "",
+                b: "",
+                c: "",
+              }))
+            : Array.from({ length: 2 }, () => ["", "", ""]);
+  }
+  let html = '<section class="wide structured"><h3>' + esc(label) + "</h3>";
+  for (const [i, row] of d[k].entries()) {
+    html += '<div class="form-grid">';
+    if (t === "mcqs") {
+      html += area(
+        "Item " + (i + 1) + " · question",
+        "data." + k + "." + i + ".stem",
+        row.stem,
+      );
+      for (let j = 0; j < 4; j++)
+        html += input(
+          "Option " + (j + 1),
+          "data." + k + "." + i + ".options." + j,
+          row.options?.[j] || "",
+        );
+    } else if (t === "transformations")
+      html +=
+        input(
+          "Sentence " + (i + 1),
+          "data." + k + "." + i + ".sentence",
+          row.sentence,
+        ) +
+        input("Direction", "data." + k + "." + i + ".direction", row.direction);
+    else if (t === "matching")
+      for (const col of ["a", "b", "c"])
+        html += input(
+          "Row " + (i + 1) + " · " + col.toUpperCase(),
+          "data." + k + "." + i + "." + col,
+          row[col],
+        );
+    else if (Array.isArray(row))
+      for (let j = 0; j < row.length; j++)
+        html += input(
+          "Row " + (i + 1) + " · column " + (j + 1),
+          "data." + k + "." + i + "." + j,
+          row[j],
+        );
+    html += "</div>";
+  }
+  if (t === "table" || t === "matching")
+    html +=
+      '<button type="button" class="ghost small" data-grow="' +
+      k +
+      '">+ Add row</button> ' +
+      (t === "table"
+        ? '<button type="button" class="ghost small" data-column="' +
+          k +
+          '">+ Add column</button>'
+        : "");
+  return html + "</section>";
+}
+function provenanceForEnglish(row) {
+  if (!row.data) return {};
+  row.data.provenance ??= C.englishProvenance(
+    row.paper_type,
+    row.source === "ai" ? "ai" : "manual",
+    row.data,
+  );
+  return row.data.provenance;
+}
+function markEnglishFieldProvenance(path) {
+  if (!editingEnglish || !path) return;
+  const key = path.startsWith("answer.")
+    ? "answers." + path.slice("answer.".length)
+    : path.startsWith("data.")
+      ? path.slice("data.".length).split(".")[0]
+      : "";
+  if (!key || ["source_text", "source_files", "provenance"].includes(key))
+    return;
+  editing.data.provenance ??= {};
+  editing.data.provenance[key] = { source: "manual", verified: false };
+}
+function openEditor(row, old = null) {
+  editing = structuredClone(row);
+  previous = old ? structuredClone(old) : null;
+  editingEnglish = !!row.paper_type;
+  if (editingEnglish) provenanceForEnglish(editing);
+  parseErrors.clear();
+  $("editor-errors").textContent = "";
+  $("editor-title").textContent =
+    (old ? "Edit " : "New ") +
+    (editingEnglish ? "English board paper" : "question");
+  drawEditor();
+  $("editor").showModal();
+}
+function drawEditor() {
+  const r = editing,
+    p = r.payload || {},
+    d = r.data || {};
+  let html = '<div class="form-grid">' + input("Stable record ID", "id", r.id);
+  if (editingEnglish) {
+    const schema = C.englishSchemas[r.paper_type] || C.englishSchemas.first,
+      provenance = provenanceForEnglish(r),
+      provenanceRows = Object.values(provenance),
+      aiCount = provenanceRows.filter((item) => item.source === "ai").length,
+      pendingCount = provenanceRows.filter((item) => !item.verified).length,
+      allVerified = provenanceRows.length > 0 && pendingCount === 0;
+    html +=
+      `<label>Paper type<select data-field="paper_type"><option value="first" ${r.paper_type === "first" ? "selected" : ""}>English 1st · Reading & Writing</option><option value="second" ${r.paper_type === "second" ? "selected" : ""}>English 2nd · Grammar & Composition</option></select></label>` +
+      input("Board", "board", r.board) +
+      input("Year", "year", r.year, "number") +
+      input("Source label", "source_label", r.source_label || "") +
+      '<div class="wide warn" style="padding:14px">Schema v1 follows the existing board-book pattern. First paper has 11 sections; second has 12. Answers are optional but must come from your source.</div>' +
+      `<div class="wide ${pendingCount ? "warn" : "success"}" style="padding:14px"><strong>Extraction provenance</strong><br>${aiCount ? `${aiCount} field(s) came from AI extraction. ` : ""}${pendingCount ? `${pendingCount} populated field(s) still need source verification.` : "All populated fields are marked verified."}<label class="check" style="margin-top:8px"><input type="checkbox" data-field="english-verify-all" ${allVerified ? "checked" : ""}> Mark all populated fields verified against the uploaded source</label></div>`;
+    for (const [k, t] of Object.entries(
+      r.paper_type === "first" ? C.firstFields : C.secondFields,
+    ))
+      html += englishField(k, t, d);
+    html +=
+      '<h3 class="wide section-label">Source-provided answers · leave blank when not supplied</h3>';
+    for (let i = 1; i <= schema.questionCount; i++)
+      html += area(
+        "Q" + i + " answer (source only)",
+        "answer.q" + i,
+        d.answers?.["q" + i] || "",
+      );
+  } else {
+    html += `<label>Type<select data-field="type">${["mcq", "saq", "cq"].map((t) => `<option ${r.type === t ? "selected" : ""}>${t}</option>`).join("")}</select></label>${subjectChapterRibbon({ prefix: "editor", subject: r.subject_id, chapter: r.chapter, editor: true })}`;
+    if (r.type === "cq") {
+      for (const k of [
+        "stem",
+        "questionK",
+        "questionKh",
+        "questionG",
+        "questionGh",
+      ])
+        html += area(
+          {
+            stem: "উদ্দীপক",
+            questionK: "ক",
+            questionKh: "খ",
+            questionG: "গ",
+            questionGh: "ঘ (blank for three-part maths)",
+          }[k],
+          "payload." + k,
+          p[k] || "",
+        );
+      html += area("CQ marks", "payload.marks", p.marks || [1, 2, 3, 4], true);
+    } else {
+      html += area(
+        "Question text",
+        "payload.questionText",
+        p.questionText || "",
+      );
+      if (r.type === "mcq") {
+        for (let i = 0; i < 4; i++)
+          html += input(
+            "Option " + ["ক", "খ", "গ", "ঘ"][i],
+            "option." + i,
+            p.options?.[i] || "",
+          );
+        html += `<label>Correct answer<select data-field="payload.correctIndex"><option value="">Answer not supplied</option>${[0, 1, 2, 3].map((i) => `<option value="${i}" ${p.correctIndex === i ? "selected" : ""}>${["ক", "খ", "গ", "ঘ"][i]}</option>`).join("")}</select></label>`;
+      } else html += area("Answer", "payload.answer", p.answer || "");
+      html += area("Explanation", "payload.explanation", p.explanation || "");
+    }
+    html +=
+      figureField(r) +
+      input("Source label", "source_label", r.source_label || "") +
+      `<label>Provenance<select data-field="source">${["original", "board", "ai", "internet"].map((v) => `<option ${r.source === v ? "selected" : ""}>${v}</option>`).join("")}</select></label><label><input type="checkbox" data-field="metadata.verified" ${r.metadata?.verified ? "checked" : ""}> Verified against the source by the reviewer</label>` +
+      `<label>Difficulty<select data-field="metadata.difficulty">${["easy", "medium", "hard"].map((v) => `<option ${r.metadata?.difficulty === v ? "selected" : ""}>${v}</option>`).join("")}</select></label>` +
+      input("Topic", "metadata.topic", r.metadata?.topic || "") +
+      input(
+        "Source board",
+        "metadata.source_board",
+        r.metadata?.source_board || "",
+      ) +
+      input(
+        "Source year",
+        "metadata.source_year",
+        r.metadata?.source_year || "",
+        "number",
+      ) +
+      area("Tags", "metadata.tags", r.metadata?.tags || [], true);
+  }
+  html += "</div>";
+  $("editor-fields").innerHTML = html;
+  const attach = document.querySelector("#figure-file-attach");
+  const preview = document.querySelector("#figure-preview");
+  if (preview)
+    preview.onerror = () => {
+      const note = document.querySelector("#figure-note");
+      if (note)
+        note.textContent =
+          "That URL did not return an image. Share links from Drive or Dropbox are pages, not files — use a direct link that ends in .png, .jpg or .webp.";
+    };
+  if (attach) {
+    const source = attach;
+    attach.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      task(async () => {
+        if (!/^image\/(png|jpeg|webp)$/.test(file.type))
+          throw Error("Use a PNG, JPEG or WebP image.");
+        if (state.demo) throw Error("Uploads are disabled in offline demo.");
+        const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1],
+          path = "questions/" + crypto.randomUUID() + "." + ext;
+        const { error } = await client.storage
+          .from("question-figures")
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (error) throw error;
+        const { data } = client.storage
+          .from("question-figures")
+          .getPublicUrl(path);
+        editing.figure = {
+          kind: "image",
+          imagePath: data.publicUrl,
+          aspect: 1.4,
+        };
+        const field = document.querySelector('[data-field="image"]');
+        if (field) field.value = data.publicUrl;
+        paintFigurePreview();
+        notify("Image uploaded. Save the question to keep it.");
+      }, source);
+    };
+  }
+  if (previous) {
+    document.querySelector('[data-field="id"]').disabled = true;
+    if (editingEnglish)
+      document.querySelector('[data-field="paper_type"]').disabled = true;
+  }
+  document.querySelectorAll("[data-grow]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const rows = editing.data[b.dataset.grow];
+        rows.push(
+          Array.isArray(rows[0])
+            ? Array(rows[0].length).fill("")
+            : { a: "", b: "", c: "" },
+        );
+        drawEditor();
+      }),
+  );
+  document.querySelectorAll("[data-column]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        editing.data[b.dataset.column].forEach((row) => row.push(""));
+        drawEditor();
+      }),
+  );
+  document.querySelectorAll("[data-field]").forEach(
+    (el) =>
+      (el.oninput = () => {
+        const key = el.dataset.field;
+        if (key === "english-verify-all") {
+          editing.data.provenance ??= {};
+          const populated = C.englishProvenance(
+            editing.paper_type,
+            "manual",
+            editing.data,
+          );
+          for (const field of Object.keys(populated))
+            editing.data.provenance[field] = {
+              source: editing.data.provenance[field]?.source || "manual",
+              verified: el.checked,
+            };
+          drawEditor();
+          return;
+        }
+        markEnglishFieldProvenance(key);
+        let value = el.type === "checkbox" ? el.checked : el.value;
+        if (el.dataset.lines)
+          value = value
+            .split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        if (el.dataset.json) {
+          try {
+            value = JSON.parse(value);
+            parseErrors.delete(key);
+          } catch {
+            parseErrors.set(key, "Invalid JSON in " + key);
+            $("editor-errors").textContent = [...parseErrors.values()].join(
+              "\n",
+            );
+            return;
+          }
+        }
+        if (key === "paper_type") {
+          if (!confirm("Change pattern? This resets the structured fields.")) {
+            el.value = editing.paper_type;
+            return;
+          }
+          editing = {
+            ...C.englishTemplate(value),
+            id: editing.id,
+            board: editing.board,
+            year: editing.year,
+          };
+          drawEditor();
+          return;
+        }
+        if (key === "type") {
+          editing.type = value;
+          editing.payload =
+            value === "cq"
+              ? {
+                  stem: "",
+                  questionK: "",
+                  questionKh: "",
+                  questionG: "",
+                  questionGh: "",
+                  marks: [1, 2, 3, 4],
+                }
+              : value === "saq"
+                ? { questionText: "", answer: "", explanation: "" }
+                : {
+                    questionText: "",
+                    options: ["", "", "", ""],
+                    correctIndex: null,
+                    explanation: "",
+                  };
+          drawEditor();
+          return;
+        }
+        if (key === "image") {
+          editing.figure = value.trim()
+            ? { kind: "image", imagePath: value.trim(), aspect: 1.4 }
+            : null;
+          paintFigurePreview();
+          return;
+        }
+        const [a, b, ...rest] = key.split(".");
+        if (a === "option") {
+          editing.payload.options ??= ["", "", "", ""];
+          editing.payload.options[Number(b)] = value;
+        } else if (a === "answer") {
+          editing.data.answers ??= {};
+          editing.data.answers[b] = value.trim() ? value : null;
+        } else if (b) {
+          editing[a] ??= {};
+          if (rest.length) {
+            let target = editing[a][b];
+            for (const part of rest.slice(0, -1)) target = target[part];
+            target[rest.at(-1)] = value;
+          } else
+            editing[a][b] =
+              b === "correctIndex" || b === "source_year"
+                ? value === ""
+                  ? null
+                  : Number(value)
+                : value;
+        } else editing[a] = a === "year" ? Number(value) : value;
+        if (key === "subject_id") {
+          editing.chapter = catalog.CHAPTERS[value]?.[0] || "";
+          drawEditor();
+        }
+      }),
+  );
+  $("editor-fields").querySelectorAll("[data-chapter-chip]").forEach(
+    (button) =>
+      (button.onclick = () => {
+        const field = $("editor-fields").querySelector(
+          "[data-ribbon-chapter]",
+        );
+        if (!field) return;
+        field.value = button.dataset.chapterChip;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        button
+          .closest(".chapter-chip-row")
+          .querySelectorAll("[data-chapter-chip]")
+          .forEach((chip) => {
+            const active = chip === button;
+            chip.classList.toggle("active", active);
+            chip.setAttribute("aria-pressed", String(active));
+          });
+      }),
+  );
+}
+function editorReport() {
+  if (parseErrors.size) throw Error([...parseErrors.values()].join("\n"));
+  return editingEnglish
+    ? C.validateEnglish(editing)
+    : { errors: C.validateQuestion(editing), warnings: [] };
+}
+$("editor").addEventListener("cancel", (e) => {
+  if (!confirm("Discard unsaved editor changes?")) e.preventDefault();
+});
+$("close-editor").onclick = () => {
+  if (confirm("Close editor? Unsaved changes will be lost."))
+    $("editor").close();
+};
+$("editor-form").onsubmit = (e) => {
+  e.preventDefault();
+  task(async () => {
+    if (parseErrors.size) throw Error([...parseErrors.values()].join("\n"));
+    editing.review_status = "draft";
+    if (editingEnglish)
+      editing.subject =
+        editing.paper_type === "first" ? "english_1st" : "english_2nd";
+    await save(tableFor(editingEnglish), editing, previous);
+    $("editor").close();
+    notify("Draft saved. Validate and submit it for review before publishing.");
+    await render();
+  });
+};
+$("ai-review-editor").onclick = () =>
+  task(async () => {
+    if (state.demo) throw Error("AI review requires a live admin session.");
+    const data = await invokeAdminContent({
+      action: "review",
+      format: editingEnglish ? editing.paper_type : "questions",
+      text: JSON.stringify(editing),
+    });
+    $("editor-errors").textContent =
+      "AI suggestions — verify against your source; nothing was changed.\n" +
+      data.result.summary +
+      "\n" +
+      data.result.findings.map((f) => f.field + ": " + f.message).join("\n");
+  });
+$("preview-editor").onclick = () => {
+  try {
+    const report = editorReport();
+    $("editor-errors").textContent = [
+      ...report.errors,
+      ...report.warnings,
+    ].join("\n");
+    showPreview([editing], editingEnglish, report);
+  } catch (e) {
+    $("editor-errors").textContent = C.errorMessage(e);
+  }
+};
+function rich(value) {
+  if (Array.isArray(value)) {
+    if (Array.isArray(value[0]))
+      return (
+        "<table>" +
+        value
+          .map(
+            (row) =>
+              "<tr>" +
+              row.map((cell) => "<td>" + esc(cell) + "</td>").join("") +
+              "</tr>",
+          )
+          .join("") +
+        "</table>"
+      );
+    return (
+      "<ol>" +
+      value
+        .map(
+          (item) =>
+            "<li>" +
+            (typeof item === "object"
+              ? Object.entries(item)
+                  .map(([k, v]) => `<strong>${esc(k)}</strong> ${rich(v)}`)
+                  .join("<br>")
+              : esc(item)) +
+            "</li>",
+        )
+        .join("") +
+      "</ol>"
+    );
+  }
+  return "<p>" + esc(value) + "</p>";
+}
+function questionPreview(r, i = 0, answers = false) {
+  const p = r.payload || {};
+  return `<div class="q"><strong>${i + 1}. ${esc(C.text(r))}</strong>${r.figure?.kind === "image" && /^https:\/\//.test(r.figure.imagePath) ? `<p><img src="${esc(r.figure.imagePath)}" alt="Question figure"></p>` : ""}${
+    r.type === "mcq"
+      ? `<div class="options">${(p.options || []).map((s, i) => "<span>" + ["ক", "খ", "গ", "ঘ"][i] + ") " + esc(s) + "</span>").join("")}</div>${answers ? "<p><strong>Answer:</strong> " + esc(Number.isInteger(p.correctIndex) ? ["ক", "খ", "গ", "ঘ"][p.correctIndex] : "Not supplied") + "<br>" + esc(p.explanation) + "</p>" : ""}`
+      : r.type === "cq"
+        ? ["questionK", "questionKh", "questionG", "questionGh"]
+            .filter((k) => p[k])
+            .map(
+              (k, i) =>
+                "<p>" +
+                ["ক", "খ", "গ", "ঘ"][i] +
+                ") " +
+                esc(p[k]) +
+                " [" +
+                esc(p.marks?.[i]) +
+                "]</p>",
+            )
+            .join("")
+        : answers
+          ? "<p>Answer: " + esc(p.answer) + "</p>"
+          : ""
+  }</div>`;
+}
+function englishPreview(r, answers = true) {
+  const d = r.data || {},
+    first = r.paper_type === "first";
+  const section = (n, title, marks, body) =>
+    `<section class="q" data-question="${n}"><strong>${n}. ${esc(title)} [${marks}]</strong>${body}</section>`;
+  const paragraph = (k) => rich(d[k] || ""),
+    list = (k) => rich(d[k] || []);
+  let body = "";
+  if (first) {
+    body =
+      "<h3>Part A · Reading · 70 marks</h3>" +
+      paragraph("passage1Intro") +
+      paragraph("passage1Unit") +
+      paragraph("passage1");
+    body += section(
+      1,
+      d.q1Instr || "Choose the correct answer.",
+      7,
+      '<ol type="a">' +
+        (d.q1 || [])
+          .map(
+            (q) =>
+              `<li><p>${esc(q?.stem)}</p><div class="options">${(q?.options || []).map((o, i) => "<span>" + ["i", "ii", "iii", "iv"][i] + ". " + esc(o) + "</span>").join("")}</div></li>`,
+          )
+          .join("") +
+        "</ol>",
+    );
+    body += section(2, "Answer the following questions.", 10, list("q2"));
+    body += section(
+      3,
+      d.q3Instr || "Complete the cloze passage.",
+      5,
+      paragraph("q3Source") + paragraph("q3Unit") + paragraph("q3Cloze"),
+    );
+    body += paragraph("passage2Intro") + paragraph("passage2");
+    body += section(4, d.q4Instr || "Complete the table.", 5, list("q4Table"));
+    body += section(
+      5,
+      "Write a summary of the above passage in your own words.",
+      10,
+      "",
+    );
+    const columns = [d.q6A || [], d.q6B || [], d.q6C || []];
+    const table = [
+      ["A", "B", "C"],
+      ...Array.from(
+        { length: Math.max(...columns.map((c) => c.length)) },
+        (_, i) => columns.map((c) => c[i] || ""),
+      ),
+    ];
+    body += section(
+      6,
+      "Match the parts of sentences in columns A, B and C.",
+      5,
+      rich(table),
+    );
+    body += section(
+      7,
+      "Put the following parts in the correct order to make a story.",
+      8,
+      list("q7"),
+    );
+    body += section(
+      8,
+      "Answer any five questions from the poems.",
+      10,
+      list("q8"),
+    );
+    body += section(
+      9,
+      "Answer any five questions from the stories.",
+      10,
+      list("q9"),
+    );
+    body += "<h3>Part B · Writing · 30 marks</h3>";
+    body += section(
+      10,
+      d.q10Instr || "Complete the story.",
+      15,
+      paragraph("q10Starter"),
+    );
+    body += section(11, "Write a dialogue.", 15, paragraph("q11"));
+  } else {
+    body = list("headerExtra") + "<h3>Part A · Grammar · 60 marks</h3>";
+    body += section(
+      1,
+      "Fill in the gaps with words from the box.",
+      10,
+      rich([d.q1Box || []]) + paragraph("q1Passage"),
+    );
+    body += section(
+      2,
+      "Make five sentences using the substitution table.",
+      5,
+      rich(
+        (d.q2 || []).map((row) => [row?.a || "", row?.b || "", row?.c || ""]),
+      ),
+    );
+    body += section(
+      3,
+      "Complete the text with the right forms of the verbs.",
+      10,
+      rich([d.q3Box || []]) + paragraph("q3Passage"),
+    );
+    body += section(
+      4,
+      "Change the sentences as directed.",
+      10,
+      rich(
+        (d.q4 || []).map(
+          (q) => (q?.sentence || "") + " (" + (q?.direction || "") + ")",
+        ),
+      ),
+    );
+    body += section(5, "Add tag questions.", 5, list("q5"));
+    body += section(
+      6,
+      "Complete the text using prefixes or suffixes.",
+      5,
+      paragraph("q6Passage"),
+    );
+    body += section(
+      7,
+      "Complete the text with suitable prepositions.",
+      5,
+      paragraph("q7Passage"),
+    );
+    body += section(
+      8,
+      "Complete the text using suitable connectors.",
+      5,
+      paragraph("q8Passage"),
+    );
+    body += section(
+      9,
+      "Use capitals and punctuation marks where necessary.",
+      5,
+      paragraph("q9Text"),
+    );
+    body += "<h3>Part B · Composition · 40 marks</h3>";
+    body +=
+      section(10, "Write a paragraph.", 10, paragraph("q10")) +
+      section(11, "Write a letter / application.", 10, paragraph("q11")) +
+      section(12, "Write a composition.", 20, paragraph("q12"));
+  }
+  return `<article class="paper"><h2>English ${first ? "First" : "Second"} Paper</h2><h3>${esc(r.board)} Board · ${esc(r.year)}</h3><p style="text-align:center">Full marks: 100 · Time: 3 hours · Source-pattern preview</p>${body}${
+    answers
+      ? "<hr><h3>Source-provided answers</h3>" +
+        Object.entries(d.answers || {})
+          .map(
+            ([k, v]) =>
+              "<p><strong>" +
+              esc(k.toUpperCase()) +
+              ":</strong> " +
+              esc(v || "Answer not supplied") +
+              "</p>",
+          )
+          .join("")
+      : ""
+  }</article>`;
+}
+let previewState = null;
+function paintPreview() {
+  const { rows, english, report, answers } = previewState;
+  $("preview-mode").textContent = answers
+    ? "Switch to student view"
+    : "Switch to teacher view";
+  $("preview-heading").textContent = answers
+    ? "Teacher paper preview"
+    : "Student paper preview";
+  $("preview-content").innerHTML =
+    (report
+      ? `<div class="${report.errors.length ? "warn" : "ok"}" style="padding:14px">${report.errors.length ? report.errors.length + " blocking issue(s)" : "Structure valid"} · ${report.warnings.length} answer warning(s)</div>`
+      : "") +
+    (english
+      ? rows.map((r) => englishPreview(r, answers)).join("")
+      : `<article class="paper"><h2>Tutor’s Desk · Question paper preview</h2><p style="text-align:center">${rows.length} selected questions · ${answers ? "Teacher review" : "Student"} copy</p>${rows.map((r, i) => questionPreview(r, i, answers)).join("")}</article>`);
+}
+function showPreview(rows, english = false, report = null) {
+  previewState = { rows, english, report, answers: true };
+  paintPreview();
+  $("preview").showModal();
+}
+$("preview-mode").onclick = () => {
+  previewState.answers = !previewState.answers;
+  paintPreview();
+};
+$("close-preview").onclick = () => $("preview").close();
+$("print-preview").onclick = () => window.print();
+/**
+ * The paste-first screen. Everything arrives the same way whatever the subject:
+ * a block of mixed CQ / MCQ / short questions, a CSV export, or a whole English
+ * board paper. AI reformats it into publish-ready drafts; nothing is published
+ * without a human reading the review list first.
+ */
+function workspaceMarkup(heading, blurb) {
+  return `<section class="card"><h2>${heading}</h2><p class="muted">${blurb}</p><input type="file" id="import-file" accept=".json,.csv,.pdf,text/plain,image/png,image/jpeg,image/webp"><div class="form-grid"><label>Format<select id="import-format"><option value="questions">Questions</option><option value="first">English 1st</option><option value="second">English 2nd</option></select></label></div>${subjectChapterRibbon({ prefix: "import", subject: "physics", chapter: "", includeEnglish: true })}<textarea id="import-text" rows="14" placeholder="Paste text here."></textarea><div class="toolbar"><button class="primary" data-action="ai-format">Reformat</button><button class="ghost" data-action="parse-import">Parse</button><button class="ghost" data-action="upload-files">Upload</button><button class="link" data-action="csv-template">Template</button></div><div id="import-report"></div><div id="import-results"></div></section>`;
+}
+async function addView() {
+  return `<p class="muted">Paste text or upload a file.</p>${workspaceMarkup(
+    "Paste",
+    "AI creates drafts. Review before publish.",
+  )}<section class="card" style="margin-top:24px"><h2>Blank</h2><div class="toolbar"><button class="ghost" data-action="new-question">Question</button><button class="ghost" data-action="new-english">English</button></div></section>`;
+}
+/**
+ * Every question the app can serve, bank content and teacher-created records
+ * alike, narrowed by subject and chapter. The read policy already lets an
+ * administrator see teacher rows, so this needs no schema change.
+ */
+async function chapterChoices() {
+  if (state.demo)
+    return [
+      ...new Set(demoRows.map((r) => r.chapter).filter(Boolean)),
+    ].sort();
+  if (!state.subject) return [];
+  const { data, error } = await client
+    .from("questions")
+    .select("chapter")
+    .eq("subject_id", state.subject)
+    .limit(1000);
+  if (error) return [];
+  return [...new Set(data.map((r) => r.chapter).filter(Boolean))].sort();
+}
+async function allView() {
+  const chapters = await chapterChoices();
+  let rows, total;
+  if (state.demo) {
+    rows = demoRows.filter(
+      (r) =>
+        (!state.subject || r.subject_id === state.subject) &&
+        (!state.chapter ||
+          String(r.chapter || "")
+            .toLowerCase()
+            .includes(state.chapter.toLowerCase())) &&
+        (!state.query ||
+          JSON.stringify(r)
+            .toLowerCase()
+            .includes(state.query.toLowerCase())),
+    );
+    total = rows.length;
+    rows = rows.slice(state.page * 25, state.page * 25 + 25);
+  } else {
+    let q = client
+      .from("questions")
+      .select("*", { count: "exact" })
+      .eq("is_active", true);
+    if (state.subject) q = q.eq("subject_id", state.subject);
+    if (state.query)
+      q = q.ilike(
+        "search_text",
+        "%" + state.query.replace(/[\\%_]/g, "\\$&") + "%",
+      );
+    if (state.chapter)
+      q = q.ilike(
+        "chapter",
+        "%" + state.chapter.replace(/[\\%_]/g, "\\$&") + "%",
+      );
+    const r = await q
+      .order("updated_at", { ascending: false })
+      .range(state.page * 25, state.page * 25 + 24);
+    if (r.error) throw r.error;
+    rows = r.data;
+    total = r.count;
+  }
+  state.rows = rows;
+  state.total = total;
+  const shown = rows.filter(figureUrl).length;
+  return `<div class="intro"><p class="muted">Every question in the app — the reviewed bank and what teachers generated themselves — filtered by subject and chapter. ${shown ? shown + " on this page carry an image." : ""}</p></div><div class="filters"><label>SUBJECT<select id="subject-filter">${options(catalog.SUBJECTS, state.subject, "All subjects")}</select></label><label>CHAPTER<input id="chapter-filter" list="chapter-options" value="${esc(state.chapter)}" placeholder="All chapters">${state.subject ? `<datalist id="chapter-options">${chapters.map((c) => `<option value="${esc(c)}">`).join("")}</datalist>` : ""}</label><label class="search">SEARCH<input id="search" value="${esc(state.query)}" placeholder="Question text or ID…"></label><button class="ghost" data-action="filter">Apply</button></div><div class="table-wrap"><table><thead><tr><th>IMAGE</th><th>QUESTION / CHAPTER</th><th>TYPE</th><th>SOURCE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${rows
+    .map(
+      (r) =>
+        `<tr><td>${thumb(r)}</td><td class="title-cell"><div class="truncate">${esc(C.text(r))}</div><small>${esc(r.id)}${r.chapter ? " · " + esc(r.chapter) : ""}${r.subject_id ? " · " + esc(catalog.SUBJECTS[r.subject_id] || r.subject_id) : ""}</small></td><td>${esc(String(r.type || "").toUpperCase())}</td><td>${r.owner_id ? '<span class="badge teacher" title="' + esc(r.owner_id) + '">Teacher</span>' : '<span class="badge bank">Bank</span>'}</td><td>${badge(r.review_status)}</td><td class="actions"><button class="ghost small" data-row="${esc(r.id)}" data-action="preview">Preview</button><button class="ghost small" data-row="${esc(r.id)}" data-action="edit">Edit</button></td></tr>`,
+    )
+    .join("")}</tbody></table>${rows.length ? "" : '<div class="empty">Nothing matches. Pick a subject first — the chapter list fills in from it.</div>'}</div><div class="pager"><span>${total.toLocaleString()} questions · Showing ${rows.length ? state.page * 25 + 1 : 0}–${state.page * 25 + rows.length}</span><span><button class="ghost small" data-action="prev">Previous</button> <span>Page ${state.page + 1} of ${Math.max(1, Math.ceil(total / 25))}</span> <button class="ghost small" data-action="next">Next</button></span></div>`;
+}
+async function importView() {
+  return `<div class="import-grid">${[
+    ["paste", "add", "Paste", "AI drafts; blanks stay visible."],
+    ["json", "questions", "JSON", "Question or board-paper export."],
+    ["csv", "all", "CSV", "Questions, options and answers."],
+    ["files", "import", "Upload", "PDF or paper photos."],
+    ["figures", "figures", "Figures", "Inspect and process diagrams."],
+  ]
+    .map(
+      ([id, iconName, title, sub]) =>
+        `<button class="card" data-action="import-${id}" aria-label="${title}" style="text-align:left"><span class="quick-icon">${icon(iconName)}</span><strong class="card-action">${title}</strong><p>${sub}</p></button>`,
+    )
+    .join(
+      "",
+    )}</div>${workspaceMarkup("Import", "JSON and CSV stay deterministic; AI only creates drafts.")}`;
+}
+let importRows = [];
+async function parseImport(ai = false) {
+  const raw = $("import-text").value.trim(),
+    format = $("import-format").value,
+    defaultSubject = $("import-subject")?.value || "",
+    defaultChapter = $("import-chapter")?.value || "";
+  if (!raw) throw Error("Add source text or upload a file first.");
+  if (raw.length > 5000000)
+    throw Error("Import is too large. Split it into smaller files.");
+  if (ai) {
+    if (state.demo)
+      throw Error(
+        "AI requires an authenticated server session; demo mode never contacts an AI service.",
+      );
+    const data = await invokeAdminContent({
+      action: "structure",
+      format,
+      subject_id: defaultSubject,
+      chapter: defaultChapter,
+      text: raw,
+    });
+    $("import-text").value = JSON.stringify(data.result, null, 2);
+    return parseImport(false);
+  }
+  if (format !== "questions") {
+    let row;
+    try {
+      row = JSON.parse(raw);
+    } catch {
+      row = C.draftFromText(raw, format);
+    }
+    if (!row.paper_type)
+      row = { ...C.draftFromText(row.source_text || "", format), data: row };
+    openEditor(row);
+    return;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = C.csvQuestions(raw);
+  }
+  importRows = Array.isArray(parsed)
+    ? parsed
+    : Array.isArray(parsed.records)
+      ? parsed.records
+      : parsed.paper_type
+        ? [parsed]
+        : [parsed];
+  if (importRows.some((r) => r.paper_type)) {
+    if (importRows.length !== 1)
+      throw Error(
+        "Review English papers individually. Import one complete set at a time.",
+      );
+    openEditor(importRows[0]);
+    return;
+  }
+  if (importRows.length > 500)
+    throw Error("Import at most 500 rows per review batch.");
+  importRows = importRows.map((r, i) => ({
+    ...r,
+    id: r.id || "import_" + Date.now() + "_" + i,
+    subject_id: r.subject_id || r.subjectId || defaultSubject,
+    chapter: r.chapter || defaultChapter,
+    payload: r.payload || r,
+    review_status: "draft",
+    is_active: true,
+    owner_id: null,
+    metadata: r.metadata || {},
+  }));
+  const ids = new Set(),
+    errors = [];
+  for (const r of importRows) {
+    if (ids.has(r.id)) errors.push(r.id + ": duplicate ID in this import");
+    ids.add(r.id);
+    errors.push(...C.validateQuestion(r).map((e) => r.id + ": " + e));
+  }
+  const existing = await all("questions"),
+    existingIds = new Set(existing.map((r) => r.id));
+  for (const r of importRows)
+    if (existingIds.has(r.id))
+      errors.push(r.id + ": already exists; use Edit instead of overwriting");
+  const duplicateCount = (
+    await duplicateScan([...importRows, ...existing], 1)
+  ).filter((h) => importRows.includes(h.a) || importRows.includes(h.b)).length;
+  $("import-report").textContent =
+    `${importRows.length} records · ${errors.length} validation issues · ${duplicateCount} exact duplicate pairs. Imported records remain drafts.`;
+  $("import-results").innerHTML =
+    errors.map((e) => '<p class="warn">' + esc(e) + "</p>").join("") +
+    `<div class="toolbar"><button class="ghost" data-action="preview-import">Preview</button><button class="primary" data-action="save-import">Save</button></div>` +
+    importRows
+      .slice(0, 10)
+      .map((r, i) => questionPreview(r, i, true))
+      .join("");
+  bindActions($("import-results"));
+  // Invalid answers can be saved as drafts for repair, but cannot enter review.
+  if (
+    errors.some(
+      (e) => e.includes("duplicate ID") || e.includes("already exists"),
+    )
+  )
+    importRows = [];
+}
+async function validationView() {
+  return `<div class="card"><h2>Question bank health</h2><p class="muted">Checks all server records, including drafts and archived records. Nothing is deleted automatically.</p><div class="toolbar"><button class="primary" data-action="health">Health</button><button class="ghost" data-action="duplicates">Similar</button><button class="ghost" data-action="storage-health">Storage</button></div><div id="health-results" class="empty">Choose a check to see actionable issues.</div></div>`;
+}
+let healthRows = [],
+  healthEnglish = [];
+async function runHealth(kind) {
+  healthRows = await all("questions");
+  healthEnglish = await all("english_papers");
+  const target = $("health-results");
+  target.className = "";
+  if (kind === "health") {
+    const report = C.health(healthRows, healthEnglish, catalog.CHAPTERS);
+    target.innerHTML =
+      `<h3>${report.questions} questions · ${report.english} English papers · ${report.issues.length} issues</h3>` +
+      report.issues
+        .map(
+          (x) =>
+            `<div class="issue"><span><strong>${esc(x.id)}</strong><br>${esc(x.message)}</span><button class="ghost small" data-fix="${esc(x.id)}" data-english="${!!x.english}">Fix</button></div>`,
+        )
+        .join("");
+  } else if (kind === "duplicates") {
+    const pairs = await duplicateScan(healthRows.filter((r) => r.is_active));
+    target.innerHTML =
+      `<p>${pairs.length} similar pairs. Similarity is a text signal, not proof of duplication. Review before archiving.</p>` +
+      pairs
+        .slice(0, 200)
+        .map(
+          ({ a, b, score }) =>
+            `<div class="card" style="margin:12px 0"><span class="badge review">${Math.round(score * 100)}% token similarity</span><p>${esc(C.text(a))}</p><p>${esc(C.text(b))}</p><button class="ghost small" data-fix="${esc(a.id)}">Review</button> <button class="ghost small" data-fix="${esc(b.id)}">Review</button></div>`,
+        )
+        .join("");
+  } else {
+    await storageHealth(target);
+  }
+  target.querySelectorAll("[data-fix]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const r = (
+          b.dataset.english === "true" ? healthEnglish : healthRows
+        ).find((r) => r.id === b.dataset.fix);
+        if (r) openEditor(r, r);
+      }),
+  );
+}
+async function activityView() {
+  const rows = (await all("admin_activity")).sort((a, b) =>
+    b.created_at.localeCompare(a.created_at),
+  );
+  return `<p class="muted">Server-generated change history. Content administrators cannot rewrite audit entries.</p><div class="table-wrap"><table><thead><tr><th>WHEN</th><th>ADMIN</th><th>ACTION</th><th>CONTENT</th></tr></thead><tbody>${rows
+    .slice(0, 200)
+    .map(
+      (r) =>
+        `<tr><td>${esc(new Date(r.created_at).toLocaleString())}</td><td>${esc(r.admin_id || "Service / migration")}</td><td>${esc(r.action)}</td><td>${esc(r.record_id)}<small>${esc(r.entity)}</small></td></tr>`,
+    )
+    .join(
+      "",
+    )}</tbody></table></div><p class="muted">Showing the latest ${Math.min(200, rows.length)} of ${rows.length} audit entries.</p>`;
+}
+function promotionBadge(row, kind) {
+  if (kind === "notifications")
+    return row.sent_at
+      ? '<span class="badge published">Published in app</span>'
+      : '<span class="badge draft">Draft</span>';
+  if (row.is_active && row.ends_at && new Date(row.ends_at) <= new Date())
+    return '<span class="badge draft">Expired</span>';
+  return row.is_active
+    ? '<span class="badge published">Live</span>'
+    : '<span class="badge draft">Inactive</span>';
+}
+function promotionImage(row) {
+  return row.image_url && /^https:\/\//i.test(row.image_url)
+    ? `<img class="promo-thumb" src="${esc(row.image_url)}" alt="" loading="lazy">`
+    : '<span class="promo-thumb promo-no-image">Photo</span>';
+}
+function promotionRowsMarkup(kind, rows) {
+  if (!rows.length)
+    return '<p class="empty">Nothing here yet. Use the form to create the first item.</p>';
+  return `<div class="promotion-list">${rows
+    .map(
+      (row) =>
+        `<div class="promotion-row">${kind === "ads" || kind === "prizes" ? promotionImage(row) : `<span class="promo-icon">${icon(kind === "notifications" ? "activity" : "promotions")}</span>`}<div class="promotion-row-copy"><strong>${esc(row.title)}</strong><small>${esc(kind === "offers" ? `${row.currency || "BDT"} ${row.price} · ${row.plan_id}` : kind === "notifications" ? row.message : row.description || row.body || row.value_text || "No description")}</small></div>${promotionBadge(row, kind)}<div class="actions"><button class="ghost small" data-action="promo-edit-${kind}" data-row="${esc(row.id)}">Edit</button><button class="danger small" data-action="promo-delete-${kind}" data-row="${esc(row.id)}">Delete</button></div></div>`,
+    )
+    .join("")}</div>`;
+}
+function promotionFormFields() {
+  return `<input id="promo-offer-id" type="hidden"><label>Title<input id="promo-offer-title" placeholder="Pro Yearly"></label><label>Plan<select id="promo-offer-plan"><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="lifetime">Lifetime</option></select></label><label>Price<input id="promo-offer-price" type="number" min="0" step="0.01" placeholder="2499"></label><label>Duration days<input id="promo-offer-days" type="number" min="1" placeholder="365 · blank for lifetime"></label><label>Badge<input id="promo-offer-badge" placeholder="Best value"></label><label>Sort order<input id="promo-offer-sort" type="number" value="0"></label><label class="wide">Description<textarea id="promo-offer-description" rows="3" placeholder="What this plan unlocks"></textarea></label><label>Starts<input id="promo-offer-starts" type="datetime-local"></label><label>Ends<input id="promo-offer-ends" type="datetime-local"></label><label class="check wide"><input id="promo-offer-active" type="checkbox"> Show this offer in the app</label>`;
+}
+function promotionForm(kind) {
+  if (kind === "offers")
+    return `<form class="promotion-form" data-promotion-form="offers"><h3>Create or edit paid plan</h3><div class="form-grid">${promotionFormFields()}</div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-offers">Save</button><button type="button" class="ghost" data-action="promo-clear-offers">Clear</button></div></form>`;
+  if (kind === "prizes")
+    return `<form class="promotion-form" data-promotion-form="prizes"><h3>Create or edit prize</h3><div class="form-grid"><input id="promo-prize-id" type="hidden"><label>Prize title<input id="promo-prize-title" placeholder="Monthly paper challenge"></label><label>Value / reward<input id="promo-prize-value" placeholder="৳1,000 book voucher"></label><label>Stock<input id="promo-prize-stock" type="number" min="0" placeholder="Blank = unlimited"></label><label>Photo URL<input id="promo-prize-image" type="url" placeholder="https://…"></label><label class="wide">Description<textarea id="promo-prize-description" rows="3" placeholder="Who can win and how"></textarea></label><label>Starts<input id="promo-prize-starts" type="datetime-local"></label><label>Ends<input id="promo-prize-ends" type="datetime-local"></label><label class="check wide"><input id="promo-prize-active" type="checkbox"> Show this prize in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-prizes">Save</button><button type="button" class="ghost" data-action="promo-clear-prizes">Clear</button></div></form>`;
+  if (kind === "notifications")
+    return `<form class="promotion-form" data-promotion-form="notifications"><h3>Write an in-app notification</h3><p class="muted">Save as a draft, or publish it immediately to the selected audience. This creates an in-app broadcast; OS push delivery needs a push provider and is not fabricated here.</p><div class="form-grid"><input id="promo-notification-id" type="hidden"><label>Title<input id="promo-notification-title" placeholder="New yearly plan available"></label><label>Audience<select id="promo-notification-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-notification-message" rows="4" placeholder="Write the message teachers will see"></textarea></label><label>Action label<input id="promo-notification-action-label" placeholder="View plans"></label><label>Action URL<input id="promo-notification-action-url" value="/plans" placeholder="/plans"></label><label>Schedule<input id="promo-notification-scheduled" type="datetime-local"></label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-send-notifications" aria-label="Publish in app" title="Publish in app">Publish</button><button type="button" class="ghost" data-action="promo-save-notifications">Save</button><button type="button" class="ghost" data-action="promo-clear-notifications">Clear</button></div></form>`;
+  return `<form class="promotion-form" data-promotion-form="ads"><h3>Create or edit popup offer ad</h3><div class="form-grid"><input id="promo-ad-id" type="hidden"><label>Ad title<input id="promo-ad-title" placeholder="Save more with Pro"></label><label>Audience<select id="promo-ad-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-ad-body" rows="3" placeholder="Short text under the photo"></textarea></label><label class="wide">Photo URL<input id="promo-ad-image" type="url" placeholder="Upload a photo below or paste an https URL"></label><label class="wide">Upload photo<input id="promo-ad-file" type="file" accept="image/png,image/jpeg,image/webp"><small class="muted" id="promo-ad-upload-note">PNG, JPEG or WebP · up to 10 MB</small></label><div class="wide promo-ad-preview" id="promo-ad-preview"><span class="promo-no-image">Photo preview</span></div><label>Button label<input id="promo-ad-button" value="View offer"></label><label>Button URL<input id="promo-ad-url" value="/plans"></label><label>Linked plan<select id="promo-ad-offer"><option value="">No linked plan</option>${promotionRows.offers.map((r) => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join("")}</select></label><label>Priority<input id="promo-ad-priority" type="number" value="0"></label><label>Starts<input id="promo-ad-starts" type="datetime-local"></label><label>Ends<input id="promo-ad-ends" type="datetime-local"></label><label class="check wide"><input id="promo-ad-active" type="checkbox"> Show this popup in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-ads">Save</button><button type="button" class="ghost" data-action="promo-clear-ads">Clear</button></div></form>`;
+}
+async function promotionsView() {
+  const [offers, prizes, notifications, ads] = await Promise.all(
+    Object.keys(promotionTables).map(loadPromotionRows),
+  );
+  promotionRows = { offers, prizes, notifications, ads };
+  return `<div class="intro"><div><h2>Offers, prizes and announcements</h2><p class="muted">Manage what teachers see in the app. Photos are stored in the separate promotion-assets bucket.</p></div><span class="badge">PROMOTION CONTROL</span></div><div class="promotion-grid"><section class="card promotion-card"><div class="card-head"><h2>Paid plan offers</h2><span class="badge">${offers.length}</span></div><p class="muted">The bKash plan ID and price used for the offer display.</p>${promotionForm("offers")}${promotionRowsMarkup("offers", offers)}</section><section class="card promotion-card"><div class="card-head"><h2>Prizes</h2><span class="badge">${prizes.length}</span></div><p class="muted">Prize announcements, value and optional photo.</p>${promotionForm("prizes")}${promotionRowsMarkup("prizes", prizes)}</section><section class="card promotion-card"><div class="card-head"><h2>In-app notifications</h2><span class="badge">${notifications.length}</span></div>${promotionForm("notifications")}${promotionRowsMarkup("notifications", notifications)}</section><section class="card promotion-card"><div class="card-head"><h2>Popup app offer ads</h2><span class="badge">${ads.length}</span></div><p class="muted">Upload a promotional photo, link it to a plan, then activate it for the app.</p>${promotionForm("ads")}${promotionRowsMarkup("ads", ads)}</section></div>`;
+}
+function promotionField(id) {
+  return $(id)?.value.trim() || "";
+}
+function promotionNumber(id) {
+  const value = promotionField(id);
+  return value === "" ? null : Number(value);
+}
+function promotionChecked(id) {
+  return !!$(id)?.checked;
+}
+function promotionFormData(kind, send = false) {
+  if (kind === "offers")
+    return {
+      id: promotionField("promo-offer-id") || promotionId("offer", promotionField("promo-offer-title")),
+      plan_id: promotionField("promo-offer-plan"),
+      title: promotionField("promo-offer-title"),
+      description: promotionField("promo-offer-description"),
+      price: promotionNumber("promo-offer-price"),
+      currency: "BDT",
+      period_days: promotionNumber("promo-offer-days"),
+      badge: promotionField("promo-offer-badge"),
+      sort_order: promotionNumber("promo-offer-sort") ?? 0,
+      starts_at: dateValue(promotionField("promo-offer-starts")),
+      ends_at: dateValue(promotionField("promo-offer-ends")),
+      is_active: promotionChecked("promo-offer-active"),
+    };
+  if (kind === "prizes")
+    return {
+      id: promotionField("promo-prize-id") || promotionId("prize", promotionField("promo-prize-title")),
+      title: promotionField("promo-prize-title"),
+      description: promotionField("promo-prize-description"),
+      value_text: promotionField("promo-prize-value"),
+      image_url: promotionField("promo-prize-image"),
+      stock: promotionNumber("promo-prize-stock"),
+      sort_order: 0,
+      starts_at: dateValue(promotionField("promo-prize-starts")),
+      ends_at: dateValue(promotionField("promo-prize-ends")),
+      is_active: promotionChecked("promo-prize-active"),
+    };
+  if (kind === "notifications")
+    return {
+      id: promotionField("promo-notification-id") || promotionId("notification", promotionField("promo-notification-title")),
+      title: promotionField("promo-notification-title"),
+      message: promotionField("promo-notification-message"),
+      audience: promotionField("promo-notification-audience"),
+      action_label: promotionField("promo-notification-action-label"),
+      action_url: promotionField("promo-notification-action-url"),
+      scheduled_at: send ? null : dateValue(promotionField("promo-notification-scheduled")),
+      is_active: send,
+      sent_at: send ? new Date().toISOString() : null,
+    };
+  return {
+    id: promotionField("promo-ad-id") || promotionId("ad", promotionField("promo-ad-title")),
+    title: promotionField("promo-ad-title"),
+    body: promotionField("promo-ad-body"),
+    image_url: promotionField("promo-ad-image"),
+    button_text: promotionField("promo-ad-button") || "View offer",
+    button_url: promotionField("promo-ad-url") || "/plans",
+    offer_id: promotionField("promo-ad-offer") || null,
+    audience: promotionField("promo-ad-audience"),
+    priority: promotionNumber("promo-ad-priority") ?? 0,
+    starts_at: dateValue(promotionField("promo-ad-starts")),
+    ends_at: dateValue(promotionField("promo-ad-ends")),
+    is_active: promotionChecked("promo-ad-active"),
+  };
+}
+async function savePromotion(kind, row) {
+  const table = promotionTable(kind);
+  if (!row.title) throw Error("Add a title first.");
+  validatePromotionWindow(kind, row);
+  if (kind === "offers" && (row.price == null || !row.plan_id))
+    throw Error("Choose a plan and enter its price.");
+  if (kind === "notifications" && !row.message)
+    throw Error("Write the notification message first.");
+  if (kind === "ads" && !row.image_url)
+    throw Error("Upload or paste a promotional photo before activating the ad.");
+  if (state.demo) {
+    const list = demoPromotions[kind];
+    const i = list.findIndex((item) => item.id === row.id);
+    if (i >= 0) list[i] = { ...list[i], ...row };
+    else list.unshift(row);
+    return;
+  }
+  const exists = promotionRows[kind].some((item) => item.id === row.id);
+  const query = exists
+    ? client.from(table).update(row).eq("id", row.id)
+    : client.from(table).insert(row);
+  const { error } = await query;
+  if (error) throw error;
+}
+function fillPromotionForm(kind, id) {
+  const row = promotionRows[kind].find((item) => item.id === id);
+  if (!row) throw Error("Promotion record was not found. Reload and try again.");
+  const set = (field, value) => { if ($(field)) $(field).value = value ?? ""; };
+  const check = (field, value) => { if ($(field)) $(field).checked = !!value; };
+  if (kind === "offers") {
+    set("promo-offer-id", row.id); set("promo-offer-plan", row.plan_id); set("promo-offer-title", row.title); set("promo-offer-description", row.description); set("promo-offer-price", row.price); set("promo-offer-days", row.period_days); set("promo-offer-badge", row.badge); set("promo-offer-sort", row.sort_order); set("promo-offer-starts", dateInput(row.starts_at)); set("promo-offer-ends", dateInput(row.ends_at)); check("promo-offer-active", row.is_active);
+  } else if (kind === "prizes") {
+    set("promo-prize-id", row.id); set("promo-prize-title", row.title); set("promo-prize-description", row.description); set("promo-prize-value", row.value_text); set("promo-prize-image", row.image_url); set("promo-prize-stock", row.stock); set("promo-prize-starts", dateInput(row.starts_at)); set("promo-prize-ends", dateInput(row.ends_at)); check("promo-prize-active", row.is_active);
+  } else if (kind === "notifications") {
+    set("promo-notification-id", row.id); set("promo-notification-title", row.title); set("promo-notification-message", row.message); set("promo-notification-audience", row.audience); set("promo-notification-action-label", row.action_label); set("promo-notification-action-url", row.action_url); set("promo-notification-scheduled", dateInput(row.scheduled_at));
+  } else {
+    set("promo-ad-id", row.id); set("promo-ad-title", row.title); set("promo-ad-body", row.body); set("promo-ad-image", row.image_url); set("promo-ad-button", row.button_text); set("promo-ad-url", row.button_url); set("promo-ad-offer", row.offer_id); set("promo-ad-audience", row.audience); set("promo-ad-priority", row.priority); set("promo-ad-starts", dateInput(row.starts_at)); set("promo-ad-ends", dateInput(row.ends_at)); check("promo-ad-active", row.is_active); paintPromotionAdPreview();
+  }
+  notify(`Editing ${row.title}.`);
+}
+function clearPromotionForm(kind) {
+  const form = document.querySelector(`[data-promotion-form="${kind}"]`);
+  if (form) form.reset();
+  if (kind === "notifications") $("promo-notification-action-url").value = "/plans";
+  if (kind === "ads") { $("promo-ad-button").value = "View offer"; $("promo-ad-url").value = "/plans"; paintPromotionAdPreview(); }
+}
+function paintPromotionAdPreview() {
+  const target = $("promo-ad-preview"), url = promotionField("promo-ad-image");
+  if (!target) return;
+  target.innerHTML = url && /^https:\/\//i.test(url)
+    ? `<img src="${esc(url)}" alt="Popup offer preview">`
+    : '<span class="promo-no-image">Photo preview</span>';
+}
+async function uploadPromotionPhoto(file) {
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp)$/.test(file.type) || file.size > 10 * 1024 * 1024)
+    throw Error("Choose a PNG, JPEG or WebP photo smaller than 10 MB.");
+  if (state.demo) {
+    const reader = new FileReader();
+    reader.onload = () => { $("promo-ad-image").value = String(reader.result || ""); paintPromotionAdPreview(); };
+    reader.readAsDataURL(file);
+    return;
+  }
+  const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+  const path = `ads/${crypto.randomUUID()}.${ext}`;
+  const { error } = await client.storage.from("promotion-assets").upload(path, file, { contentType: file.type, upsert: false });
+  if (error) throw error;
+  const { data } = client.storage.from("promotion-assets").getPublicUrl(path);
+  $("promo-ad-image").value = data.publicUrl;
+  paintPromotionAdPreview();
+  $("promo-ad-upload-note").textContent = "Uploaded. Save the popup ad to keep it.";
+}
+async function settingsView() {
+  return `<div class="columns"><section class="card"><h2>Subject & chapter catalog</h2><button class="ghost small" data-action="add-subject">Add</button><p class="muted">Save a subject’s chapter list without editing JavaScript. Existing question chapter labels are not silently renamed.</p><label>Subject<select id="catalog-subject">${options(catalog.SUBJECTS, "physics", "Choose")}</select></label><label>Display name<input id="catalog-name" value="${esc(catalog.SUBJECTS.physics)}"></label><label>Chapters · one per line<textarea id="catalog-chapters" rows="12">${esc(catalog.CHAPTERS.physics.join("\n"))}</textarea></label><button class="primary" data-action="save-catalog">Save</button></section><section class="card"><h2>Content rules</h2><p class="muted">Required safeguards are enforced on the server; they cannot be disabled from this browser.</p>${["Require subject and chapter", "Prevent duplicate record IDs", "Require four distinct MCQ options", "Require an explicit MCQ answer and explanation", "Validate CQ parts and marks", "Block corrupted Unicode", "Keep English answers absent when not supplied", "Require Draft → Review → Published", "Record changes in a server audit trail"].map((t) => '<p class="ok" style="padding:10px">✓ ' + t + "</p>").join("")}<p class="muted">Session tokens stay in memory. A refresh of this page requires sign-in again. Only the public anon key is shipped; never add a service-role key to these files.</p></section><section class="card"><h2>Studio motion</h2><p class="muted">Entrances, skeleton shimmer and state transitions. Reduced motion is applied automatically when your system asks for it.</p><label>Motion<select id="motion-pref"><option value="system">Follow my system</option><option value="full">Full motion</option><option value="reduced">Reduced</option></select></label><p class="ok" id="motion-state" style="padding:10px"></p><p class="muted">Press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to jump to a workspace or action.</p></section></div>`;
+}
+async function figuresView() {
+  return `<section class="card"><h2>Prepare a question figure</h2><p class="muted">PNG / JPEG / WebP only. Uploads use unique object names; replacing a figure does not overwrite another question’s image.</p><input id="figure-file" type="file" accept="image/png,image/jpeg,image/webp"><div class="toolbar"><label><input id="mono" type="checkbox" checked>Grayscale & contrast</label><button class="ghost" data-action="process-figure">Process</button><button class="primary" data-action="upload-figure">Upload</button><button class="ghost" data-action="storage-health">Health</button></div><div class="figure-grid"><div><h3>Original</h3><img id="figure-original" alt="Original preview"><p id="figure-meta"></p></div><div><h3>Processed / final</h3><canvas id="figure-canvas" style="max-width:100%"></canvas><p id="processed-meta"></p></div></div><div id="figure-output"></div><div id="health-results"></div></section>`;
+}
+let originalImage = null;
+/**
+ * The figure preview owns one blob URL at a time. Replacing the selection used
+ * to leave the previous URL alive for the lifetime of the tab, so a long review
+ * session accumulated one leaked blob per image opened.
+ */
+let figurePreviewUrl = null;
+async function processFigure() {
+  if (!originalImage) throw Error("Choose an image first.");
+  const canvas = $("figure-canvas"),
+    scale = Math.min(
+      1,
+      1654 / originalImage.width,
+      2339 / originalImage.height,
+    );
+  canvas.width = Math.round(originalImage.width * scale);
+  canvas.height = Math.round(originalImage.height * scale);
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+  if ($("mono").checked) {
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < pixels.data.length; i += 4) {
+      const g = Math.max(
+        0,
+        Math.min(
+          255,
+          (0.299 * pixels.data[i] +
+            0.587 * pixels.data[i + 1] +
+            0.114 * pixels.data[i + 2] -
+            128) *
+            1.15 +
+            128,
+        ),
+      );
+      pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = g;
+    }
+    ctx.putImageData(pixels, 0, 0);
+  }
+  const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
+  $("processed-meta").textContent =
+    `${canvas.width} × ${canvas.height} · PNG · ${(blob.size / 1024).toFixed(0)} KB`;
+  return blob;
+}
+async function storageHealth(target) {
+  if (state.demo) {
+    target.textContent =
+      "Storage checks require a live admin session. Demo mode has no storage bucket.";
+    return;
+  }
+  const rows = await all("questions", true),
+    english = await all("english_papers");
+  const referenced = new Set();
+  const marker = "/storage/v1/object/public/question-figures/";
+  for (const row of [...rows, ...english]) {
+    const raw = JSON.stringify(row);
+    for (const match of raw.matchAll(/https:\/\/[^"\s]+/g)) {
+      const path = match[0].split(marker)[1];
+      if (path) referenced.add(decodeURIComponent(path.split("?")[0]));
+    }
+  }
+  const files = [];
+  async function walk(prefix = "") {
+    for (let offset = 0; ; offset += 100) {
+      const { data, error } = await client.storage
+        .from("question-figures")
+        .list(prefix, {
+          limit: 100,
+          offset,
+          sortBy: { column: "name", order: "asc" },
+        });
+      if (error) throw error;
+      for (const item of data) {
+        const path = prefix ? prefix + "/" + item.name : item.name;
+        if (item.id) files.push(path);
+        else await walk(path);
+      }
+      if (data.length < 100) break;
+    }
+  }
+  await walk();
+  const unused = files.filter((f) => !referenced.has(f)),
+    missing = [...referenced].filter((f) => !files.includes(f));
+  target.innerHTML =
+    `<h3>Health</h3><p>${files.length - unused.length} used · ${unused.length} unreferenced server files · ${missing.length} missing references</p><p class="warn">Bundled APK figures and external clients may still use an apparently unreferenced file. Download a backup and verify before deleting.</p>` +
+    missing.map((p) => '<p class="warn">Missing: ' + esc(p) + "</p>").join("") +
+    unused
+      .map(
+        (path) =>
+          `<div class="issue"><span>${esc(path)}</span><button class="danger small" data-unused="${esc(path)}">Review</button></div>`,
+      )
+      .join("");
+  target.querySelectorAll("[data-unused]").forEach(
+    (b) =>
+      (b.onclick = () =>
+        task(async () => {
+          if (
+            prompt(
+              "Type the complete filename to delete after checking bundled APK references:\n" +
+                b.dataset.unused,
+            ) !== b.dataset.unused
+          )
+            return;
+          const current = await all("questions", true);
+          if (
+            JSON.stringify(current).includes(b.dataset.unused) ||
+            JSON.stringify(await all("english_papers")).includes(
+              b.dataset.unused,
+            )
+          )
+            throw Error("This image is now referenced. It was not deleted.");
+          const { data, error } = await client.storage
+            .from("question-figures")
+            .download(b.dataset.unused);
+          if (error) throw error;
+          download(b.dataset.unused.split("/").pop(), data, "image/png");
+          const removed = await client.storage
+            .from("question-figures")
+            .remove([b.dataset.unused]);
+          if (removed.error) throw removed.error;
+          await storageHealth(target);
+        })),
+  );
+}
+function bindActions(root = $("main")) {
+  root
+    .querySelectorAll("[data-action]")
+    .forEach(
+      (b) =>
+        (b.onclick = () =>
+          task(() => action(b.dataset.action, b.dataset.row), b)),
+    );
+}
+function bindPasteSubjectChapter() {
+  const ribbon = document.querySelector(
+      '[data-subject-chapter-ribbon][data-ribbon-prefix="import"]',
+    ),
+    subject = $("import-subject"),
+    chapter = $("import-chapter"),
+    chips = $("import-chapter-chips");
+  if (!ribbon || !subject || !chapter || !chips) return;
+  const paint = () => {
+    const names = catalog.CHAPTERS[subject.value] || [],
+      current = chapter.value;
+    chapter.innerHTML =
+      '<option value="">Use chapter from source if present</option>' +
+      names
+        .map(
+          (name) =>
+            `<option value="${esc(name)}">${esc(name)}</option>`,
+        )
+        .join("");
+    if (names.includes(current)) chapter.value = current;
+    chips.innerHTML = names.length
+      ? names
+          .map(
+            (name) =>
+              `<button type="button" class="chapter-chip${name === chapter.value ? " active" : ""}" data-chapter-chip="${esc(name)}" aria-pressed="${name === chapter.value ? "true" : "false"}">${esc(name)}</button>`,
+          )
+          .join("")
+      : '<span class="muted">No chapters have been added for this subject yet.</span>';
+    chips.querySelectorAll("[data-chapter-chip]").forEach(
+      (button) =>
+        (button.onclick = () => {
+          chapter.value = button.dataset.chapterChip;
+          chapter.dispatchEvent(new Event("change", { bubbles: true }));
+        }),
+    );
+  };
+  subject.onchange = () => {
+    chapter.value = "";
+    paint();
+  };
+  chapter.onchange = () =>
+    chips.querySelectorAll("[data-chapter-chip]").forEach((button) => {
+      const active = button.dataset.chapterChip === chapter.value;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  paint();
+}
+function bind() {
+  bindActions();
+  animateCounters($("main"));
+  bindDropZones($("main"));
+  bindPasteSubjectChapter();
+  if ($("motion-pref")) {
+    $("motion-pref").value = motionPref();
+    $("motion-pref").onchange = (e) => setMotion(e.target.value);
+  }
+  applyMotion();
+  document.querySelectorAll("[data-select]").forEach(
+    (el) =>
+      (el.onchange = () => {
+        if (el.checked) state.selected.add(el.dataset.select);
+        else state.selected.delete(el.dataset.select);
+      }),
+  );
+  if ($("select-page"))
+    $("select-page").onchange = (e) => {
+      document.querySelectorAll("[data-select]").forEach((el) => {
+        el.checked = e.target.checked;
+        el.onchange();
+      });
+    };
+  if ($("search"))
+    $("search").onkeydown = (e) => {
+      if (e.key === "Enter") task(() => action("filter"));
+    };
+  if ($("catalog-subject"))
+    $("catalog-subject").onchange = () => {
+      const id = $("catalog-subject").value;
+      $("catalog-name").value = catalog.SUBJECTS[id] || "";
+      $("catalog-chapters").value = (catalog.CHAPTERS[id] || []).join("\n");
+    };
+  if ($("import-file"))
+    $("import-file").onchange = (e) =>
+      task(async () => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 20 * 1024 * 1024)
+          throw Error("Choose a file smaller than 20 MB.");
+        if (file.name.toLowerCase().endsWith(".pdf")) {
+          const pdfjs = await import("./vendor/pdf.mjs");
+          pdfjs.GlobalWorkerOptions.workerSrc = new window.URL(
+            "./vendor/pdf.worker.mjs",
+            import.meta.url,
+          ).href;
+          const pdf = await pdfjs.getDocument({
+            data: await file.arrayBuffer(),
+            isEvalSupported: false,
+          }).promise;
+          if (pdf.numPages > 60)
+            throw Error("Import at most 60 PDF pages at a time.");
+          const pages = [];
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i),
+              text = await page.getTextContent();
+            pages.push(
+              text.items.map((x) => x.str + (x.hasEOL ? "\n" : " ")).join(""),
+            );
+          }
+          $("import-text").value = pages.join("\n\n");
+          notify(
+            "PDF text extracted locally. Tables and scanned/image-only pages need manual transcription or source images; nothing is invented.",
+          );
+          await pdf.destroy();
+        } else $("import-text").value = await file.text();
+      });
+  if ($("promo-ad-image"))
+    $("promo-ad-image").oninput = paintPromotionAdPreview;
+  if ($("promo-ad-file"))
+    $("promo-ad-file").onchange = (e) =>
+      task(() => uploadPromotionPhoto(e.target.files[0]), e.target);
+  if ($("figure-file"))
+    $("figure-file").onchange = (e) =>
+      task(async () => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (
+          file.size > 15 * 1024 * 1024 ||
+          !["image/png", "image/jpeg", "image/webp"].includes(file.type)
+        )
+          throw Error("Choose a PNG, JPEG or WebP below 15 MB.");
+        if (figurePreviewUrl) window.URL.revokeObjectURL(figurePreviewUrl);
+        const url = window.URL.createObjectURL(file);
+        figurePreviewUrl = url;
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+        if (img.width * img.height > 40000000)
+          throw Error("Image exceeds 40 megapixels. Resize it first.");
+        originalImage = img;
+        $("figure-original").src = url;
+        $("figure-meta").textContent =
+          `${img.width} × ${img.height} · ${file.type} · ${(file.size / 1024).toFixed(0)} KB`;
+        await processFigure();
+      });
+}
+async function action(name, id) {
+  const english = englishMode(),
+    table = tableFor(english),
+    row = state.rows.find((r) => r.id === id);
+  if (name === "reload") return render();
+  if (name.startsWith("promo-")) {
+    const parts = name.split("-");
+    const kind = parts[parts.length - 1];
+    if (name.startsWith("promo-edit-")) {
+      fillPromotionForm(kind, id);
+      return;
+    }
+    if (name.startsWith("promo-delete-")) {
+      const row = promotionRows[kind].find((item) => item.id === id);
+      if (!row) throw Error("Promotion record was not found. Reload and try again.");
+      if (!confirm(`Permanently delete ${row.title}?`)) return;
+      if (
+        prompt(
+          "Type DELETE to confirm permanent removal. This promotion cannot be restored.",
+        ) !== "DELETE"
+      )
+        return;
+      if (state.demo) {
+        demoPromotions[kind] = demoPromotions[kind].filter(
+          (item) => item.id !== id,
+        );
+      } else {
+        const { error } = await client
+          .from(promotionTable(kind))
+          .delete()
+          .eq("id", row.id)
+          .eq("updated_at", row.updated_at);
+        if (error) throw error;
+      }
+      notify("Promotion permanently deleted.");
+      return render();
+    }
+    if (name.startsWith("promo-clear-")) {
+      clearPromotionForm(kind);
+      return;
+    }
+    if (name === "promo-save-notifications" || name === "promo-send-notifications") {
+      const row = promotionFormData("notifications", name === "promo-send-notifications");
+      if (name === "promo-send-notifications" && !confirm("Publish this in-app notification to the selected audience now?")) return;
+      await savePromotion("notifications", row);
+      notify(name === "promo-send-notifications" ? "Notification published in the app." : "Notification draft saved.");
+      return render();
+    }
+    if (name === "promo-save-offers" || name === "promo-save-prizes" || name === "promo-save-ads") {
+      const kindName = name.slice("promo-save-".length);
+      await savePromotion(kindName, promotionFormData(kindName));
+      notify("Promotion saved.");
+      return render();
+    }
+  }
+  if (name === "upload-english" || name === "upload-files") {
+    /* One upload route for every subject. The format selector decides what the
+     * extracted pages become; paper photos need the AI vision step. */
+    const format = document.querySelector("#import-format")?.value;
+    englishUploader.open(
+      format === "second"
+        ? "second"
+        : format === "first"
+          ? "first"
+          : state.paperType,
+    );
+    return;
+  }
+  if (name === "new-question") {
+    openEditor(newQuestion());
+    return;
+  }
+  if (name === "new-english") {
+    openEditor(C.englishTemplate());
+    return;
+  }
+  if (name === "filter") {
+    state.query = $("search")?.value.trim() || "";
+    state.subject = $("subject-filter")?.value || "";
+    state.chapter = $("chapter-filter")?.value.trim() || "";
+    state.source = $("source-filter")?.value || "";
+    state.status = $("status-filter")?.value || "";
+    state.paperType =
+      $("archive-type")?.value || $("paper-filter")?.value || "";
+    state.board = $("board-filter")?.value || "";
+    state.year = $("year-filter")?.value || "";
+    state.page = 0;
+    state.selected.clear();
+    return render();
+  }
+  if (name === "prev" || name === "next") {
+    state.page = Math.max(
+      0,
+      Math.min(
+        Math.ceil(state.total / 25) - 1,
+        state.page + (name === "next" ? 1 : -1),
+      ),
+    );
+    state.selected.clear();
+    return render();
+  }
+  if (name === "edit") return openEditor(row, row);
+  if (name === "duplicate") {
+    const copy = structuredClone(row);
+    copy.id += "_" + crypto.randomUUID().slice(0, 6);
+    copy.review_status = "draft";
+    return openEditor(copy);
+  }
+  if (name === "preview") return showPreview([row], english);
+  if (name === "paper-preview") {
+    const selected = state.rows.filter((r) => state.selected.has(r.id));
+    if (!selected.length)
+      throw Error("Select questions or English papers first.");
+    return showPreview(selected, english);
+  }
+  if (name === "review" || name === "publish") {
+    const report = english
+      ? C.validateEnglish(row)
+      : { errors: C.validateQuestion(row), warnings: [] };
+    if (report.errors.length) throw Error(report.errors.join("\n"));
+    let next =
+      name === "review"
+        ? "review"
+        : row.review_status === "published"
+          ? "draft"
+          : "published";
+    if (
+      next === "published" &&
+      !confirm(
+        `Publish ${row.id}?\n${report.warnings.join("\n")}\nI have reviewed the source, wording and answers.`,
+      )
+    )
+      return;
+    await save(table, { ...row, review_status: next }, row);
+    notify(
+      next === "published"
+        ? "Published. The updated app receives this content on its next successful sync."
+        : "Workflow updated.",
+    );
+    return render();
+  }
+  if (["archive", "restore", "delete"].includes(name)) {
+    if (
+      !confirm(`${name === "delete" ? "Permanently delete" : name} ${row.id}?`)
+    )
+      return;
+    if (name === "delete") {
+      if (
+        prompt(
+          "Type DELETE to confirm permanent removal. A backup will download first.",
+        ) !== "DELETE"
+      )
+        return;
+      download("backup-" + row.id + ".json", row);
+      if (state.demo) {
+        if (english) demoEnglish = demoEnglish.filter((r) => r.id !== id);
+        else demoRows = demoRows.filter((r) => r.id !== id);
+      } else {
+        const { error } = await client
+          .from(table)
+          .delete()
+          .eq("id", row.id)
+          .eq("updated_at", row.updated_at)
+          .eq("is_active", false);
+        if (error) throw error;
+      }
+    } else await save(table, { ...row, is_active: name === "restore" }, row);
+    return render();
+  }
+  if (name.startsWith("export-")) {
+    let rows = await all(table);
+    if (name === "export-selected") {
+      rows = rows.filter((r) => state.selected.has(r.id));
+      if (!rows.length) throw Error("Select records first.");
+    }
+    if (name === "export-subject") {
+      if (!english && !state.subject)
+        throw Error("Choose a subject filter first.");
+      if (!english) rows = rows.filter((r) => r.subject_id === state.subject);
+      const chapter = prompt(
+        "Optional exact chapter name (leave blank for the whole subject):",
+        "",
+      );
+      if (chapter === null) return;
+      if (chapter) rows = rows.filter((r) => r.chapter === chapter);
+    }
+    download(`${table}-${new Date().toISOString().slice(0, 10)}.json`, {
+      schema_version: 1,
+      exported_at: new Date().toISOString(),
+      records: rows,
+    });
+    return;
+  }
+  if (name === "bulk-publish") {
+    const rows = state.rows.filter((r) => state.selected.has(r.id));
+    if (!rows.length) throw Error("Select the approved records on this page.");
+    for (const r of rows) {
+      if (r.review_status !== "review" || !r.is_active)
+        throw Error("Select only active records that are in review.");
+      const report = english
+        ? C.validateEnglish(r)
+        : { errors: C.validateQuestion(r) };
+      if (report.errors.length)
+        throw Error(r.id + ": " + report.errors.join(" / "));
+    }
+    if (
+      !confirm(
+        `Publish exactly these ${rows.length} reviewed records?\n${rows.map((r) => r.id).join("\n")}\nI checked the source and all missing-answer warnings.`,
+      )
+    )
+      return;
+    let done = 0;
+    try {
+      for (const r of rows) {
+        await save(table, { ...r, review_status: "published" }, r);
+        done++;
+      }
+    } catch (e) {
+      throw Error(
+        `${done}/${rows.length} published. Refresh before retrying. ${C.errorMessage(e)}`,
+      );
+    }
+    state.selected.clear();
+    notify(`${done} reviewed records published.`);
+    return render();
+  }
+  if (name === "bulk-archive") {
+    const rows = state.rows.filter((r) => state.selected.has(r.id));
+    if (!rows.length) throw Error("Select records on this page first.");
+    if (
+      !confirm(
+        `Download a backup, then ${state.tab === "archived" ? "restore" : "archive"} ${rows.length} records?`,
+      )
+    )
+      return;
+    download("backup-" + Date.now() + ".json", rows);
+    let done = 0;
+    try {
+      for (const r of rows) {
+        await save(table, { ...r, is_active: state.tab === "archived" }, r);
+        done++;
+      }
+    } catch (e) {
+      throw Error(
+        `${done}/${rows.length} changed before an error. Your backup contains every selected row. ${C.errorMessage(e)}`,
+      );
+    }
+    state.selected.clear();
+    return render();
+  }
+  if (name.startsWith("import-")) {
+    const kind = name.slice(7);
+    if (kind === "figures") {
+      location.hash = "figures";
+      return;
+    }
+    if (kind === "files") {
+      /* One upload route for every subject; the format selector decides what the
+       * extracted pages become. */
+      const format = $("import-format")?.value;
+      englishUploader.open(
+        format === "second"
+          ? "second"
+          : format === "first"
+            ? "first"
+            : state.paperType,
+      );
+      return;
+    } else $("import-format").value = "questions";
+    if (kind === "csv" || kind === "json") $("import-file").click();
+    else $("import-text").focus();
+    return;
+  }
+  if (name === "parse-import" || name === "ai-format")
+    return parseImport(name === "ai-format");
+  if (name === "preview-import") return showPreview(importRows);
+  if (name === "save-import") {
+    if (!importRows.length)
+      throw Error("No importable rows. Fix duplicate IDs and parse again.");
+    if (
+      !confirm(
+        `Save? Nothing will be published yet.`,
+      )
+    )
+      return;
+    if (state.demo) {
+      for (const row of importRows) await save("questions", row, null);
+    } else {
+      const { error } = await client
+        .from("questions")
+        .insert(importRows.map(writable));
+      if (error) throw error;
+    }
+    notify(
+      `${importRows.length} drafts saved. Open Question Bank to repair issues and submit for review.`,
+    );
+    importRows = [];
+    $("import-results").innerHTML = "";
+    return;
+  }
+  if (name === "csv-template")
+    return download(
+      "question-template.csv",
+      "id,subject,chapter,type,question,option_a,option_b,option_c,option_d,answer,explanation\n",
+      "text/csv",
+    );
+  if (name === "health" || name === "duplicates") return runHealth(name);
+  if (name === "storage-health") return runHealth(name);
+  if (name === "process-figure") return processFigure();
+  if (name === "upload-figure") {
+    const blob = await processFigure();
+    if (state.demo) throw Error("Uploads are disabled in offline demo.");
+    const path = "studio/" + crypto.randomUUID() + ".png";
+    const { error } = await client.storage
+      .from("question-figures")
+      .upload(path, blob, { contentType: "image/png", upsert: false });
+    if (error) throw error;
+    const { data } = client.storage.from("question-figures").getPublicUrl(path);
+    $("figure-output").innerHTML =
+      '<label>Final figure URL · paste into a question to add / replace its image<input readonly value="' +
+      esc(data.publicUrl) +
+      '"></label>';
+    return;
+  }
+  if (name === "add-subject") {
+    const id = prompt(
+      "Stable subject ID (lowercase letters, digits, underscores):",
+    );
+    if (!id) return;
+    if (!/^[a-z][a-z0-9_]+$/.test(id) || catalog.SUBJECTS[id])
+      throw Error("Use a new lowercase subject ID.");
+    const label = prompt("Subject display name:");
+    if (!label) return;
+    catalog.SUBJECTS[id] = label;
+    catalog.CHAPTERS[id] = [];
+    $("catalog-subject").innerHTML = options(catalog.SUBJECTS, id, "Choose");
+    $("catalog-name").value = label;
+    $("catalog-chapters").value = "";
+    notify(
+      "Add the chapter list, then Save. Custom subjects use custom paper counts, not a new official board pattern.",
+    );
+    return;
+  }
+  if (name === "save-catalog") {
+    const id = $("catalog-subject").value,
+      name = $("catalog-name").value.trim(),
+      chapters = [
+        ...new Set(
+          $("catalog-chapters")
+            .value.split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean),
+        ),
+      ];
+    if (!id || !name) throw Error("Choose a subject and display name.");
+    if (!state.demo) {
+      const { error } = await client
+        .from("content_subjects")
+        .upsert({ id, name, chapters });
+      if (error) throw error;
+    }
+    catalog.SUBJECTS[id] = name;
+    catalog.CHAPTERS[id] = chapters;
+    notify(
+      "Chapter catalog saved. Existing questions retain their current chapter names.",
+    );
+    return;
+  }
+}
+
+function duplicateScan(rows, threshold = 0.8) {
+  return new Promise((resolve) => {
+    let worker;
+    let settled = false;
+    const finish = (hits) => {
+      if (settled) return;
+      settled = true;
+      worker?.terminate();
+      resolve(hits);
+    };
+    try {
+      worker = new Worker("validation-worker.js");
+    } catch (e) {
+      console.warn("Duplicate checker unavailable.", e);
+      finish([]);
+      return;
+    }
+    worker.onmessage = ({ data }) => {
+      if (data?.error) {
+        console.warn("Duplicate checker returned an error.", data.error);
+        finish([]);
+        return;
+      }
+      const byId = new Map(rows.map((r) => [r.id, r]));
+      finish(
+        (data?.hits || []).map((h) => ({
+          ...h,
+          a: byId.get(h.a),
+          b: byId.get(h.b),
+        })),
+      );
+    };
+    worker.onerror = (e) => {
+      console.warn("Duplicate checker could not load.", e.message || e);
+      finish([]);
+    };
+    try {
+      worker.postMessage({ rows, threshold });
+    } catch (e) {
+      console.warn("Duplicate checker could not start.", e);
+      finish([]);
+    }
+  });
+}
+
+const englishUploader = createEnglishUploader({
+  client,
+  isDemo: () => state.demo,
+  onDraft: (row) => openEditor(row),
+});
+
+/* ── Motion, navigation and session feedback ─────────────────────────────── */
+
+const MOTION_KEY = "studio_motion";
+function motionPref() {
+  try {
+    return localStorage.getItem(MOTION_KEY) || "system";
+  } catch (_) {
+    return "system";
+  }
+}
+/** True when the OS asks for reduced motion or the teacher asked for it here. */
+function motionOff() {
+  return C.motionReduced(
+    motionPref(),
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+}
+function applyMotion() {
+  document.documentElement.dataset.motion = motionOff() ? "reduced" : "full";
+  const row = $("motion-state");
+  if (row)
+    row.textContent = motionOff()
+      ? "Reduced — entrances, shimmer and transitions are off"
+      : "Full — motion follows your system setting";
+}
+function setMotion(pref) {
+  try {
+    localStorage.setItem(MOTION_KEY, pref);
+  } catch (_) {}
+  applyMotion();
+}
+function toggleMotion() {
+  setMotion(motionOff() ? "full" : "reduced");
+  notify(
+    motionOff()
+      ? "Reduced motion is on for this studio."
+      : "Motion follows your system setting again.",
+  );
+}
+window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener(
+  "change",
+  applyMotion,
+);
+
+/** Count the dashboard up to the real total, never past it. */
+function animateCounters(root) {
+  const reduce = motionOff();
+  root.querySelectorAll("[data-count]").forEach((el) => {
+    const target = Number(el.dataset.count) || 0;
+    if (reduce) {
+      el.textContent = target.toLocaleString();
+      return;
+    }
+    const start = performance.now();
+    const step = (now) => {
+      el.textContent = C.countUpFrame(target, now - start).toLocaleString();
+      if (now - start < 700 && el.isConnected) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/** Every file input gets a drop target that answers while a file is hovering. */
+function bindDropZones(root) {
+  root.querySelectorAll('input[type="file"]').forEach((input) => {
+    if (input.dataset.dropBound) return;
+    input.dataset.dropBound = "1";
+    const zone = document.createElement("div");
+    zone.className = "dropzone";
+    input.parentNode.insertBefore(zone, input);
+    zone.appendChild(input);
+    const hover = (on) => {
+      zone.dataset.drag = on ? "over" : "";
+    };
+    ["dragenter", "dragover"].forEach((type) =>
+      zone.addEventListener(type, (e) => {
+        e.preventDefault();
+        hover(true);
+      }),
+    );
+    ["dragleave", "dragend"].forEach((type) =>
+      zone.addEventListener(type, () => hover(false)),
+    );
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      hover(false);
+      const file = e.dataTransfer && e.dataTransfer.files[0];
+      if (!file) return;
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      input.files = transfer.files;
+      if (typeof input.onchange === "function") input.onchange({ target: input });
+    });
+  });
+}
+
+/* Off-canvas navigation on narrow screens. */
+function setDrawer(open) {
+  document.body.dataset.drawer = open ? "open" : "closed";
+  const toggle = $("menu-toggle");
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute(
+      "aria-label",
+      open ? "Close navigation" : "Open navigation",
+    );
+  }
+  if (open) {
+    const first = $("studio-nav").querySelector("a,button");
+    if (first) first.focus();
+  }
+}
+$("menu-toggle").onclick = () =>
+  setDrawer(document.body.dataset.drawer !== "open");
+$("drawer-scrim").onclick = () => setDrawer(false);
+$("studio-nav").addEventListener("click", (e) => {
+  if (e.target.closest("a")) setDrawer(false);
+});
+
+/* Command centre: one keystroke to any workspace. */
+function commandChoices() {
+  return [
+    ...nav.map(([id, , label]) => ({
+      label,
+      hint: "Workspace",
+      run: () => {
+        location.hash = id;
+      },
+    })),
+    {
+      label: "Add a question",
+      hint: "Action",
+      run: () => openEditor(newQuestion()),
+    },
+    {
+      label: "Open English editor",
+      hint: "Action",
+      run: () => action("new-english"),
+    },
+    {
+      label: "Check bank health",
+      hint: "Action",
+      run: () => {
+        location.hash = "validation";
+      },
+    },
+    {
+      label: motionOff() ? "Allow motion" : "Reduce motion",
+      hint: "Preference",
+      run: toggleMotion,
+    },
+  ];
+}
+let commandIndex = 0;
+function drawCommand() {
+  const term = $("command-input").value.trim().toLowerCase();
+  const matches = commandChoices().filter(
+    (c) => !term || c.label.toLowerCase().includes(term),
+  );
+  commandIndex = Math.min(commandIndex, Math.max(0, matches.length - 1));
+  $("command-list").innerHTML = matches
+    .map(
+      (c, i) =>
+        `<li role="option" aria-selected="${i === commandIndex}"><button type="button" data-command="${i}" aria-selected="${i === commandIndex}"><strong>${esc(c.label)}</strong> <small>${esc(c.hint)}</small></button></li>`,
+    )
+    .join("");
+  $("command-list").onclick = (e) => {
+    const button = e.target.closest("[data-command]");
+    if (!button) return;
+    const choice = matches[Number(button.dataset.command)];
+    $("command").close();
+    if (choice) choice.run();
+  };
+  $("command-list").matches_ = matches;
+}
+function openCommand() {
+  if ($("app").hidden) return;
+  commandIndex = 0;
+  $("command-input").value = "";
+  drawCommand();
+  $("command").showModal();
+  $("command-input").focus();
+}
+$("command-input").oninput = () => {
+  commandIndex = 0;
+  drawCommand();
+};
+$("command-input").onkeydown = (e) => {
+  const matches = $("command-list").matches_ || [];
+  if (e.key === "ArrowDown") {
+    commandIndex = Math.min(commandIndex + 1, matches.length - 1);
+    drawCommand();
+    e.preventDefault();
+  } else if (e.key === "ArrowUp") {
+    commandIndex = Math.max(commandIndex - 1, 0);
+    drawCommand();
+    e.preventDefault();
+  } else if (e.key === "Enter") {
+    const choice = matches[commandIndex];
+    $("command").close();
+    if (choice) choice.run();
+    e.preventDefault();
+  }
+};
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    openCommand();
+  } else if (e.key === "Escape" && document.body.dataset.drawer === "open") {
+    setDrawer(false);
+    $("menu-toggle").focus();
+  }
+});
+
+/**
+ * An expired session used to surface as a generic error under whatever the
+ * teacher was doing. Name it instead, and say what to do.
+ */
+function sessionGuard(error) {
+  const text = String((error && error.message) || error || "");
+  if (!/jwt expired|session|token|sign.?in|auth/i.test(text)) return;
+  if ($("app").hidden) return;
+  notify("Your session expired. Sign in again to continue.", true);
+  const again = document.createElement("button");
+  again.className = "ghost";
+  again.textContent = "Sign in again";
+  again.style.marginLeft = "10px";
+  again.onclick = () => location.reload();
+  $("notice").appendChild(again);
+}
+
+applyMotion();
+setDrawer(false);

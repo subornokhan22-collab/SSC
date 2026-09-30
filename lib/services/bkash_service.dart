@@ -76,11 +76,12 @@ class BkashService {
   /// longer carries an `error` field); the server's
   /// `{ok: false, error: "..."}` body rides along as the exception's
   /// `details`, which is where the human message is read from.
-  static Future<Map<String, dynamic>> _invoke(
-      Map<String, Object?> body) async {
+  static Future<Map<String, dynamic>> _invoke(Map<String, Object?> body) async {
     try {
-      final res =
-          await Supabase.instance.client.functions.invoke('bkash', body: body);
+      final res = await Supabase.instance.client.functions.invoke(
+        'bkash',
+        body: body,
+      );
       final d = res.data;
       if (d is Map) return Map<String, dynamic>.from(d);
       throw const BkashError('Unexpected payment response.');
@@ -95,7 +96,8 @@ class BkashService {
         throw BkashError(details);
       }
       throw BkashError(
-          'Could not reach the payment server — check your connection and try again.');
+        'Could not reach the payment server — check your connection and try again.',
+      );
     }
   }
 
