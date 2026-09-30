@@ -4,11 +4,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const css = fs.readFileSync(path.join(__dirname, '..', 'studio.css'), 'utf8');
+const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const englishUpload = fs.readFileSync(
   path.join(__dirname, '..', 'english-upload.js'),
   'utf8',
 );
-const palette = new Set(['#E3F2FD', '#90CAF9', '#2196F3', '#0D47A1']);
+const palette = new Set(['#FFFFFF', '#E3F2FD', '#90CAF9', '#2196F3', '#0D47A1']);
 
 function authoredHexColors(source) {
   return new Set(
@@ -16,8 +17,17 @@ function authoredHexColors(source) {
   );
 }
 
-test('admin theme uses only the supplied four palette colors', () => {
+test('admin theme uses the supplied four palette colors plus white text', () => {
   assert.deepEqual(authoredHexColors(css), palette);
+});
+
+
+test('admin panel uses the real app icon and white text on color surfaces', () => {
+  assert.match(index, /rel="icon"[^>]+href="\.\/app-icon\.png"/);
+  assert.match(index, /class="brandmark"><img src="\.\/app-icon\.png"/);
+  assert.match(css, /--white:\s*#FFFFFF/);
+  assert.match(css, /\.primary[\s\S]*?color:\s*var\(--white\)/);
+  assert.match(css, /nav a\.active[\s\S]*?color:\s*var\(--white\)/);
 });
 
 test('admin theme resolves existing semantic tokens to the supplied palette', () => {

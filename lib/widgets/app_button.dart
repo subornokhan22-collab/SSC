@@ -35,7 +35,7 @@ class _AppButtonState extends State<AppButton> {
   Widget build(BuildContext context) {
     final disabled = widget.onPressed == null || widget.loading;
     final pressed = _pressed && !disabled && !MotionPolicy.reduce(context);
-    final foreground = widget.outlined ? AppTheme.primary : AppColors.surface;
+    final foreground = widget.outlined ? AppTheme.primary : AppColors.onColor;
     final radius = BorderRadius.circular(AppRadii.action);
     final child = Row(
       mainAxisSize: MainAxisSize.min,

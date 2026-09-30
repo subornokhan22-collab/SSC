@@ -8,6 +8,8 @@ import 'package:tutors_desk/theme/design_tokens.dart';
 
 void main() {
   test('existing theme API delegates to semantic palette tokens', () {
+    expect(AppTheme.onColor, Colors.white);
+    expect(AppColors.onColor, Colors.white);
     expect(AppTheme.primary, AppColors.primary);
     expect(AppTheme.canvas, AppColors.canvas);
     expect(AppTheme.textDark, AppColors.text);

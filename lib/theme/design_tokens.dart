@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Paper + Ink + Indigo. Semantic colors shared across the teacher workspace.
 abstract final class AppColors {
+  static const onColor = Colors.white;
   static const primary = Color(0xFF3157D5);
   static const primaryDark = Color(0xFF3157D5);
   static const secondary = Color(0xFF16845B);

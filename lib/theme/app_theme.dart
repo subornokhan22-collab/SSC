@@ -11,6 +11,7 @@ import 'design_tokens.dart';
 /// primary brand colour and a teal accent for confirmation states.
 class AppTheme {
   // ── Brand ────────────────────────────────────────────────────────
+  static const Color onColor = AppColors.onColor;
   static const Color primary = AppColors.primary; // indigo
   static const Color primaryDark = AppColors.primaryDark;
   static const Color secondary = AppColors.secondary; // teal
@@ -54,13 +55,13 @@ class AppTheme {
       seedColor: primary,
       brightness: Brightness.light,
       primary: primary,
-      onPrimary: Colors.white,
+      onPrimary: onColor,
       secondary: secondary,
-      onSecondary: Colors.white,
+      onSecondary: onColor,
       surface: surface,
       onSurface: textDark,
       error: danger,
-      onError: Colors.white,
+      onError: onColor,
     );
     return base.copyWith(
       colorScheme: scheme,
@@ -123,7 +124,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
-          foregroundColor: Colors.white,
+          foregroundColor: onColor,
           padding: AppSpacing.buttonPadding,
           textStyle: AppTypography.button,
           shape: RoundedRectangleBorder(
@@ -135,9 +136,9 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: primary,
-          foregroundColor: Colors.white,
+          foregroundColor: onColor,
           disabledBackgroundColor: AppColors.disabled,
-          disabledForegroundColor: Colors.white,
+          disabledForegroundColor: onColor,
           padding: AppSpacing.buttonPadding,
           textStyle: AppTypography.button,
           shape: RoundedRectangleBorder(

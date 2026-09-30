@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 
 /// The Tutor's Desk mark, drawn from the real launcher icon.
 ///
@@ -49,7 +50,7 @@ class AppLogo extends StatelessWidget {
           child: Text(
             'TD',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.onColor,
               fontWeight: FontWeight.w900,
               fontSize: size * .34,
               letterSpacing: .5,
@@ -66,7 +67,7 @@ class AppLogo extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white,
+        color: AppColors.onColor,
         border: Border.all(color: ring.withOpacity(.35), width: 1.4),
         boxShadow: [
           BoxShadow(
