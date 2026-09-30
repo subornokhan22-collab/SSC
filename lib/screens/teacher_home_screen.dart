@@ -598,9 +598,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      color: color.withOpacity(.10),
+                      color: color,
                       borderRadius: BorderRadius.circular(12)),
-                  child: Icon(icon, color: color),
+                  child: Icon(icon, color: AppColors.onColor),
                 ),
                 const SizedBox(height: 10),
                 Text(title,

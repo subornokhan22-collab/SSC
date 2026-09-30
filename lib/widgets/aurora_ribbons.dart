@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'motion_policy.dart';
+import '../theme/design_tokens.dart';
 
 /// Slow pastel ribbons for the few places that deserve atmosphere.
 ///
@@ -65,10 +66,22 @@ class _AuroraPainter extends CustomPainter {
   final double opacity;
   const _AuroraPainter(this.t, this.opacity);
 
-  static const _bands = <List<Color>>[
-    [Color(0x333157D5), Color(0x553157D5), Color(0x22FFFFFF)],
-    [Color(0x2616845B), Color(0x44087F8C), Color(0x22FFFFFF)],
-    [Color(0x267C5CE0), Color(0x447C5CE0), Color(0x22FFFFFF)],
+  static final _bands = <List<Color>>[
+    [
+      AppColors.primary.withOpacity(.20),
+      AppColors.primary.withOpacity(.34),
+      Colors.white.withOpacity(.13),
+    ],
+    [
+      AppColors.primaryDark.withOpacity(.15),
+      AppColors.primaryDark.withOpacity(.27),
+      Colors.white.withOpacity(.13),
+    ],
+    [
+      AppColors.light.withOpacity(.28),
+      AppColors.light.withOpacity(.46),
+      Colors.white.withOpacity(.13),
+    ],
   ];
 
   @override

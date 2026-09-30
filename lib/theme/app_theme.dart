@@ -4,11 +4,8 @@ import 'package:flutter/services.dart';
 import '../widgets/animations.dart';
 import 'design_tokens.dart';
 
-/// Light "Paper + Ink + Indigo" design system for Tutor's Desk.
-///
-/// The palette is built for long reading sessions and for screens that sit
-/// next to printed paper: a soft paper-white canvas, deep indigo as the
-/// primary brand colour and a teal accent for confirmation states.
+/// Tutor's Desk blue design system. White text is used on every dark/blue
+/// brand surface while white cards keep long reading sessions comfortable.
 class AppTheme {
   // ── Brand ────────────────────────────────────────────────────────
   static const Color onColor = AppColors.onColor;
@@ -42,10 +39,10 @@ class AppTheme {
 
   /// Status-bar / nav-bar styling for a light UI.
   static const SystemUiOverlayStyle overlayStyle = SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light,
-    systemNavigationBarColor: canvas,
+    statusBarColor: primaryDark,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+    systemNavigationBarColor: surface,
     systemNavigationBarIconBrightness: Brightness.dark,
   );
 
@@ -99,15 +96,16 @@ class AppTheme {
             bodySmall: AppTypography.caption,
             labelLarge: AppTypography.label,
           ),
+      iconTheme: const IconThemeData(color: primary, size: 22),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.appBar,
-        foregroundColor: textDark,
+        foregroundColor: onColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: overlayStyle,
-        iconTheme: IconThemeData(color: primary, size: 22),
+        iconTheme: IconThemeData(color: onColor, size: 22),
         titleTextStyle: AppTypography.appBarTitle,
       ),
       cardTheme: CardThemeData(
@@ -193,7 +191,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceAlt,
+        fillColor: surface,
         hintStyle: const TextStyle(color: muted, fontSize: 13.5),
         labelStyle: const TextStyle(color: muted, fontSize: 13.5),
         floatingLabelStyle: const TextStyle(
@@ -343,20 +341,20 @@ class AppTheme {
         textStyle: const TextStyle(fontSize: 12, color: Colors.white),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surface,
-        indicatorColor: primary.withOpacity(.12),
+        backgroundColor: primaryDark,
+        indicatorColor: primary,
         elevation: 0,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (s) => TextStyle(
             fontSize: 11.5,
             fontWeight: FontWeight.w700,
-            color: s.contains(WidgetState.selected) ? primary : muted,
+            color: onColor,
           ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (s) => IconThemeData(
             size: 23,
-            color: s.contains(WidgetState.selected) ? primary : muted,
+            color: onColor,
           ),
         ),
       ),

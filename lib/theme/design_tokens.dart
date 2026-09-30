@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
-/// Paper + Ink + Indigo. Semantic colors shared across the teacher workspace.
+/// Tutor's Desk blue theme. White is the foreground on brand surfaces;
+/// the OMR pink pair remains reserved for the printed-sheet workflow.
 abstract final class AppColors {
   static const onColor = Colors.white;
-  static const primary = Color(0xFF3157D5);
-  static const primaryDark = Color(0xFF3157D5);
-  static const secondary = Color(0xFF16845B);
-  static const accent = Color(0xFF16845B);
-  static const gradientEnd = Color(0xFF3157D5);
+  static const light = Color(0xFF90CAF9);
+  static const primary = Color(0xFF2196F3);
+  static const primaryDark = Color(0xFF0D47A1);
+  static const secondary = Color(0xFF0D47A1);
+  static const accent = Color(0xFF2196F3);
+  static const gradientEnd = Color(0xFF0D47A1);
 
-  static const canvas = Color(0xFFF7F8FA);
+  static const canvas = Color(0xFFE3F2FD);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceAlt = Color(0xFFF7F8FA);
-  static const border = Color(0xFFE4E7EC);
-  static const text = Color(0xFF172033);
-  static const muted = Color(0xFF667085);
-  static const disabled = Color(0xFFC9D0E2);
-  static const progressTrack = Color(0xFFE4E7EC);
-  static const appBar = Color(0xFFFFFFFF);
+  static const surfaceAlt = Color(0xFFE3F2FD);
+  static const border = Color(0xFF90CAF9);
+  static const text = Color(0xFF0D47A1);
+  static const muted = Color(0xFF0D47A1);
+  static const disabled = Color(0xFF90CAF9);
+  static const progressTrack = Color(0xFF90CAF9);
+  static const appBar = Color(0xFF0D47A1);
 
   // Workspace roles; do not change persisted preset ordering.
   // OMR uses the same pink as the printed sheet so the scanner workflow has
@@ -102,7 +104,7 @@ abstract final class AppTypography {
     fontSize: 18.5,
     fontWeight: FontWeight.w800,
     letterSpacing: .2,
-    color: AppColors.text,
+    color: AppColors.onColor,
   );
 }
 

@@ -22,7 +22,7 @@ class ContentCatalogSync {
             name: name,
             bengaliName: name,
             icon: old?.icon ?? '📘',
-            colorHex: old?.colorHex ?? 0xFF3157D5,
+            colorHex: old?.colorHex ?? 0xFF2196F3,
             group: old?.group ?? SubjectGroup.general));
         chapters[id] = list;
       } catch (e) {

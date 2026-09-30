@@ -678,7 +678,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ? Icon(
                                 Icons.check_rounded,
                                 size: 20,
-                                color: AppStyle.accents[i],
+                                color: AppColors.onColor,
                               )
                             : null,
                       ),

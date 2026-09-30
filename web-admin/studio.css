@@ -409,8 +409,8 @@ select {
   border: 1px solid var(--light);
   border-radius: 7px;
   padding: 10px;
-  background: var(--pale);
-  color: var(--ink);
+  background: var(--white);
+  color: var(--deep);
   margin-top: 6px;
 }
 textarea {
