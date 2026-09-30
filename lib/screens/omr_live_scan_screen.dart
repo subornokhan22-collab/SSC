@@ -5,6 +5,7 @@ import 'dart:ui' show PathFillType;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/omr/omr_quality.dart';
 import '../theme/app_theme.dart';
@@ -296,7 +297,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
-                        Icons.no_photography_outlined,
+                        PhosphorIcons.cameraSlash,
                         size: 44,
                         color: Colors.white70,
                       ),
@@ -336,7 +337,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
               right: 8,
               child: Row(
                 children: [
-                  _round(Icons.close_rounded, _close),
+                  _round(PhosphorIcons.x, _close),
                   const Spacer(),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -397,7 +398,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                                 ),
                               )
                             : const Icon(
-                                Icons.photo_camera_outlined,
+                                PhosphorIcons.camera,
                                 color: AppColors.omr,
                                 size: 34,
                               ),

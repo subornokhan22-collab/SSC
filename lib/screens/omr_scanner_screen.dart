@@ -9,6 +9,7 @@ import '../widgets/motion_policy.dart';
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/omr/omr_geometry.dart';
 import '../services/omr/omr_scanner.dart';
@@ -835,12 +836,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const OMrAnalyticsScreen()),
             ),
-            icon: const Icon(Icons.bar_chart_rounded),
+            icon: const Icon(PhosphorIcons.chartBar),
           ),
           IconButton(
             tooltip: 'Key draft restore',
             onPressed: _busy || _step != 0 ? null : _restoreKeyDraft,
-            icon: const Icon(Icons.history_rounded),
+            icon: const Icon(PhosphorIcons.clockCounterClockwise),
           ),
         ],
       ),
@@ -863,7 +864,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: _busy ? null : () => setState(() => _step--),
-                  icon: const Icon(Icons.arrow_back, size: 16),
+                  icon: const Icon(PhosphorIcons.arrowLeft, size: 16),
                   label: const Text('Back'),
                 ),
               ),
@@ -931,7 +932,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           ),
                         ),
                         onPressed: _busy ? null : _pickSavedPaper,
-                        icon: const Icon(Icons.bookmarks_rounded, size: 18),
+                        icon: const Icon(PhosphorIcons.bookmarksSimple, size: 18),
                         label: const Text(
                           'Use saved paper (key auto-loads)',
                           style: TextStyle(
@@ -955,7 +956,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         IconButton(
                           onPressed:
                               _total > 5 ? () => _setTotal(_total - 5) : null,
-                          icon: const Icon(Icons.remove_circle_outline),
+                          icon: const Icon(PhosphorIcons.minusCircle),
                         ),
                         SizedBox(
                           width: 44,
@@ -972,7 +973,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         IconButton(
                           onPressed:
                               _total < 100 ? () => _setTotal(_total + 5) : null,
-                          icon: const Icon(Icons.add_circle_outline),
+                          icon: const Icon(PhosphorIcons.plusCircle),
                         ),
                         const Spacer(),
                         TextButton(
@@ -1018,7 +1019,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           Expanded(
                             child: AppButton(
                               label: 'Camera',
-                              icon: Icons.view_in_ar_rounded,
+                              icon: PhosphorIcons.cube,
                               onPressed: _busy ? null : _openCamera,
                             ),
                           ),
@@ -1026,7 +1027,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           Expanded(
                             child: AppButton(
                               label: 'Gallery',
-                              icon: Icons.photo_library_rounded,
+                              icon: PhosphorIcons.images,
                               outlined: true,
                               onPressed: _busy
                                   ? null
@@ -1044,7 +1045,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       const SizedBox(height: 8),
                       TextButton.icon(
                         onPressed: () => _scanNext(),
-                        icon: const Icon(Icons.close_rounded, size: 16),
+                        icon: const Icon(PhosphorIcons.x, size: 16),
                         label: const Text('Change / remove photo'),
                       ),
                     ],
@@ -1053,7 +1054,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _busy ? null : _batchDialog,
-                        icon: const Icon(Icons.groups_rounded, size: 18),
+                        icon: const Icon(PhosphorIcons.usersThree, size: 18),
                         label: const Text('Batch scan'),
                       ),
                     ),
@@ -1091,7 +1092,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
               const SizedBox(height: 12),
               AppButton(
                 label: 'Read answers for review',
-                icon: Icons.qr_code_scanner_rounded,
+                icon: PhosphorIcons.qrCode,
                 onPressed: _busy ? null : _scan,
               ),
             ],
@@ -1106,7 +1107,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     Row(
                       children: [
                         const Icon(
-                          Icons.groups_rounded,
+                          PhosphorIcons.usersThree,
                           color: AppColors.omr,
                           size: 20,
                         ),
@@ -1128,7 +1129,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Cancel batch',
-                            icon: Icons.close_rounded,
+                            icon: PhosphorIcons.x,
                             outlined: true,
                             onPressed: _cancelBatch,
                           ),
@@ -1137,7 +1138,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Finish batch',
-                            icon: Icons.flag_rounded,
+                            icon: PhosphorIcons.flag,
                             onPressed: _batch.isEmpty ? null : _finishBatch,
                           ),
                         ),
@@ -1252,7 +1253,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     _verdictGrid(graded),
                     TextButton.icon(
                       onPressed: _busy ? null : () => setState(() => _step = 2),
-                      icon: const Icon(Icons.edit_outlined),
+                      icon: const Icon(PhosphorIcons.pencilSimple),
                       label: const Text('Review / correct readings'),
                     ),
                     const SizedBox(height: 14),
@@ -1261,7 +1262,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Print scorecard',
-                            icon: Icons.print_rounded,
+                            icon: PhosphorIcons.printer,
                             onPressed: _printScorecard,
                           ),
                         ),
@@ -1269,7 +1270,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Save key',
-                            icon: Icons.save_rounded,
+                            icon: PhosphorIcons.floppyDisk,
                             outlined: true,
                             onPressed: _saveKey,
                           ),
@@ -1281,7 +1282,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _scanNext,
-                        icon: const Icon(Icons.person_rounded, size: 18),
+                        icon: const Icon(PhosphorIcons.user, size: 18),
                         label: const Text("Scan next student's OMR sheet"),
                       ),
                     ),
@@ -1410,7 +1411,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       IconButton(
                         onPressed: () => _showRecord(r),
                         icon: const Icon(
-                          Icons.visibility_rounded,
+                          PhosphorIcons.eye,
                           size: 18,
                           color: AppColors.omr,
                         ),
@@ -1421,7 +1422,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           _loadHistory();
                         },
                         icon: const Icon(
-                          Icons.delete_outline_rounded,
+                          PhosphorIcons.trash,
                           size: 18,
                           color: AppTheme.danger,
                         ),
@@ -1804,13 +1805,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             ),
             const SizedBox(height: 14),
             FilledButton.icon(
-              icon: const Icon(Icons.photo_library_rounded, size: 18),
+              icon: const Icon(PhosphorIcons.images, size: 18),
               label: const Text('Gallery (pick many)'),
               onPressed: () => Navigator.pop(c, 'gallery'),
             ),
             const SizedBox(height: 10),
             FilledButton.icon(
-              icon: const Icon(Icons.photo_camera_rounded, size: 18),
+              icon: const Icon(PhosphorIcons.camera, size: 18),
               label: const Text('Camera (one by one)'),
               onPressed: () => Navigator.pop(c, 'camera'),
             ),

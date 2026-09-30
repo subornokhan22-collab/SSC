@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutors_desk/screens/signin_screen.dart';
 import 'package:tutors_desk/services/app_settings.dart';
@@ -49,7 +50,7 @@ void main() {
     expect(find.text('42'), findsOneWidget);
     expect(find.byType(TweenAnimationBuilder<double>), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.byIcon(Icons.hourglass_top_rounded), findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.hourglass), findsOneWidget);
     await tester.pumpAndSettle();
     AppSettings.reduceMotion.value = true;
     await tester.pumpWidget(host(const ActivityIndicator()));
@@ -149,7 +150,7 @@ void main() {
     bank.complete();
     await tester.pump();
     expect(calls, ['bank', 'cache']);
-    expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.checkCircle), findsOneWidget);
     cache.complete();
     await tester.pumpAndSettle();
     expect(find.text('Workspace ready'), findsOneWidget);

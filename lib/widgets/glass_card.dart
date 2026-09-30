@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
 import 'animations.dart';
@@ -190,19 +191,19 @@ class InfoBanner extends StatelessWidget {
     super.key,
     required this.text,
     required this.color,
-    this.icon = Icons.info_outline_rounded,
+    this.icon = PhosphorIcons.info,
   });
 
   factory InfoBanner.success(String text) => InfoBanner(
         text: text,
         color: AppTheme.success,
-        icon: Icons.check_circle_outline_rounded,
+        icon: PhosphorIcons.checkCircle,
       );
 
   factory InfoBanner.error(String text) => InfoBanner(
         text: text,
         color: AppTheme.danger,
-        icon: Icons.error_outline_rounded,
+        icon: PhosphorIcons.warningCircle,
       );
 
   @override
@@ -325,7 +326,7 @@ class BusyIndicator extends StatelessWidget {
                     max: 1.06,
                     period: const Duration(milliseconds: 1100),
                     child: const Icon(
-                      Icons.auto_awesome_rounded,
+                      PhosphorIcons.magicWand,
                       color: AppTheme.primary,
                       size: 26,
                     ),

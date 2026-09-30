@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'data/question_bank.dart';
 import 'navigation/app_routes.dart';
@@ -219,7 +220,7 @@ class _FriendlyErrorView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
-                Icons.build_circle_outlined,
+                PhosphorIcons.wrench,
                 color: AppTheme.accent,
                 size: 44,
               ),

@@ -7,6 +7,7 @@ import '../widgets/motion_policy.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../models/subject_info.dart';
 import '../services/paper_library.dart';
@@ -279,7 +280,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               border: Border.all(color: AppColors.science.withOpacity(.35)),
             ),
             child: const Icon(
-              Icons.key_rounded,
+              PhosphorIcons.key,
               color: AppColors.science,
               size: 22,
             ),
@@ -322,19 +323,19 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _iconBtn(
-                Icons.qr_code_scanner_rounded,
+                PhosphorIcons.qrCode,
                 'Scan OMR',
                 () => _scanWith(p),
               ),
-              _iconBtn(Icons.key_rounded, 'View answers', () => _showKey(p)),
+              _iconBtn(PhosphorIcons.key, 'View answers', () => _showKey(p)),
               if (p.pages > 0)
                 _iconBtn(
-                  Icons.description_rounded,
+                  PhosphorIcons.fileText,
                   'View paper',
                   () => _viewSaved(p),
                 ),
               _iconBtn(
-                Icons.delete_outline_rounded,
+                PhosphorIcons.trash,
                 'Delete',
                 () => _deleteSaved(p),
                 color: AppTheme.danger,
@@ -377,7 +378,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
-                Icons.bookmarks_rounded,
+                PhosphorIcons.bookmarksSimple,
                 size: 54,
                 color: AppColors.science,
               ),
@@ -476,7 +477,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               child: const Text('Cancel'),
             ),
             FilledButton.icon(
-              icon: const Icon(Icons.photo_camera_rounded, size: 18),
+              icon: const Icon(PhosphorIcons.camera, size: 18),
               label: const Text('From photos'),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
@@ -493,7 +494,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               },
             ),
             FilledButton.icon(
-              icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+              icon: const Icon(PhosphorIcons.filePdf, size: 18),
               label: const Text('From PDF'),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
@@ -639,13 +640,13 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           IconButton(
             tooltip: 'Copy backup to Download folder',
             onPressed: _backUpToDownload,
-            icon: const Icon(Icons.backup_outlined),
+            icon: const Icon(PhosphorIcons.cloudArrowUp),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
-        icon: const Icon(Icons.add_photo_alternate_rounded),
+        icon: const Icon(PhosphorIcons.imageSquare),
         label: const Text('Add'),
       ),
       body: SafeArea(
@@ -702,7 +703,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(
-              Icons.photo_library_rounded,
+              PhosphorIcons.images,
               size: 54,
               color: AppColors.science,
             ),
@@ -770,11 +771,11 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _iconBtn(Icons.visibility_rounded, 'View', () => _view(e)),
-              _iconBtn(Icons.print_rounded, 'Print', () => _print(e)),
-              _iconBtn(Icons.share_rounded, 'Share', () => _share(e)),
+              _iconBtn(PhosphorIcons.eye, 'View', () => _view(e)),
+              _iconBtn(PhosphorIcons.printer, 'Print', () => _print(e)),
+              _iconBtn(PhosphorIcons.share, 'Share', () => _share(e)),
               _iconBtn(
-                Icons.delete_outline_rounded,
+                PhosphorIcons.trash,
                 'Delete',
                 () => _delete(e),
                 color: AppTheme.danger,
@@ -804,7 +805,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             border: Border.all(color: AppTheme.border),
           ),
           child: const Icon(
-            Icons.picture_as_pdf_rounded,
+            PhosphorIcons.filePdf,
             color: AppColors.science,
             size: 26,
           ),

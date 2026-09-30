@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_settings.dart';
 import '../services/local_diagnostics.dart';
@@ -102,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 _section(
                   'Accessibility',
-                  icon: Icons.accessibility_new,
+                  icon: PhosphorIcons.personSimple,
                   child: GlassCard(
                     padding: EdgeInsets.zero,
                     child: ValueListenableBuilder<bool>(
@@ -119,21 +120,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _section(
                   'Privacy & diagnostics',
-                  icon: Icons.shield_outlined,
+                  icon: PhosphorIcons.shield,
                   child: GlassCard(
                     padding: EdgeInsets.zero,
                     child: ListTile(
                       title: const Text('Local diagnostics'),
                       subtitle: const Text(
                           'On this device only · Remote reporting off'),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: const Icon(PhosphorIcons.caretRight),
                       onTap: _diagnostics,
                     ),
                   ),
                 ),
                 _section(
                   'Profile',
-                  icon: Icons.person_rounded,
+                  icon: PhosphorIcons.user,
                   child: GlassCard(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -156,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                           child: const Icon(
-                            Icons.person_rounded,
+                            PhosphorIcons.user,
                             color: AppTheme.primary,
                             size: 22,
                           ),
@@ -185,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                         Icon(
-                          Icons.chevron_right_rounded,
+                          PhosphorIcons.caretRight,
                           color: AppTheme.muted,
                         ),
                       ],
@@ -194,7 +195,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _section(
                   'OMR scanner',
-                  icon: Icons.qr_code_scanner_rounded,
+                  icon: PhosphorIcons.qrCode,
                   child: GlassCard(
                     padding: const EdgeInsets.all(14),
                     child: ValueListenableBuilder<bool>(
@@ -212,7 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                             child: const Icon(
-                              Icons.table_view_rounded,
+                              PhosphorIcons.table,
                               color: AppTheme.secondary,
                               size: 22,
                             ),
@@ -254,7 +255,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _section(
                   'Default paper name',
-                  icon: Icons.title_rounded,
+                  icon: PhosphorIcons.textT,
                   child: GlassCard(
                     padding: const EdgeInsets.all(16),
                     child: Column(

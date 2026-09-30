@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
 import 'motion_policy.dart';
@@ -172,7 +173,7 @@ class _ProblemCardState extends State<_ProblemCard> {
                           color: col.withOpacity(.12 + .10 * t),
                         ),
                         child: Icon(
-                          Icons.error_outline_rounded,
+                          PhosphorIcons.warningCircle,
                           size: 36,
                           color: col,
                         ),

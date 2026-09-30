@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/omr/omr_scanner.dart';
 import '../theme/app_theme.dart';
@@ -75,10 +76,10 @@ class OmrAnswerReview extends StatelessWidget {
                 const Spacer(),
                 Icon(
                   corrected
-                      ? Icons.edit_outlined
+                      ? PhosphorIcons.pencilSimple
                       : uncertain
-                          ? Icons.warning_amber_rounded
-                          : Icons.check_circle_outline,
+                          ? PhosphorIcons.warning
+                          : PhosphorIcons.checkCircle,
                   size: 16,
                   color: corrected
                       ? AppTheme.primary

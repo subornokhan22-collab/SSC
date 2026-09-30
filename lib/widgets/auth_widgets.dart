@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
@@ -132,10 +133,10 @@ class DeskWelcome extends StatelessWidget {
           const SizedBox(height: 18),
           Wrap(spacing: 8, runSpacing: 8, children: [
             feature(
-                Icons.description_outlined, 'Paper builder', AppTheme.primary),
+                PhosphorIcons.fileText, 'Paper builder', AppTheme.primary),
             feature(
-                Icons.document_scanner_outlined, 'OMR review', AppColors.omr),
-            feature(Icons.auto_awesome_outlined, 'AI Tools', AppColors.ai),
+                PhosphorIcons.scan, 'OMR review', AppColors.omr),
+            feature(PhosphorIcons.magicWand, 'AI Tools', AppColors.ai),
           ]),
         ],
       );

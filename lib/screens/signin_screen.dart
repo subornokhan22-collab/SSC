@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/auth_service.dart';
 import '../widgets/animations.dart';
@@ -120,7 +121,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         children: [
                           const SectionTitle(
                             title: 'Your details',
-                            icon: Icons.alternate_email_rounded,
+                            icon: PhosphorIcons.at,
                           ),
                           TextField(
                             controller: _emailCtrl,
@@ -131,7 +132,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             decoration: const InputDecoration(
                               labelText: 'Email',
                               hintText: 'you@example.com',
-                              prefixIcon: Icon(Icons.alternate_email_rounded),
+                              prefixIcon: Icon(PhosphorIcons.at),
                             ),
                           ),
                           const SizedBox(height: 14),
@@ -145,7 +146,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             decoration: InputDecoration(
                               labelText: 'Password',
                               prefixIcon:
-                                  const Icon(Icons.lock_outline_rounded),
+                                  const Icon(PhosphorIcons.lock),
                               suffixIcon: IconButton(
                                 tooltip: _obscure
                                     ? 'Show password'
@@ -154,8 +155,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                     setState(() => _obscure = !_obscure),
                                 icon: Icon(
                                   _obscure
-                                      ? Icons.visibility_rounded
-                                      : Icons.visibility_off_rounded,
+                                      ? PhosphorIcons.eye
+                                      : PhosphorIcons.eyeSlash,
                                 ),
                               ),
                             ),
@@ -170,7 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           const SizedBox(height: 4),
                           SubmitButton(
                             busy: _busy,
-                            icon: Icons.login_rounded,
+                            icon: PhosphorIcons.signIn,
                             label: 'Sign In',
                             onPressed: _busy ? null : _signIn,
                           ),
@@ -198,7 +199,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   ),
                                 ),
-                        icon: const Icon(Icons.person_add_alt_1_rounded,
+                        icon: const Icon(PhosphorIcons.userPlus,
                             size: 18),
                         label: const Text('No account yet? Create one'),
                       ),

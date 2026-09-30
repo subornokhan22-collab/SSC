@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'motion_policy.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../services/ai/teacher_attachment.dart';
 
 /// Session-only attachments: no upload on selection, no file persistence.
@@ -97,10 +98,10 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
                   ? null
                   : () => pick(source),
               icon: Icon(source == 'camera'
-                  ? Icons.camera_alt_outlined
+                  ? PhosphorIcons.camera
                   : source == 'pdf'
-                      ? Icons.picture_as_pdf_outlined
-                      : Icons.photo_library_outlined),
+                      ? PhosphorIcons.filePdf
+                      : PhosphorIcons.images),
               label: Text(source == 'camera'
                   ? 'Camera'
                   : source == 'pdf'
@@ -116,7 +117,7 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: widget.files[i].isPdf
-                ? const Icon(Icons.picture_as_pdf_outlined)
+                ? const Icon(PhosphorIcons.filePdf)
                 : Image.memory(widget.files[i].bytes,
                     width: 48, height: 48, fit: BoxFit.cover, cacheWidth: 160),
             title: Text(widget.files[i].name,
@@ -144,7 +145,7 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
                 onPressed: !widget.enabled || picking
                     ? null
                     : () => widget.onChanged([...widget.files]..removeAt(i)),
-                icon: const Icon(Icons.close)),
+                icon: const Icon(PhosphorIcons.x)),
           ),
       ]);
 }

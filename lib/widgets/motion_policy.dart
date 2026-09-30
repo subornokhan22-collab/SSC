@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_settings.dart';
 
@@ -133,7 +134,7 @@ class ActivityIndicator extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox.square(
         dimension: size,
         child: MotionPolicy.reduce(context)
-            ? Icon(Icons.hourglass_top_rounded, size: size, color: color)
+            ? Icon(PhosphorIcons.hourglass, size: size, color: color)
             : CircularProgressIndicator(strokeWidth: strokeWidth, color: color),
       );
 }

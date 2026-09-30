@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_style.dart';
 import '../services/auth_service.dart';
@@ -420,7 +421,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             ),
                           ),
                           child: const Icon(
-                            Icons.verified_rounded,
+                            PhosphorIcons.sealCheck,
                             color: AppTheme.accent,
                             size: 44,
                           ),
@@ -462,22 +463,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buyBody() {
     const perks = [
       (
-        Icons.description_rounded,
+        PhosphorIcons.fileText,
         'Full question papers',
         'Every banked question, no demo cut-off',
       ),
       (
-        Icons.picture_as_pdf_rounded,
+        PhosphorIcons.filePdf,
         'PDF export & printing',
         'Share or print straight from your phone',
       ),
       (
-        Icons.water_drop_outlined,
+        PhosphorIcons.drop,
         'No watermark',
         'Clean, classroom-ready papers',
       ),
       (
-        Icons.rocket_launch_rounded,
+        PhosphorIcons.rocketLaunch,
         'New features first',
         'Get every improvement as it ships',
       ),
@@ -500,7 +501,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     max: 1.06,
                     period: const Duration(milliseconds: 2100),
                     child: const Icon(
-                      Icons.workspace_premium_rounded,
+                      PhosphorIcons.crown,
                       color: AppTheme.accent,
                       size: 32,
                     ),
@@ -534,7 +535,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         const SizedBox(height: 18),
         const SectionTitle(
           title: "What's included",
-          icon: Icons.check_circle_outline_rounded,
+          icon: PhosphorIcons.checkCircle,
         ),
         for (final perk in perks)
           Padding(
@@ -586,7 +587,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         const SizedBox(height: 12),
         const SectionTitle(
           title: 'Choose a plan',
-          icon: Icons.receipt_long_rounded,
+          icon: PhosphorIcons.receipt,
         ),
         for (final plan in _plans) _planCard(plan),
         const SizedBox(height: 16),
@@ -622,7 +623,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   )
                 else
                   const Icon(
-                    Icons.account_balance_wallet_rounded,
+                    PhosphorIcons.wallet,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -657,7 +658,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             children: [
               const SectionTitle(
                 title: 'Support',
-                icon: Icons.support_agent_rounded,
+                icon: PhosphorIcons.headset,
               ),
               const Text(
                 'Payment problems, refunds or questions — contact support. '
@@ -694,7 +695,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.support_agent_rounded,
+                        PhosphorIcons.headset,
                         color: AppTheme.accent,
                         size: 20,
                       ),
@@ -711,7 +712,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         ),
                       ),
                       const Icon(
-                        Icons.copy_rounded,
+                        PhosphorIcons.copy,
                         color: AppTheme.muted,
                         size: 17,
                       ),
@@ -802,7 +803,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
+              const Icon(PhosphorIcons.caretRight, color: AppTheme.muted),
             ],
           ),
         ),

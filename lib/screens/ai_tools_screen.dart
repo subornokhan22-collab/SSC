@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../widgets/motion_policy.dart';
 
 import '../controllers/ai_controller.dart';
@@ -123,7 +124,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.auto_awesome_outlined,
+                  child: const Icon(PhosphorIcons.magicWand,
                       color: AppColors.ai, size: 24),
                 ),
                 const SizedBox(width: 14),
@@ -316,7 +317,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                       height: 16,
                       child: ActivityIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.auto_awesome_outlined, size: 18),
+                  : const Icon(PhosphorIcons.magicWand, size: 18),
               label: Text(c.busy ? 'Working…' : '${label(command)} with AI'),
             ),
             OperationNotice(
@@ -407,7 +408,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                             ),
                           );
                       },
-                icon: const Icon(Icons.description_outlined),
+                icon: const Icon(PhosphorIcons.fileText),
                 label: Text(
                   widget.forSelection
                       ? 'Add reviewed questions'

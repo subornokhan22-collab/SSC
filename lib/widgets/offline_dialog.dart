@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
@@ -142,7 +143,7 @@ class _OfflineCardState extends State<_OfflineCard> {
                                 color: Color(0x2AE5484D),
                               ),
                               child: const Icon(
-                                Icons.cloud_off_rounded,
+                                PhosphorIcons.cloudSlash,
                                 size: 40,
                                 color: Colors.white,
                               ),
@@ -217,7 +218,7 @@ class _OfflineCardState extends State<_OfflineCard> {
                                   ),
                                 )
                               : const Icon(
-                                  Icons.wifi_tethering_rounded,
+                                  PhosphorIcons.wifiHigh,
                                   size: 17,
                                 ),
                           label: Text(

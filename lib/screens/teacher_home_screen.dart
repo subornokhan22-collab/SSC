@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../models/paper_draft.dart';
 import '../controllers/paper_controller.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/animations.dart';
+import '../widgets/app_icon.dart';
 import '../services/app_style.dart';
 import '../widgets/alive_tab_stack.dart';
 import '../widgets/aurora_ribbons.dart';
@@ -141,7 +143,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const SizedBox(
                       height: 120,
-                      child: Center(child: Icon(Icons.image_not_supported)),
+                      child: Center(child: Icon(PhosphorIcons.imageBroken)),
                     ),
                   ),
                 ),
@@ -240,21 +242,21 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             onDestinationSelected: select,
             destinations: const [
               NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
+                icon: Icon(PhosphorIcons.house),
+                selectedIcon: Icon(PhosphorIcons.house),
                 label: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(Icons.folder_outlined),
-                selectedIcon: Icon(Icons.folder),
+                icon: Icon(PhosphorIcons.folder),
+                selectedIcon: Icon(PhosphorIcons.folder),
                 label: 'My Papers',
               ),
               NavigationDestination(
-                icon: Icon(Icons.document_scanner_outlined),
+                icon: Icon(PhosphorIcons.scan),
                 label: 'Scan',
               ),
               NavigationDestination(
-                icon: Icon(Icons.auto_awesome_outlined),
+                icon: Icon(PhosphorIcons.magicWand),
                 label: 'AI Tools',
               ),
             ],
@@ -264,14 +266,14 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   Widget _notificationCard(AppNotificationItem item) => Card(
         color: const Color(0xFFF5F3FF),
         child: ListTile(
-          leading: const Icon(Icons.notifications_active_outlined,
+          leading: const Icon(PhosphorIcons.bellRinging,
               color: AppColors.ai),
           title: Text(item.title,
               style: const TextStyle(fontWeight: FontWeight.w800)),
           subtitle:
               Text(item.message, maxLines: 3, overflow: TextOverflow.ellipsis),
           trailing: item.actionUrl == '/plans'
-              ? const Icon(Icons.chevron_right)
+              ? const Icon(PhosphorIcons.caretRight)
               : null,
           onTap: item.actionUrl == '/plans'
               ? () => Navigator.pushNamed(context, AppRoutes.plans)
@@ -290,10 +292,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       height: 44,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => const Icon(
-                          Icons.emoji_events_outlined,
+                          PhosphorIcons.trophy,
                           color: Colors.amber)),
                 )
-              : const Icon(Icons.emoji_events_outlined, color: Colors.amber),
+              : const Icon(PhosphorIcons.trophy, color: Colors.amber),
           title: Text(prize.title,
               style: const TextStyle(fontWeight: FontWeight.w800)),
           subtitle: Text(
@@ -316,7 +318,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 await Navigator.pushNamed(context, AppRoutes.settings);
                 if (mounted) load();
               },
-              icon: const Icon(Icons.settings_outlined),
+              icon: const Icon(PhosphorIcons.gear),
             ),
           ],
         ),
@@ -356,8 +358,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(children: [
-                          Icon(Icons.description_outlined,
-                              color: AppTheme.primary, size: 34),
+                          AppDuotoneIcon(
+                            PhosphorIcons.fileTextDuotone,
+                            size: 34,
+                          ),
                           SizedBox(width: 12),
                           Expanded(
                               child: Text('FROM YOUR DESK TO THE CLASSROOM',
@@ -381,7 +385,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           width: double.infinity,
                           child: FilledButton.icon(
                             onPressed: () => create(),
-                            icon: const Icon(Icons.add),
+                            icon: const Icon(PhosphorIcons.plus),
                             label: Text(draftTitle == null
                                 ? 'Create a paper'
                                 : 'Create / resume paper'),
@@ -414,7 +418,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         Row(
                           children: [
                             const Icon(
-                              Icons.workspace_premium_rounded,
+                              PhosphorIcons.crown,
                               color: AppTheme.accent,
                             ),
                             const SizedBox(width: 10),
@@ -446,7 +450,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                               if (mounted) load();
                             },
                             icon: const Icon(
-                              Icons.account_balance_wallet_rounded,
+                              PhosphorIcons.wallet,
                               size: 19,
                             ),
                             label: const Text('Buy Pro plan'),
@@ -469,13 +473,13 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               if (draftTitle != null)
                 Card(
                     child: ListTile(
-                  leading: const Icon(Icons.edit_note, color: AppTheme.primary),
+                  leading: const Icon(PhosphorIcons.notePencil, color: AppTheme.primary),
                   title: const Text('Continue your draft'),
                   subtitle: Text(
                       '${draftTitle!.isEmpty ? 'Untitled paper' : draftTitle!} · On this device',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis),
-                  trailing: const Icon(Icons.arrow_forward),
+                  trailing: const Icon(PhosphorIcons.arrowRight),
                   onTap: () => create(),
                 )),
               const SizedBox(height: 12),
@@ -483,7 +487,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 children: [
                   Expanded(
                     child: quickAction(
-                      Icons.document_scanner_outlined,
+                      PhosphorIcons.scan,
                       'Scan OMR',
                       'Review & grade',
                       () => select(2),
@@ -493,7 +497,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   const SizedBox(width: 12),
                   Expanded(
                     child: quickAction(
-                      Icons.auto_awesome_outlined,
+                      PhosphorIcons.magicWand,
                       'AI Tools',
                       'Create · Improve · Check',
                       () => select(3),
@@ -504,7 +508,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               ),
               const SizedBox(height: 12),
               quickAction(
-                Icons.folder_open_outlined,
+                PhosphorIcons.folderOpen,
                 'My Papers',
                 'Saved · PDF · OMR keys',
                 () => select(1),
@@ -539,7 +543,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         trailing: IconButton(
                             tooltip: 'Retry loading papers',
                             onPressed: load,
-                            icon: const Icon(Icons.refresh))))
+                            icon: const Icon(PhosphorIcons.arrowClockwise))))
               else if (recent.isEmpty)
                 const Card(
                   child: Padding(
@@ -553,7 +557,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Card(
                   child: ListTile(
                     leading: const Icon(
-                      Icons.description_outlined,
+                      PhosphorIcons.fileText,
                       color: AppTheme.primary,
                     ),
                     title: Text(
@@ -564,7 +568,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     subtitle: Text(
                       'Saved · ${entry.subject} · ${entry.pages} pages · ${entry.createdAt.day}/${entry.createdAt.month}',
                     ),
-                    trailing: const Icon(Icons.chevron_right),
+                    trailing: const Icon(PhosphorIcons.caretRight),
                     onTap: () async {
                       await Navigator.push(
                         context,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_style.dart';
 import '../services/auth_service.dart';
@@ -177,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   labelText: 'Full name',
-                  prefixIcon: Icon(Icons.badge_outlined),
+                  prefixIcon: Icon(PhosphorIcons.identificationBadge),
                 ),
               ),
               const SizedBox(height: 14),
@@ -299,7 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: Stagger.list([
               if (!AuthService.ready)
                 const EmptyState(
-                  icon: Icons.cloud_off_rounded,
+                  icon: PhosphorIcons.cloudSlash,
                   title: 'Sign-in is not configured',
                   message:
                       'Every offline feature keeps working — papers, PDFs and printing are all available.',
@@ -343,7 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Sign in',
             subtitle:
                 'Use the email and password from your tutor account. Codes are only used when you first sign up.',
-            icon: Icons.login_rounded,
+            icon: PhosphorIcons.signIn,
           ),
           TextField(
             controller: _emailCtrl,
@@ -353,7 +354,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: const InputDecoration(
               labelText: 'Email',
               hintText: 'you@example.com',
-              prefixIcon: Icon(Icons.alternate_email_rounded),
+              prefixIcon: Icon(PhosphorIcons.at),
             ),
           ),
           const SizedBox(height: 14),
@@ -365,14 +366,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onSubmitted: (_) => _busy ? null : _signIn(),
             decoration: InputDecoration(
               labelText: 'Password',
-              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              prefixIcon: const Icon(PhosphorIcons.lock),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
                 icon: Icon(
                   _obscure
-                      ? Icons.visibility_rounded
-                      : Icons.visibility_off_rounded,
+                      ? PhosphorIcons.eye
+                      : PhosphorIcons.eyeSlash,
                 ),
               ),
             ),
@@ -386,7 +387,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SubmitButton(
             busy: _busy,
-            icon: Icons.login_rounded,
+            icon: PhosphorIcons.signIn,
             label: 'Sign In',
             onPressed: _busy ? null : _signIn,
           ),
@@ -483,7 +484,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : _editDetails,
-                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  icon: const Icon(PhosphorIcons.pencilSimple, size: 18),
                   label: const Text('Edit details'),
                 ),
               ),
@@ -492,7 +493,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Expanded(
                   child: FilledButton.icon(
                     onPressed: _busy ? null : _openPlans,
-                    icon: const Icon(Icons.workspace_premium_rounded, size: 18),
+                    icon: const Icon(PhosphorIcons.crown, size: 18),
                     label: const Text('Buy Pro plan'),
                   ),
                 ),
@@ -509,7 +510,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 15,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.sync_rounded, size: 17),
+                    : const Icon(PhosphorIcons.arrowsClockwise, size: 17),
                 label: const Text('Already paid? Refresh Pro access'),
               ),
             ),
@@ -518,7 +519,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: double.infinity,
             child: TextButton.icon(
               onPressed: _busy ? null : _logout,
-              icon: const Icon(Icons.logout_rounded, size: 18),
+              icon: const Icon(PhosphorIcons.signOut, size: 18),
               label: const Text('Sign out'),
               style: TextButton.styleFrom(foregroundColor: AppTheme.danger),
             ),
@@ -539,7 +540,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               max: 1.07,
               period: const Duration(milliseconds: 2200),
               child: const Icon(
-                Icons.workspace_premium_rounded,
+                PhosphorIcons.crown,
                 color: AppTheme.accent,
                 size: 30,
               ),
@@ -585,7 +586,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children: [
           const Icon(
-            Icons.workspace_premium_rounded,
+            PhosphorIcons.crown,
             color: AppTheme.accent,
             size: 30,
           ),
@@ -614,7 +615,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded, color: AppTheme.accent),
+          const Icon(PhosphorIcons.caretRight, color: AppTheme.accent),
         ],
       ),
     );

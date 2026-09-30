@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
 import 'animations.dart';
@@ -74,7 +75,7 @@ class OperationNotice extends StatelessWidget {
         ),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           if (error != null)
-            Icon(Icons.info_outline, color: color, size: 20)
+            Icon(PhosphorIcons.info, color: color, size: 20)
           else
             ActivityIndicator(color: color),
           const SizedBox(width: 10),

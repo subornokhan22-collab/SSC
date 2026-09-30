@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../controllers/ai_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../controllers/paper_controller.dart';
 import '../data/questions_data.dart';
@@ -207,7 +208,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                       if (step == 4) setState(() => step = 3);
                     }
                   : null,
-              icon: const Icon(Icons.undo)),
+              icon: const Icon(PhosphorIcons.arrowCounterClockwise)),
           IconButton(
               tooltip: 'Redo',
               onPressed: c.canRedo
@@ -216,7 +217,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                       if (step == 4) setState(() => step = 3);
                     }
                   : null,
-              icon: const Icon(Icons.redo)),
+              icon: const Icon(PhosphorIcons.arrowClockwise)),
         ]),
         body: !c.initialized
             ? const Center(child: ActivityIndicator(size: 24))
@@ -225,7 +226,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(children: [
-                      const Icon(Icons.save_outlined,
+                      const Icon(PhosphorIcons.floppyDisk,
                           size: 14, color: AppTheme.muted),
                       const SizedBox(width: 6),
                       Expanded(
@@ -281,8 +282,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                                     child: ActivityIndicator(strokeWidth: 2))
                                 : Icon(
                                     step == 3
-                                        ? Icons.visibility_outlined
-                                        : Icons.arrow_forward,
+                                        ? PhosphorIcons.eye
+                                        : PhosphorIcons.arrowRight,
                                     size: 18),
                             label: Text(c.busy
                                 ? 'Working…'
@@ -298,19 +299,19 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                         children: [
                             FilledButton.icon(
                                 onPressed: c.busy ? null : () => export('pdf'),
-                                icon: const Icon(Icons.picture_as_pdf_outlined,
+                                icon: const Icon(PhosphorIcons.filePdf,
                                     size: 18),
                                 label: const Text('Export PDF')),
                             OutlinedButton.icon(
                                 onPressed: c.busy ? null : () => export('save'),
                                 icon:
-                                    const Icon(Icons.bookmark_border, size: 18),
+                                    const Icon(PhosphorIcons.bookmarkSimple, size: 18),
                                 label: const Text('Save')),
                             IconButton(
                                 tooltip: 'Print',
                                 onPressed:
                                     c.busy ? null : () => export('print'),
-                                icon: const Icon(Icons.print_outlined)),
+                                icon: const Icon(PhosphorIcons.printer)),
                             if (c.paper?.mcqs.isNotEmpty == true)
                               PopupMenuButton<String>(
                                   enabled: !c.busy,
@@ -355,8 +356,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                   // subjects are recognisable before the title is read.
                   secondary: Icon(
                     PaperComposer.isEnglish(s.id)
-                        ? Icons.edit_note_rounded
-                        : Icons.menu_book_outlined,
+                        ? PhosphorIcons.notePencil
+                        : PhosphorIcons.bookOpen,
                     color: PaperComposer.isEnglish(s.id)
                         ? AppColors.writing
                         : AppTheme.muted,
@@ -507,14 +508,14 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 IconButton(
                     tooltip: 'Fewer $label',
                     onPressed: value > 0 ? () => change(value - 1) : null,
-                    icon: const Icon(Icons.remove_circle_outline)),
+                    icon: const Icon(PhosphorIcons.minusCircle)),
                 SizedBox(
                     width: 32,
                     child: Text('$value', textAlign: TextAlign.center)),
                 IconButton(
                     tooltip: 'More $label',
                     onPressed: value < max ? () => change(value + 1) : null,
-                    icon: const Icon(Icons.add_circle_outline)),
+                    icon: const Icon(PhosphorIcons.plusCircle)),
               ])));
   Widget reviewStep() {
     final p = c.paper;
@@ -551,7 +552,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                               forSelection: true)));
                   if (mounted && questions != null) c.addAiQuestions(questions);
                 },
-                icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+                icon: const Icon(PhosphorIcons.magicWand, size: 18),
                 label: const Text('Add reviewed AI questions'))),
       for (var i = 0; i < p.mcqs.length; i++)
         PaperQuestionCard(
@@ -625,7 +626,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           child: Padding(
             padding: const EdgeInsets.only(top: 12),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Icon(Icons.check_circle_outline,
+              const Icon(PhosphorIcons.checkCircle,
                   color: AppTheme.success, size: 18),
               const SizedBox(width: 8),
               Text('PDF ready · ${preview!.pages.length} pages',

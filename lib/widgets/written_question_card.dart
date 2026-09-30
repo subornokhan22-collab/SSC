@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../data/questions_data.dart';
 import '../services/question_validation.dart';
 import '../theme/app_theme.dart';
@@ -55,17 +56,17 @@ class WrittenQuestionCard extends StatelessWidget {
                           context: context, builder: (_) => _Editor(q));
                       if (edited != null) onEdit(edited);
                     },
-                    icon: const Icon(Icons.edit_outlined, size: 17),
+                    icon: const Icon(PhosphorIcons.pencilSimple, size: 17),
                     label: const Text('Edit')),
                 TextButton.icon(
                     onPressed: onReplace,
-                    icon: const Icon(Icons.swap_horiz, size: 17),
+                    icon: const Icon(PhosphorIcons.arrowsLeftRight, size: 17),
                     label: const Text('Replace')),
                 if (onDelete != null)
                   IconButton(
                       tooltip: 'Remove question',
                       onPressed: onDelete,
-                      icon: const Icon(Icons.delete_outline, size: 18)),
+                      icon: const Icon(PhosphorIcons.trash, size: 18)),
               ]),
             ])));
   }

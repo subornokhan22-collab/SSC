@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../widgets/motion_policy.dart';
 import 'package:printing/printing.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/paper_library.dart';
 import 'omr_scanner_screen.dart';
@@ -83,12 +84,12 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
             IconButton(
               tooltip: 'Print',
               onPressed: busy || pages == null ? null : () => action(true),
-              icon: const Icon(Icons.print_outlined),
+              icon: const Icon(PhosphorIcons.printer),
             ),
             IconButton(
               tooltip: 'Share PDF',
               onPressed: busy || pages == null ? null : () => action(false),
-              icon: const Icon(Icons.share_outlined),
+              icon: const Icon(PhosphorIcons.share),
             ),
           ],
         ),
@@ -141,7 +142,7 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
                         ),
                       ),
                     ),
-                    icon: const Icon(Icons.document_scanner_outlined),
+                    icon: const Icon(PhosphorIcons.scan),
                     label: const Text('Scan answers for this paper'),
                   ),
                 ),

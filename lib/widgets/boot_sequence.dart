@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/local_diagnostics.dart';
 import '../theme/app_theme.dart';
@@ -85,15 +86,15 @@ class _BootSequenceState extends State<BootSequence> {
                       padding: const EdgeInsets.symmetric(vertical: 9),
                       child: Row(children: [
                         if (i < completed)
-                          const Icon(Icons.check_circle_outline,
+                          const Icon(PhosphorIcons.checkCircle,
                               color: AppTheme.success, size: 20)
                         else if (i == completed && !failed)
                           const ActivityIndicator(size: 20)
                         else
                           Icon(
                               i == completed && failed
-                                  ? Icons.error_outline
-                                  : Icons.circle_outlined,
+                                  ? PhosphorIcons.warningCircle
+                                  : PhosphorIcons.circle,
                               size: 20,
                               color: i == completed && failed
                                   ? AppTheme.danger
@@ -119,7 +120,7 @@ class _BootSequenceState extends State<BootSequence> {
                     const SizedBox(height: 12),
                     FilledButton.icon(
                         onPressed: start,
-                        icon: const Icon(Icons.refresh),
+                        icon: const Icon(PhosphorIcons.arrowClockwise),
                         label: const Text('Retry opening desk')),
                   ],
                 ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../data/questions_data.dart';
 import '../services/ai/ai_text_formatter.dart';
@@ -63,8 +64,8 @@ class PaperQuestionCard extends StatelessWidget {
                     children: [
                       Icon(
                         i == question.correctIndex
-                            ? Icons.check_circle_outline
-                            : Icons.radio_button_unchecked,
+                            ? PhosphorIcons.checkCircle
+                            : PhosphorIcons.circle,
                         size: 17,
                         color: i == question.correctIndex
                             ? AppTheme.success
@@ -114,25 +115,25 @@ class PaperQuestionCard extends StatelessWidget {
                         );
                         if (changed != null) onEdit!(changed);
                       },
-                      icon: const Icon(Icons.edit_outlined, size: 17),
+                      icon: const Icon(PhosphorIcons.pencilSimple, size: 17),
                       label: const Text('Edit / answer key'),
                     ),
                   if (onReplace != null)
                     TextButton.icon(
                       onPressed: onReplace,
-                      icon: const Icon(Icons.swap_horiz, size: 17),
+                      icon: const Icon(PhosphorIcons.arrowsLeftRight, size: 17),
                       label: const Text('Replace'),
                     ),
                   if (onImprove != null)
                     TextButton.icon(
                         onPressed: onImprove,
-                        icon: const Icon(Icons.auto_awesome_outlined, size: 17),
+                        icon: const Icon(PhosphorIcons.magicWand, size: 17),
                         label: const Text('Improve with AI')),
                   if (onDelete != null)
                     IconButton(
                       tooltip: 'Remove question',
                       onPressed: onDelete,
-                      icon: const Icon(Icons.delete_outline, size: 19),
+                      icon: const Icon(PhosphorIcons.trash, size: 19),
                     ),
                 ],
               ),

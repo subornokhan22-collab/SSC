@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/omr/omr_store.dart';
 import '../theme/app_theme.dart';
@@ -89,7 +90,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _head('Overview', Icons.summarize_rounded),
+          _head('Overview', PhosphorIcons.article),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -121,7 +122,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _head('By subject', Icons.menu_book_rounded),
+          _head('By subject', PhosphorIcons.bookOpen),
           const SizedBox(height: 10),
           for (final e in rows)
             Padding(
@@ -194,7 +195,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _head('Leaderboard', Icons.emoji_events_rounded),
+          _head('Leaderboard', PhosphorIcons.trophy),
           const SizedBox(height: 2),
           const Text(
             'Top 10 across all saved scans on this device',
@@ -304,7 +305,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _head('Most missed questions', Icons.help_outline_rounded),
+          _head('Most missed questions', PhosphorIcons.question),
           const SizedBox(height: 2),
           const Text(
             'Questions with the lowest correct rate (needs at least 2 attempts).',

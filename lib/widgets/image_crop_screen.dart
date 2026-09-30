@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Pure-Flutter photo cropper — ZERO native code, so it can never trigger
 /// the native "app has a bug" crash dialog that killed the app when a
@@ -180,7 +181,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                                 foregroundColor: Colors.white,
                               ),
                               onPressed: _crop,
-                              icon: const Icon(Icons.crop_rounded, size: 18),
+                              icon: const Icon(PhosphorIcons.crop, size: 18),
                               label: const Text('Crop'),
                             ),
                           ),

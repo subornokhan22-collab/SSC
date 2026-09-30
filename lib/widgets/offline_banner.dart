@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
@@ -160,7 +161,7 @@ class _PulsingOfflineIcon extends StatelessWidget {
   const _PulsingOfflineIcon();
   @override
   Widget build(BuildContext context) => const Icon(
-        Icons.cloud_off_rounded,
+        PhosphorIcons.cloudSlash,
         color: Colors.white,
         size: 18,
       );
