@@ -115,7 +115,9 @@ export function createEnglishUploader({ client, isDemo, onDraft }) {
     target.width = Math.max(1, Math.round(width * scale));
     target.height = Math.max(1, Math.round(height * scale));
     const context = target.getContext("2d");
-    context.fillStyle = "#fff";
+    context.fillStyle = getComputedStyle(document.documentElement)
+      .getPropertyValue("--pale")
+      .trim();
     context.fillRect(0, 0, target.width, target.height);
     if (pdfPage)
       await pdfPage.render({

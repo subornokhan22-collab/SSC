@@ -4,6 +4,10 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const css = fs.readFileSync(path.join(__dirname, '..', 'studio.css'), 'utf8');
+const englishUpload = fs.readFileSync(
+  path.join(__dirname, '..', 'english-upload.js'),
+  'utf8',
+);
 const palette = new Set(['#E3F2FD', '#90CAF9', '#2196F3', '#0D47A1']);
 
 function authoredHexColors(source) {
@@ -23,4 +27,9 @@ test('admin theme resolves existing semantic tokens to the supplied palette', ()
   assert.match(css, /--indigo:\s*var\(--deep\)/);
   assert.doesNotMatch(css, /rgb[a]?\s*\(/i);
   assert.doesNotMatch(css, /\bhsl[a]?\s*\(/i);
+});
+
+test('admin image preview reads its canvas color from the palette token', () => {
+  assert.match(englishUpload, /getPropertyValue\(["']--pale["']\)/);
+  assert.doesNotMatch(englishUpload, /#[0-9a-f]{3,8}\b/i);
 });
