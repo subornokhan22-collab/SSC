@@ -7,6 +7,7 @@ import 'package:tutors_desk/models/subject_info.dart';
 import 'package:tutors_desk/services/app_style.dart';
 import 'package:tutors_desk/services/auth_service.dart';
 import 'package:tutors_desk/theme/app_theme.dart';
+import 'package:tutors_desk/theme/design_tokens.dart';
 
 /// Guards the teacher-only shape of the app: the student portal must stay
 /// removed, and the shared pieces it used to own must live in their new homes.
