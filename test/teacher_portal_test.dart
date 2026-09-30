@@ -126,7 +126,8 @@ void main() {
       expect(theme.brightness, Brightness.light);
       expect(AppTheme.canvas.computeLuminance(), greaterThan(0.8));
       expect(AppTheme.surface.computeLuminance(), greaterThan(0.9));
-      expect(AppTheme.textDark.computeLuminance(), lessThan(0.2));
+      expect(AppTheme.textDark, AppColors.primary);
+      expect(AppTheme.textDark.computeLuminance(), greaterThan(0.2));
       final main = File('lib/main.dart').readAsStringSync();
       expect(main.contains('ThemeMode.dark'), isFalse);
       expect(main.contains('AppTheme.light()'), isTrue);
