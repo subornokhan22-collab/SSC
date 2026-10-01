@@ -42,6 +42,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   @override
   void initState() {
     super.initState();
+    AppStyle.mood.value = WorkspaceMood.home;
     WidgetsBinding.instance.addObserver(this);
     load();
   }
