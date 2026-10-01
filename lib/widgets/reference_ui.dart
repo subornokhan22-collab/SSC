@@ -146,6 +146,8 @@ class ReferenceActionCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool large;
   final bool multiline;
+  final double compactIconSize;
+  final double largeIconSize;
 
   const ReferenceActionCard({
     super.key,
@@ -156,6 +158,8 @@ class ReferenceActionCard extends StatelessWidget {
     required this.onTap,
     this.large = false,
     this.multiline = false,
+    this.compactIconSize = 36,
+    this.largeIconSize = 58,
   });
 
   @override
@@ -175,37 +179,52 @@ class ReferenceActionCard extends StatelessWidget {
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: ReferencePalette.ink,
-                        fontSize: 17,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        letterSpacing: .7,
+                        letterSpacing: .45,
                       ),
                     ),
                   ),
                   customIcon ??
                       (asset == null
-                          ? ReferenceIcon(icon, size: 72)
-                          : ReferenceImageIcon(asset!, size: 72)),
+                          ? ReferenceIcon(icon, size: largeIconSize)
+                          : ReferenceImageIcon(asset!, size: largeIconSize)),
                 ],
               )
             : Row(
                 children: [
                   customIcon ??
                       (asset == null
-                          ? ReferenceIcon(icon, size: 48)
-                          : ReferenceImageIcon(asset!, size: 48)),
-                  const SizedBox(width: 18),
+                          ? ReferenceIcon(icon, size: compactIconSize)
+                          : ReferenceImageIcon(asset!, size: compactIconSize)),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      label,
-                      maxLines: multiline ? 2 : 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: ReferencePalette.ink,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: .1,
-                      ),
-                    ),
+                    child: multiline
+                        ? Text(
+                            label,
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(
+                              color: ReferencePalette.ink,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: .05,
+                            ),
+                          )
+                        : FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                color: ReferencePalette.ink,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: .05,
+                              ),
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -233,14 +252,14 @@ class ReferenceBottomBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 asset == null
-                    ? ReferenceIcon(icon, size: 42)
-                    : ReferenceImageIcon(asset, size: 42),
+                    ? ReferenceIcon(icon, size: 30)
+                    : ReferenceImageIcon(asset, size: 30),
                 const SizedBox(height: 2),
                 Text(
                   label,
                   style: const TextStyle(
                     color: ReferencePalette.ink,
-                    fontSize: 17,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -259,16 +278,16 @@ class ReferenceBottomBar extends StatelessWidget {
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 128,
+            height: 106,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 58),
+              padding: const EdgeInsets.symmetric(horizontal: 64),
               child: Row(
                 children: [
                   _item(
                     icon: PhosphorIcons.house,
                     label: 'Home',
                     onTap: () {},
-                    asset: 'New UI/IMG_1259.png',
+                    asset: 'New UI 2.0/Picsart_26-10-02_00-41-53-565.png',
                   ),
                   _item(
                     icon: PhosphorIcons.gear,

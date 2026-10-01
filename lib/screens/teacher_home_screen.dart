@@ -288,9 +288,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   Widget home() => Column(
         children: [
           Container(
-            height: 183,
+            height: 138,
             color: ReferencePalette.surface,
-            padding: const EdgeInsets.fromLTRB(18, 0, 24, 34),
+            padding: const EdgeInsets.fromLTRB(18, 0, 20, 22),
             alignment: Alignment.bottomRight,
             child: _referenceHeader(),
           ),
@@ -301,7 +301,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               onRefresh: load,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 38, 16, 24),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
                 children: [
                   _referenceDashboard(),
                   if (!devicePro) ...[
@@ -315,7 +315,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           Expanded(
                             child: ReferenceActionCard(
                               icon: PhosphorIcons.wallet,
-                              asset: 'New UI/IMG_1258.jpeg',
+                              asset: 'New UI 2.0/Picsart_26-10-02_00-37-44-626.png',
                               label: 'BUY PLANS',
                               onTap: () =>
                                   _openScreen(const SubscriptionScreen()),
@@ -361,48 +361,66 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         ],
       );
 
+  void _showNotifications() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: ReferencePalette.surface,
+      showDragHandle: true,
+      builder: (_) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+          children: [
+            const Text(
+              'Notifications',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 10),
+            if (promotions.notifications.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  children: [
+                    ReferenceIcon(PhosphorIcons.bellRinging, size: 34),
+                    SizedBox(height: 10),
+                    Text(
+                      'No new notifications',
+                      style: TextStyle(color: ReferencePalette.mutedInk),
+                    ),
+                  ],
+                ),
+              )
+            else
+              for (final item in promotions.notifications.take(5))
+                _notificationCard(item),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _referenceHeader() => Row(
         children: [
           const Spacer(),
           IconButton(
             tooltip: 'Notifications',
-            onPressed: () {
-              if (promotions.notifications.isNotEmpty) {
-                showModalBottomSheet<void>(
-                  context: context,
-                  backgroundColor: ReferencePalette.surface,
-                  showDragHandle: true,
-                  builder: (_) => SafeArea(
-                    child: ListView(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
-                      children: [
-                        const Text(
-                          'Notifications',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        for (final item in promotions.notifications.take(5))
-                          _notificationCard(item),
-                      ],
-                    ),
-                  ),
-                );
-              }
-            },
-            icon: const ReferenceImageIcon('New UI/IMG_1261.png', size: 34),
+            onPressed: _showNotifications,
+            icon: const ReferenceImageIcon(
+              'New UI 2.0/Picsart_26-10-02_00-38-35-905.png',
+              size: 27,
+            ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           InkWell(
             onTap: () => _openScreen(const ProfileScreen()),
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(32),
             child: const CircleAvatar(
-              radius: 29,
+              radius: 23,
               backgroundColor: Color(0xFFD7D6DB),
-              child: ReferenceImageIcon('New UI/IMG_1262.png', size: 49),
+              child: ReferenceImageIcon(
+                'New UI 2.0/Picsart_26-10-02_00-40-10-782.png',
+                size: 38,
+              ),
             ),
           ),
         ],
@@ -430,7 +448,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   child: ReferenceActionCard(
                     large: true,
                     icon: PhosphorIcons.filePlus,
-                    asset: 'New UI/IMG_1263.jpeg',
                     label: 'CREATE PAPER',
                     onTap: () => create(),
                   ),
@@ -442,7 +459,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       Expanded(
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.magicWand,
-                          customIcon: const ReferenceAiMark(),
+                          asset: 'New UI 2.0/Picsart_26-10-02_00-43-56-921.png',
                           label: 'Assistant',
                           onTap: () => _openScreen(const AiToolsScreen()),
                         ),
@@ -451,7 +468,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       Expanded(
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.bookmarkSimple,
-                          asset: 'New UI/IMG_1256.jpeg',
+                          asset: 'New UI 2.0/Picsart_26-10-02_00-36-36-321.png',
                           label: 'My Papers',
                           onTap: () => _openScreen(const PapersLibraryScreen()),
                         ),
@@ -470,7 +487,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.clock,
-                    asset: 'New UI/IMG_1253.jpeg',
+                    asset: 'New UI 2.0/Picsart_26-10-02_00-39-16-173.png',
                     label: 'Recents',
                     onTap: () => _openScreen(const PapersLibraryScreen()),
                   ),
@@ -479,7 +496,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.chartBar,
-                    asset: 'New UI/IMG_1252.jpeg',
+                    asset: 'New UI 2.0/Picsart_26-10-02_00-33-02-879.png',
                     label: 'Statistics',
                     onTap: () => _openScreen(const OMrAnalyticsScreen()),
                   ),
@@ -495,7 +512,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.scan,
-                    asset: 'New UI/IMG_1257.png',
                     label: 'OMR Scanner',
                     multiline: true,
                     onTap: () => _openScreen(const OMrScannerScreen()),

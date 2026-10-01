@@ -50,7 +50,7 @@ flutter:
           weight: 700
   assets:
     - assets/questions/
-    - New UI/
+    - New UI 2.0/
     - assets/question_figures/
     - assets/icon/icon.png
     - assets/icon/icon_foreground.png

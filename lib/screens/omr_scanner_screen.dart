@@ -18,6 +18,7 @@ import '../services/omr/omr_store.dart';
 import 'omr_analytics_screen.dart';
 import 'omr_live_scan_screen.dart';
 import '../services/app_settings.dart';
+import '../services/app_style.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../theme/app_theme.dart';
@@ -98,6 +99,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   @override
   void initState() {
     super.initState();
+    AppStyle.mood.value = WorkspaceMood.omr;
     final seed = widget.initialKey;
     if (seed != null && seed.isNotEmpty) {
       _total = seed.length;

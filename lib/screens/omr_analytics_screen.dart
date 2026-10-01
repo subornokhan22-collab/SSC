@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
+import '../services/app_style.dart';
 import '../services/omr/omr_store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -24,6 +25,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
   @override
   void initState() {
     super.initState();
+    AppStyle.mood.value = WorkspaceMood.omr;
     _load();
   }
 
