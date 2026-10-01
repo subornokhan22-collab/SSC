@@ -40,9 +40,9 @@ class AppTheme {
 
   /// Navy status-bar / nav-bar styling with white system icons.
   static const SystemUiOverlayStyle overlayStyle = SystemUiOverlayStyle(
-    statusBarColor: primaryDark,
-    statusBarIconBrightness: Brightness.light,
-    statusBarBrightness: Brightness.dark,
+    statusBarColor: surface,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
     systemNavigationBarColor: surface,
     systemNavigationBarIconBrightness: Brightness.dark,
   );
@@ -97,16 +97,16 @@ class AppTheme {
             bodySmall: AppTypography.caption,
             labelLarge: AppTypography.label,
           ),
-      iconTheme: const IconThemeData(color: primary, size: 22),
+      iconTheme: const IconThemeData(color: Colors.black, size: 22),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.appBar,
-        foregroundColor: onColor,
+        foregroundColor: textDark,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: overlayStyle,
-        iconTheme: IconThemeData(color: onColor, size: 22),
+        iconTheme: IconThemeData(color: textDark, size: 22),
         titleTextStyle: AppTypography.appBarTitle,
       ),
       cardTheme: CardThemeData(
@@ -122,8 +122,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primary,
-          foregroundColor: onColor,
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
           padding: AppSpacing.buttonPadding,
           textStyle: AppTypography.button,
           shape: RoundedRectangleBorder(
@@ -134,8 +134,8 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: primary,
-          foregroundColor: onColor,
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.disabled,
           disabledForegroundColor: onColor,
           padding: AppSpacing.buttonPadding,
@@ -147,7 +147,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primary,
+          foregroundColor: Colors.black,
           textStyle: const TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 13.5,
@@ -159,8 +159,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primary,
-          side: BorderSide(color: primary.withOpacity(.42), width: 1.2),
+          foregroundColor: Colors.black,
+          side: const BorderSide(color: Colors.black, width: 1.2),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
           textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           shape: RoundedRectangleBorder(
@@ -196,11 +196,11 @@ class AppTheme {
         hintStyle: const TextStyle(color: muted, fontSize: 13.5),
         labelStyle: const TextStyle(color: muted, fontSize: 13.5),
         floatingLabelStyle: const TextStyle(
-          color: primary,
+          color: Colors.black,
           fontWeight: FontWeight.w700,
         ),
-        prefixIconColor: muted,
-        suffixIconColor: muted,
+        prefixIconColor: Colors.black54,
+        suffixIconColor: Colors.black54,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.control),
           borderSide: const BorderSide(color: border),
@@ -285,9 +285,9 @@ class AppTheme {
       ),
       dividerTheme: const DividerThemeData(color: border, space: 24),
       tabBarTheme: const TabBarThemeData(
-        labelColor: primary,
+        labelColor: Colors.black,
         unselectedLabelColor: muted,
-        indicatorColor: primary,
+        indicatorColor: Colors.black,
         dividerColor: Colors.transparent,
         labelStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
       ),
@@ -342,20 +342,20 @@ class AppTheme {
         textStyle: const TextStyle(fontSize: 12, color: Colors.white),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: primaryDark,
-        indicatorColor: primary,
+        backgroundColor: surface,
+        indicatorColor: Colors.black,
         elevation: 0,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (s) => TextStyle(
             fontSize: 11.5,
             fontWeight: FontWeight.w700,
-            color: onColor,
+            color: Colors.black,
           ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (s) => IconThemeData(
             size: 23,
-            color: onColor,
+            color: Colors.black,
           ),
         ),
       ),

@@ -29,7 +29,7 @@ void main() {
       expect(AppStyle.colors, AppColors.workspaceBackgrounds);
       expect(AppStyle.accents, AppColors.workspaceAccents);
       expect(AppStyle.colors.length, 8);
-      expect(AppStyle.colors.first, const Color(0xFFF6F7FC));
+      expect(AppStyle.colors.first, const Color(0xFFECEBF1));
       expect(AppStyle.accents.first, const Color(0xFF5B4BDB));
       expect(AppStyle.labels.length, AppStyle.colors.length);
     },
@@ -50,8 +50,8 @@ void main() {
     expect(theme.textTheme.titleMedium?.color, AppColors.text);
     expect(theme.textTheme.bodyMedium?.color, AppColors.text);
     expect(theme.appBarTheme.backgroundColor, AppColors.appBar);
-    expect(theme.appBarTheme.foregroundColor, AppColors.onColor);
-    expect(theme.navigationBarTheme.backgroundColor, AppColors.primaryDark);
+    expect(theme.appBarTheme.foregroundColor, AppColors.text);
+    expect(theme.navigationBarTheme.backgroundColor, AppColors.surface);
   });
 
   test('font families are declared and their assets exist', () {

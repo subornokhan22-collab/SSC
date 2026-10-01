@@ -18,18 +18,18 @@ abstract final class AppColors {
   static const light = Color(0xFFB9B2FF);
 
   // Calm reading surfaces with enough contrast against the saturated brand.
-  static const canvas = Color(0xFFF6F7FC);
+  static const canvas = Color(0xFFECEBF1);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceAlt = Color(0xFFEEF1FF);
-  static const heroSurface = Color(0xFFEAE8FF);
+  static const surfaceAlt = Color(0xFFF7F7F9);
+  static const heroSurface = Color(0xFFFFFFFF);
   static const warmSurface = Color(0xFFFFF1E8);
   static const cyanSurface = Color(0xFFE3F8FC);
-  static const border = Color(0xFFD9E1F0);
-  static const text = Color(0xFF17213C);
-  static const muted = Color(0xFF65718C);
-  static const disabled = Color(0xFFB8C3D8);
-  static const progressTrack = Color(0xFFDDE6F5);
-  static const appBar = Color(0xFF172554);
+  static const border = Color(0xFFE2E1E7);
+  static const text = Color(0xFF111111);
+  static const muted = Color(0xFF686870);
+  static const disabled = Color(0xFFC8C7CD);
+  static const progressTrack = Color(0xFFDAD9DF);
+  static const appBar = Color(0xFFFFFFFF);
 
   // OMR uses the requested pink pair exactly; never replace these with blue.
   static const omr = Color(0xFFEB3897);
@@ -116,7 +116,7 @@ abstract final class AppTypography {
     fontSize: 18.5,
     fontWeight: FontWeight.w800,
     letterSpacing: .2,
-    color: AppColors.onColor,
+    color: AppColors.text,
   );
 }
 

@@ -36,7 +36,7 @@ class _AppButtonState extends State<AppButton> {
   Widget build(BuildContext context) {
     final disabled = widget.onPressed == null || widget.loading;
     final pressed = _pressed && !disabled && !MotionPolicy.reduce(context);
-    final foreground = widget.outlined ? AppTheme.primary : AppColors.onColor;
+    final foreground = widget.outlined ? Colors.black : Colors.white;
     final radius = BorderRadius.circular(AppRadii.action);
     final child = Row(
       mainAxisSize: MainAxisSize.min,
@@ -75,19 +75,18 @@ class _AppButtonState extends State<AppButton> {
         decoration: BoxDecoration(
           borderRadius: radius,
           color: filled
-              ? null
+              ? Colors.black
               : (disabled ? AppColors.disabled : AppColors.surface),
-          gradient: filled ? AppTheme.brandGradient : null,
           border: _focused && !disabled
               ? Border.all(color: AppTheme.textDark, width: 2)
               : widget.outlined
                   ? Border.all(
-                      color: AppTheme.primary.withOpacity(.45), width: 1.3)
+                      color: Colors.black.withOpacity(.45), width: 1.3)
                   : null,
           boxShadow: filled
               ? [
                   BoxShadow(
-                    color: AppTheme.primary.withOpacity(.22),
+                    color: Colors.black.withOpacity(.18),
                     blurRadius: 16,
                     offset: const Offset(0, 7),
                   ),

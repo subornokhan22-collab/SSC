@@ -6,12 +6,9 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../models/paper_draft.dart';
 import '../controllers/paper_controller.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/animations.dart';
 import '../widgets/app_icon.dart';
 import '../services/app_style.dart';
-import '../widgets/alive_tab_stack.dart';
-import '../widgets/aurora_ribbons.dart';
-import '../widgets/motion_policy.dart';
+import '../widgets/reference_ui.dart';
 import '../navigation/app_routes.dart';
 import '../services/auth_service.dart';
 import '../services/paper_library.dart';
@@ -20,11 +17,13 @@ import '../services/promotion_service.dart';
 import '../theme/app_theme.dart';
 import 'ai_tools_screen.dart';
 import 'omr_scanner_screen.dart';
+import 'omr_analytics_screen.dart';
+import 'profile_screen.dart';
+import 'subscription_screen.dart';
 import 'papers_library_screen.dart';
-import 'saved_paper_screen.dart';
 
-/// Four predictable destinations. Lazy tabs avoid permission prompts and
-/// network work for tools the teacher has not opened.
+/// Reference-style teacher dashboard. Product workflows remain real screens;
+/// the dashboard only changes the presentation and entry points.
 class TeacherHomeScreen extends StatefulWidget {
   const TeacherHomeScreen({super.key});
   @override
@@ -33,11 +32,8 @@ class TeacherHomeScreen extends StatefulWidget {
 
 class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     with WidgetsBindingObserver {
-  int tab = 0;
-  int libraryVisit = 0;
   String? draftTitle;
   int loadGeneration = 0;
-  final visited = <int>{0};
   List<PaperEntry> recent = [];
   PromotionFeed promotions = const PromotionFeed();
   bool loading = true;
@@ -188,446 +184,255 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     );
     // The editor can move the workspace tint (English is pink); coming back to
     // the desk restores the accent for the tab the teacher is actually on.
-    AppStyle.mood.value = _moods[tab % _moods.length];
+    AppStyle.mood.value = WorkspaceMood.home;
     if (mounted) load();
   }
 
-  /// Tab index to the colour the backdrop should drift towards. Colour is the
-  /// navigation cue: indigo desk, sky library, teal scanner, purple AI.
-  static const List<WorkspaceMood> _moods = [
-    WorkspaceMood.home,
-    WorkspaceMood.papers,
-    WorkspaceMood.omr,
-    WorkspaceMood.ai,
-  ];
+  Future<void> _openScreen(Widget screen) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    );
+    if (mounted) load();
+  }
 
-  void select(int i) {
-    if (i == tab) return;
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (i == 1) libraryVisit++;
-    setState(() {
-      tab = i;
-      visited.add(i);
-    });
-    AppStyle.mood.value = _moods[i % _moods.length];
-    if (i == 0) load();
+  Future<void> _openSettings() async {
+    await Navigator.pushNamed(context, AppRoutes.settings);
+    if (mounted) load();
   }
 
   @override
-  Widget build(BuildContext context) => PopScope(
-        canPop: tab == 0,
-        onPopInvoked: (didPop) {
-          if (!didPop) select(0);
-        },
-        child: Scaffold(
-          body: AliveTabStack(
-            index: tab,
-            children: [
-              home(),
-              // Recreate the library on each visit so a just-saved paper is visible.
-              visited.contains(1)
-                  ? PapersLibraryScreen(key: ValueKey(libraryVisit))
-                  : const SizedBox.shrink(),
-              visited.contains(2)
-                  ? const OMrScannerScreen()
-                  : const SizedBox.shrink(),
-              visited.contains(3)
-                  ? const AiToolsScreen()
-                  : const SizedBox.shrink(),
-            ],
-          ),
-          bottomNavigationBar: NavigationBar(
-            animationDuration: MotionPolicy.duration(context, 180),
-            selectedIndex: tab,
-            onDestinationSelected: select,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(PhosphorIcons.house),
-                selectedIcon: Icon(PhosphorIcons.house),
-                label: 'Home',
-              ),
-              NavigationDestination(
-                icon: Icon(PhosphorIcons.folder),
-                selectedIcon: Icon(PhosphorIcons.folder),
-                label: 'My Papers',
-              ),
-              NavigationDestination(
-                icon: Icon(PhosphorIcons.scan),
-                label: 'Scan',
-              ),
-              NavigationDestination(
-                icon: Icon(PhosphorIcons.magicWand),
-                label: 'AI Tools',
-              ),
-            ],
-          ),
-        ),
-      );
-  Widget _notificationCard(AppNotificationItem item) => Card(
-        color: AppColors.surfaceAlt,
-        child: ListTile(
-          leading: const Icon(PhosphorIcons.bellRinging, color: AppColors.ai),
-          title: Text(item.title,
-              style: const TextStyle(fontWeight: FontWeight.w800)),
-          subtitle:
-              Text(item.message, maxLines: 3, overflow: TextOverflow.ellipsis),
-          trailing: item.actionUrl == '/plans'
-              ? const Icon(PhosphorIcons.caretRight)
-              : null,
-          onTap: item.actionUrl == '/plans'
-              ? () => Navigator.pushNamed(context, AppRoutes.plans)
-              : null,
-        ),
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: ReferencePalette.background,
+        body: SafeArea(child: home()),
+        bottomNavigationBar: ReferenceBottomBar(onSettings: _openSettings),
       );
 
-  Widget _prizeCard(PromotionPrize prize) => Card(
-        color: AppColors.warmSurface,
-        child: ListTile(
-          leading: prize.imageUrl.startsWith('https://')
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(prize.imageUrl,
-                      width: 44,
-                      height: 44,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
-                          PhosphorIcons.trophy,
-                          color: Colors.amber)),
-                )
-              : const Icon(PhosphorIcons.trophy, color: Colors.amber),
-          title: Text(prize.title,
-              style: const TextStyle(fontWeight: FontWeight.w800)),
-          subtitle: Text(
-            [prize.valueText, prize.description]
-                .where((text) => text.trim().isNotEmpty)
-                .join(' · '),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+  Widget home() => Column(
+        children: [
+          Container(
+            height: 183,
+            color: ReferencePalette.surface,
+            padding: const EdgeInsets.fromLTRB(18, 0, 24, 34),
+            alignment: Alignment.bottomRight,
+            child: _referenceHeader(),
           ),
-        ),
-      );
-
-  Widget home() => Scaffold(
-        appBar: AppBar(
-          title: const Text("Tutor’s Desk"),
-          actions: [
-            IconButton(
-              tooltip: 'Settings',
-              onPressed: () async {
-                await Navigator.pushNamed(context, AppRoutes.settings);
-                if (mounted) load();
-              },
-              icon: const Icon(PhosphorIcons.gear),
+          Expanded(
+            child: RefreshIndicator(
+              color: ReferencePalette.ink,
+              backgroundColor: ReferencePalette.surface,
+              onRefresh: load,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 38, 16, 24),
+                children: [
+                  _referenceDashboard(),
+                  if (!devicePro) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 108,
+                      child: Row(
+                        children: [
+                          const Expanded(child: SizedBox()),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ReferenceActionCard(
+                              icon: PhosphorIcons.wallet,
+                              label: 'BUY PLANS',
+                              onTap: () =>
+                                  _openScreen(const SubscriptionScreen()),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (promotions.notifications.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    for (final item in promotions.notifications.take(3))
+                      _notificationCard(item),
+                  ],
+                  if (promotions.prizes.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    _prizeCard(promotions.prizes.first),
+                  ],
+                  if (error != null) ...[
+                    const SizedBox(height: 12),
+                    ReferenceCard(
+                      onTap: load,
+                      child: Row(
+                        children: [
+                          const ReferenceIcon(
+                            PhosphorIcons.warningCircle,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(error!)),
+                          const ReferenceIcon(
+                            PhosphorIcons.arrowClockwise,
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
+          ),
+        ],
+      );
+
+  Widget _referenceHeader() => Row(
+        children: [
+          const Spacer(),
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: () {
+              if (promotions.notifications.isNotEmpty) {
+                showModalBottomSheet<void>(
+                  context: context,
+                  backgroundColor: ReferencePalette.surface,
+                  showDragHandle: true,
+                  builder: (_) => SafeArea(
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+                      children: [
+                        const Text(
+                          'Notifications',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        for (final item in promotions.notifications.take(5))
+                          _notificationCard(item),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+            icon: const ReferenceIcon(PhosphorIcons.bellRinging, size: 34),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: () => _openScreen(const ProfileScreen()),
+            borderRadius: BorderRadius.circular(40),
+            child: const CircleAvatar(
+              radius: 29,
+              backgroundColor: Color(0xFFD7D6DB),
+              child: ReferenceIcon(
+                PhosphorIcons.user,
+                size: 39,
+                color: ReferencePalette.surface,
+                secondaryColor: ReferencePalette.mutedInk,
+                secondaryOpacity: .85,
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget _referenceBlankRow() => const SizedBox(
+        height: 108,
+        child: Row(
+          children: [
+            Expanded(child: ReferenceCard(child: SizedBox.expand())),
+            SizedBox(width: 12),
+            Expanded(child: ReferenceCard(child: SizedBox.expand())),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: load,
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: Stagger.list([
-              Text(
-                AuthService.isLoggedIn
-                    ? 'Welcome, ${AuthService.displayName.isEmpty ? 'teacher' : AuthService.displayName}'
-                    : 'Your teaching workspace',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Prepare a paper. Review the answers. Start your class.',
-                style: TextStyle(color: AppTheme.muted),
-              ),
-              const SizedBox(height: 24),
-              Card(
-                color: AppColors.heroSurface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(color: AppTheme.primary.withOpacity(.18)),
-                ),
-                // The one place on the desk that earns atmosphere. Kept faint
-                // and clipped to the hero so the rest of the screen stays a
-                // still, printable surface.
-                child: AuroraRibbons(
-                  enabled: true,
-                  opacity: .34,
-                  child: Padding(
-                    padding: const EdgeInsets.all(22),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(children: [
-                          AppDuotoneIcon(
-                            PhosphorIcons.fileTextDuotone,
-                            size: 34,
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                              child: Text('FROM YOUR DESK TO THE CLASSROOM',
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      letterSpacing: 1.1,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppTheme.primary))),
-                        ]),
-                        const SizedBox(height: 14),
-                        Text(
-                          'Create a Question Paper',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Board Pattern, Chapter Test or MCQ + OMR — one guided workflow.',
-                        ),
-                        const SizedBox(height: 18),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () => create(),
-                            icon: const AppDuotoneIcon(
-                              PhosphorIcons.plusDuotone,
-                              color: AppColors.onColor,
-                              secondaryColor: AppColors.light,
-                            ),
-                            label: Text(draftTitle == null
-                                ? 'Create a paper'
-                                : 'Create / resume paper'),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => create(quick: true),
-                          child: const Text('Start a Physics Model Test →'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              if (!devicePro) ...[
-                const SizedBox(height: 14),
-                Card(
-                  color: AppColors.cyanSurface,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    side: BorderSide(
-                      color: AppTheme.primary.withOpacity(.22),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 15, 16, 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              PhosphorIcons.crown,
-                              color: AppTheme.accent,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                'Unlock Tutor\'s Desk Pro',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Full papers, PDF export, printing and no watermark.',
-                          style: TextStyle(color: AppTheme.muted),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () async {
-                              await Navigator.pushNamed(
-                                context,
-                                AppRoutes.plans,
-                              );
-                              if (mounted) load();
-                            },
-                            icon: const Icon(
-                              PhosphorIcons.wallet,
-                              size: 19,
-                            ),
-                            label: const Text('Buy Pro plan'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              if (promotions.notifications.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                for (final item in promotions.notifications.take(3))
-                  _notificationCard(item),
-              ],
-              if (promotions.prizes.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                _prizeCard(promotions.prizes.first),
-              ],
-              if (draftTitle != null)
-                Card(
-                    child: ListTile(
-                  leading: const AppDuotoneIcon(
-                    PhosphorIcons.notePencilDuotone,
-                    color: AppTheme.primary,
-                    secondaryColor: AppColors.secondary,
-                  ),
-                  title: const Text('Continue your draft'),
-                  subtitle: Text(
-                      '${draftTitle!.isEmpty ? 'Untitled paper' : draftTitle!} · On this device',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
-                  trailing: const Icon(PhosphorIcons.arrowRight),
-                  onTap: () => create(),
-                )),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: quickAction(
-                      PhosphorIcons.scanDuotone,
-                      'Scan OMR',
-                      'Review & grade',
-                      () => select(2),
-                      AppColors.omr,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: quickAction(
-                      PhosphorIcons.magicWandDuotone,
-                      'AI Tools',
-                      'Create · Improve · Check',
-                      () => select(3),
-                      AppColors.ai,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              quickAction(
-                PhosphorIcons.folderOpenDuotone,
-                'My Papers',
-                'Saved · PDF · OMR keys',
-                () => select(1),
-                AppColors.science,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Text(
-                    'Recent papers',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () => select(1),
-                    child: const Text('View all'),
-                  ),
-                ],
-              ),
-              if (loading)
-                const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Row(children: [
-                      ActivityIndicator(),
-                      SizedBox(width: 12),
-                      Text('Loading your papers…')
-                    ]))
-              else if (error != null)
-                Card(
-                    child: ListTile(
-                        title: Text(error!),
-                        trailing: IconButton(
-                            tooltip: 'Retry loading papers',
-                            onPressed: load,
-                            icon: const Icon(PhosphorIcons.arrowClockwise))))
-              else if (recent.isEmpty)
-                const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text(
-                      'No saved papers yet. Create your first paper; it will appear here.',
-                    ),
-                  ),
-                ),
-              for (final entry in recent)
-                Card(
-                  child: ListTile(
-                    leading: const AppDuotoneIcon(
-                      PhosphorIcons.fileTextDuotone,
-                      color: AppTheme.primary,
-                      secondaryColor: AppColors.secondary,
-                    ),
-                    title: Text(
-                      entry.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      'Saved · ${entry.subject} · ${entry.pages} pages · ${entry.createdAt.day}/${entry.createdAt.month}',
-                    ),
-                    trailing: const Icon(PhosphorIcons.caretRight),
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SavedPaperScreen(entry: entry),
-                        ),
-                      );
-                      if (mounted) load();
-                    },
-                  ),
-                ),
-            ]),
-          ),
-        ),
       );
-  Widget quickAction(
-    PhosphorDuotoneIconData icon,
-    String title,
-    String subtitle,
-    VoidCallback action,
-    Color color,
-  ) =>
-      Card(
-        child: PressableScale(
-          onTap: action,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+
+  Widget _referenceDashboard() => Column(
+        children: [
+          SizedBox(
+            height: 250,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: color, borderRadius: BorderRadius.circular(12)),
-                  child: AppDuotoneIcon(
-                    icon,
-                    color: AppColors.onColor,
-                    secondaryColor: AppColors.light,
+                Expanded(
+                  child: ReferenceActionCard(
+                    large: true,
+                    icon: PhosphorIcons.fileText,
+                    label: 'CREATE PAPER',
+                    onTap: () => create(),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(color: AppTheme.muted, fontSize: 12),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.magicWand,
+                          label: 'Assistant',
+                          onTap: () => _openScreen(const AiToolsScreen()),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.bookmarkSimple,
+                          label: 'My Papers',
+                          onTap: () =>
+                              _openScreen(const PapersLibraryScreen()),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 108,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ReferenceActionCard(
+                    icon: PhosphorIcons.clock,
+                    label: 'Recents',
+                    onTap: () => _openScreen(const PapersLibraryScreen()),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ReferenceActionCard(
+                    icon: PhosphorIcons.chartBar,
+                    label: 'Statistics',
+                    onTap: () => _openScreen(const OMrAnalyticsScreen()),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 108,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ReferenceActionCard(
+                    icon: PhosphorIcons.scan,
+                    label: 'OMR Scanner',
+                    multiline: true,
+                    onTap: () => _openScreen(const OMrScannerScreen()),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(child: ReferenceCard(child: SizedBox.expand())),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          _referenceBlankRow(),
+          const SizedBox(height: 12),
+          _referenceBlankRow(),
+        ],
       );
 }
