@@ -59,16 +59,48 @@ class ReferenceAiMark extends StatelessWidget {
   const ReferenceAiMark({super.key});
 
   @override
-  Widget build(BuildContext context) => const Text(
-        'Ai',
-        style: TextStyle(
-          color: ReferencePalette.ink,
-          fontSize: 43,
-          fontWeight: FontWeight.w900,
-          height: .9,
-          letterSpacing: -4,
-        ),
+  Widget build(BuildContext context) => const SizedBox(
+        width: 64,
+        height: 52,
+        child: CustomPaint(painter: _ReferenceAiPainter()),
       );
+}
+
+class _ReferenceAiPainter extends CustomPainter {
+  const _ReferenceAiPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = Paint()
+      ..color = ReferencePalette.ink
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..strokeWidth = 7;
+    final a = Path()
+      ..moveTo(5, size.height - 8)
+      ..lineTo(size.width * .42, 6)
+      ..lineTo(size.width * .72, size.height - 8);
+    canvas.drawPath(a, stroke);
+    canvas.drawLine(
+      Offset(size.width * .23, size.height * .57),
+      Offset(size.width * .56, size.height * .57),
+      stroke,
+    );
+    canvas.drawCircle(
+      Offset(size.width * .88, 9),
+      4,
+      Paint()..color = ReferencePalette.ink,
+    );
+    canvas.drawLine(
+      Offset(size.width * .88, 22),
+      Offset(size.width * .88, size.height - 8),
+      stroke,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _ReferenceAiPainter oldDelegate) => false;
 }
 
 class ReferenceCard extends StatelessWidget {
