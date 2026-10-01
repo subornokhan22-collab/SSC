@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/motion_policy.dart';
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
@@ -836,12 +837,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const OMrAnalyticsScreen()),
             ),
-            icon: const Icon(PhosphorIcons.chartBar),
+            icon: const AppDuotoneIcon(PhosphorIcons.chartBarDuotone),
           ),
           IconButton(
             tooltip: 'Key draft restore',
             onPressed: _busy || _step != 0 ? null : _restoreKeyDraft,
-            icon: const Icon(PhosphorIcons.clockCounterClockwise),
+            icon: const AppDuotoneIcon(PhosphorIcons.clockCounterClockwiseDuotone),
           ),
         ],
       ),
@@ -864,7 +865,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: _busy ? null : () => setState(() => _step--),
-                  icon: const Icon(PhosphorIcons.arrowLeft, size: 16),
+                  icon: const AppDuotoneIcon(PhosphorIcons.arrowLeftDuotone, size: 16),
                   label: const Text('Back'),
                 ),
               ),
@@ -933,7 +934,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         ),
                         onPressed: _busy ? null : _pickSavedPaper,
                         icon:
-                            const Icon(PhosphorIcons.bookmarksSimple, size: 18),
+                            const AppDuotoneIcon(PhosphorIcons.bookmarksSimpleDuotone, size: 18),
                         label: const Text(
                           'Use saved paper (key auto-loads)',
                           style: TextStyle(
@@ -957,7 +958,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         IconButton(
                           onPressed:
                               _total > 5 ? () => _setTotal(_total - 5) : null,
-                          icon: const Icon(PhosphorIcons.minusCircle),
+                          icon: const AppDuotoneIcon(PhosphorIcons.minusCircleDuotone),
                         ),
                         SizedBox(
                           width: 44,
@@ -974,7 +975,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         IconButton(
                           onPressed:
                               _total < 100 ? () => _setTotal(_total + 5) : null,
-                          icon: const Icon(PhosphorIcons.plusCircle),
+                          icon: const AppDuotoneIcon(PhosphorIcons.plusCircleDuotone),
                         ),
                         const Spacer(),
                         TextButton(
@@ -1020,7 +1021,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           Expanded(
                             child: AppButton(
                               label: 'Camera',
-                              icon: PhosphorIcons.cube,
+                              icon: PhosphorIcons.cubeDuotone,
                               onPressed: _busy ? null : _openCamera,
                             ),
                           ),
@@ -1028,7 +1029,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           Expanded(
                             child: AppButton(
                               label: 'Gallery',
-                              icon: PhosphorIcons.images,
+                              icon: PhosphorIcons.imagesDuotone,
                               outlined: true,
                               onPressed: _busy
                                   ? null
@@ -1046,7 +1047,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       const SizedBox(height: 8),
                       TextButton.icon(
                         onPressed: () => _scanNext(),
-                        icon: const Icon(PhosphorIcons.x, size: 16),
+                        icon: const AppDuotoneIcon(PhosphorIcons.xDuotone, size: 16),
                         label: const Text('Change / remove photo'),
                       ),
                     ],
@@ -1055,7 +1056,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _busy ? null : _batchDialog,
-                        icon: const Icon(PhosphorIcons.usersThree, size: 18),
+                        icon: const AppDuotoneIcon(PhosphorIcons.usersThreeDuotone, size: 18),
                         label: const Text('Batch scan'),
                       ),
                     ),
@@ -1093,7 +1094,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
               const SizedBox(height: 12),
               AppButton(
                 label: 'Read answers for review',
-                icon: PhosphorIcons.qrCode,
+                icon: PhosphorIcons.qrCodeDuotone,
                 onPressed: _busy ? null : _scan,
               ),
             ],
@@ -1107,9 +1108,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(
-                          PhosphorIcons.usersThree,
+                        const AppDuotoneIcon(
+                          PhosphorIcons.usersThreeDuotone,
                           color: AppColors.omr,
+                          secondaryColor: AppColors.light,
                           size: 20,
                         ),
                         const SizedBox(width: 10),
@@ -1130,7 +1132,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Cancel batch',
-                            icon: PhosphorIcons.x,
+                            icon: PhosphorIcons.xDuotone,
                             outlined: true,
                             onPressed: _cancelBatch,
                           ),
@@ -1139,7 +1141,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Finish batch',
-                            icon: PhosphorIcons.flag,
+                            icon: PhosphorIcons.flagDuotone,
                             onPressed: _batch.isEmpty ? null : _finishBatch,
                           ),
                         ),
@@ -1254,7 +1256,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     _verdictGrid(graded),
                     TextButton.icon(
                       onPressed: _busy ? null : () => setState(() => _step = 2),
-                      icon: const Icon(PhosphorIcons.pencilSimple),
+                      icon: const AppDuotoneIcon(PhosphorIcons.pencilSimpleDuotone),
                       label: const Text('Review / correct readings'),
                     ),
                     const SizedBox(height: 14),
@@ -1263,7 +1265,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Print scorecard',
-                            icon: PhosphorIcons.printer,
+                            icon: PhosphorIcons.printerDuotone,
                             onPressed: _printScorecard,
                           ),
                         ),
@@ -1271,7 +1273,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         Expanded(
                           child: AppButton(
                             label: 'Save key',
-                            icon: PhosphorIcons.floppyDisk,
+                            icon: PhosphorIcons.floppyDiskDuotone,
                             outlined: true,
                             onPressed: _saveKey,
                           ),
@@ -1283,7 +1285,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _scanNext,
-                        icon: const Icon(PhosphorIcons.user, size: 18),
+                        icon: const AppDuotoneIcon(PhosphorIcons.userDuotone, size: 18),
                         label: const Text("Scan next student's OMR sheet"),
                       ),
                     ),
@@ -1411,10 +1413,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       ),
                       IconButton(
                         onPressed: () => _showRecord(r),
-                        icon: const Icon(
-                          PhosphorIcons.eye,
+                        icon: const AppDuotoneIcon(
+                          PhosphorIcons.eyeDuotone,
                           size: 18,
                           color: AppColors.omr,
+                          secondaryColor: AppColors.light,
                         ),
                       ),
                       IconButton(
@@ -1422,10 +1425,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           await OmrStore.deleteRecord(r.id);
                           _loadHistory();
                         },
-                        icon: const Icon(
-                          PhosphorIcons.trash,
+                        icon: const AppDuotoneIcon(
+                          PhosphorIcons.trashDuotone,
                           size: 18,
                           color: AppTheme.danger,
+                          secondaryColor: AppColors.light,
                         ),
                       ),
                     ],
@@ -1806,13 +1810,23 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             ),
             const SizedBox(height: 14),
             FilledButton.icon(
-              icon: const Icon(PhosphorIcons.images, size: 18),
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.imagesDuotone,
+                color: AppColors.onColor,
+                secondaryColor: AppColors.light,
+                size: 18,
+              ),
               label: const Text('Gallery (pick many)'),
               onPressed: () => Navigator.pop(c, 'gallery'),
             ),
             const SizedBox(height: 10),
             FilledButton.icon(
-              icon: const Icon(PhosphorIcons.camera, size: 18),
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.cameraDuotone,
+                color: AppColors.onColor,
+                secondaryColor: AppColors.light,
+                size: 18,
+              ),
               label: const Text('Camera (one by one)'),
               onPressed: () => Navigator.pop(c, 'camera'),
             ),

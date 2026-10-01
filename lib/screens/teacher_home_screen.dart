@@ -384,7 +384,11 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           width: double.infinity,
                           child: FilledButton.icon(
                             onPressed: () => create(),
-                            icon: const Icon(PhosphorIcons.plus),
+                            icon: const AppDuotoneIcon(
+                              PhosphorIcons.plusDuotone,
+                              color: AppColors.onColor,
+                              secondaryColor: AppColors.light,
+                            ),
                             label: Text(draftTitle == null
                                 ? 'Create a paper'
                                 : 'Create / resume paper'),
@@ -472,8 +476,11 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               if (draftTitle != null)
                 Card(
                     child: ListTile(
-                  leading: const Icon(PhosphorIcons.notePencil,
-                      color: AppTheme.primary),
+                  leading: const AppDuotoneIcon(
+                      PhosphorIcons.notePencilDuotone,
+                      color: AppTheme.primary,
+                      secondaryColor: AppColors.secondary,
+                    ),
                   title: const Text('Continue your draft'),
                   subtitle: Text(
                       '${draftTitle!.isEmpty ? 'Untitled paper' : draftTitle!} · On this device',
@@ -487,7 +494,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 children: [
                   Expanded(
                     child: quickAction(
-                      PhosphorIcons.scan,
+                      PhosphorIcons.scanDuotone,
                       'Scan OMR',
                       'Review & grade',
                       () => select(2),
@@ -497,7 +504,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   const SizedBox(width: 12),
                   Expanded(
                     child: quickAction(
-                      PhosphorIcons.magicWand,
+                      PhosphorIcons.magicWandDuotone,
                       'AI Tools',
                       'Create · Improve · Check',
                       () => select(3),
@@ -508,7 +515,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               ),
               const SizedBox(height: 12),
               quickAction(
-                PhosphorIcons.folderOpen,
+                PhosphorIcons.folderOpenDuotone,
                 'My Papers',
                 'Saved · PDF · OMR keys',
                 () => select(1),
@@ -556,9 +563,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               for (final entry in recent)
                 Card(
                   child: ListTile(
-                    leading: const Icon(
-                      PhosphorIcons.fileText,
+                    leading: const AppDuotoneIcon(
+                      PhosphorIcons.fileTextDuotone,
                       color: AppTheme.primary,
+                      secondaryColor: AppColors.secondary,
                     ),
                     title: Text(
                       entry.title,
@@ -585,7 +593,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         ),
       );
   Widget quickAction(
-    IconData icon,
+    PhosphorDuotoneIconData icon,
     String title,
     String subtitle,
     VoidCallback action,
@@ -603,7 +611,11 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: color, borderRadius: BorderRadius.circular(12)),
-                  child: Icon(icon, color: AppColors.onColor),
+                  child: AppDuotoneIcon(
+                    icon,
+                    color: AppColors.onColor,
+                    secondaryColor: AppColors.light,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Text(title,

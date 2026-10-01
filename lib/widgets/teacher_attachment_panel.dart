@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'motion_policy.dart';
+import 'app_icon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../services/ai/teacher_attachment.dart';
+import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 
 /// Session-only attachments: no upload on selection, no file persistence.
 class TeacherAttachmentPanel extends StatefulWidget {
@@ -97,11 +100,15 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
                       widget.files.length >= TeacherAttachment.maxCount
                   ? null
                   : () => pick(source),
-              icon: Icon(source == 'camera'
-                  ? PhosphorIcons.camera
-                  : source == 'pdf'
-                      ? PhosphorIcons.filePdf
-                      : PhosphorIcons.images),
+              icon: AppDuotoneIcon(
+                source == 'camera'
+                    ? PhosphorIcons.cameraDuotone
+                    : source == 'pdf'
+                        ? PhosphorIcons.filePdfDuotone
+                        : PhosphorIcons.imagesDuotone,
+                color: AppTheme.primary,
+                secondaryColor: AppColors.secondary,
+              ),
               label: Text(source == 'camera'
                   ? 'Camera'
                   : source == 'pdf'
@@ -117,7 +124,11 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: widget.files[i].isPdf
-                ? const Icon(PhosphorIcons.filePdf)
+                ? const AppDuotoneIcon(
+                    PhosphorIcons.filePdfDuotone,
+                    color: AppTheme.primary,
+                    secondaryColor: AppColors.secondary,
+                  )
                 : Image.memory(widget.files[i].bytes,
                     width: 48, height: 48, fit: BoxFit.cover, cacheWidth: 160),
             title: Text(widget.files[i].name,

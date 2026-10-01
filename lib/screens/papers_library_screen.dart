@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/motion_policy.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:printing/printing.dart';
@@ -279,9 +280,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppColors.science.withOpacity(.35)),
             ),
-            child: const Icon(
-              PhosphorIcons.key,
+            child: const AppDuotoneIcon(
+              PhosphorIcons.keyDuotone,
               color: AppColors.science,
+              secondaryColor: AppColors.secondary,
               size: 22,
             ),
           ),
@@ -323,19 +325,19 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _iconBtn(
-                PhosphorIcons.qrCode,
+                PhosphorIcons.qrCodeDuotone,
                 'Scan OMR',
                 () => _scanWith(p),
               ),
-              _iconBtn(PhosphorIcons.key, 'View answers', () => _showKey(p)),
+              _iconBtn(PhosphorIcons.keyDuotone, 'View answers', () => _showKey(p)),
               if (p.pages > 0)
                 _iconBtn(
-                  PhosphorIcons.fileText,
+                  PhosphorIcons.fileTextDuotone,
                   'View paper',
                   () => _viewSaved(p),
                 ),
               _iconBtn(
-                PhosphorIcons.trash,
+                PhosphorIcons.trashDuotone,
                 'Delete',
                 () => _deleteSaved(p),
                 color: AppTheme.danger,
@@ -377,10 +379,11 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                PhosphorIcons.bookmarksSimple,
+              const AppDuotoneIcon(
+                PhosphorIcons.bookmarksSimpleDuotone,
                 size: 54,
                 color: AppColors.science,
+                secondaryColor: AppColors.secondary,
               ),
               const SizedBox(height: 14),
               const Text(
@@ -477,7 +480,12 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               child: const Text('Cancel'),
             ),
             FilledButton.icon(
-              icon: const Icon(PhosphorIcons.camera, size: 18),
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.cameraDuotone,
+                color: AppColors.onColor,
+                secondaryColor: AppColors.light,
+                size: 18,
+              ),
               label: const Text('From photos'),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
@@ -494,7 +502,12 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
               },
             ),
             FilledButton.icon(
-              icon: const Icon(PhosphorIcons.filePdf, size: 18),
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.filePdfDuotone,
+                color: AppColors.onColor,
+                secondaryColor: AppColors.light,
+                size: 18,
+              ),
               label: const Text('From PDF'),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
@@ -640,13 +653,21 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           IconButton(
             tooltip: 'Copy backup to Download folder',
             onPressed: _backUpToDownload,
-            icon: const Icon(PhosphorIcons.cloudArrowUp),
+            icon: const AppDuotoneIcon(
+              PhosphorIcons.cloudArrowUpDuotone,
+              color: AppColors.primary,
+              secondaryColor: AppColors.secondary,
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _busyAdd ? null : _addDialog,
-        icon: const Icon(PhosphorIcons.imageSquare),
+        icon: const AppDuotoneIcon(
+          PhosphorIcons.imageSquareDuotone,
+          color: AppColors.onColor,
+          secondaryColor: AppColors.light,
+        ),
         label: const Text('Add'),
       ),
       body: SafeArea(
@@ -702,10 +723,11 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              PhosphorIcons.images,
+            const AppDuotoneIcon(
+              PhosphorIcons.imagesDuotone,
               size: 54,
               color: AppColors.science,
+              secondaryColor: AppColors.secondary,
             ),
             const SizedBox(height: 14),
             const Text(
@@ -771,11 +793,11 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _iconBtn(PhosphorIcons.eye, 'View', () => _view(e)),
-              _iconBtn(PhosphorIcons.printer, 'Print', () => _print(e)),
-              _iconBtn(PhosphorIcons.share, 'Share', () => _share(e)),
+              _iconBtn(PhosphorIcons.eyeDuotone, 'View', () => _view(e)),
+              _iconBtn(PhosphorIcons.printerDuotone, 'Print', () => _print(e)),
+              _iconBtn(PhosphorIcons.shareDuotone, 'Share', () => _share(e)),
               _iconBtn(
-                PhosphorIcons.trash,
+                PhosphorIcons.trashDuotone,
                 'Delete',
                 () => _delete(e),
                 color: AppTheme.danger,
@@ -804,9 +826,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AppTheme.border),
           ),
-          child: const Icon(
-            PhosphorIcons.filePdf,
+          child: const AppDuotoneIcon(
+            PhosphorIcons.filePdfDuotone,
             color: AppColors.science,
+            secondaryColor: AppColors.secondary,
             size: 26,
           ),
         );
@@ -832,7 +855,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
       );
 
   Widget _iconBtn(
-    IconData icon,
+    PhosphorDuotoneIconData icon,
     String label,
     VoidCallback onTap, {
     Color? color,
@@ -843,7 +866,12 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
           message: label,
           child: IconButton(
             visualDensity: VisualDensity.compact,
-            icon: Icon(icon, size: 19, color: color ?? AppColors.science),
+            icon: AppDuotoneIcon(
+              icon,
+              size: 19,
+              color: color ?? AppColors.science,
+              secondaryColor: AppColors.secondary,
+            ),
             onPressed: onTap,
           ),
         ),

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/motion_policy.dart';
 import 'package:printing/printing.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
@@ -84,12 +85,20 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
             IconButton(
               tooltip: 'Print',
               onPressed: busy || pages == null ? null : () => action(true),
-              icon: const Icon(PhosphorIcons.printer),
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.printerDuotone,
+                color: AppColors.primary,
+                secondaryColor: AppColors.secondary,
+              ),
             ),
             IconButton(
               tooltip: 'Share PDF',
               onPressed: busy || pages == null ? null : () => action(false),
-              icon: const Icon(PhosphorIcons.share),
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.shareDuotone,
+                color: AppColors.primary,
+                secondaryColor: AppColors.secondary,
+              ),
             ),
           ],
         ),
@@ -142,7 +151,11 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
                         ),
                       ),
                     ),
-                    icon: const Icon(PhosphorIcons.scan),
+                    icon: const AppDuotoneIcon(
+                      PhosphorIcons.scanDuotone,
+                      color: AppColors.primary,
+                      secondaryColor: AppColors.secondary,
+                    ),
                     label: const Text('Scan answers for this paper'),
                   ),
                 ),

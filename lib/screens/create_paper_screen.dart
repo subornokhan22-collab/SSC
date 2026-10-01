@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import '../widgets/app_icon.dart';
 import '../controllers/ai_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
@@ -226,8 +227,12 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(children: [
-                      const Icon(PhosphorIcons.floppyDisk,
-                          size: 14, color: AppTheme.muted),
+                      const AppDuotoneIcon(
+                          PhosphorIcons.floppyDiskDuotone,
+                          size: 14,
+                          color: AppTheme.muted,
+                          secondaryColor: AppColors.secondary,
+                        ),
                       const SizedBox(width: 6),
                       Expanded(
                           child: Text(
@@ -299,19 +304,31 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                         children: [
                             FilledButton.icon(
                                 onPressed: c.busy ? null : () => export('pdf'),
-                                icon:
-                                    const Icon(PhosphorIcons.filePdf, size: 18),
+                                icon: const AppDuotoneIcon(
+                                  PhosphorIcons.filePdfDuotone,
+                                  color: AppColors.onColor,
+                                  secondaryColor: AppColors.light,
+                                  size: 18,
+                                ),
                                 label: const Text('Export PDF')),
                             OutlinedButton.icon(
                                 onPressed: c.busy ? null : () => export('save'),
-                                icon: const Icon(PhosphorIcons.bookmarkSimple,
-                                    size: 18),
+                                icon: const AppDuotoneIcon(
+                                  PhosphorIcons.bookmarkSimpleDuotone,
+                                  color: AppTheme.primary,
+                                  secondaryColor: AppColors.secondary,
+                                  size: 18,
+                                ),
                                 label: const Text('Save')),
                             IconButton(
                                 tooltip: 'Print',
                                 onPressed:
                                     c.busy ? null : () => export('print'),
-                                icon: const Icon(PhosphorIcons.printer)),
+                                icon: const AppDuotoneIcon(
+                                  PhosphorIcons.printerDuotone,
+                                  color: AppTheme.primary,
+                                  secondaryColor: AppColors.secondary,
+                                )),
                             if (c.paper?.mcqs.isNotEmpty == true)
                               PopupMenuButton<String>(
                                   enabled: !c.busy,
@@ -552,7 +569,12 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                               forSelection: true)));
                   if (mounted && questions != null) c.addAiQuestions(questions);
                 },
-                icon: const Icon(PhosphorIcons.magicWand, size: 18),
+                icon: const AppDuotoneIcon(
+                  PhosphorIcons.magicWandDuotone,
+                  color: AppTheme.primary,
+                  secondaryColor: AppColors.secondary,
+                  size: 18,
+                ),
                 label: const Text('Add reviewed AI questions'))),
       for (var i = 0; i < p.mcqs.length; i++)
         PaperQuestionCard(
