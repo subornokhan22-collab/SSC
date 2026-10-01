@@ -147,7 +147,8 @@ class ReferenceBottomBar extends StatelessWidget {
     required Object icon,
     required String label,
     required VoidCallback onTap,
-  }) => Expanded(
+  }) =>
+      Expanded(
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),

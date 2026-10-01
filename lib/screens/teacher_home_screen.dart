@@ -455,8 +455,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.bookmarkSimple,
                           label: 'My Papers',
-                          onTap: () =>
-                              _openScreen(const PapersLibraryScreen()),
+                          onTap: () => _openScreen(const PapersLibraryScreen()),
                         ),
                       ),
                     ],

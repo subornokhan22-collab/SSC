@@ -80,8 +80,7 @@ class _AppButtonState extends State<AppButton> {
           border: _focused && !disabled
               ? Border.all(color: AppTheme.textDark, width: 2)
               : widget.outlined
-                  ? Border.all(
-                      color: Colors.black.withOpacity(.45), width: 1.3)
+                  ? Border.all(color: Colors.black.withOpacity(.45), width: 1.3)
                   : null,
           boxShadow: filled
               ? [
