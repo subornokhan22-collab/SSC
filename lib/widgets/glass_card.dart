@@ -5,9 +5,9 @@ import '../theme/app_theme.dart';
 import 'animations.dart';
 import 'motion_policy.dart';
 
-/// Frosted, softly-lit white surface used for every panel in the tutor
-/// portal. The translucency keeps the animated backdrop visible while the
-/// content sits on clean paper-white so long text stays easy to read.
+/// Quiet white reference surface used for every panel in the tutor portal.
+/// The rounded border keeps long-form content readable over the shared
+/// lavender paper canvas without introducing a second visual language.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -22,7 +22,7 @@ class GlassCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(18),
     this.margin,
-    this.radius = 22,
+    this.radius = 16,
     this.tint,
     this.highlighted = false,
     this.onTap,
@@ -31,7 +31,7 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final border =
-        highlighted ? AppTheme.primary.withOpacity(.45) : AppTheme.border;
+        highlighted ? AppTheme.textDark.withOpacity(.45) : AppTheme.border;
     // No BackdropFilter here on purpose. The card fill is 88-94% opaque, so
     // the blur behind it was barely visible, but it is one of the most
     // expensive things Flutter can draw — and during a page transition two
@@ -50,9 +50,9 @@ class GlassCard extends StatelessWidget {
             border: Border.all(color: border, width: highlighted ? 1.3 : 1),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primary.withOpacity(.06),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+                color: Colors.black.withOpacity(.035),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -96,7 +96,7 @@ class SectionTitle extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [AppTheme.primary, AppTheme.secondary],
+                colors: [AppTheme.textDark, AppTheme.muted],
               ),
             ),
           ),
