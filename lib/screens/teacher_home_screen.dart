@@ -315,6 +315,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           Expanded(
                             child: ReferenceActionCard(
                               icon: PhosphorIcons.wallet,
+                              asset: 'New UI/IMG_1258.jpeg',
                               label: 'BUY PLANS',
                               onTap: () =>
                                   _openScreen(const SubscriptionScreen()),
@@ -392,7 +393,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 );
               }
             },
-            icon: const ReferenceIcon(PhosphorIcons.bellRinging, size: 34),
+            icon: const ReferenceImageIcon('New UI/IMG_1261.png', size: 34),
           ),
           const SizedBox(width: 8),
           InkWell(
@@ -401,13 +402,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             child: const CircleAvatar(
               radius: 29,
               backgroundColor: Color(0xFFD7D6DB),
-              child: ReferenceIcon(
-                PhosphorIcons.user,
-                size: 39,
-                color: ReferencePalette.surface,
-                secondaryColor: ReferencePalette.mutedInk,
-                secondaryOpacity: .85,
-              ),
+              child: ReferenceImageIcon('New UI/IMG_1262.png', size: 49),
             ),
           ),
         ],
@@ -434,7 +429,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     large: true,
-                    icon: PhosphorIcons.fileText,
+                    icon: PhosphorIcons.filePlus,
                     label: 'CREATE PAPER',
                     onTap: () => create(),
                   ),
@@ -446,6 +441,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       Expanded(
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.magicWand,
+                          customIcon: const ReferenceAiMark(),
                           label: 'Assistant',
                           onTap: () => _openScreen(const AiToolsScreen()),
                         ),
@@ -454,6 +450,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       Expanded(
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.bookmarkSimple,
+                          asset: 'New UI/IMG_1256.jpeg',
                           label: 'My Papers',
                           onTap: () => _openScreen(const PapersLibraryScreen()),
                         ),
@@ -472,6 +469,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.clock,
+                    asset: 'New UI/IMG_1253.jpeg',
                     label: 'Recents',
                     onTap: () => _openScreen(const PapersLibraryScreen()),
                   ),
@@ -480,6 +478,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.chartBar,
+                    asset: 'New UI/IMG_1252.jpeg',
                     label: 'Statistics',
                     onTap: () => _openScreen(const OMrAnalyticsScreen()),
                   ),
@@ -495,6 +494,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.scan,
+                    asset: 'New UI/IMG_1257.png',
                     label: 'OMR Scanner',
                     multiline: true,
                     onTap: () => _openScreen(const OMrScannerScreen()),

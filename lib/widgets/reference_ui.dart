@@ -39,6 +39,38 @@ class ReferenceIcon extends StatelessWidget {
       );
 }
 
+class ReferenceImageIcon extends StatelessWidget {
+  final String asset;
+  final double size;
+
+  const ReferenceImageIcon(this.asset, {super.key, this.size = 34});
+
+  @override
+  Widget build(BuildContext context) => Image.asset(
+        asset,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+      );
+}
+
+class ReferenceAiMark extends StatelessWidget {
+  const ReferenceAiMark({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Text(
+        'Ai',
+        style: TextStyle(
+          color: ReferencePalette.ink,
+          fontSize: 43,
+          fontWeight: FontWeight.w900,
+          height: .9,
+          letterSpacing: -4,
+        ),
+      );
+}
+
 class ReferenceCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -76,6 +108,8 @@ class ReferenceCard extends StatelessWidget {
 
 class ReferenceActionCard extends StatelessWidget {
   final Object icon;
+  final String? asset;
+  final Widget? customIcon;
   final String label;
   final VoidCallback onTap;
   final bool large;
@@ -84,6 +118,8 @@ class ReferenceActionCard extends StatelessWidget {
   const ReferenceActionCard({
     super.key,
     required this.icon,
+    this.asset,
+    this.customIcon,
     required this.label,
     required this.onTap,
     this.large = false,
@@ -113,12 +149,18 @@ class ReferenceActionCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ReferenceIcon(icon, size: 72),
+                  customIcon ??
+                      (asset == null
+                          ? ReferenceIcon(icon, size: 72)
+                          : ReferenceImageIcon(asset!, size: 72)),
                 ],
               )
             : Row(
                 children: [
-                  ReferenceIcon(icon, size: 48),
+                  customIcon ??
+                      (asset == null
+                          ? ReferenceIcon(icon, size: 48)
+                          : ReferenceImageIcon(asset!, size: 48)),
                   const SizedBox(width: 18),
                   Expanded(
                     child: Text(
@@ -147,6 +189,7 @@ class ReferenceBottomBar extends StatelessWidget {
     required Object icon,
     required String label,
     required VoidCallback onTap,
+    String? asset,
   }) =>
       Expanded(
         child: InkWell(
@@ -157,7 +200,9 @@ class ReferenceBottomBar extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ReferenceIcon(icon, size: 42),
+                asset == null
+                    ? ReferenceIcon(icon, size: 42)
+                    : ReferenceImageIcon(asset, size: 42),
                 const SizedBox(height: 2),
                 Text(
                   label,
@@ -191,6 +236,7 @@ class ReferenceBottomBar extends StatelessWidget {
                     icon: PhosphorIcons.house,
                     label: 'Home',
                     onTap: () {},
+                    asset: 'New UI/IMG_1259.png',
                   ),
                   _item(
                     icon: PhosphorIcons.gear,
