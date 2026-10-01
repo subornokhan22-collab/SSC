@@ -139,6 +139,8 @@ class ReferenceCard extends StatelessWidget {
 }
 
 class ReferenceActionCard extends StatelessWidget {
+  static const _iconSize = 40.0;
+
   final Object icon;
   final String? asset;
   final Widget? customIcon;
@@ -146,8 +148,6 @@ class ReferenceActionCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool large;
   final bool multiline;
-  final double compactIconSize;
-  final double largeIconSize;
 
   const ReferenceActionCard({
     super.key,
@@ -158,8 +158,6 @@ class ReferenceActionCard extends StatelessWidget {
     required this.onTap,
     this.large = false,
     this.multiline = false,
-    this.compactIconSize = 36,
-    this.largeIconSize = 58,
   });
 
   @override
@@ -187,16 +185,16 @@ class ReferenceActionCard extends StatelessWidget {
                   ),
                   customIcon ??
                       (asset == null
-                          ? ReferenceIcon(icon, size: largeIconSize)
-                          : ReferenceImageIcon(asset!, size: largeIconSize)),
+                          ? ReferenceIcon(icon, size: _iconSize)
+                          : ReferenceImageIcon(asset!, size: _iconSize)),
                 ],
               )
             : Row(
                 children: [
                   customIcon ??
                       (asset == null
-                          ? ReferenceIcon(icon, size: compactIconSize)
-                          : ReferenceImageIcon(asset!, size: compactIconSize)),
+                          ? ReferenceIcon(icon, size: _iconSize)
+                          : ReferenceImageIcon(asset!, size: _iconSize)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: multiline
@@ -287,7 +285,7 @@ class ReferenceBottomBar extends StatelessWidget {
                     icon: PhosphorIcons.house,
                     label: 'Home',
                     onTap: () {},
-                    asset: 'New UI 2.0/Picsart_26-10-02_00-41-53-565.png',
+                    asset: 'New UI 2.0/Picsart_26-10-02_00-40-10-782.png',
                   ),
                   _item(
                     icon: PhosphorIcons.gear,

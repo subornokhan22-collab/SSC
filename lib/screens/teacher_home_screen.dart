@@ -93,7 +93,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     if (mounted && generation == loadGeneration) {
       setState(() {
         draftTitle = storedTitle;
-        recent = entries.take(4).toList();
+        recent = entries.take(8).toList();
         promotions = feed;
         devicePro = localPro;
         loading = false;
@@ -307,23 +307,20 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   _referenceDashboard(),
                   if (!devicePro) ...[
                     const SizedBox(height: 12),
-                    SizedBox(
-                      height: 108,
-                      child: Row(
-                        children: [
-                          const Expanded(child: SizedBox()),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ReferenceActionCard(
-                              icon: PhosphorIcons.wallet,
-                              asset:
-                                  'New UI 2.0/Picsart_26-10-02_00-37-44-626.png',
-                              label: 'BUY PLANS',
-                              onTap: () =>
-                                  _openScreen(const SubscriptionScreen()),
-                            ),
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 360),
+                        child: SizedBox(
+                          height: 108,
+                          child: ReferenceActionCard(
+                            icon: PhosphorIcons.wallet,
+                            asset:
+                                'New UI 2.0/Picsart_26-10-02_00-33-02-879.png',
+                            label: 'BUY PLANS',
+                            onTap: () =>
+                                _openScreen(const SubscriptionScreen()),
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ],
@@ -362,6 +359,146 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           ),
         ],
       );
+
+  Future<void> _showRecents() async {
+    final saved = recent.take(8).toList(growable: false);
+    final draft = draftTitle?.trim();
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: ReferencePalette.surface,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * .72,
+            ),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const Text(
+                  'Recents',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                if (draft != null && draft.isNotEmpty) ...[
+                  ReferenceCard(
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      create();
+                    },
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        const ReferenceIcon(PhosphorIcons.pencilSimple, size: 28),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Unsaved paper',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              Text(
+                                draft,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: ReferencePalette.mutedInk,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const ReferenceIcon(
+                          PhosphorIcons.caretRight,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (saved.isNotEmpty) const SizedBox(height: 10),
+                ],
+                if (saved.isEmpty && (draft == null || draft.isEmpty))
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 28),
+                    child: Center(
+                      child: Text(
+                        'No saved or unsaved papers yet',
+                        style: TextStyle(color: ReferencePalette.mutedInk),
+                      ),
+                    ),
+                  )
+                else
+                  ...saved.map(
+                    (entry) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ReferenceCard(
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _openScreen(const PapersLibraryScreen());
+                        },
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            const ReferenceIcon(
+                              PhosphorIcons.fileText,
+                              size: 28,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    entry.title.isEmpty
+                                        ? 'Untitled paper'
+                                        : entry.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${entry.subject.isEmpty ? entry.kindLabel : entry.subject} · ${_recentDate(entry.createdAt)}',
+                                    style: const TextStyle(
+                                      color: ReferencePalette.mutedInk,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const ReferenceIcon(
+                              PhosphorIcons.caretRight,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _recentDate(DateTime date) {
+    final d = date.toLocal();
+    return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+  }
 
   void _showNotifications() {
     showModalBottomSheet<void>(
@@ -408,7 +545,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             tooltip: 'Notifications',
             onPressed: _showNotifications,
             icon: const ReferenceImageIcon(
-              'New UI 2.0/Picsart_26-10-02_00-38-35-905.png',
+              'New UI 2.0/Picsart_26-10-02_00-39-16-173.png',
               size: 27,
             ),
           ),
@@ -420,7 +557,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               radius: 23,
               backgroundColor: Color(0xFFD7D6DB),
               child: ReferenceImageIcon(
-                'New UI 2.0/Picsart_26-10-02_00-40-10-782.png',
+                'New UI 2.0/Picsart_26-10-02_00-36-36-321.png',
                 size: 38,
               ),
             ),
@@ -428,19 +565,11 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         ],
       );
 
-  Widget _referenceBlankRow() => const SizedBox(
-        height: 108,
-        child: Row(
-          children: [
-            Expanded(child: ReferenceCard(child: SizedBox.expand())),
-            SizedBox(width: 12),
-            Expanded(child: ReferenceCard(child: SizedBox.expand())),
-          ],
-        ),
-      );
-
-  Widget _referenceDashboard() => Column(
-        children: [
+  Widget _referenceDashboard() => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            children: [
           SizedBox(
             height: 250,
             child: Row(
@@ -461,7 +590,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       Expanded(
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.magicWand,
-                          asset: 'New UI 2.0/Picsart_26-10-02_00-43-56-921.png',
+                          asset: 'New UI 2.0/Picsart_26-10-02_00-38-35-905.png',
                           label: 'Assistant',
                           onTap: () => _openScreen(const AiToolsScreen()),
                         ),
@@ -470,7 +599,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                       Expanded(
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.bookmarkSimple,
-                          asset: 'New UI 2.0/Picsart_26-10-02_00-36-36-321.png',
+                          asset: 'New UI 2.0/Picsart_26-10-02_00-37-44-626.png',
                           label: 'My Papers',
                           onTap: () => _openScreen(const PapersLibraryScreen()),
                         ),
@@ -489,16 +618,16 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.clock,
-                    asset: 'New UI 2.0/Picsart_26-10-02_00-39-16-173.png',
+                    asset: 'New UI 2.0/Picsart_26-10-02_00-43-56-921.png',
                     label: 'Recents',
-                    onTap: () => _openScreen(const PapersLibraryScreen()),
+                    onTap: _showRecents,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ReferenceActionCard(
                     icon: PhosphorIcons.chartBar,
-                    asset: 'New UI 2.0/Picsart_26-10-02_00-33-02-879.png',
+                    asset: 'New UI 2.0/Picsart_26-10-02_00-41-53-565.png',
                     label: 'Statistics',
                     onTap: () => _openScreen(const OMrAnalyticsScreen()),
                   ),
@@ -509,25 +638,15 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           const SizedBox(height: 12),
           SizedBox(
             height: 108,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ReferenceActionCard(
-                    icon: PhosphorIcons.scan,
-                    label: 'OMR Scanner',
-                    multiline: true,
-                    onTap: () => _openScreen(const OMrScannerScreen()),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(child: ReferenceCard(child: SizedBox.expand())),
-              ],
+            child: ReferenceActionCard(
+              icon: PhosphorIcons.scan,
+              label: 'OMR Scanner',
+              multiline: true,
+              onTap: () => _openScreen(const OMrScannerScreen()),
             ),
           ),
-          const SizedBox(height: 12),
-          _referenceBlankRow(),
-          const SizedBox(height: 12),
-          _referenceBlankRow(),
         ],
+          ),
+        ),
       );
 }
