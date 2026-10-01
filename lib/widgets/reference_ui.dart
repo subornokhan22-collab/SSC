@@ -285,7 +285,7 @@ class ReferenceBottomBar extends StatelessWidget {
                     icon: PhosphorIcons.house,
                     label: 'Home',
                     onTap: () {},
-                    asset: 'New UI 2.0/Picsart_26-10-02_00-40-10-782.png',
+                    asset: 'New UI 3.0/Home.png',
                   ),
                   _item(
                     icon: PhosphorIcons.gear,
