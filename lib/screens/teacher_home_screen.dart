@@ -315,7 +315,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           Expanded(
                             child: ReferenceActionCard(
                               icon: PhosphorIcons.wallet,
-                              asset: 'New UI 2.0/Picsart_26-10-02_00-37-44-626.png',
+                              asset:
+                                  'New UI 2.0/Picsart_26-10-02_00-37-44-626.png',
                               label: 'BUY PLANS',
                               onTap: () =>
                                   _openScreen(const SubscriptionScreen()),
