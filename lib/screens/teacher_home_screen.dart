@@ -188,6 +188,83 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     if (mounted) load();
   }
 
+  Widget _notificationCard(AppNotificationItem item) => ReferenceCard(
+        onTap: item.actionUrl == '/plans'
+            ? () => Navigator.pushNamed(context, AppRoutes.plans)
+            : null,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const ReferenceIcon(PhosphorIcons.bellRinging, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    item.message,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: ReferencePalette.mutedInk),
+                  ),
+                ],
+              ),
+            ),
+            if (item.actionUrl == '/plans')
+              const ReferenceIcon(PhosphorIcons.caretRight, size: 22),
+          ],
+        ),
+      );
+
+  Widget _prizeCard(PromotionPrize prize) => ReferenceCard(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            if (prize.imageUrl.startsWith('https://'))
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  prize.imageUrl,
+                  width: 44,
+                  height: 44,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      const ReferenceIcon(PhosphorIcons.trophy, size: 32),
+                ),
+              )
+            else
+              const ReferenceIcon(PhosphorIcons.trophy, size: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    prize.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  if ([prize.valueText, prize.description]
+                      .any((text) => text.trim().isNotEmpty))
+                    Text(
+                      [prize.valueText, prize.description]
+                          .where((text) => text.trim().isNotEmpty)
+                          .join(' · '),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: ReferencePalette.mutedInk),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+
   Future<void> _openScreen(Widget screen) async {
     await Navigator.push<void>(
       context,
