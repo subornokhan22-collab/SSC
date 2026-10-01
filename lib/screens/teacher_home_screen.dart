@@ -430,6 +430,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   child: ReferenceActionCard(
                     large: true,
                     icon: PhosphorIcons.filePlus,
+                    asset: 'New UI/IMG_1263.jpeg',
                     label: 'CREATE PAPER',
                     onTap: () => create(),
                   ),
