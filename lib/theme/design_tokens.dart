@@ -145,7 +145,7 @@ abstract final class AppRadii {
   static const segment = 13.0;
   static const control = 14.0;
   static const action = 15.0;
-  static const card = 20.0;
+  static const card = 16.0;
   static const dialog = 24.0;
   static const sheet = 26.0;
 }
