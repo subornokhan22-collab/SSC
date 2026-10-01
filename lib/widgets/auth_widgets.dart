@@ -133,13 +133,15 @@ class DeskWelcome extends StatelessWidget {
               style: TextStyle(color: AppTheme.muted, height: 1.6)),
           const SizedBox(height: 18),
           Wrap(spacing: 8, runSpacing: 8, children: [
-            feature(PhosphorIcons.fileTextDuotone, 'Paper builder', AppTheme.primary),
+            feature(PhosphorIcons.fileTextDuotone, 'Paper builder',
+                AppTheme.primary),
             feature(PhosphorIcons.scanDuotone, 'OMR review', AppColors.omr),
             feature(PhosphorIcons.magicWandDuotone, 'AI Tools', AppColors.ai),
           ]),
         ],
       );
-  Widget feature(PhosphorDuotoneIconData icon, String label, Color color) => Container(
+  Widget feature(PhosphorDuotoneIconData icon, String label, Color color) =>
+      Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
             color: color, borderRadius: BorderRadius.circular(20)),

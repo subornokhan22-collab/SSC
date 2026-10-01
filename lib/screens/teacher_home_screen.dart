@@ -477,10 +477,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 Card(
                     child: ListTile(
                   leading: const AppDuotoneIcon(
-                      PhosphorIcons.notePencilDuotone,
-                      color: AppTheme.primary,
-                      secondaryColor: AppColors.secondary,
-                    ),
+                    PhosphorIcons.notePencilDuotone,
+                    color: AppTheme.primary,
+                    secondaryColor: AppColors.secondary,
+                  ),
                   title: const Text('Continue your draft'),
                   subtitle: Text(
                       '${draftTitle!.isEmpty ? 'Untitled paper' : draftTitle!} · On this device',

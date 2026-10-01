@@ -228,11 +228,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(children: [
                       const AppDuotoneIcon(
-                          PhosphorIcons.floppyDiskDuotone,
-                          size: 14,
-                          color: AppTheme.muted,
-                          secondaryColor: AppColors.secondary,
-                        ),
+                        PhosphorIcons.floppyDiskDuotone,
+                        size: 14,
+                        color: AppTheme.muted,
+                        secondaryColor: AppColors.secondary,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                           child: Text(

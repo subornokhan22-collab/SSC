@@ -329,7 +329,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                 'Scan OMR',
                 () => _scanWith(p),
               ),
-              _iconBtn(PhosphorIcons.keyDuotone, 'View answers', () => _showKey(p)),
+              _iconBtn(
+                  PhosphorIcons.keyDuotone, 'View answers', () => _showKey(p)),
               if (p.pages > 0)
                 _iconBtn(
                   PhosphorIcons.fileTextDuotone,
