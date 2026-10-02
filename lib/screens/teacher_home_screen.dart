@@ -298,7 +298,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         children: [
           SizedBox(
             width: double.infinity,
-            child: Center(
+            child: Align(
+              alignment: Alignment.topRight,
               child: ConstrainedBox(
                 // The upper white tab is intentionally 200 logical pixels
                 // narrower than the former 360-pixel reference width.
