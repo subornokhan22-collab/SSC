@@ -282,7 +282,15 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: ReferencePalette.background,
-        body: SafeArea(child: home()),
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SizedBox(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: home(),
+            ),
+          ),
+        ),
         bottomNavigationBar: ReferenceBottomBar(onSettings: _openSettings),
       );
 

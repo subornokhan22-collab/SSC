@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutors_desk/screens/signin_screen.dart';
+import 'package:tutors_desk/screens/teacher_home_screen.dart';
 import 'package:tutors_desk/services/app_settings.dart';
 import 'package:tutors_desk/theme/app_theme.dart';
 import 'package:tutors_desk/widgets/alive_background.dart';
@@ -14,6 +15,7 @@ import 'package:tutors_desk/widgets/alive_tab_stack.dart';
 import 'package:tutors_desk/widgets/animations.dart';
 import 'package:tutors_desk/widgets/boot_sequence.dart';
 import 'package:tutors_desk/widgets/motion_policy.dart';
+import 'package:tutors_desk/widgets/reference_ui.dart';
 import 'package:tutors_desk/widgets/workflow_progress.dart';
 
 Widget host(Widget child, {bool systemReduce = false}) => MaterialApp(
@@ -127,6 +129,21 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(calls, 1);
+  });
+
+  testWidgets('teacher dashboard renders above its bottom navigation',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(home: const TeacherHomeScreen()),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text('CREATE PAPER'), findsOneWidget);
+    expect(find.text('Assistant'), findsOneWidget);
+    expect(find.text('My Papers'), findsOneWidget);
+    expect(find.byType(ReferenceBottomBar), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   test('dashboard content is given finite horizontal constraints', () {
