@@ -209,6 +209,7 @@ void main() {
         pubspec,
         contains('image_path: "New UI 4.0/NEW LOGO padded.png"'),
       );
+      expect(pubspec, contains('adaptive_icon_background: "#FFFFFF"'));
     });
   });
 }
