@@ -146,8 +146,24 @@ void main() {
       reason: 'dashboard build failed: $dashboardException',
     );
     if (find.text('CREATE PAPER').evaluate().isEmpty) {
-      final teacher = find.byType(TeacherHomeScreen).evaluate().single;
-      debugPrint(teacher.toStringDeep());
+      final safeArea = find.byType(SafeArea).evaluate().first;
+      final layout = find.byType(LayoutBuilder).evaluate().first;
+      final childTypes = <String>[];
+      safeArea.visitChildren(
+        (child) => childTypes.add(child.widget.runtimeType.toString()),
+      );
+      layout.visitChildren(
+        (child) => childTypes.add(child.widget.runtimeType.toString()),
+      );
+      debugPrint(
+        'DASHBOARD DIAGNOSTIC: '
+        'safeArea=${tester.getSize(find.byType(SafeArea))}, '
+        'layout=${tester.getSize(find.byType(LayoutBuilder))}, '
+        'columns=${find.byType(Column).evaluate().length}, '
+        'lists=${find.byType(ListView).evaluate().length}, '
+        'cards=${find.byType(ReferenceActionCard).evaluate().length}, '
+        'children=$childTypes',
+      );
     }
     expect(find.text('CREATE PAPER'), findsOneWidget);
     expect(find.text('Assistant'), findsOneWidget);
