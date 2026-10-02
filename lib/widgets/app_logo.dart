@@ -6,10 +6,10 @@ import '../theme/design_tokens.dart';
 /// The Tutor's Desk mark from the supplied New UI 4.0 artwork.
 ///
 /// Every place that shows the app mark uses the same square source, clipped
-/// inside a dark circular badge so the white logo remains visible on white
-/// loading and authentication screens.
+/// inside a light circular badge so the black and grey artwork remains visible
+/// on white loading and authentication screens.
 class AppLogo extends StatelessWidget {
-  static const assetPath = 'New UI 4.0/NEW LOGO.png';
+  static const assetPath = 'New UI 4.0/NEW LOGO padded.png';
 
   /// Overall diameter of the badge, including the ring.
   final double size;
@@ -68,7 +68,7 @@ class AppLogo extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.black,
+        color: Colors.white,
         border: Border.all(color: ring.withOpacity(.35), width: 1.4),
         boxShadow: [
           BoxShadow(

@@ -198,12 +198,17 @@ void main() {
       final logo = File('lib/widgets/app_logo.dart');
       expect(logo.existsSync(), isTrue);
       expect(
-        logo.readAsStringSync().contains('New UI 4.0/NEW LOGO.png'),
+        logo.readAsStringSync().contains(
+          "assetPath = 'New UI 4.0/NEW LOGO padded.png'",
+        ),
         isTrue,
       );
-      expect(File('New UI 4.0/NEW LOGO.png').existsSync(), isTrue);
+      expect(File('New UI 4.0/NEW LOGO padded.png').existsSync(), isTrue);
       final pubspec = File('pubspec.yaml').readAsStringSync();
-      expect(pubspec, contains('image_path: "New UI 4.0/NEW LOGO.png"'));
+      expect(
+        pubspec,
+        contains('image_path: "New UI 4.0/NEW LOGO padded.png"'),
+      );
     });
   });
 }
