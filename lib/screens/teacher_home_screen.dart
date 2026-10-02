@@ -624,7 +624,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     Expanded(
                       child: ReferenceActionCard(
                         icon: PhosphorIcons.clock,
-                            label: 'Recents',
+                        label: 'Recents',
                         onTap: _showRecents,
                       ),
                     ),
@@ -632,7 +632,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     Expanded(
                       child: ReferenceActionCard(
                         icon: PhosphorIcons.chartBar,
-                            label: 'Statistics',
+                        label: 'Statistics',
                         onTap: () => _openScreen(const OMrAnalyticsScreen()),
                       ),
                     ),
