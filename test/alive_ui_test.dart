@@ -157,8 +157,8 @@ void main() {
       );
       debugPrint(
         'DASHBOARD DIAGNOSTIC: '
-        'safeArea=${tester.getSize(find.byType(SafeArea))}, '
-        'layout=${tester.getSize(find.byType(LayoutBuilder))}, '
+        'safeArea=${tester.getSize(find.byType(SafeArea).first)}, '
+        'layout=${tester.getSize(find.byType(LayoutBuilder).first)}, '
         'columns=${find.byType(Column).evaluate().length}, '
         'lists=${find.byType(ListView).evaluate().length}, '
         'cards=${find.byType(ReferenceActionCard).evaluate().length}, '
