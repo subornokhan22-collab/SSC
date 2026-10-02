@@ -171,7 +171,7 @@ void main() {
       matches(
         RegExp(
           r'Widget build\(BuildContext context\) => SizedBox\(\s*'
-          r'width: double\.infinity,\s*child: Align',
+          r'width: double\.infinity,\s*height: 106,\s*child: Align',
         ),
       ),
     );
