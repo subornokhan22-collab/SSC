@@ -583,80 +583,80 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             constraints: const BoxConstraints(maxWidth: 360),
             child: Column(
               children: [
-              SizedBox(
-                height: 250,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: ReferenceActionCard(
-                        large: true,
-                        icon: PhosphorIcons.filePlus,
-                        label: 'CREATE PAPER',
-                        onTap: () => create(),
+                SizedBox(
+                  height: 250,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          large: true,
+                          icon: PhosphorIcons.filePlus,
+                          label: 'CREATE PAPER',
+                          onTap: () => create(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ReferenceActionCard(
-                              icon: PhosphorIcons.magicWand,
-                              asset: 'New UI 4.0/Ai assistant.png',
-                              label: 'Assistant',
-                              onTap: () => _openScreen(const AiToolsScreen()),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ReferenceActionCard(
+                                icon: PhosphorIcons.magicWand,
+                                asset: 'New UI 4.0/Ai assistant.png',
+                                label: 'Assistant',
+                                onTap: () => _openScreen(const AiToolsScreen()),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: ReferenceActionCard(
-                              icon: PhosphorIcons.bookmarkSimple,
-                              asset: 'New UI 4.0/Saved papers.png',
-                              label: 'My Papers',
-                              onTap: () =>
-                                  _openScreen(const PapersLibraryScreen()),
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: ReferenceActionCard(
+                                icon: PhosphorIcons.bookmarkSimple,
+                                asset: 'New UI 4.0/Saved papers.png',
+                                label: 'My Papers',
+                                onTap: () =>
+                                    _openScreen(const PapersLibraryScreen()),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 108,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ReferenceActionCard(
-                        icon: PhosphorIcons.clock,
-                        label: 'Recents',
-                        onTap: _showRecents,
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 108,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.clock,
+                          label: 'Recents',
+                          onTap: _showRecents,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ReferenceActionCard(
-                        icon: PhosphorIcons.chartBar,
-                        label: 'Statistics',
-                        onTap: () => _openScreen(const OMrAnalyticsScreen()),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.chartBar,
+                          label: 'Statistics',
+                          onTap: () => _openScreen(const OMrAnalyticsScreen()),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 108,
-                child: ReferenceActionCard(
-                  icon: PhosphorIcons.scan,
-                  label: 'OMR Scanner',
-                  multiline: true,
-                  onTap: () => _openScreen(const OMrScannerScreen()),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 108,
+                  child: ReferenceActionCard(
+                    icon: PhosphorIcons.scan,
+                    label: 'OMR Scanner',
+                    multiline: true,
+                    onTap: () => _openScreen(const OMrScannerScreen()),
+                  ),
                 ),
-              ),
               ],
             ),
           ),

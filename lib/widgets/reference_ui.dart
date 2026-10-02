@@ -273,41 +273,41 @@ class ReferenceBottomBar extends StatelessWidget {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Material(
-            color: ReferencePalette.surface,
-            elevation: 8,
-            shadowColor: Colors.black26,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
-            child: SafeArea(
-              top: false,
-              child: SizedBox(
-                height: 106,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 64),
-                  child: Row(
-                    children: [
-                      _item(
-                        icon: PhosphorIcons.house,
-                        label: 'Home',
-                        onTap: () {},
-                        asset: 'New UI 4.0/Home.png',
-                      ),
-                      _item(
-                        icon: PhosphorIcons.gear,
-                        label: 'Settings',
-                        onTap: onSettings,
-                        asset: 'New UI 4.0/Settings.png',
-                      ),
-                    ],
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Material(
+              color: ReferencePalette.surface,
+              elevation: 8,
+              shadowColor: Colors.black26,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  height: 106,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 64),
+                    child: Row(
+                      children: [
+                        _item(
+                          icon: PhosphorIcons.house,
+                          label: 'Home',
+                          onTap: () {},
+                          asset: 'New UI 4.0/Home.png',
+                        ),
+                        _item(
+                          icon: PhosphorIcons.gear,
+                          label: 'Settings',
+                          onTap: onSettings,
+                          asset: 'New UI 4.0/Settings.png',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
 }

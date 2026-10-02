@@ -97,8 +97,7 @@ class _BootSequenceState extends State<BootSequence> {
                           const Icon(PhosphorIcons.checkCircle,
                               color: Colors.black, size: 20)
                         else if (i == completed && !failed)
-                          const ActivityIndicator(
-                              size: 20, color: Colors.black)
+                          const ActivityIndicator(size: 20, color: Colors.black)
                         else
                           Icon(
                               i == completed && failed
