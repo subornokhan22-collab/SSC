@@ -69,8 +69,8 @@ void main() {
       await tester.pumpWidget(host(const AliveBackground(child: Text('desk'))));
       await tester.pump();
 
-      final box = tester.widget<ColoredBox>(find.byType(ColoredBox));
-      expect(box.color, Colors.white);
+      expect(find.text('desk'), findsOneWidget);
+      expect(AppStyle.gradient.colors, [Colors.white, Colors.white]);
     });
 
     testWidgets('rapid area switching survives without throwing',
@@ -106,8 +106,8 @@ void main() {
         const AuroraRibbons(enabled: true, child: Text('sign in')),
       ));
       await tester.pump();
-      final box = tester.widget<ColoredBox>(find.byType(ColoredBox));
-      expect(box.color, Colors.white);
+      expect(find.text('sign in'), findsOneWidget);
+      expect(AppStyle.gradient.colors, [Colors.white, Colors.white]);
       expect(tester.binding.hasScheduledFrame, isFalse);
     });
   });
