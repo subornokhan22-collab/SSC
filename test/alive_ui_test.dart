@@ -146,7 +146,8 @@ void main() {
       reason: 'dashboard build failed: $dashboardException',
     );
     if (find.text('CREATE PAPER').evaluate().isEmpty) {
-      debugDumpApp();
+      final teacher = find.byType(TeacherHomeScreen).evaluate().single;
+      debugPrint(teacher.toStringDeep());
     }
     expect(find.text('CREATE PAPER'), findsOneWidget);
     expect(find.text('Assistant'), findsOneWidget);
