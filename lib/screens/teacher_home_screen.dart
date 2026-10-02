@@ -300,7 +300,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             width: double.infinity,
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 360),
+                // The upper white tab is intentionally 200 logical pixels
+                // narrower than the former 360-pixel reference width.
+                constraints: const BoxConstraints(maxWidth: 160),
                 child: Container(
                   height: 138,
                   color: ReferencePalette.surface,
@@ -575,9 +577,15 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             child: const CircleAvatar(
               radius: 23,
               backgroundColor: Color(0xFFD7D6DB),
-              child: ReferenceImageIcon(
-                'New UI 4.0/Profile.png',
-                size: 38,
+              child: ClipOval(
+                child: SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: ReferenceImageIcon(
+                    'New UI 4.0/Profile.png',
+                    size: 38,
+                  ),
+                ),
               ),
             ),
           ),
@@ -592,7 +600,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             child: Column(
               children: [
                 SizedBox(
-                  height: 250,
+                  height: 180,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

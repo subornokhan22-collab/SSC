@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 
-/// The Tutor's Desk mark, drawn from the real launcher icon.
+/// The Tutor's Desk mark from the supplied New UI 4.0 artwork.
 ///
-/// Every place that used to show a generic graduation-cap glyph now shows
-/// this, so the brand is identical from the splash screen to the profile
-/// header. The asset is already square and circular, so it is simply clipped
-/// and given a soft ring.
+/// Every place that shows the app mark uses the same square source, clipped
+/// inside a dark circular badge so the white logo remains visible on white
+/// loading and authentication screens.
 class AppLogo extends StatelessWidget {
+  static const assetPath = 'New UI 4.0/NEW LOGO.png';
+
   /// Overall diameter of the badge, including the ring.
   final double size;
 
@@ -32,7 +33,7 @@ class AppLogo extends StatelessWidget {
     final ring = ringColor ?? AppTheme.primary;
     final image = ClipOval(
       child: Image.asset(
-        'assets/icon/icon.png',
+        assetPath,
         width: size,
         height: size,
         fit: BoxFit.cover,
@@ -45,7 +46,7 @@ class AppLogo extends StatelessWidget {
           alignment: Alignment.center,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            gradient: AppTheme.brandGradient,
+            color: Colors.black,
           ),
           child: Text(
             'TD',
@@ -67,7 +68,7 @@ class AppLogo extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.onColor,
+        color: Colors.black,
         border: Border.all(color: ring.withOpacity(.35), width: 1.4),
         boxShadow: [
           BoxShadow(

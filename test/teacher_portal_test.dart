@@ -194,11 +194,16 @@ void main() {
       );
     });
 
-    test('the logo widget points at the real launcher asset', () {
+    test('the logo widget points at the supplied New UI 4.0 artwork', () {
       final logo = File('lib/widgets/app_logo.dart');
       expect(logo.existsSync(), isTrue);
-      expect(logo.readAsStringSync().contains('assets/icon/icon.png'), isTrue);
-      expect(File('assets/icon/icon.png').existsSync(), isTrue);
+      expect(
+        logo.readAsStringSync().contains('New UI 4.0/NEW LOGO.png'),
+        isTrue,
+      );
+      expect(File('New UI 4.0/NEW LOGO.png').existsSync(), isTrue);
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(pubspec, contains('image_path: "New UI 4.0/NEW LOGO.png"'));
     });
   });
 }

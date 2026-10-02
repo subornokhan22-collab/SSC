@@ -274,7 +274,9 @@ class ReferenceBottomBar extends StatelessWidget {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 360),
+            // Match the upper tab: 200 logical pixels narrower than the
+            // former 360-pixel reference width.
+            constraints: const BoxConstraints(maxWidth: 160),
             child: Material(
               color: ReferencePalette.surface,
               elevation: 8,
@@ -287,7 +289,7 @@ class ReferenceBottomBar extends StatelessWidget {
                 child: SizedBox(
                   height: 106,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 64),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Row(
                       children: [
                         _item(
