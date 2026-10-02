@@ -560,8 +560,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   Widget _referenceHeader() => Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const Spacer(),
           IconButton(
             tooltip: 'Notifications',
             onPressed: _showNotifications,
