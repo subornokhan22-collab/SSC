@@ -177,7 +177,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                             flex: 2,
                             child: FilledButton.icon(
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Colors.black,
+                                backgroundColor: Colors.black,
                                 foregroundColor: Colors.white,
                               ),
                               onPressed: _crop,
