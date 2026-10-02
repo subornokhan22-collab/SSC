@@ -199,8 +199,8 @@ void main() {
       expect(logo.existsSync(), isTrue);
       expect(
         logo.readAsStringSync().contains(
-          "assetPath = 'New UI 4.0/NEW LOGO padded.png'",
-        ),
+              "assetPath = 'New UI 4.0/NEW LOGO padded.png'",
+            ),
         isTrue,
       );
       expect(File('New UI 4.0/NEW LOGO padded.png').existsSync(), isTrue);
