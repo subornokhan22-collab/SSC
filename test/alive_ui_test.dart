@@ -129,6 +129,30 @@ void main() {
     expect(calls, 1);
   });
 
+  test('dashboard content is given finite horizontal constraints', () {
+    final home = File('lib/screens/teacher_home_screen.dart').readAsStringSync();
+    final navigation = File('lib/widgets/reference_ui.dart').readAsStringSync();
+
+    expect(
+      home,
+      matches(
+        RegExp(
+          r'Widget _referenceDashboard\(\) => SizedBox\(\s*'
+          r'width: double\.infinity,\s*child: Center',
+        ),
+      ),
+    );
+    expect(
+      navigation,
+      matches(
+        RegExp(
+          r'Widget build\(BuildContext context\) => SizedBox\(\s*'
+          r'width: double\.infinity,\s*child: Align',
+        ),
+      ),
+    );
+  });
+
   testWidgets('startup paints before work and preserves task dependency order',
       (tester) async {
     final bank = Completer<void>();
