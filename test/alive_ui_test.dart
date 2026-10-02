@@ -154,6 +154,37 @@ void main() {
     );
   });
 
+  testWidgets('startup screen uses a white black and grey palette',
+      (tester) async {
+    final pending = Completer<void>();
+    await tester.pumpWidget(host(BootSequence(
+      steps: [BootStep('Bank', () => pending.future)],
+      child: const Text('Workspace ready'),
+    )));
+    await tester.pump();
+
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).last);
+    expect(scaffold.backgroundColor, Colors.white);
+    expect(
+      tester.widget<Text>(find.text('Opening your desk')).style?.color,
+      Colors.black,
+    );
+    expect(
+      tester.widget<ActivityIndicator>(find.byType(ActivityIndicator)).color,
+      Colors.black,
+    );
+    expect(
+      tester
+          .widget<Text>(
+            find.text('Your papers, tools and teaching workspace.'),
+          )
+          .style
+          ?.color,
+      Colors.grey,
+    );
+    pending.complete();
+  });
+
   testWidgets('startup paints before work and preserves task dependency order',
       (tester) async {
     final bank = Completer<void>();
