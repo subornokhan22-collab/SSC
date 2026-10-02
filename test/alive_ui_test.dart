@@ -130,7 +130,8 @@ void main() {
   });
 
   test('dashboard content is given finite horizontal constraints', () {
-    final home = File('lib/screens/teacher_home_screen.dart').readAsStringSync();
+    final home =
+        File('lib/screens/teacher_home_screen.dart').readAsStringSync();
     final navigation = File('lib/widgets/reference_ui.dart').readAsStringSync();
 
     expect(
