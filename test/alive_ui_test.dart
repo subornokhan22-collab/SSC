@@ -139,6 +139,12 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
+    final dashboardException = tester.takeException();
+    expect(
+      dashboardException,
+      isNull,
+      reason: 'dashboard build failed: $dashboardException',
+    );
     expect(find.text('CREATE PAPER'), findsOneWidget);
     expect(find.text('Assistant'), findsOneWidget);
     expect(find.text('My Papers'), findsOneWidget);
