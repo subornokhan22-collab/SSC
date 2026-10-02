@@ -270,6 +270,7 @@ class ReferenceBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
         width: double.infinity,
+        height: 106,
         child: Align(
           alignment: Alignment.bottomCenter,
           child: ConstrainedBox(
