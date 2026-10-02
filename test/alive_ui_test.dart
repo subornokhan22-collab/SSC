@@ -145,6 +145,9 @@ void main() {
       isNull,
       reason: 'dashboard build failed: $dashboardException',
     );
+    if (find.text('CREATE PAPER').evaluate().isEmpty) {
+      debugDumpApp();
+    }
     expect(find.text('CREATE PAPER'), findsOneWidget);
     expect(find.text('Assistant'), findsOneWidget);
     expect(find.text('My Papers'), findsOneWidget);
