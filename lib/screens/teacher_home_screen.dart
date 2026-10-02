@@ -7,6 +7,7 @@ import '../models/paper_draft.dart';
 import '../controllers/paper_controller.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/app_icon.dart';
+import '../widgets/app_logo.dart';
 import '../services/app_style.dart';
 import '../widgets/reference_ui.dart';
 import '../navigation/app_routes.dart';
@@ -298,19 +299,21 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         children: [
           SizedBox(
             width: double.infinity,
-            child: Align(
-              alignment: Alignment.topRight,
-              child: ConstrainedBox(
-                // The upper white tab is intentionally 200 logical pixels
-                // narrower than the former 360-pixel reference width.
-                constraints: const BoxConstraints(maxWidth: 160),
-                child: Container(
-                  height: 138,
-                  color: ReferencePalette.surface,
-                  padding: const EdgeInsets.fromLTRB(18, 0, 20, 22),
-                  alignment: Alignment.bottomRight,
-                  child: _referenceHeader(),
-                ),
+            child: Container(
+              height: 138,
+              color: ReferencePalette.surface,
+              padding: const EdgeInsets.fromLTRB(18, 18, 20, 22),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: _referenceBrand(),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: _referenceHeader(),
+                  ),
+                ],
               ),
             ),
           ),
@@ -559,6 +562,23 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
       ),
     );
   }
+
+  Widget _referenceBrand() => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AppLogo(size: 42),
+          const SizedBox(width: 10),
+          const Text(
+            "Tutor's Desk",
+            style: TextStyle(
+              color: ReferencePalette.ink,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: .1,
+            ),
+          ),
+        ],
+      );
 
   Widget _referenceHeader() => Row(
         mainAxisSize: MainAxisSize.min,

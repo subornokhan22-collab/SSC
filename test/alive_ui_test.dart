@@ -145,6 +145,7 @@ void main() {
       isNull,
       reason: 'dashboard build failed: $dashboardException',
     );
+    expect(find.text("Tutor's Desk"), findsOneWidget);
     expect(find.text('CREATE PAPER'), findsOneWidget);
     expect(find.text('Assistant'), findsOneWidget);
     expect(find.text('My Papers'), findsOneWidget);
