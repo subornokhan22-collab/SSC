@@ -82,17 +82,17 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0E17),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           'Crop photo',
           style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w900,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
         actions: [
@@ -102,7 +102,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
             child: const Text(
               'Use as is',
               style: TextStyle(
-                color: Color(0xFF7FE7DC),
+                color: Colors.black,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -151,7 +151,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 11.5,
-                          color: Colors.white70,
+                          color: Colors.black54,
                           shadows: [Shadow(color: Colors.black, blurRadius: 4)],
                         ),
                       ),
@@ -161,8 +161,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                           Expanded(
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.white70,
-                                side: const BorderSide(color: Colors.white24),
+                                foregroundColor: Colors.black54,
+                                side: const BorderSide(color: Colors.black26),
                               ),
                               onPressed: () {
                                 setState(() {
@@ -177,7 +177,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                             flex: 2,
                             child: FilledButton.icon(
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF3D5AFE),
+                                backgroundColor: const Colors.black,
                                 foregroundColor: Colors.white,
                               ),
                               onPressed: _crop,

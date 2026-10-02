@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import '../widgets/animations.dart';
 import 'design_tokens.dart';
 
-/// Tutor's Desk rich classroom system. Navy anchors the chrome, saturated
-/// accents identify actions, and white cards keep long reading sessions clear.
+/// Tutor's Desk neutral classroom system. Grey controls and borders sit on
+/// solid white pages so every screen has one consistent visual surface.
 class AppTheme {
   // ── Brand ────────────────────────────────────────────────────────
   static const Color onColor = AppColors.onColor;
@@ -63,10 +63,10 @@ class AppTheme {
     );
     return base.copyWith(
       colorScheme: scheme,
-      // Transparent so AliveBackground paints the chosen workspace paper;
-      // an opaque scaffold would hide it and waste the accent washes.
-      scaffoldBackgroundColor: Colors.transparent,
-      canvasColor: canvas,
+      // Keep every route on the same solid white page, including routes that
+      // are opened without the workspace backdrop wrapper.
+      scaffoldBackgroundColor: Colors.white,
+      canvasColor: Colors.white,
       splashColor: primary.withOpacity(.08),
       highlightColor: primary.withOpacity(.04),
       visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -255,14 +255,14 @@ class AppTheme {
           (s) => s.contains(WidgetState.selected) ? primary : Colors.white,
         ),
         checkColor: const WidgetStatePropertyAll(Colors.white),
-        side: const BorderSide(color: Color(0xFFB8C1D9), width: 1.5),
+        side: const BorderSide(color: Color(0xFFD0D0D0), width: 1.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
               ? primary
-              : const Color(0xFFAEB7CC),
+              : const Color(0xFFB5B5B5),
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)

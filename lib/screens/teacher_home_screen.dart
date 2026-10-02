@@ -288,12 +288,17 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
 
   Widget home() => Column(
         children: [
-          Container(
-            height: 138,
-            color: ReferencePalette.surface,
-            padding: const EdgeInsets.fromLTRB(18, 0, 20, 22),
-            alignment: Alignment.bottomRight,
-            child: _referenceHeader(),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Container(
+                height: 138,
+                color: ReferencePalette.surface,
+                padding: const EdgeInsets.fromLTRB(18, 0, 20, 22),
+                alignment: Alignment.bottomRight,
+                child: _referenceHeader(),
+              ),
+            ),
           ),
           Expanded(
             child: RefreshIndicator(
@@ -314,7 +319,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           height: 108,
                           child: ReferenceActionCard(
                             icon: PhosphorIcons.wallet,
-                            asset: 'New UI 3.0/Buy plan.png',
+                            asset: 'New UI 4.0/Buy plan.png',
                             label: 'BUY PLANS',
                             onTap: () =>
                                 _openScreen(const SubscriptionScreen()),
@@ -544,8 +549,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           IconButton(
             tooltip: 'Notifications',
             onPressed: _showNotifications,
-            icon: const ReferenceImageIcon(
-              'New UI 3.0/Notification.png',
+            icon: const ReferenceIcon(
+              PhosphorIcons.bellRinging,
               size: 27,
             ),
           ),
@@ -557,7 +562,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               radius: 23,
               backgroundColor: Color(0xFFD7D6DB),
               child: ReferenceImageIcon(
-                'New UI 3.0/Profile.png',
+                'New UI 4.0/Profile.png',
                 size: 38,
               ),
             ),
@@ -590,7 +595,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           Expanded(
                             child: ReferenceActionCard(
                               icon: PhosphorIcons.magicWand,
-                              asset: 'New UI 3.0/Assistant.png',
+                              asset: 'New UI 4.0/Ai assistant.png',
                               label: 'Assistant',
                               onTap: () => _openScreen(const AiToolsScreen()),
                             ),
@@ -599,7 +604,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           Expanded(
                             child: ReferenceActionCard(
                               icon: PhosphorIcons.bookmarkSimple,
-                              asset: 'New UI 3.0/Saved papers.png',
+                              asset: 'New UI 4.0/Saved papers.png',
                               label: 'My Papers',
                               onTap: () =>
                                   _openScreen(const PapersLibraryScreen()),
@@ -619,8 +624,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     Expanded(
                       child: ReferenceActionCard(
                         icon: PhosphorIcons.clock,
-                        asset: 'New UI 3.0/Recents.png',
-                        label: 'Recents',
+                            label: 'Recents',
                         onTap: _showRecents,
                       ),
                     ),
@@ -628,8 +632,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     Expanded(
                       child: ReferenceActionCard(
                         icon: PhosphorIcons.chartBar,
-                        asset: 'New UI 3.0/Analytics.png',
-                        label: 'Statistics',
+                            label: 'Statistics',
                         onTap: () => _openScreen(const OMrAnalyticsScreen()),
                       ),
                     ),

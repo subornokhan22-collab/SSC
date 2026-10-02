@@ -2,43 +2,48 @@ import 'package:flutter/material.dart';
 
 /// Tutor's Desk — a richer classroom palette.
 ///
-/// Deep navy anchors the workspace, indigo gives the product its identity,
-/// cyan keeps actions energetic, and coral adds a warm human touch. Long-form
-/// content remains on white cards for comfortable reading. OMR keeps its
-/// exact pink pair because the printed-sheet workflow depends on it.
+/// Neutral grey controls and borders keep every screen on a solid white page.
+/// Long-form content remains on white cards for comfortable reading. The
+/// printed OMR template retains its separate drop-out signature for scanning.
 abstract final class AppColors {
   static const onColor = Colors.white;
 
-  // Brand: midnight navy, electric indigo, cyan and a warm coral spark.
-  static const primary = Color(0xFF5B4BDB);
-  static const primaryDark = Color(0xFF312E81);
-  static const secondary = Color(0xFF0EA5E9);
-  static const accent = Color(0xFFF97360);
-  static const gradientEnd = Color(0xFF14B8A6);
-  static const light = Color(0xFFB9B2FF);
+  // Neutral grey brand scale for all app controls and accents.
+  static const primary = Color(0xFF5A5A5A);
+  static const primaryDark = Color(0xFF303030);
+  static const secondary = Color(0xFF777777);
+  static const accent = Color(0xFF666666);
+  static const gradientEnd = Color(0xFF909090);
+  static const light = Color(0xFFD9D9D9);
 
   // Calm reading surfaces with enough contrast against the saturated brand.
-  static const canvas = Color(0xFFECEBF1);
+  static const canvas = Color(0xFFFFFFFF);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceAlt = Color(0xFFF7F7F9);
+  static const surfaceAlt = Color(0xFFF2F2F2);
   static const heroSurface = Color(0xFFFFFFFF);
-  static const warmSurface = Color(0xFFFFF1E8);
-  static const cyanSurface = Color(0xFFE3F8FC);
-  static const border = Color(0xFFE2E1E7);
+  static const warmSurface = Color(0xFFF2F2F2);
+  static const cyanSurface = Color(0xFFF2F2F2);
+  static const border = Color(0xFFD6D6D6);
   static const text = Color(0xFF111111);
-  static const muted = Color(0xFF686870);
-  static const disabled = Color(0xFFC8C7CD);
-  static const progressTrack = Color(0xFFDAD9DF);
+  static const muted = Color(0xFF666666);
+  static const disabled = Color(0xFFBDBDBD);
+  static const progressTrack = Color(0xFFE0E0E0);
   static const appBar = Color(0xFFFFFFFF);
 
-  // OMR uses the requested pink pair exactly; never replace these with blue.
-  static const omr = Color(0xFFEB3897);
-  static const omrSoft = Color(0xFFFCDEEE);
+  // OMR screen controls are neutral black and grey, not pink.
+  static const omr = Color(0xFF000000);
+  static const omrSoft = Color(0xFFE5E5E5);
+
+  // Keep the printed template's drop-out signature separate from the screen
+  // palette; the scanner uses this pink hue to distinguish template ink from
+  // a student's neutral pen marks.
+  static const omrTemplateInk = Color(0xFFEB3897);
+  static const omrTemplateSoft = Color(0xFFFCDEEE);
 
   // Feature colors make the home dashboard easier to scan at a glance.
-  static const ai = Color(0xFF7C3AED);
-  static const writing = Color(0xFFF97360);
-  static const science = Color(0xFF0891B2);
+  static const ai = Color(0xFF555555);
+  static const writing = Color(0xFF707070);
+  static const science = Color(0xFF858585);
 
   // Real status semantics are more useful than painting every state blue.
   static const success = Color(0xFF16A34A);

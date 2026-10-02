@@ -7,7 +7,7 @@ import 'motion_policy.dart';
 
 /// Quiet white reference surface used for every panel in the tutor portal.
 /// The rounded border keeps long-form content readable over the shared
-/// lavender paper canvas without introducing a second visual language.
+/// solid white page without introducing a second visual language.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;

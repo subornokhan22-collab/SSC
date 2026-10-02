@@ -27,11 +27,13 @@ void main() {
 
   group('workspace colour language', () {
     test('OMR uses the requested sheet and scanner colours', () {
-      expect(AppColors.omr, const Color(0xFFEB3897));
-      expect(AppColors.omrSoft, const Color(0xFFFCDEEE));
+      expect(AppColors.omr, Colors.black);
+      expect(AppColors.omrSoft, const Color(0xFFE5E5E5));
+      expect(AppColors.omrTemplateInk, const Color(0xFFEB3897));
+      expect(AppColors.omrTemplateSoft, const Color(0xFFFCDEEE));
     });
 
-    test('workspace moods use feature colors except OMR pink', () {
+    test('workspace moods use neutral grey colors except black OMR', () {
       AppStyle.mood.value = WorkspaceMood.papers;
       expect(AppStyle.moodColor, AppColors.science);
       AppStyle.mood.value = WorkspaceMood.ai;
@@ -40,45 +42,35 @@ void main() {
       expect(AppStyle.moodColor, AppColors.writing);
       AppStyle.mood.value = WorkspaceMood.omr;
       expect(AppStyle.moodColor, AppColors.omr);
-      expect(AppColors.omr, const Color(0xFFEB3897));
-      expect(AppColors.omrSoft, const Color(0xFFFCDEEE));
+      expect(AppColors.omr, Colors.black);
+      expect(AppColors.omrSoft, const Color(0xFFE5E5E5));
+      expect(AppColors.omrTemplateInk, const Color(0xFFEB3897));
+      expect(AppColors.omrTemplateSoft, const Color(0xFFFCDEEE));
     });
 
     test('home follows the chosen workspace preset, not a fixed hue', () async {
       AppStyle.mood.value = WorkspaceMood.home;
       final daylight = AppStyle.moodColor;
-      await AppStyle.set(4); // Lavender
+      await AppStyle.set(4); // Light Grey
       expect(AppStyle.moodColor, AppColors.workspaceAccents[4]);
       expect(AppStyle.moodColor, daylight);
       expect(AppStyle.moodColor, AppColors.primary);
     });
 
-    test('the gradient token tracks the preset the teacher picked', () async {
-      expect(AppStyle.gradient.colors.length, 3);
-      expect(AppStyle.gradient.colors.first, isNot(AppStyle.bg));
-      await AppStyle.set(2); // Sky
-      expect(AppStyle.gradient.colors.length, 3);
-      expect(AppStyle.gradient.colors.last,
-          isNot(AppColors.workspaceBackgrounds[2]));
+    test('the backdrop gradient is solid white for every preset', () async {
+      expect(AppStyle.gradient.colors, [Colors.white, Colors.white]);
+      await AppStyle.set(2); // Cool Grey
+      expect(AppStyle.gradient.colors, [Colors.white, Colors.white]);
     });
   });
 
   group('backdrop', () {
-    testWidgets('paints the workspace gradient rather than a flat colour',
-        (tester) async {
+    testWidgets('paints a solid white workspace background', (tester) async {
       await tester.pumpWidget(host(const AliveBackground(child: Text('desk'))));
       await tester.pump();
 
-      final decorated = tester
-          .widgetList<DecoratedBox>(find.descendant(
-            of: find.byType(AliveBackground),
-            matching: find.byType(DecoratedBox),
-          ))
-          .where((w) => w.decoration is BoxDecoration)
-          .map((w) => (w.decoration as BoxDecoration).gradient)
-          .whereType<Gradient>();
-      expect(decorated, isNotEmpty,
-          reason: 'AppStyle.gradient must actually reach the screen');
+      final box = tester.widget<ColoredBox>(find.byType(ColoredBox));
+      expect(box.color, Colors.white);
     });
 
     testWidgets('rapid area switching survives without throwing',
@@ -101,7 +93,7 @@ void main() {
     });
   });
 
-  group('aurora is opt-in atmosphere, not a global background', () {
+  group('auth background remains solid white', () {
     testWidgets('does not schedule frames while disabled', (tester) async {
       await tester
           .pumpWidget(host(const AuroraRibbons(child: Text('sign in'))));
@@ -109,20 +101,14 @@ void main() {
       expect(tester.binding.hasScheduledFrame, isFalse);
     });
 
-    testWidgets('animates when enabled and stops for reduced motion',
-        (tester) async {
+    testWidgets('enabled ribbons remain static and white', (tester) async {
       await tester.pumpWidget(host(
         const AuroraRibbons(enabled: true, child: Text('sign in')),
-        systemReduce: true,
       ));
       await tester.pump();
-      expect(tester.binding.hasScheduledFrame, isFalse,
-          reason: 'reduced motion must leave a still wash, not a hidden cost');
-
-      await tester.pumpWidget(
-          host(const AuroraRibbons(enabled: true, child: Text('sign in'))));
-      await tester.pump();
-      expect(tester.binding.hasScheduledFrame, isTrue);
+      final box = tester.widget<ColoredBox>(find.byType(ColoredBox));
+      expect(box.color, Colors.white);
+      expect(tester.binding.hasScheduledFrame, isFalse);
     });
   });
 }

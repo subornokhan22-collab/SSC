@@ -105,7 +105,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
         body: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            // AI owns purple across the app: icon well, chip selection and the
+            // AI uses the shared neutral grey scale across the app: icon well, chip selection and the
             // activity indicator. The card underneath stays paper white.
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,

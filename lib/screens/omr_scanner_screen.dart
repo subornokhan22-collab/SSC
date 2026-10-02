@@ -659,7 +659,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
       // Registration corners — the circle is sized to the corner mark
       // itself, so it sits concentric on the printed square.
-      ringPaint.color = const Color(0xB33D5AFE);
+      ringPaint.color = const Color(0xB3000000);
       for (final c in cornerPts) {
         canvas.drawCircle(c * k, OMrGeometry.markSize / 2 * k + 2, ringPaint);
       }

@@ -10,8 +10,8 @@ void main() {
   test('existing theme API delegates to semantic palette tokens', () {
     expect(AppTheme.onColor, Colors.white);
     expect(AppColors.onColor, Colors.white);
-    expect(AppTheme.primary, const Color(0xFF5B4BDB));
-    expect(AppTheme.primaryDark, const Color(0xFF312E81));
+    expect(AppTheme.primary, const Color(0xFF5A5A5A));
+    expect(AppTheme.primaryDark, const Color(0xFF303030));
     expect(AppTheme.primary, AppColors.primary);
     expect(AppTheme.canvas, AppColors.canvas);
     expect(AppTheme.textDark, AppColors.text);
@@ -29,8 +29,8 @@ void main() {
       expect(AppStyle.colors, AppColors.workspaceBackgrounds);
       expect(AppStyle.accents, AppColors.workspaceAccents);
       expect(AppStyle.colors.length, 8);
-      expect(AppStyle.colors.first, const Color(0xFFECEBF1));
-      expect(AppStyle.accents.first, const Color(0xFF5B4BDB));
+      expect(AppStyle.colors.first, Colors.white);
+      expect(AppStyle.accents.first, const Color(0xFF5A5A5A));
       expect(AppStyle.labels.length, AppStyle.colors.length);
     },
   );

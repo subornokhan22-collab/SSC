@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
-/// Visual language used by the supplied home-screen reference: quiet lavender
-/// canvas, white cards, near-black icons, and generous rounded controls.
+/// Visual language used by the supplied home-screen reference: solid white
+/// canvas, white cards, black icons, and neutral grey borders.
 abstract final class ReferencePalette {
-  static const background = Color(0xFFECEBF1);
+  static const background = Colors.white;
   static const surface = Colors.white;
   static const ink = Color(0xFF050505);
-  static const mutedInk = Color(0xFF686870);
-  static const border = Color(0xFFE2E1E7);
+  static const mutedInk = Color(0xFF666666);
+  static const border = Color(0xFFD6D6D6);
 }
 
 /// Renders either a regular Phosphor icon or a duotone Phosphor icon without
@@ -268,31 +268,40 @@ class ReferenceBottomBar extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: ReferencePalette.surface,
-        elevation: 8,
-        shadowColor: Colors.black26,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 106,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 64),
-              child: Row(
-                children: [
-                  _item(
-                    icon: PhosphorIcons.house,
-                    label: 'Home',
-                    onTap: () {},
-                    asset: 'New UI 3.0/Home.png',
+  Widget build(BuildContext context) => Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Material(
+            color: ReferencePalette.surface,
+            elevation: 8,
+            shadowColor: Colors.black26,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
+            child: SafeArea(
+              top: false,
+              child: SizedBox(
+                height: 106,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 64),
+                  child: Row(
+                    children: [
+                      _item(
+                        icon: PhosphorIcons.house,
+                        label: 'Home',
+                        onTap: () {},
+                        asset: 'New UI 4.0/Home.png',
+                      ),
+                      _item(
+                        icon: PhosphorIcons.gear,
+                        label: 'Settings',
+                        onTap: onSettings,
+                        asset: 'New UI 4.0/Settings.png',
+                      ),
+                    ],
                   ),
-                  _item(
-                    icon: PhosphorIcons.gear,
-                    label: 'Settings',
-                    onTap: onSettings,
-                  ),
-                ],
+                ),
               ),
             ),
           ),

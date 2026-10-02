@@ -24,26 +24,26 @@ class AppStyle {
   /// Light backdrop colours (base layer behind the frosted cards).
   static const List<Color> colors = AppColors.workspaceBackgrounds;
 
-  /// Matching accent used for glows/edges of the selected preset.
+  /// Matching neutral accent used for controls and borders.
   static const List<Color> accents = AppColors.workspaceAccents;
 
   static const labels = [
-    'Daylight (default)',
-    'Mint Paper',
-    'Sky',
-    'Blush',
-    'Lavender',
-    'Sand',
-    'Seafoam',
-    'Slate Mist',
+    'White (default)',
+    'Soft Grey',
+    'Cool Grey',
+    'Warm Grey',
+    'Light Grey',
+    'Mid Grey',
+    'Stone Grey',
+    'Slate Grey',
   ];
 
   static Color get bg => colors[bgIndex.value % colors.length];
   static Color get accent => accents[bgIndex.value % accents.length];
   static String get label => labels[bgIndex.value % labels.length];
 
-  /// Area currently on screen. Not a notifier of its own: the backdrop listens
-  /// to this and animates towards [moodColor]. OMR keeps its pink identity.
+  /// Area currently on screen. Not a notifier of its own: screens use this
+  /// only for semantic neutral control colours.
   static final ValueNotifier<WorkspaceMood> mood =
       ValueNotifier<WorkspaceMood>(WorkspaceMood.home);
 
@@ -64,17 +64,11 @@ class AppStyle {
     }
   }
 
-  /// Soft but colourful gradient for screen backdrops. The middle remains
-  /// quiet enough for reading while the edges carry the current mood.
-  static LinearGradient get gradient => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Color.alphaBlend(moodColor.withOpacity(.10), bg),
-          Color.alphaBlend(AppColors.secondary.withOpacity(.035), bg),
-          Color.alphaBlend(moodColor.withOpacity(.13), bg),
-        ],
-      );
+  /// Every app screen uses one solid white backdrop. The mood value remains
+  /// available for semantic control colours, but never tints the page.
+  static const LinearGradient gradient = LinearGradient(
+    colors: [Colors.white, Colors.white],
+  );
 
   static Future<void> load() async {
     try {

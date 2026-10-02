@@ -280,14 +280,14 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   Widget build(BuildContext context) {
     final controller = _controller;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           fit: StackFit.expand,
           children: [
             if (_starting)
               const Center(
-                child: ActivityIndicator(size: 26, color: Colors.white70),
+                child: ActivityIndicator(size: 26, color: Colors.black),
               )
             else if (_error != null)
               Center(
@@ -299,7 +299,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                       const Icon(
                         PhosphorIcons.cameraSlash,
                         size: 44,
-                        color: Colors.white70,
+                        color: Colors.black,
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -308,7 +308,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                         style: const TextStyle(
                           fontSize: 14,
                           height: 1.4,
-                          color: Colors.white70,
+                          color: Colors.black,
                         ),
                       ),
                     ],

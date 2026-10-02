@@ -1946,11 +1946,11 @@ class PaperPdf {
   ///
   /// Keep the channel signature in sync with the scanner's drop-out test:
   /// `r > g + 25 && r > b + 10`.
-  static const Color omrTemplateInk = AppColors.omr;
+  static const Color omrTemplateInk = AppColors.omrTemplateInk;
 
   /// Requested pale pink tint for the template's soft bands (header/zebra) —
   /// a background, not answer ink, so it never enters the scanner's mask.
-  static const Color omrTemplateSoft = AppColors.omrSoft;
+  static const Color omrTemplateSoft = AppColors.omrTemplateSoft;
 
   /// Pre-filled code discs (subject code / set code) are printed "answers"
   /// the scanner must *read*, so they stay a neutral dark ink — NOT the
