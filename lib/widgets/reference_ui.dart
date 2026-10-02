@@ -268,9 +268,11 @@ class ReferenceBottomBar extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) => Align(
-        alignment: Alignment.bottomCenter,
-        child: ConstrainedBox(
+  Widget build(BuildContext context) => SizedBox(
+        width: double.infinity,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 360),
           child: Material(
             color: ReferencePalette.surface,
@@ -306,5 +308,6 @@ class ReferenceBottomBar extends StatelessWidget {
             ),
           ),
         ),
-      );
+      ),
+    );
 }

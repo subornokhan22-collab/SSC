@@ -82,6 +82,7 @@ class _BootSplash extends StatelessWidget {
   const _BootSplash();
   @override
   Widget build(BuildContext context) => const Scaffold(
+        backgroundColor: Colors.white,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -90,12 +91,19 @@ class _BootSplash extends StatelessWidget {
               SizedBox(height: 24),
               Text(
                 "Tutor’s Desk",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               SizedBox(height: 20),
-              ActivityIndicator(size: 24),
+              ActivityIndicator(size: 24, color: Colors.black),
               SizedBox(height: 12),
-              Text('Opening your workspace…'),
+              Text(
+                'Opening your workspace…',
+                style: TextStyle(color: Colors.grey),
+              ),
             ],
           ),
         ),

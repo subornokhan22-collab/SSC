@@ -288,15 +288,18 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
 
   Widget home() => Column(
         children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 360),
-              child: Container(
-                height: 138,
-                color: ReferencePalette.surface,
-                padding: const EdgeInsets.fromLTRB(18, 0, 20, 22),
-                alignment: Alignment.bottomRight,
-                child: _referenceHeader(),
+          SizedBox(
+            width: double.infinity,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: Container(
+                  height: 138,
+                  color: ReferencePalette.surface,
+                  padding: const EdgeInsets.fromLTRB(18, 0, 20, 22),
+                  alignment: Alignment.bottomRight,
+                  child: _referenceHeader(),
+                ),
               ),
             ),
           ),
@@ -312,17 +315,20 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   _referenceDashboard(),
                   if (!devicePro) ...[
                     const SizedBox(height: 12),
-                    Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 360),
-                        child: SizedBox(
-                          height: 108,
-                          child: ReferenceActionCard(
-                            icon: PhosphorIcons.wallet,
-                            asset: 'New UI 4.0/Buy plan.png',
-                            label: 'BUY PLANS',
-                            onTap: () =>
-                                _openScreen(const SubscriptionScreen()),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 360),
+                          child: SizedBox(
+                            height: 108,
+                            child: ReferenceActionCard(
+                              icon: PhosphorIcons.wallet,
+                              asset: 'New UI 4.0/Buy plan.png',
+                              label: 'BUY PLANS',
+                              onTap: () =>
+                                  _openScreen(const SubscriptionScreen()),
+                            ),
                           ),
                         ),
                       ),
@@ -570,11 +576,13 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         ],
       );
 
-  Widget _referenceDashboard() => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Column(
-            children: [
+  Widget _referenceDashboard() => SizedBox(
+        width: double.infinity,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Column(
+              children: [
               SizedBox(
                 height: 250,
                 child: Row(
@@ -649,7 +657,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   onTap: () => _openScreen(const OMrScannerScreen()),
                 ),
               ),
-            ],
+              ],
+            ),
           ),
         ),
       );

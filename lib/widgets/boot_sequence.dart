@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/local_diagnostics.dart';
-import '../theme/app_theme.dart';
 import 'app_logo.dart';
 import 'motion_policy.dart';
 
@@ -63,6 +62,7 @@ class _BootSequenceState extends State<BootSequence> {
   Widget build(BuildContext context) {
     if (completed == widget.steps.length) return widget.child;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -75,11 +75,19 @@ class _BootSequenceState extends State<BootSequence> {
                 children: [
                   const AppLogo(size: 64),
                   const SizedBox(height: 24),
-                  Text('Opening your desk',
-                      style: Theme.of(context).textTheme.headlineSmall),
+                  const Text(
+                    'Opening your desk',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  const Text('Your papers, tools and teaching workspace.',
-                      style: TextStyle(color: AppTheme.muted)),
+                  const Text(
+                    'Your papers, tools and teaching workspace.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                   const SizedBox(height: 24),
                   for (var i = 0; i < widget.steps.length; i++)
                     Padding(
@@ -87,18 +95,17 @@ class _BootSequenceState extends State<BootSequence> {
                       child: Row(children: [
                         if (i < completed)
                           const Icon(PhosphorIcons.checkCircle,
-                              color: AppTheme.success, size: 20)
+                              color: Colors.black, size: 20)
                         else if (i == completed && !failed)
-                          const ActivityIndicator(size: 20)
+                          const ActivityIndicator(
+                              size: 20, color: Colors.black)
                         else
                           Icon(
                               i == completed && failed
                                   ? PhosphorIcons.warningCircle
                                   : PhosphorIcons.circle,
                               size: 20,
-                              color: i == completed && failed
-                                  ? AppTheme.danger
-                                  : AppTheme.muted),
+                              color: Colors.grey),
                         const SizedBox(width: 12),
                         Expanded(child: Text(widget.steps[i].label)),
                       ]),
@@ -111,17 +118,20 @@ class _BootSequenceState extends State<BootSequence> {
                           failed
                               ? 'This step could not finish. Your saved data has not been cleared.'
                               : '${completed + 1} of ${widget.steps.length}: ${widget.steps[completed].label}',
-                          style: TextStyle(
-                              color:
-                                  failed ? AppTheme.danger : AppTheme.muted)),
+                          style: const TextStyle(color: Colors.grey)),
                     ),
                   ),
                   if (failed) ...[
                     const SizedBox(height: 12),
                     FilledButton.icon(
-                        onPressed: start,
-                        icon: const Icon(PhosphorIcons.arrowClockwise),
-                        label: const Text('Retry opening desk')),
+                      onPressed: start,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                      ),
+                      icon: const Icon(PhosphorIcons.arrowClockwise),
+                      label: const Text('Retry opening desk'),
+                    ),
                   ],
                 ],
               ),
