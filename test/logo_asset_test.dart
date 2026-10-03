@@ -9,6 +9,7 @@ void main() {
 
     expect(File('New UI 4.0/Logo 1.jpg').existsSync(), isTrue);
     expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
+    expect(File('New UI 4.0/NEW LOGO.png').existsSync(), isFalse);
     expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
     expect(
         pubspec, contains('adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"'));
