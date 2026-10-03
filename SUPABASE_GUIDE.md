@@ -32,7 +32,7 @@ You need:
 
 - A Supabase account and one project, or permission to use the existing project.
 - This repository checked out on the computer where you will deploy.
-- Node.js/npm for the CLI tests.
+- Node.js 20 or newer/npm for the CLI tests. The npm-based Supabase CLI does not run on older Node versions.
 - The Flutter app's actual redirect/deep-link scheme, if password reset and payment return-to-app are enabled.
 - A Gemini server key and Rupantor provider credentials only when you are ready to enable those services.
 
@@ -86,6 +86,15 @@ supabase login
 supabase projects list
 ```
 
+If `npx` says **“Need to install supabase”** and then shows **“npm error canceled”**, the install prompt was canceled. In Codespaces, run:
+
+```sh
+node --version
+npx --yes supabase@latest --version
+```
+
+The Node version must be 20 or newer. If it is older and `nvm` is available, run `nvm install 20`, then `nvm use 20`, and retry the command.
+
 ### If you are using only a phone
 
 The Supabase Dashboard in a phone browser is useful for settings and SQL queries, but it is not the Supabase CLI. The easiest phone-only method is **GitHub Codespaces**:
@@ -96,11 +105,11 @@ The Supabase Dashboard in a phone browser is useful for settings and SQL queries
 4. Start with:
 
    ```sh
-   npx supabase --version
-   npx supabase login
-   npx supabase init
-   npx supabase link --project-ref <project-ref>
-   npx supabase db push
+npx --yes supabase@latest --version
+npx --yes supabase@latest login
+npx --yes supabase@latest init
+npx --yes supabase@latest link --project-ref <project-ref>
+npx --yes supabase@latest db push
    ```
 
 Codespaces gives you a Linux terminal without putting the CLI or server secrets on the phone. It may require GitHub Codespaces availability for your account.
@@ -113,11 +122,11 @@ pkg install nodejs git
 cd "$HOME"
 git clone https://github.com/subornokhan22-collab/SSC.git
 cd SSC
-npx supabase --version
-npx supabase login
+npx --yes supabase@latest --version
+npx --yes supabase@latest login
 ```
 
-Some Android phones cannot run the Supabase CLI package because of their CPU/OS combination. If `npx supabase --version` fails, use Codespaces instead. Do not paste a service-role key into Termux commands or save it in the repository.
+Some Android phones cannot run the Supabase CLI package because of their CPU/OS combination. If `npx --yes supabase@latest --version` fails, use Codespaces instead. Do not paste a service-role key into Termux commands or save it in the repository.
 
 After logging in, continue with Step 2 below. Do not manually paste every migration into SQL Editor unless you have no CLI option; manual execution can lose migration history and order.
 
