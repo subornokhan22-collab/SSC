@@ -1,13 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
-import '../theme/app_theme.dart';
+import '../services/subscription_state.dart';
 import '../widgets/animations.dart';
 import 'auth_choice_screen.dart';
 import 'teacher_home_screen.dart';
 import '../widgets/app_logo.dart';
-import '../services/connectivity_service.dart';
-import '../widgets/offline_dialog.dart';
+import '../widgets/motion_policy.dart';
 
 /// App gatekeeper —
 ///  • not signed in → welcome / sign-in screen
@@ -38,33 +39,24 @@ class _RootGateState extends State<RootGate> {
   void initState() {
     super.initState();
     _boot = _prepare();
-    _checkOfflineOnOpen();
-  }
-
-  /// App-open page: if the app is opened with no internet, show the
-  /// red offline error once. The global banner covers the session
-  /// afterwards (and re-appears if the connection drops later).
-  Future<void> _checkOfflineOnOpen() async {
-    await ConnectivityService.instance.refresh();
-    if (!mounted || ConnectivityService.instance.isOnline) return;
-    await showOfflineDialog(context);
   }
 
   /// Warms up the profile/Pro state before showing the workspace so the
   /// home screen never flickers between logged-out and logged-in states.
   Future<bool> _prepare() async {
-    if (!AuthService.ready || !AuthService.isLoggedIn) return false;
-    Future<void> bootSync() async {
-      await AuthService.ensureTeacherProfile();
-      await AuthService.syncProFromServer();
+    if (!AuthService.ready || !AuthService.isLoggedIn) {
+      SubscriptionState.instance.clear();
+      return false;
     }
     try {
-      // Hard cap: a dead network must never hold the boot screen — the
-      // profile sync gets 8 seconds, then the app opens with local state.
-      await bootSync().timeout(const Duration(seconds: 8));
+      await AuthService.ensureTeacherProfile();
+      // Cached entitlements are loaded before the first workspace frame. The
+      // server refresh runs reactively and never holds the app at the splash.
+      await SubscriptionState.instance.initialize(refresh: false);
+      unawaited(SubscriptionState.instance.refresh());
     } catch (_) {
-      // Offline / slow network — the local Pro flag and banked questions
-      // still work.
+      // Offline / slow network — cached entitlement and banked questions still
+      // work, while the view model can refresh when connectivity returns.
     }
     return true;
   }
@@ -88,57 +80,35 @@ class _RootGateState extends State<RootGate> {
   }
 }
 
-/// Branded loading state shown while the session is restored.
+/// A short functional loading state, without a perpetual decorative animation.
 class _BootSplash extends StatelessWidget {
   const _BootSplash();
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 104,
-              height: 104,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const HaloRing(size: 104, strokeWidth: 2.6),
-                  Pulse(
-                    min: .92,
-                    max: 1.08,
-                    period: const Duration(milliseconds: 1400),
-                    child: const AppLogo(size: 72),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            FadeSlideIn(
-              delay: const Duration(milliseconds: 120),
-              child: const Text(
-                "Tutor's Desk",
+  Widget build(BuildContext context) => const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppLogo(size: 64),
+              SizedBox(height: 24),
+              Text(
+                "Tutor’s Desk",
                 style: TextStyle(
+                  color: Colors.black,
                   fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
-                  color: AppTheme.textDark,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ),
-            const SizedBox(height: 6),
-            FadeSlideIn(
-              delay: const Duration(milliseconds: 240),
-              child: const Text(
-                'Preparing your tutor workspace...',
-                style: TextStyle(fontSize: 12.8, color: AppTheme.muted),
+              SizedBox(height: 20),
+              ActivityIndicator(size: 24, color: Colors.black),
+              SizedBox(height: 12),
+              Text(
+                'Opening your workspace…',
+                style: TextStyle(color: Colors.grey),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

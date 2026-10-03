@@ -1,501 +1,719 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
-import '../services/app_style.dart';
-import '../services/auth_service.dart';
-import '../services/paper_license.dart';
-import '../theme/app_theme.dart';
-import '../widgets/animations.dart';
-import '../widgets/glass_card.dart';
-import 'ai_tutor_screen.dart';
-import 'custom_paper_screen.dart';
-import 'omr_scanner_screen.dart';
-import 'papers_library_screen.dart';
-import 'question_paper_screen.dart';
-import 'settings_screen.dart';
-import 'subscription_screen.dart';
+import '../controllers/paper_controller.dart';
+import '../theme/design_tokens.dart';
+import '../widgets/app_icon.dart';
 import '../widgets/app_logo.dart';
+import '../services/app_style.dart';
+import '../widgets/reference_ui.dart';
+import '../navigation/app_routes.dart';
+import '../services/auth_service.dart';
+import '../services/paper_library.dart';
+import '../services/promotion_service.dart';
+import '../services/subscription_guard.dart';
+import '../models/subscription_entitlement.dart';
+import '../services/subscription_state.dart';
+import '../theme/app_theme.dart';
+import 'ai_tools_screen.dart';
+import 'omr_scanner_screen.dart';
+import 'omr_analytics_screen.dart';
+import 'profile_screen.dart';
+import 'subscription_screen.dart';
+import 'papers_library_screen.dart';
 
-/// Tutor workspace — the single home of the app.
-/// Chapter papers, full model tests, custom MCQ + OMR, profile and Pro.
+/// Reference-style teacher dashboard. Product workflows remain real screens;
+/// the dashboard only changes the presentation and entry points.
 class TeacherHomeScreen extends StatefulWidget {
   const TeacherHomeScreen({super.key});
-
   @override
   State<TeacherHomeScreen> createState() => _TeacherHomeScreenState();
 }
 
 class _TeacherHomeScreenState extends State<TeacherHomeScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  late final AnimationController _ctrl;
-  String _name = '';
-  bool _isPro = false;
-  bool _loading = true;
-
+    with WidgetsBindingObserver {
+  String? draftTitle;
+  int loadGeneration = 0;
+  List<PaperEntry> recent = [];
+  PromotionFeed promotions = const PromotionFeed();
+  bool loading = true;
+  bool hasPaidSubscription = false;
+  String? error;
   @override
   void initState() {
     super.initState();
+    AppStyle.mood.value = WorkspaceMood.home;
     WidgetsBinding.instance.addObserver(this);
-    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 10))
-      ..repeat(reverse: true);
-    _load();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      if (!_ctrl.isAnimating) _ctrl.repeat(reverse: true);
-      _load();
-    } else {
-      _ctrl.stop();
-    }
-  }
-
-  Future<void> _load() async {
-    await AppStyle.load();
-    final pro = await PaperLicense.isPro();
-    String name = '';
-    if (AuthService.isLoggedIn) {
-      try {
-        final p = await AuthService.fetchProfile(refresh: false);
-        name = (p?['name'] ?? '').toString().trim();
-        if (name.isEmpty) name = AuthService.displayName;
-      } catch (_) {
-        name = AuthService.displayName;
-      }
-    }
-    if (!mounted) return;
-    setState(() {
-      _name = name;
-      _isPro = pro;
-      _loading = false;
-    });
+    load();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _ctrl.dispose();
     super.dispose();
   }
 
-  Future<void> _open(Widget screen, {bool fast = false}) async {
-    if (fast) {
-      // Snappier custom transition for lightweight screens (Settings) —
-      // built on PageRouteBuilder + SlideTransition (stable core APIs;
-      // the newer Flutter toolchain dropped the duration parameters from
-      // MaterialPageRoute).
-      await Navigator.push(
-        context,
-        PageRouteBuilder<void>(
-          transitionDuration: const Duration(milliseconds: 200),
-          reverseTransitionDuration: const Duration(milliseconds: 160),
-          pageBuilder: (context, _, __) => screen,
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) {
-            final curved = CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-              reverseCurve: Curves.easeInCubic,
-            );
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(curved),
-              child: child,
-            );
-          },
-        ),
-      );
-    } else {
-      await Navigator.push(
-          context, MaterialPageRoute(builder: (_) => screen));
-    }
-    if (mounted) _load(); // Pro state / name may have changed.
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _load,
-          color: AppTheme.primary,
-          backgroundColor: AppTheme.card,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics()),
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
-            children: Stagger.list([
-              _header(),
-              const SizedBox(height: 20),
-              _statusStrip(),
-              const SizedBox(height: 22),
-              const SectionTitle(
-                title: 'Build a paper',
-                subtitle: 'Pick a format — every option exports to PDF or print.',
-                icon: Icons.auto_awesome_rounded,
-              ),
-              _ActionTile(
-                icon: Icons.menu_book_rounded,
-                title: 'Chapter-wise Model Test',
-                subtitle: 'Build a paper from one chosen chapter',
-                accentIndex: 0,
-                onTap: () =>
-                    _open(const QuestionPaperScreen(initialMode: 'chapter')),
-              ),
-              _ActionTile(
-                icon: Icons.description_rounded,
-                title: 'Full Model Test Paper',
-                subtitle: 'Complete paper in the SSC-2027 board format',
-                accentIndex: 1,
-                onTap: () =>
-                    _open(const QuestionPaperScreen(initialMode: 'full')),
-              ),
-              _ActionTile(
-                icon: Icons.fact_check_rounded,
-                title: 'Custom MCQ Test + OMR',
-                subtitle: 'Chapter-wise counts • up to 100 • OMR sheet included',
-                accentIndex: 2,
-                onTap: () => _open(const CustomPaperScreen(mcqOnly: true)),
-              ),
-              _ActionTile(
-                icon: Icons.tune_rounded,
-                title: 'Customised Test Paper',
-                subtitle: 'Mix chapters with MCQ, short-answer and CQ counts',
-                accentIndex: 3,
-                onTap: () => _open(const CustomPaperScreen()),
-              ),
-              const SizedBox(height: 20),
-              _ActionTile(
-                icon: Icons.auto_awesome_rounded,
-                title: 'MiMi — AI Assistant',
-                subtitle:
-                    'Ask or attach a photo, audio or PDF — solved in board style',
-                accentIndex: 3,
-                onTap: () => _open(const AiTutorScreen()),
-              ),
-              const SizedBox(height: 20),
-              const SectionTitle(
-                title: 'Examine & archive',
-                subtitle: 'Scan filled OMR sheets; keep your own papers.',
-                icon: Icons.assessment_rounded,
-              ),
-              _ActionTile(
-                icon: Icons.qr_code_scanner_rounded,
-                title: 'OMR Scanner',
-                subtitle:
-                    'Photograph a filled sheet → auto marks + printable scorecard',
-                accentIndex: 5,
-                onTap: () => _open(const OMrScannerScreen()),
-              ),
-              _ActionTile(
-                icon: Icons.photo_library_rounded,
-                title: 'Question Papers',
-                subtitle:
-                    'Saved papers with answer keys + your uploaded photos/PDFs',
-                accentIndex: 2,
-                onTap: () => _open(const PapersLibraryScreen()),
-              ),
-              const SizedBox(height: 20),
-              const SectionTitle(
-                title: 'Account',
-                icon: Icons.manage_accounts_rounded,
-              ),
-              _ActionTile(
-                icon: Icons.settings_rounded,
-                title: 'Settings',
-                subtitle: 'Profile, OMR prefill switch, default paper name',
-                accentIndex: 4,
-                compact: true,
-                onTap: () => _open(const SettingsScreen(), fast: true),
-              ),
-              if (!_isPro)
-                _ActionTile(
-                  icon: Icons.workspace_premium_rounded,
-                  title: 'Upgrade to Pro',
-                  subtitle: 'Unlock full papers, no watermark, PDF & printing',
-                  accentIndex: 5,
-                  compact: true,
-                  highlighted: true,
-                  onTap: () => _open(const SubscriptionScreen()),
-                ),
-            ]),
-          ),
-        ),
-      ),
-    );
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) load();
   }
 
-  Widget _header() {
-    final greeting = _loading
-        ? 'Loading your workspace...'
-        : (_name.isEmpty ? 'Tutor workspace' : 'Welcome back, $_name');
-    return Row(
-      children: [
-        SizedBox(
-          width: 56,
-          height: 56,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const HaloRing(size: 56, strokeWidth: 1.8),
-              const AppLogo(size: 42),
-            ],
-          ),
-        ),
-        const SizedBox(width: 13),
-        Expanded(
+  Future<void> load() async {
+    final generation = ++loadGeneration;
+    final subscription = SubscriptionState.instance;
+    if (!subscription.initialized) {
+      await subscription.initialize(refresh: false);
+    }
+    final cachedSubscriptionActive = subscription.entitlement.isPaid;
+    unawaited(subscription.refresh());
+    String? storedTitle;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(PaperController.draftKey);
+      if (raw != null) {
+        final snapshot = jsonDecode(raw) as Map<String, dynamic>;
+        if (snapshot['version'] == 1 && snapshot['draft'] is Map) {
+          storedTitle = (snapshot['draft']['title'] as String?)?.trim();
+        }
+      }
+    } catch (_) {
+      // A corrupt draft must not hide the saved-paper library.
+    }
+    // Keep promotions independent from the local paper library. A slow or
+    // corrupt paper index must not prevent a newly signed-in account from
+    // receiving an active in-app offer popup.
+    List<PaperEntry> entries = const [];
+    var libraryFailed = false;
+    try {
+      entries = await PaperLibrary.loadEntries();
+    } catch (_) {
+      libraryFailed = true;
+    }
+    PromotionFeed feed = const PromotionFeed();
+    try {
+      feed = await PromotionService.load();
+    } catch (_) {
+      // Promotions are optional network content; they must never hide papers.
+    }
+    if (mounted && generation == loadGeneration) {
+      setState(() {
+        draftTitle = storedTitle;
+        recent = entries.take(8).toList();
+        promotions = feed;
+        hasPaidSubscription = cachedSubscriptionActive;
+        loading = false;
+        error = libraryFailed
+            ? 'Your papers could not be loaded. Pull down to retry.'
+            : null;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && generation == loadGeneration) _showOfferPopup(feed);
+      });
+    }
+  }
+
+  Future<void> _showOfferPopup(PromotionFeed feed) async {
+    // A promotion may be text-only. Requiring an image here made valid active
+    // ads silently disappear even though the database and RLS query succeeded.
+    if (feed.ads.isEmpty) return;
+    final ad = feed.ads.first;
+    final prefs = await SharedPreferences.getInstance();
+    // Seen state belongs to the account, not only the physical device: a new
+    // tutor signing in on a shared phone must still receive the offer.
+    final account = AuthService.userId ?? 'signed_out';
+    final safeAccount = account.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+    final seenKey = 'promotion_ad_seen_${safeAccount}_${ad.id}';
+    if (prefs.getBool(seenKey) == true || !mounted) return;
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
+    await prefs.setBool(seenKey, true);
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(ad.title),
+        content: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Tutor's Desk",
-                style: TextStyle(
-                  color: AppTheme.textDark,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .8,
-                ),
-              ),
-              const SizedBox(height: 2),
-              SoftSwitcher(
-                child: Text(
-                  greeting,
-                  key: ValueKey(greeting),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppTheme.muted, fontSize: 12.5),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        StatusPill(
-          label: _isPro ? 'PRO' : 'DEMO',
-          color: _isPro ? AppTheme.accent : AppTheme.muted,
-          icon: _isPro ? Icons.verified_rounded : Icons.lock_outline_rounded,
-        ),
-      ],
-    );
-  }
-
-  /// Slim gradient banner that reacts to the animation controller.
-  Widget _statusStrip() {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (context, child) {
-        final t = _ctrl.value;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              begin: Alignment(-1 + t * .6, -1),
-              end: Alignment(1 - t * .6, 1),
-              colors: [
-                Color.lerp(Colors.white, AppTheme.primary, .10)!,
-                Colors.white,
-                Color.lerp(Colors.white, AppTheme.secondary, .09)!,
-              ],
-            ),
-            border: Border.all(color: AppTheme.primary.withOpacity(.28)),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primary.withOpacity(.08 + .05 * t),
-                blurRadius: 22,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: child,
-        );
-      },
-      child: Row(
-        children: [
-          Pulse(
-            min: .94,
-            max: 1.06,
-            period: const Duration(milliseconds: 2000),
-            child: const Icon(Icons.bolt_rounded,
-                color: AppTheme.accent, size: 24),
-          ),
-          const SizedBox(width: 13),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SSC 2027 question bank',
-                  style: TextStyle(
-                    color: AppTheme.textDark,
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w800,
+              if (ad.imageUrl.startsWith('https://')) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.network(
+                    ad.imageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      height: 120,
+                      child: Center(child: Icon(PhosphorIcons.imageBroken)),
+                    ),
                   ),
                 ),
-                SizedBox(height: 3),
-                Text(
-                  'SSC board-style patterns across every subject, ready offline.',
-                  style: TextStyle(
-                      color: AppTheme.muted, fontSize: 11.8, height: 1.4),
-                ),
+                const SizedBox(height: 12),
               ],
-            ),
+              if (ad.body.trim().isNotEmpty)
+                Text(ad.body)
+              else
+                const Text('Open this offer to learn more.'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Later'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              if (ad.buttonUrl == '/plans' && mounted)
+                Navigator.pushNamed(context, AppRoutes.plans);
+            },
+            child: Text(ad.buttonText),
           ),
         ],
       ),
     );
   }
-}
 
-/// Tappable, animated card for each workspace action.
-class _ActionTile extends StatefulWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-  final int accentIndex;
-  final bool compact;
-  final bool highlighted;
+  Future<void> create({bool quick = false}) async {
+    await Navigator.pushNamed(
+      context,
+      AppRoutes.createPaper,
+      arguments: quick ? const CreatePaperArgs(quickStart: true) : null,
+    );
+    // The editor can move the workspace tint (English is pink); coming back to
+    // the desk restores the accent for the tab the teacher is actually on.
+    AppStyle.mood.value = WorkspaceMood.home;
+    if (mounted) load();
+  }
 
-  const _ActionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    required this.accentIndex,
-    this.compact = false,
-    this.highlighted = false,
-  });
-
-  @override
-  State<_ActionTile> createState() => _ActionTileState();
-}
-
-class _ActionTileState extends State<_ActionTile> {
-  bool _pressed = false;
-
-  /// Light [tint, ink] pairs — the tint fills the icon badge, the ink is the
-  /// saturated version used for borders, shadows and the pressed state.
-  static const _accents = <List<Color>>[
-    [Color(0xFF6B7BFF), Color(0xFF3D5AFE)],
-    [Color(0xFF4FB3F0), Color(0xFF0B84D9)],
-    [Color(0xFFF07EA0), Color(0xFFD3446E)],
-    [Color(0xFF4FC48A), Color(0xFF12A150)],
-    [Color(0xFF9B85EC), Color(0xFF7C5CE0)],
-    [Color(0xFF35C6BA), Color(0xFF00897B)],
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = _accents[widget.accentIndex % _accents.length];
-    final content = AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.all(widget.compact ? 14 : 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: widget.highlighted
-              ? [
-                  Color.lerp(Colors.white, AppTheme.primary, .10)!,
-                  Color.lerp(Colors.white, AppTheme.primary, .04)!,
-                ]
-              : [
-                  Color.lerp(Colors.white, colors[1], _pressed ? .10 : .035)!,
-                  Colors.white,
+  Widget _notificationCard(AppNotificationItem item) => ReferenceCard(
+        onTap: item.actionUrl == '/plans'
+            ? () => Navigator.pushNamed(context, AppRoutes.plans)
+            : null,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const ReferenceIcon(PhosphorIcons.bellRinging, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    item.message,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: ReferencePalette.mutedInk),
+                  ),
                 ],
-        ),
-        border: Border.all(
-          color: widget.highlighted
-              ? AppTheme.primary.withOpacity(.5)
-              : colors[1].withOpacity(_pressed ? .45 : .20),
-          width: widget.highlighted ? 1.4 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colors[1].withOpacity(_pressed ? .08 : .15),
-            blurRadius: _pressed ? 10 : 18,
-            offset: Offset(0, _pressed ? 3 : 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(widget.compact ? 10 : 12),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: colors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
               ),
-              boxShadow: [
-                BoxShadow(color: colors[1].withOpacity(.32), blurRadius: 14),
-              ],
             ),
-            child: Icon(widget.icon,
-                color: Colors.white, size: widget.compact ? 20 : 23),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    color: AppTheme.textDark,
-                    fontSize: widget.compact ? 14.5 : 15.5,
-                    fontWeight: FontWeight.w800,
-                    height: 1.25,
+            if (item.actionUrl == '/plans')
+              const ReferenceIcon(PhosphorIcons.caretRight, size: 22),
+          ],
+        ),
+      );
+
+  Widget _prizeCard(PromotionPrize prize) => ReferenceCard(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            if (prize.imageUrl.startsWith('https://'))
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  prize.imageUrl,
+                  width: 44,
+                  height: 44,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      const ReferenceIcon(PhosphorIcons.trophy, size: 32),
+                ),
+              )
+            else
+              const ReferenceIcon(PhosphorIcons.trophy, size: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    prize.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  widget.subtitle,
-                  style: const TextStyle(
-                      color: AppTheme.muted, fontSize: 11.8, height: 1.4),
-                ),
-              ],
+                  if ([prize.valueText, prize.description]
+                      .any((text) => text.trim().isNotEmpty))
+                    Text(
+                      [prize.valueText, prize.description]
+                          .where((text) => text.trim().isNotEmpty)
+                          .join(' · '),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: ReferencePalette.mutedInk),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Future<void> _openScreen(Widget screen) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    );
+    if (mounted) load();
+  }
+
+  Future<void> _openSettings() async {
+    await Navigator.pushNamed(context, AppRoutes.settings);
+    if (mounted) load();
+  }
+
+  Future<void> _openPremium(Widget screen, PremiumFeature feature) async {
+    if (!mounted) return;
+    if (await SubscriptionGuard.require(context, feature)) {
+      await _openScreen(screen);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: ReferencePalette.background,
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SizedBox(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: home(),
             ),
           ),
-          const SizedBox(width: 6),
-          AnimatedSlide(
-            duration: const Duration(milliseconds: 180),
-            offset: Offset(_pressed ? .22 : 0, 0),
-            child: Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: colors[0].withOpacity(.75)),
+        ),
+        bottomNavigationBar: ReferenceBottomBar(onSettings: _openSettings),
+      );
+
+  Widget home() => Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              height: 138,
+              color: ReferencePalette.surface,
+              padding: const EdgeInsets.fromLTRB(18, 18, 20, 22),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: _referenceBrand(),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: _referenceHeader(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              color: ReferencePalette.ink,
+              backgroundColor: ReferencePalette.surface,
+              onRefresh: load,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+                children: [
+                  _referenceDashboard(),
+                  if (!hasPaidSubscription) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 360),
+                          child: SizedBox(
+                            height: 108,
+                            child: ReferenceActionCard(
+                              icon: PhosphorIcons.wallet,
+                              asset: 'New UI 4.0/Buy plan.png',
+                              label: 'BUY PLANS',
+                              onTap: () =>
+                                  _openScreen(const SubscriptionScreen()),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (promotions.notifications.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    for (final item in promotions.notifications.take(3))
+                      _notificationCard(item),
+                  ],
+                  if (promotions.prizes.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    _prizeCard(promotions.prizes.first),
+                  ],
+                  if (error != null) ...[
+                    const SizedBox(height: 12),
+                    ReferenceCard(
+                      onTap: load,
+                      child: Row(
+                        children: [
+                          const ReferenceIcon(
+                            PhosphorIcons.warningCircle,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(error!)),
+                          const ReferenceIcon(
+                            PhosphorIcons.arrowClockwise,
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
         ],
-      ),
-    );
+      );
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: (_) => setState(() => _pressed = true),
-        onTapUp: (_) => setState(() => _pressed = false),
-        onTapCancel: () => setState(() => _pressed = false),
-        onTap: widget.onTap,
-        child: AnimatedScale(
-          scale: _pressed ? .975 : 1,
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOut,
-          child: widget.highlighted
-              ? ShineSweep(
-                  borderRadius: BorderRadius.circular(20),
-                  period: const Duration(milliseconds: 3400),
-                  child: content,
-                )
-              : content,
+  Future<void> _showRecents() async {
+    final saved = recent.take(8).toList(growable: false);
+    final draft = draftTitle?.trim();
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: ReferencePalette.surface,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * .72,
+            ),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const Text(
+                  'Recents',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                if (draft != null && draft.isNotEmpty) ...[
+                  ReferenceCard(
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      create();
+                    },
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        const ReferenceIcon(PhosphorIcons.pencilSimple,
+                            size: 28),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Unsaved paper',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              Text(
+                                draft,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: ReferencePalette.mutedInk,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const ReferenceIcon(
+                          PhosphorIcons.caretRight,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (saved.isNotEmpty) const SizedBox(height: 10),
+                ],
+                if (saved.isEmpty && (draft == null || draft.isEmpty))
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 28),
+                    child: Center(
+                      child: Text(
+                        'No saved or unsaved papers yet',
+                        style: TextStyle(color: ReferencePalette.mutedInk),
+                      ),
+                    ),
+                  )
+                else
+                  ...saved.map(
+                    (entry) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ReferenceCard(
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _openScreen(const PapersLibraryScreen());
+                        },
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            const ReferenceIcon(
+                              PhosphorIcons.fileText,
+                              size: 28,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    entry.title.isEmpty
+                                        ? 'Untitled paper'
+                                        : entry.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${entry.subject.isEmpty ? entry.kindLabel : entry.subject} · ${_recentDate(entry.createdAt)}',
+                                    style: const TextStyle(
+                                      color: ReferencePalette.mutedInk,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const ReferenceIcon(
+                              PhosphorIcons.caretRight,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
+
+  String _recentDate(DateTime date) {
+    final d = date.toLocal();
+    return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+  }
+
+  void _showNotifications() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: ReferencePalette.surface,
+      showDragHandle: true,
+      builder: (_) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+          children: [
+            const Text(
+              'Notifications',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 10),
+            if (promotions.notifications.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  children: [
+                    ReferenceIcon(PhosphorIcons.bellRinging, size: 34),
+                    SizedBox(height: 10),
+                    Text(
+                      'No new notifications',
+                      style: TextStyle(color: ReferencePalette.mutedInk),
+                    ),
+                  ],
+                ),
+              )
+            else
+              for (final item in promotions.notifications.take(5))
+                _notificationCard(item),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _referenceBrand() => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AppLogo(size: 42),
+          const SizedBox(width: 10),
+          const Text(
+            "Tutor's Desk",
+            style: TextStyle(
+              color: ReferencePalette.ink,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: .1,
+            ),
+          ),
+        ],
+      );
+
+  Widget _referenceHeader() => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: _showNotifications,
+            icon: const ReferenceIcon(
+              PhosphorIcons.bellRinging,
+              size: 27,
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => _openScreen(const ProfileScreen()),
+            borderRadius: BorderRadius.circular(32),
+            child: const CircleAvatar(
+              radius: 23,
+              backgroundColor: Color(0xFFD7D6DB),
+              child: ClipOval(
+                child: SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: ReferenceImageIcon(
+                    'New UI 4.0/Profile.png',
+                    size: 38,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget _referenceDashboard() => SizedBox(
+        width: double.infinity,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 180,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          large: true,
+                          icon: PhosphorIcons.filePlus,
+                          label: 'CREATE PAPER',
+                          onTap: () => create(),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ReferenceActionCard(
+                                icon: PhosphorIcons.magicWand,
+                                asset: 'New UI 4.0/Ai assistant.png',
+                                label: 'Assistant',
+                                onTap: () => _openPremium(
+                                  const AiToolsScreen(),
+                                  PremiumFeature.aiAssistant,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: ReferenceActionCard(
+                                icon: PhosphorIcons.bookmarkSimple,
+                                asset: 'New UI 4.0/Saved papers.png',
+                                label: 'My Papers',
+                                onTap: () =>
+                                    _openScreen(const PapersLibraryScreen()),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 108,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.clock,
+                          label: 'Recents',
+                          onTap: _showRecents,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.chartBar,
+                          label: 'Statistics',
+                          onTap: () => _openPremium(
+                            const OMrAnalyticsScreen(),
+                            PremiumFeature.omrScanner,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 108,
+                  child: ReferenceActionCard(
+                    icon: PhosphorIcons.scan,
+                    label: 'OMR Scanner',
+                    multiline: true,
+                    onTap: () => _openPremium(
+                      const OMrScannerScreen(),
+                      PremiumFeature.omrScanner,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 }

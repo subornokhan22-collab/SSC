@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_style.dart';
 import '../services/auth_service.dart';
-import '../services/paper_license.dart';
+import '../services/subscription_state.dart';
 import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import '../widgets/animations.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
 import 'subscription_screen.dart';
 
-/// Profile & settings — account details, workspace theme, Pro sync, sign out.
+/// Profile & settings — account details, workspace theme, subscription refresh, sign out.
 ///
 /// If Supabase is not configured the screen still works: it simply shows the
-/// offline notice and the local Pro state, and never throws.
+/// offline notice and the last verified subscription state, and never throws.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -31,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _msg;
   String? _err;
   Map<String, dynamic>? _profile;
-  bool _devicePro = false;
+  bool _hasPaidSubscription = false;
 
   @override
   void initState() {
@@ -47,23 +49,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refresh() async {
-    final pro = await PaperLicense.isPro();
+    final subscription = SubscriptionState.instance;
+    if (!subscription.initialized) {
+      await subscription.initialize(refresh: false);
+    }
+    final wasPaid = subscription.entitlement.isPaid;
     Map<String, dynamic>? p;
-    var synced = false;
     if (AuthService.isLoggedIn) {
       try {
         p = await AuthService.fetchProfile();
-        synced = await AuthService.syncProFromServer();
+        await subscription.refresh();
       } catch (_) {
-        // Offline — keep whatever is cached locally.
+        // Offline — use the last verified entitlement.
       }
     }
-    final proNow = synced ? true : pro;
     if (!mounted) return;
+    final paidNow = subscription.entitlement.isPaid;
     setState(() {
       _profile = p;
-      _devicePro = proNow;
-      if (synced && !pro) _msg = 'Pro is now active on this device.';
+      _hasPaidSubscription = paidNow;
+      if (paidNow && !wasPaid)
+        _msg = 'Your subscription is now active on this device.';
     });
   }
 
@@ -94,7 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _forgotPassword() async {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
-      setState(() => _err = 'Type your email first, then tap "Forgot password".');
+      setState(
+        () => _err = 'Type your email first, then tap "Forgot password".',
+      );
       return;
     }
     setState(() {
@@ -105,8 +113,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       await AuthService.sendPasswordReset(email);
       if (mounted) {
-        setState(() =>
-            _msg = 'Password reset link sent to $email — check your inbox.');
+        setState(
+          () => _msg = 'Password reset link sent to $email — check your inbox.',
+        );
       }
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
@@ -121,14 +130,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Sign out?'),
         content: const Text(
-            'Your papers stay on this device. You can sign back in any time with your email.'),
+          'Your papers stay on this device. You can sign back in any time with your email.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Sign out')),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Sign out'),
+          ),
         ],
       ),
     );
@@ -147,10 +159,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _editDetails() async {
-    final nameCtrl =
-        TextEditingController(text: _profile?['name']?.toString() ?? '');
+    final nameCtrl = TextEditingController(
+      text: _profile?['name']?.toString() ?? '',
+    );
     final phoneCtrl = TextEditingController(
-        text: _localPhone(_profile?['phone']?.toString() ?? ''));
+      text: _localPhone(_profile?['phone']?.toString() ?? ''),
+    );
     String? err;
 
     final saved = await showDialog<bool>(
@@ -166,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   labelText: 'Full name',
-                  prefixIcon: Icon(Icons.badge_outlined),
+                  prefixIcon: Icon(PhosphorIcons.identificationBadge),
                 ),
               ),
               const SizedBox(height: 14),
@@ -181,7 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   counterText: '',
                   prefixText: '+880  ',
                   prefixStyle: TextStyle(
-                      fontWeight: FontWeight.bold, color: AppTheme.accent),
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.accent,
+                  ),
                 ),
               ),
               if (err != null) ...[
@@ -192,15 +208,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
               onPressed: () {
                 if (nameCtrl.text.trim().length < 3) {
                   setD(() => err = 'Enter your full name (min 3 characters).');
                   return;
                 }
-                if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(phoneCtrl.text))) {
+                if (!RegExp(r'^1\d{9}$')
+                    .hasMatch(_localPhone(phoneCtrl.text))) {
                   setD(() => err = 'Enter a valid number, e.g. 1XXXXXXXXX.');
                   return;
                 }
@@ -236,19 +254,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     phoneCtrl.dispose();
   }
 
-  Future<void> _syncPro() async {
+  Future<void> _openPlans() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+    );
+    if (mounted) await _refresh();
+  }
+
+  Future<void> _refreshSubscription() async {
     setState(() {
       _busy = true;
       _err = null;
       _msg = null;
     });
     try {
-      final ok = await AuthService.syncProFromServer();
+      final ok = await AuthService.refreshSubscription();
       await _refresh();
       if (!mounted) return;
-      setState(() => _msg = ok
-          ? 'Pro is now active on this device.'
-          : 'Pro is not enabled for this account yet.');
+      setState(
+        () => _msg = ok
+            ? 'Subscription is now active on this device.'
+            : 'No active subscription was found for this account.',
+      );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
@@ -268,12 +296,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: AppTheme.card,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics()),
+              parent: BouncingScrollPhysics(),
+            ),
             padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
             children: Stagger.list([
               if (!AuthService.ready)
                 const EmptyState(
-                  icon: Icons.cloud_off_rounded,
+                  icon: PhosphorIcons.cloudSlash,
                   title: 'Sign-in is not configured',
                   message:
                       'Every offline feature keeps working — papers, PDFs and printing are all available.',
@@ -292,8 +321,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
               const SizedBox(height: 16),
               _proCard(),
-              const SizedBox(height: 16),
-              _themeCard(),
+              // Workspace presets remain stored for compatibility, but the
+              // shared rich theme makes the old picker redundant.
               const SizedBox(height: 20),
               const Center(
                 child: Text(
@@ -317,7 +346,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Sign in',
             subtitle:
                 'Use the email and password from your tutor account. Codes are only used when you first sign up.',
-            icon: Icons.login_rounded,
+            icon: PhosphorIcons.signIn,
           ),
           TextField(
             controller: _emailCtrl,
@@ -327,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: const InputDecoration(
               labelText: 'Email',
               hintText: 'you@example.com',
-              prefixIcon: Icon(Icons.alternate_email_rounded),
+              prefixIcon: Icon(PhosphorIcons.at),
             ),
           ),
           const SizedBox(height: 14),
@@ -339,13 +368,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onSubmitted: (_) => _busy ? null : _signIn(),
             decoration: InputDecoration(
               labelText: 'Password',
-              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              prefixIcon: const Icon(PhosphorIcons.lock),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(_obscure
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded),
+                icon: Icon(
+                  _obscure ? PhosphorIcons.eye : PhosphorIcons.eyeSlash,
+                ),
               ),
             ),
           ),
@@ -358,7 +387,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SubmitButton(
             busy: _busy,
-            icon: Icons.login_rounded,
+            icon: PhosphorIcons.signIn,
             label: 'Sign In',
             onPressed: _busy ? null : _signIn,
           ),
@@ -370,13 +399,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _accountCard() {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
-    // Expired subscription = not Pro (a past pro_until with is_pro left
-    // true means the plan ran out).
-    DateTime? pu;
-    final puRaw = _profile?['pro_until']?.toString() ?? '';
-    if (puRaw.isNotEmpty) pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
-    final serverPro = _profile?['is_pro'] == true &&
-        (pu == null || pu.isAfter(DateTime.now()));
+    final hasPaidSubscription = _hasPaidSubscription;
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
     final initial =
         (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
@@ -396,7 +419,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   gradient: AppTheme.brandGradient,
                   boxShadow: [
                     BoxShadow(
-                        color: AppTheme.primary.withOpacity(.3), blurRadius: 16),
+                      color: AppTheme.primary.withOpacity(.3),
+                      blurRadius: 16,
+                    ),
                   ],
                 ),
                 child: Text(
@@ -416,23 +441,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       name.isEmpty ? 'Tutor' : name,
                       style: const TextStyle(
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.textDark),
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textDark,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       AuthService.email ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:
-                          const TextStyle(fontSize: 12.5, color: AppTheme.muted),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppTheme.muted,
+                      ),
                     ),
                     if (phone.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(phone,
-                          style: const TextStyle(
-                              fontSize: 12.5, color: AppTheme.muted)),
+                      Text(
+                        phone,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          color: AppTheme.muted,
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -445,36 +477,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : _editDetails,
-                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  icon: const Icon(PhosphorIcons.pencilSimple, size: 18),
                   label: const Text('Edit details'),
                 ),
               ),
-              // Once Pro is active on the server there is nothing left to
-              // pull, so the button retires rather than sitting there
-              // inviting a pointless tap.
-              if (!serverPro) ...[
+              if (!hasPaidSubscription) ...[
                 const SizedBox(width: 10),
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _busy ? null : _syncPro,
-                    icon: _busy
-                        ? const SizedBox(
-                            width: 15,
-                            height: 15,
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.sync_rounded, size: 18),
-                    label: const Text('Sync Pro'),
+                  child: FilledButton.icon(
+                    onPressed: _busy ? null : _openPlans,
+                    icon: const Icon(PhosphorIcons.crown, size: 18),
+                    label: const Text('View plans'),
                   ),
                 ),
               ],
             ],
           ),
-          const SizedBox(height: 10),
+          if (!hasPaidSubscription)
+            Center(
+              child: TextButton.icon(
+                onPressed: _busy ? null : _refreshSubscription,
+                icon: _busy
+                    ? const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(PhosphorIcons.arrowsClockwise, size: 17),
+                label: const Text('Already paid? Refresh subscription'),
+              ),
+            ),
+          const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
             child: TextButton.icon(
               onPressed: _busy ? null : _logout,
-              icon: const Icon(Icons.logout_rounded, size: 18),
+              icon: const Icon(PhosphorIcons.signOut, size: 18),
               label: const Text('Sign out'),
               style: TextButton.styleFrom(foregroundColor: AppTheme.danger),
             ),
@@ -485,7 +523,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _proCard() {
-    if (_devicePro) {
+    if (_hasPaidSubscription) {
       return GlassCard(
         highlighted: true,
         child: Row(
@@ -494,23 +532,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
               min: .95,
               max: 1.07,
               period: const Duration(milliseconds: 2200),
-              child: const Icon(Icons.workspace_premium_rounded,
-                  color: AppTheme.accent, size: 30),
+              child: const Icon(
+                PhosphorIcons.crown,
+                color: AppTheme.accent,
+                size: 30,
+              ),
             ),
             const SizedBox(width: 14),
             const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Pro is active',
-                      style: TextStyle(
-                          color: AppTheme.accent,
-                          fontSize: 15.5,
-                          fontWeight: FontWeight.w800)),
+                  Text(
+                    'Pro is active',
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   SizedBox(height: 3),
-                  Text('Full papers, no watermark, PDF export and printing.',
-                      style: TextStyle(
-                          color: AppTheme.muted, fontSize: 12, height: 1.4)),
+                  Text(
+                    'Full papers, no watermark, PDF export and printing.',
+                    style: TextStyle(
+                      color: AppTheme.muted,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -521,106 +570,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GlassCard(
       highlighted: true,
       onTap: () async {
-        await Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+        );
         if (mounted) _refresh();
       },
       child: Row(
         children: [
-          const Icon(Icons.workspace_premium_rounded,
-              color: AppTheme.accent, size: 30),
+          const Icon(
+            PhosphorIcons.crown,
+            color: AppTheme.accent,
+            size: 30,
+          ),
           const SizedBox(width: 14),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Upgrade to Pro',
-                    style: TextStyle(
-                        color: AppTheme.accent,
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w800)),
-                SizedBox(height: 3),
-                Text('Unlock every question, remove the watermark, print freely.',
-                    style: TextStyle(
-                        color: AppTheme.muted, fontSize: 12, height: 1.4)),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right_rounded, color: AppTheme.accent),
-        ],
-      ),
-    );
-  }
-
-  Widget _themeCard() {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionTitle(
-            title: 'Workspace theme',
-            subtitle: 'Sets the backdrop tone across the whole app.',
-            icon: Icons.palette_outlined,
-          ),
-          ValueListenableBuilder<int>(
-            valueListenable: AppStyle.bgIndex,
-            builder: (context, index, _) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: List.generate(AppStyle.colors.length, (i) {
-                    final selected = i == index;
-                    return PressableScale(
-                      onTap: () => AppStyle.set(i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOut,
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppStyle.colors[i],
-                              Color.alphaBlend(
-                                  AppStyle.accents[i].withOpacity(.35),
-                                  AppStyle.colors[i]),
-                            ],
-                          ),
-                          border: Border.all(
-                            color: selected
-                                ? AppStyle.accents[i]
-                                : AppTheme.border,
-                            width: selected ? 2 : 1,
-                          ),
-                          boxShadow: selected
-                              ? [
-                                  BoxShadow(
-                                      color: AppStyle.accents[i].withOpacity(.28),
-                                      blurRadius: 14)
-                                ]
-                              : null,
-                        ),
-                        child: selected
-                            ? Icon(Icons.check_rounded,
-                                size: 20, color: AppStyle.accents[i])
-                            : null,
-                      ),
-                    );
-                  }),
-                ),
-                const SizedBox(height: 12),
                 Text(
-                  AppStyle.labels[index % AppStyle.labels.length],
-                  style: const TextStyle(fontSize: 12.5, color: AppTheme.muted),
+                  'Upgrade to Pro',
+                  style: TextStyle(
+                    color: AppTheme.accent,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Unlock every question, remove the watermark, print freely.',
+                  style: TextStyle(
+                    color: AppTheme.muted,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
           ),
+          const Icon(PhosphorIcons.caretRight, color: AppTheme.accent),
         ],
       ),
     );

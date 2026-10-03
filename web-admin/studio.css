@@ -1,0 +1,1281 @@
+:root {
+  /* Tutor's Desk admin palette; white is reserved for text on color. */
+  --white: #FFFFFF;
+  --pale: #E3F2FD;
+  --light: #90CAF9;
+  --blue: #2196F3;
+  --deep: #0D47A1;
+
+  /* Existing semantic names remain as compatibility tokens for the JS-rendered
+     screens, but every role now resolves to the blue palette above. */
+  --ink: var(--deep);
+  --muted: var(--deep);
+  --line: var(--light);
+  --paper: var(--pale);
+  --indigo: var(--deep);
+  --green: var(--blue);
+  --amber: var(--blue);
+  --red: var(--deep);
+  --surface: var(--pale);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font:
+    14px/1.55 Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a,
+input,
+select,
+textarea {
+  outline-offset: 4px;
+}
+button {
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 7px;
+  padding: 10px 15px;
+  transition: background 0.15s;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.primary {
+  background: var(--indigo);
+  color: var(--white);
+}
+.primary:hover {
+  background: var(--blue);
+}
+.ghost {
+  background: var(--pale);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.link {
+  color: var(--indigo);
+  background: none;
+  padding: 6px 0;
+}
+.danger {
+  color: var(--white);
+  background: var(--deep);
+}
+.small {
+  font-size: 12px;
+  padding: 6px 9px;
+}
+a {
+  color: var(--indigo);
+  text-decoration: none;
+}
+aside {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 224px;
+  background: var(--pale);
+  border-right: 1px solid var(--line);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 750;
+  color: var(--ink);
+}
+.brandmark {
+  background: var(--indigo);
+  color: var(--white);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+  font-weight: 800;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.brandmark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.brand small {
+  display: block;
+  letter-spacing: 2px;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 2px;
+}
+.nav-caption,
+.eyebrow {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 1.6px;
+}
+.nav-caption {
+  margin: 38px 12px 12px;
+}
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  color: var(--deep);
+  border-radius: 7px;
+  margin: 3px 0;
+  font-weight: 550;
+}
+nav a.active {
+  color: var(--white);
+  background: var(--blue);
+}
+nav a:hover {
+  background: var(--paper);
+}
+nav .icon {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+.ui-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.quick-icon {
+  display: inline-grid;
+  place-items: center;
+}
+.quick-icon .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+.arrow .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+.card-action {
+  display: block;
+  margin: 4px 0;
+  font-size: 16px;
+}
+.sidebar-bottom {
+  margin-top: auto;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 20px 8px 0;
+  border-top: 1px solid var(--line);
+}
+.sidebar-bottom button {
+  display: block;
+  margin-top: 10px;
+}
+.status-dot {
+  display: inline-block;
+  background: var(--green);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 7px;
+}
+.workspace {
+  margin-left: 224px;
+}
+header {
+  padding: 32px 40px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  background: var(--pale);
+}
+h1 {
+  font-size: 28px;
+  letter-spacing: -0.9px;
+  line-height: 1.2;
+  margin: 8px 0 0;
+}
+h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+p {
+  margin: 6px 0 15px;
+}
+.header-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+main {
+  max-width: 1500px;
+  margin: auto;
+  padding: 30px 40px 50px;
+}
+footer {
+  padding: 16px 40px;
+  color: var(--muted);
+  font-size: 11px;
+  border-top: 1px solid var(--line);
+}
+.badge {
+  display: inline-block;
+  border: 1px solid var(--line);
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.badge.published,
+.ok,
+.success {
+  color: var(--green);
+  background: var(--pale);
+}
+.badge.review,
+.warn {
+  color: var(--amber);
+  background: var(--light);
+}
+.badge.draft {
+  background: var(--light);
+}
+.intro {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  align-items: center;
+}
+.muted,
+small {
+  color: var(--muted);
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 17px;
+  margin-bottom: 28px;
+}
+.stat,
+.card {
+  background: var(--pale);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+}
+.stat span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.stat strong {
+  display: block;
+  font-size: 32px;
+  letter-spacing: -1px;
+  line-height: 1.4;
+}
+.stat small {
+  font-size: 11px;
+}
+.columns {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 24px;
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.card-head h2 {
+  margin: 0;
+}
+.quick {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--light);
+  color: var(--ink);
+}
+.quick:last-child {
+  border: 0;
+}
+.quick-icon {
+  background: var(--light);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 20px;
+  color: var(--indigo);
+}
+.quick p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.quick strong {
+  font-size: 13px;
+}
+.quick .arrow {
+  margin-left: auto;
+  color: var(--muted);
+}
+.banner {
+  background: var(--blue);
+  border: 1px solid var(--blue);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.banner h3,
+.banner p {
+  color: var(--white);
+}
+.banner p {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+.banner button {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+.filters label {
+  margin: 0;
+  min-width: 140px;
+  flex: 1;
+}
+.filters label.search {
+  flex: 2;
+  min-width: 220px;
+}
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--deep);
+  margin: 14px 0;
+}
+input,
+textarea,
+select {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--light);
+  border-radius: 7px;
+  padding: 10px;
+  background: var(--white);
+  color: var(--deep);
+  margin-top: 6px;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-size: 13px;
+  line-height: 1.6;
+}
+input[type="checkbox"] {
+  display: inline;
+  width: auto;
+  margin: 0 6px 0 0;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--blue);
+  border-color: var(--indigo);
+}
+.table-wrap {
+  overflow: auto;
+  background: var(--pale);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+th {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  background: var(--pale);
+  padding: 13px 16px;
+  white-space: nowrap;
+}
+td {
+  padding: 16px;
+  border-top: 1px solid var(--light);
+  vertical-align: top;
+  font-size: 13px;
+}
+td small {
+  display: block;
+  font-size: 11px;
+  margin-top: 5px;
+}
+td.actions {
+  min-width: 220px;
+}
+td.actions button {
+  margin: 2px;
+}
+.title-cell {
+  min-width: 220px;
+  max-width: 430px;
+}
+.truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 14px 0;
+}
+.empty {
+  padding: 50px;
+  text-align: center;
+  color: var(--muted);
+}
+#notice {
+  margin: 20px 40px 0;
+  padding: 13px 16px;
+  border: 1px solid var(--light);
+  border-radius: 7px;
+  background: var(--pale);
+}
+#notice.error,
+#editor-errors {
+  color: var(--deep);
+  background: var(--pale);
+}
+#editor-errors:empty {
+  display: none;
+}
+#editor-errors {
+  padding: 15px;
+  border-radius: 7px;
+  margin: 10px 0;
+}
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--pale), var(--light));
+}
+.login-card {
+  width: min(460px, 90vw);
+  padding: 40px;
+  background: var(--pale);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.login-card h1 {
+  font-size: 35px;
+  margin: 18px 0;
+}
+.login-card > p {
+  color: var(--muted);
+}
+.login-card .primary {
+  width: 100%;
+  margin: 14px 0;
+}
+.login-card small {
+  display: block;
+  margin-top: 20px;
+  font-size: 11px;
+}
+#login-error {
+  color: var(--red);
+}
+[hidden] {
+  display: none !important;
+}
+dialog {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: min(960px, 94vw);
+  max-height: 92vh;
+  padding: 26px;
+  color: var(--ink);
+  background: var(--surface);
+}
+dialog::backdrop {
+  background: var(--deep);
+  opacity: 0.53;
+}
+.dialog-head,
+.dialog-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+}
+.dialog-head {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+.dialog-head h2 {
+  margin: 4px 0;
+}
+.dialog-foot {
+  position: sticky;
+  bottom: -26px;
+  background: var(--pale);
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+}
+.wide {
+  grid-column: 1/-1;
+}
+.section-label {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 24px;
+}
+.paper {
+  background: var(--pale);
+  padding: 45px;
+  max-width: 794px;
+  margin: 20px auto;
+  border: 1px solid var(--line);
+  font:
+    15px/1.7 Georgia,
+    "Times New Roman",
+    serif;
+  color: var(--deep);
+}
+.paper h2,
+.paper h3 {
+  text-align: center;
+}
+.paper p {
+  white-space: pre-wrap;
+}
+.paper table {
+  margin: 12px 0;
+}
+.paper td {
+  border: 1px solid var(--light);
+}
+.paper img {
+  max-width: 100%;
+  max-height: 350px;
+}
+.paper .q {
+  margin: 22px 0;
+  break-inside: avoid;
+}
+.paper .options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.import-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.import-grid .card {
+  cursor: pointer;
+}
+.import-grid .card:hover {
+  border-color: var(--indigo);
+}
+.import-grid h2 {
+  margin-top: 14px;
+}
+.import-grid p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.issue {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.issue button {
+  margin-left: auto;
+}
+.figure-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.figure-grid img {
+  max-width: 100%;
+  max-height: 330px;
+  object-fit: contain;
+}
+.loading {
+  padding: 70px;
+  text-align: center;
+  color: var(--muted);
+}
+@media (max-width: 900px) {
+  aside {
+    width: 180px;
+    padding: 22px 12px;
+  }
+  .workspace {
+    margin-left: 180px;
+  }
+  main,
+  header {
+    padding: 24px;
+  }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .columns {
+    grid-template-columns: 1fr;
+  }
+  .import-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  aside {
+    position: static;
+    width: 100%;
+    padding: 14px;
+  }
+  .brandmark {
+    width: 32px;
+    height: 32px;
+  }
+  nav {
+    display: flex;
+    overflow: auto;
+  }
+  nav a {
+    white-space: nowrap;
+  }
+  .nav-caption,
+  .sidebar-bottom {
+    display: none;
+  }
+  .workspace {
+    margin: 0;
+  }
+  header {
+    padding: 18px;
+  }
+  h1 {
+    font-size: 23px;
+  }
+  main {
+    padding: 18px;
+  }
+  .stats {
+    gap: 10px;
+  }
+  .stat {
+    padding: 15px;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .header-actions .badge {
+    display: none;
+  }
+  .form-grid,
+  .import-grid,
+  .figure-grid {
+    grid-template-columns: 1fr;
+  }
+  .banner {
+    display: block;
+  }
+  .banner button {
+    margin-top: 12px;
+  }
+  .paper {
+    padding: 20px;
+  }
+  .login-card {
+    padding: 26px;
+  }
+}
+@media print {
+  body > * {
+    display: none !important;
+  }
+  dialog#preview[open] {
+    display: block !important;
+    position: static;
+    border: 0;
+    width: 100%;
+    max-height: none;
+    padding: 0;
+  }
+  #preview .dialog-head,
+  #preview > .muted {
+    display: none;
+  }
+  .paper {
+    border: 0;
+    margin: 0;
+    max-width: none;
+  }
+  .paper + .paper {
+    break-before: page;
+  }
+}
+
+.structured {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.structured > .form-grid {
+  border-bottom: 1px solid var(--line);
+  padding: 6px 0;
+}
+.structured button {
+  margin-top: 12px;
+}
+@font-face {
+  font-family: StudioBangla;
+  src: url("vendor/HindSiliguri-Regular.ttf") format("truetype");
+  font-display: swap;
+  unicode-range: U+0980-09FF;
+}
+body {
+  font-family:
+    StudioBangla,
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+.paper {
+  font-family: StudioBangla, Georgia, "Times New Roman", serif;
+}
+
+/* Direct English-paper upload */
+.paper-drop{display:block;padding:24px;border:2px dashed var(--blue);border-radius:10px;background:var(--pale);text-align:center;color:var(--indigo);font-size:15px;cursor:pointer}.paper-drop input{background:var(--pale);max-width:550px;margin:15px auto}.paper-drop span{display:block;font-size:12px;color:var(--muted)}
+#upload-status{padding:12px;margin:14px 0;border-radius:7px;white-space:pre-line}
+#upload-source{border:1px solid var(--line);padding:14px;background:var(--pale);border-radius:8px;margin:16px 0}
+#source-canvas{display:block;max-width:100%;height:auto;max-height:65vh;object-fit:contain;margin:auto;background:var(--pale);box-shadow:0 1px 8px var(--light)}
+#english-upload .dialog-foot{flex-wrap:wrap}#english-upload .form-grid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:600px){#english-upload .form-grid{grid-template-columns:1fr}#english-upload .dialog-foot button{width:100%}}
+
+/* ── Motion layer ──────────────────────────────────────────────────────────
+   Purposeful only: entrances stagger, state changes are visible, and nothing
+   loops forever. Every rule here is neutralised by reduced motion, either from
+   the operating system or from the studio's own switch (html[data-motion]). */
+:root {
+  --motion-fast: 140ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --purple: var(--blue);
+  --sky: var(--blue);
+}
+
+/* Cards and rows arrive instead of appearing. The stagger is capped so a long
+   table never takes longer to settle than to load. */
+#main .card,
+#main .stat,
+#main .banner {
+  animation: rise var(--motion-slow) var(--ease-out) backwards;
+}
+#main .stat:nth-child(2) { animation-delay: 60ms; }
+#main .stat:nth-child(3) { animation-delay: 120ms; }
+#main .stat:nth-child(4) { animation-delay: 180ms; }
+#main .card:nth-of-type(2) { animation-delay: 90ms; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* State changes you can see: badges cross-fade their colour, the notice slides
+   in, and a pressed button gives way. */
+.badge,
+#notice,
+#mode,
+button,
+a.quick {
+  transition:
+    background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out),
+    opacity var(--motion-base) var(--ease-out);
+}
+#notice:not([hidden]) {
+  animation: notice-in var(--motion-base) var(--ease-out);
+}
+@keyframes notice-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+button:active:not(:disabled) { transform: translateY(1px); }
+
+/* A working button says so without a spinner on every pixel. */
+button[data-task-lock] {
+  cursor: progress;
+  box-shadow: inset 0 0 0 999px var(--light);
+}
+
+/* Skeleton: the shape of the content that is coming, not a blank pane. */
+.skeleton {
+  display: grid;
+  gap: 16px;
+}
+.skeleton-row {
+  height: 74px;
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, var(--light) 25%, var(--pale) 37%, var(--light) 63%) 0 0 / 400% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+.skeleton-row.short { height: 46px; }
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+/* Drop zone: the whole card answers, and it answers differently while a file
+   is actually hovering. */
+.dropzone {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  transition:
+    border-color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.dropzone[data-drag="over"] {
+  border-color: var(--indigo);
+  background: var(--pale);
+}
+.dropzone[data-drag="over"]::after {
+  content: "Release to load this file";
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--indigo);
+}
+
+/* Off-canvas navigation on narrow screens. */
+#menu-toggle { display: none; }
+body[data-drawer="open"] .scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--deep);
+  opacity: 0.34;
+  z-index: 20;
+}
+@media (max-width: 900px) {
+  #menu-toggle { display: inline-flex; }
+  body > #app > aside {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(84vw, 320px);
+    z-index: 30;
+    transform: translateX(-102%);
+    transition: transform var(--motion-base) var(--ease-out);
+  }
+  body[data-drawer="open"] > #app > aside { transform: none; }
+}
+
+/* Command centre. */
+dialog#command {
+  width: min(560px, 92vw);
+  padding: 0;
+  border-radius: 14px;
+}
+dialog#command::backdrop { background: var(--deep); opacity: 0.38; }
+#command-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 16px;
+  font-size: 15px;
+}
+#command-list { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow: auto; }
+#command-list button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+#command-list button[aria-selected="true"] { background: var(--pale); color: var(--indigo); }
+#command-list small { color: var(--muted); }
+kbd {
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font: 11px ui-monospace, monospace;
+  color: var(--muted);
+}
+
+/* Reduced motion — the system's request and the studio's own switch both stop
+   the same things, so the setting is real rather than decorative. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+}
+html[data-motion="reduced"] .skeleton-row { animation: none; }
+
+/* ── Content list imagery ──────────────────────────────────────────────
+   Thumbnails sit beside the question text in the bank, the dashboard's recent
+   list and the All Questions screen. A stored figure whose URL is not https
+   cannot be rendered — the database rejects it — so it is flagged instead of
+   quietly looking like a missing file. */
+.title-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.title-cell > div {
+  min-width: 0;
+}
+.thumb {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--pale);
+}
+.thumb-broken,
+.thumb-none {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--muted);
+}
+.thumb-broken {
+  border-color: var(--deep);
+  color: var(--deep);
+  background: var(--light);
+}
+.thumb-none {
+  border-style: dashed;
+}
+.badge.bank {
+  background: var(--pale);
+  color: var(--deep);
+}
+.badge.teacher {
+  background: var(--pale);
+  color: var(--deep);
+}
+
+/* Attaching an image to a question: the picture sits next to the field that
+   controls it, so a bad URL is visible before the record is ever saved. */
+.figure-attach {
+  display: block;
+}
+.figure-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.figure-preview {
+  width: 150px;
+  height: 150px;
+  flex: none;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--pale);
+}
+.figure-controls {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.figure-controls input[type="file"] {
+  width: 100%;
+}
+
+/* Subject → chapter selection ribbon used by both entry routes. */
+.subject-chapter-ribbon {
+  grid-column: 1 / -1;
+  border: 1px solid var(--light);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 8px 0 16px;
+  background: linear-gradient(135deg, var(--pale), var(--light));
+}
+.ribbon-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--indigo);
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.ribbon-heading span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ribbon-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.5fr);
+  gap: 12px;
+  align-items: end;
+}
+.ribbon-controls label {
+  margin: 10px 0 0;
+}
+.chapter-chip-row {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 4px 2px 2px;
+  margin-top: 4px;
+  scrollbar-width: thin;
+}
+.chapter-chip {
+  flex: 0 0 auto;
+  border: 1px solid var(--light);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: var(--pale);
+  color: var(--deep);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.chapter-chip:hover,
+.chapter-chip.active {
+  border-color: var(--indigo);
+  background: var(--indigo);
+  color: var(--white);
+}
+.chapter-chip:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 1px;
+}
+
+/* Offers & Promotions workspace. */
+.promotion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.promotion-card {
+  min-width: 0;
+}
+.promotion-card > .card-head {
+  align-items: center;
+}
+.promotion-card > .card-head .badge {
+  flex: none;
+}
+.promotion-form {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 14px 0 18px;
+  background: var(--light);
+}
+.promotion-form h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.promotion-form .form-grid {
+  gap: 0 12px;
+}
+.promotion-form label {
+  margin: 8px 0;
+}
+.promotion-form label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.promotion-form label.check input {
+  width: auto;
+  margin: 0;
+}
+.promotion-list {
+  display: grid;
+  gap: 8px;
+}
+.promotion-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--light);
+  border-radius: 9px;
+  background: var(--pale);
+}
+.promotion-row-copy {
+  min-width: 0;
+  flex: 1;
+}
+.promotion-row-copy strong,
+.promotion-row-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.promotion-row-copy small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.promo-icon,
+.promo-thumb,
+.promo-no-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 8px;
+  background: var(--light);
+  color: var(--indigo);
+  font-weight: 700;
+}
+.promo-thumb {
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+.promo-no-image {
+  border: 1px dashed var(--light);
+  color: var(--muted);
+  background: var(--pale);
+  font-size: 10px;
+}
+.promotion-row .actions {
+  display: flex;
+  gap: 5px;
+  flex: none;
+}
+.promo-ad-preview {
+  min-height: 150px;
+  border: 1px dashed var(--light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--pale);
+}
+.promo-ad-preview img {
+  display: block;
+  width: 100%;
+  max-height: 230px;
+  object-fit: cover;
+}
+
+/* Corrections to the pre-existing narrow-screen layout: those rules assumed the
+   sidebar stays in flow (a 180px reserved margin and a horizontal nav strip),
+   which is wrong once it is an off-canvas drawer. Later in the file, so they win. */
+@media (max-width: 900px) {
+  .workspace { margin-left: 0; }
+  body > #app > aside { width: min(84vw, 320px); padding: 22px 16px; }
+  body > #app > aside nav { display: block; overflow: visible; }
+  body > #app > aside nav a { flex: none; }
+  .ribbon-heading { display: block; }
+  .ribbon-heading span { display: block; margin-top: 4px; }
+  .ribbon-controls { grid-template-columns: 1fr; gap: 0; }
+  .promotion-grid { grid-template-columns: 1fr; }
+  .promotion-row { align-items: flex-start; flex-wrap: wrap; }
+  .promotion-row .actions { width: 100%; }
+}

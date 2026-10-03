@@ -15,6 +15,7 @@ dependencies:
   printing: ^5.15.0
   # ইমেইল OTP লগইন + Pro সিংক (Supabase)
   supabase_flutter: ^2.8.0
+  phosphoricons_flutter: ^1.0.0  # unified Phosphor icon family
   # OMR scanner + question-paper library
   image_picker: ^1.1.0   # OMR শিট / প্রশ্নপত্রের ফটো (ক্যামেরা + গ্যালারি)
   camera: ^0.12.1        # লাইভ ক্যামেরা প্রিভিউ + গাইডেড অটো-ক্যাপচার (OMR)
@@ -23,8 +24,7 @@ dependencies:
   file_picker: ^8.1.2    # PDF প্রশ্নপত্র যোগ করা
   path_provider: ^2.1.0  # যোগ করা প্রশ্নপত্র ডিভাইসে সংরক্ষণ
   connectivity_plus: ^6.0.0  # offline detection (global banner + app-open error)
-  url_launcher: ^6.3.0       # open the bKash checkout (bKash payment flow)
-  flutter_markdown_plus: ^1.0.12   # render Boktul's markdown answers
+  url_launcher: ^6.3.0       # open the Rupantor Pay checkout
 
 dev_dependencies:
   flutter_test:
@@ -34,8 +34,24 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: DejaVu Sans
+      fonts:
+        - asset: assets/fonts/DejaVuSans.ttf
+        - asset: assets/fonts/DejaVuSans-Bold.ttf
+          weight: 700
+    - family: Hind Siliguri
+      fonts:
+        - asset: assets/fonts/HindSiliguri-Regular.ttf
+    - family: Noto Serif Bengali
+      fonts:
+        - asset: assets/fonts/NotoSerifBengali-Regular.ttf
+        - asset: assets/fonts/NotoSerifBengali-Bold.ttf
+          weight: 700
   assets:
     - assets/questions/
+    - New UI 4.0/
+    - New UI 4.0/Logo 2.png
     - assets/question_figures/
     - assets/icon/icon.png
     - assets/icon/icon_foreground.png
@@ -47,7 +63,8 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  image_path: "assets/icon/icon.png"
-  adaptive_icon_background: "#0A2A80"
-  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  # Logo 1: use the supplied app-icon artwork at its full supplied canvas.
+  # Do not pass it as an adaptive foreground: Android's adaptive safe-zone
+  # crop zooms the artwork and changes the supplied proportions.
+  image_path: "New UI 4.0/Logo 1.jpg"
   min_sdk_android: 21
