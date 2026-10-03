@@ -44,7 +44,13 @@ void main() {
         SubscriptionEntitlement.defaults(SubscriptionPlan.professional),
       ),
     );
-    for (final subject in ['math', 'physics', 'english', 'biology', 'chemistry']) {
+    for (final subject in [
+      'math',
+      'physics',
+      'english',
+      'biology',
+      'chemistry'
+    ]) {
       expect((await service.select(subject)).allowed, isTrue);
     }
 
