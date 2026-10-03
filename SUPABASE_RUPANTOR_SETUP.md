@@ -15,9 +15,9 @@ supabase functions deploy rupantor-pay
 supabase functions deploy mimi
 ```
 
-`20261004000001_free_plan_hardening.sql` adds the server-controlled Free allowance (3 papers per Asia/Dhaka calendar month), controlled subject-selection RPCs, effective-entitlement resolution, AI burst/event tables, and promotion audience migration. Run it only after `20261003000001_subscription_architecture.sql`.
+`20261004000001_free_plan_hardening.sql` adds the server-controlled Free allowance (2 Model Test papers per Asia/Dhaka calendar month), controlled subject-selection RPCs, effective-entitlement resolution, AI burst/event tables, and promotion audience migration. Run it only after `20261003000001_subscription_architecture.sql`.
 
-Before enabling payments, verify in the Supabase SQL editor that `subscription_plans` has the intended live prices, that `free.monthly_paper_limit = 3`, and that `basic`, `pro`, and `professional` have a null monthly paper limit. Never edit those values from Flutter.
+Before enabling payments, verify in the Supabase SQL editor that `subscription_plans` has the intended live prices, that `free.monthly_paper_limit = 2`, and that `basic`, `pro`, and `professional` have a null monthly paper limit. Never edit those values from Flutter.
 
 ## Rupantor Pay Edge Function
 

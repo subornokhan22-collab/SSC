@@ -62,7 +62,9 @@ test("client roles cannot write subscription or AI authority tables", () => {
 
 test("Free usage and subjects are database-authoritative", () => {
   assert.match(hardening, /monthly_paper_limit/);
-  assert.match(hardening, /monthly_paper_limit = 3/);
+  assert.match(hardening, /monthly_paper_limit = 2/);
+  assert.match(hardening, /format_locked/);
+  assert.match(hardening, /p_exam_format/);
   assert.match(hardening, /paper_usage_monthly/);
   assert.match(hardening, /p_mcq_count > 100/);
   assert.match(hardening, /p_saq_count > 30/);

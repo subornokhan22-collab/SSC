@@ -10,6 +10,7 @@ import '../controllers/paper_controller.dart';
 import '../data/questions_data.dart';
 import '../data/english_paper_sync.dart';
 import '../models/paper_draft.dart';
+import '../models/subscription_entitlement.dart';
 import '../models/subject_info.dart';
 import '../theme/design_tokens.dart';
 import '../services/app_style.dart';
@@ -93,6 +94,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         restore: widget.initialSubjectId == null &&
             widget.initialFormat == null &&
             widget.initialQuestions == null);
+    if (_isFreePlan && c.draft.format != PaperFormat.board) {
+      // A stale deep link or restored draft must not bypass the Free format
+      // policy. Model Test is the only Free generation format.
+      c.update(c.draft.copyWith(format: PaperFormat.board, chapters: []));
+    }
     if (!mounted) return;
     // Register the opening subject too. Otherwise a Free teacher could open
     // one subject by default and then select a second subject without the
@@ -111,6 +117,97 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       if (await c.generate() && mounted) step = 3;
     }
     sync();
+  }
+
+  bool get _isFreePlan =>
+      SubscriptionState.instance.plan == SubscriptionPlan.free;
+
+  bool _subjectIsLocked(String id) {
+    final entitlement = SubscriptionState.instance.entitlement;
+    final selected = subjectEntitlements.selectedSubjects;
+    return !selected.contains(id) &&
+        entitlement.subjectLimit != null &&
+        selected.length >= entitlement.subjectLimit!;
+  }
+
+  bool _formatIsLocked(PaperFormat format) =>
+      (_isFreePlan && format != PaperFormat.board) ||
+      (PaperComposer.isEnglish(c.draft.subjectId) &&
+          format != PaperFormat.board);
+
+  Future<void> _explainLockedFormat(PaperFormat format) async {
+    final englishLocked =
+        PaperComposer.isEnglish(c.draft.subjectId) && format != PaperFormat.board;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Format locked'),
+        content: Text(englishLocked
+            ? 'English papers use the synced board format. Choose a board or year above.'
+            : 'Free includes exactly two Model Test generations per Asia/Dhaka month. Upgrade to unlock Chapter Test, Custom Paper, and MCQ + OMR.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('OK'),
+          ),
+          if (!englishLocked)
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SubscriptionScreen(),
+                  ),
+                );
+              },
+              child: const Text('Upgrade Plan'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _selectFormat(PaperFormat format) {
+    if (_formatIsLocked(format)) {
+      unawaited(_explainLockedFormat(format));
+      return;
+    }
+    c.update(c.draft.copyWith(format: format, chapters: []));
+  }
+
+  Widget _subjectTile(SubjectInfo subject) {
+    final locked = _subjectIsLocked(subject.id);
+    final english = PaperComposer.isEnglish(subject.id);
+    return Card(
+      child: RadioListTile<String>(
+        // Locked subjects remain tappable so the upgrade explanation is
+        // available instead of making the plan boundary look like missing data.
+        secondary: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              english ? PhosphorIcons.notePencil : PhosphorIcons.bookOpen,
+              color: english ? AppColors.writing : AppTheme.muted,
+            ),
+            if (locked) ...[
+              const SizedBox(width: 8),
+              const Icon(PhosphorIcons.lock, size: 18),
+            ],
+          ],
+        ),
+        activeColor: english ? AppColors.writing : AppTheme.primary,
+        title: Text(subject.name),
+        subtitle: Text(
+          '${subject.bengaliName} · ${english ? 'English sections available' : '${allMCQs.where((q) => q.subjectId == subject.id).length} MCQs in bank'}${locked ? ' · Upgrade to unlock' : ''}',
+        ),
+        value: subject.id,
+        groupValue: c.draft.subjectId,
+        onChanged: (id) {
+          if (id != null) _selectSubject(id);
+        },
+      ),
+    );
   }
 
   Future<void> _selectSubject(String id) async {
@@ -419,30 +516,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         const SizedBox(height: 8),
         const Text('Choose a subject. Questions come from the saved SSC bank.'),
         const SizedBox(height: 20),
-        for (final s in allSubjects)
-          Card(
-              child: RadioListTile<String>(
-                  // English is pink everywhere it appears, so the writing
-                  // subjects are recognisable before the title is read.
-                  secondary: Icon(
-                    PaperComposer.isEnglish(s.id)
-                        ? PhosphorIcons.notePencil
-                        : PhosphorIcons.bookOpen,
-                    color: PaperComposer.isEnglish(s.id)
-                        ? AppColors.writing
-                        : AppTheme.muted,
-                  ),
-                  activeColor: PaperComposer.isEnglish(s.id)
-                      ? AppColors.writing
-                      : AppTheme.primary,
-                  title: Text(s.name),
-                  subtitle: Text(
-                      '${s.bengaliName} · ${PaperComposer.isEnglish(s.id) ? 'English sections available' : '${allMCQs.where((q) => q.subjectId == s.id).length} MCQs in bank'}'),
-                  value: s.id,
-                  groupValue: c.draft.subjectId,
-                  onChanged: (id) {
-                    if (id != null) _selectSubject(id);
-                  })),
+        for (final s in allSubjects) _subjectTile(s),
       ]);
   Widget chapterStep() =>
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -474,27 +548,34 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         for (final f in PaperFormat.values)
           Card(
               child: RadioListTile<PaperFormat>(
+                  secondary: _formatIsLocked(f)
+                      ? const Icon(PhosphorIcons.lock)
+                      : null,
                   title: Text(switch (f) {
-                    PaperFormat.board => 'Board Pattern',
+                    PaperFormat.board => _isFreePlan ? 'Model Test' : 'Board Pattern',
                     PaperFormat.chapter => 'Chapter Test',
                     PaperFormat.custom => 'Custom Paper',
                     PaperFormat.mcq => 'MCQ + OMR'
                   }),
                   subtitle: Text(switch (f) {
-                    PaperFormat.board =>
-                      'Complete subject pattern from the saved bank',
-                    PaperFormat.chapter => 'Practice selected chapters',
-                    PaperFormat.custom =>
-                      'Choose your MCQ, short-answer and CQ counts',
-                    PaperFormat.mcq => 'Up to 100 MCQs with an answer key'
+                    PaperFormat.board => _isFreePlan
+                        ? 'Two server-verified generations per Asia/Dhaka month'
+                        : 'Complete subject pattern from the saved bank',
+                    PaperFormat.chapter => _formatIsLocked(f)
+                        ? 'Upgrade to unlock this format'
+                        : 'Practice selected chapters',
+                    PaperFormat.custom => _formatIsLocked(f)
+                        ? 'Upgrade to unlock this format'
+                        : 'Choose your MCQ, short-answer and CQ counts',
+                    PaperFormat.mcq => _formatIsLocked(f)
+                        ? 'Upgrade to unlock this format'
+                        : 'Up to 100 MCQs with an answer key'
                   }),
                   value: f,
                   groupValue: c.draft.format,
-                  onChanged: PaperComposer.isEnglish(c.draft.subjectId) &&
-                          f != PaperFormat.board
-                      ? null
-                      : (f) =>
-                          c.update(c.draft.copyWith(format: f, chapters: [])))),
+                  onChanged: (next) {
+                    if (next != null) _selectFormat(next);
+                  })),
         if (c.draft.format != PaperFormat.board) ...[
           const SizedBox(height: 20),
           Text('Chapters', style: Theme.of(context).textTheme.titleLarge),
@@ -546,7 +627,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Text(PaperComposer.isEnglish(c.draft.subjectId)
                       ? 'Reading / Grammar and Writing • 100 marks. Complete English sections are preserved.'
-                      : 'Board Pattern uses the subject’s fixed distribution and answer counts. Practical marks are not part of the printed theory paper.')))
+                      : '${_isFreePlan ? 'Model Test' : 'Board Pattern'} uses the subject’s fixed distribution and answer counts. Practical marks are not part of the printed theory paper.')))
         else ...[
           count('MCQ', c.draft.mcqCount, 100,
               (v) => c.update(c.draft.copyWith(mcqCount: v))),

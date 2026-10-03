@@ -7,7 +7,7 @@ void main() {
     test('Free is limited, watermarked, and has no premium access', () {
       final e = SubscriptionEntitlement.defaults(SubscriptionPlan.free);
       expect(e.subjectLimit, SubscriptionEntitlement.freeSubjectLimit);
-      expect(e.monthlyPaperLimit, 3);
+      expect(e.monthlyPaperLimit, 2);
       expect(e.noWatermark, isFalse);
       expect(e.aiDailyLimit, 0);
       expect(e.canUse(PremiumFeature.aiAssistant), isFalse);

@@ -9,14 +9,14 @@ alter table public.subscription_plans
     check (monthly_paper_limit is null or monthly_paper_limit > 0);
 
 update public.subscription_plans
-set monthly_paper_limit = case when id = 'free' then 3 else null end,
+set monthly_paper_limit = case when id = 'free' then 2 else null end,
     updated_at = now();
 
 alter table public.subscription_plans
   drop constraint if exists subscription_plans_monthly_limit_matrix;
 alter table public.subscription_plans
   add constraint subscription_plans_monthly_limit_matrix
-  check ((id = 'free' and monthly_paper_limit = 3)
+  check ((id = 'free' and monthly_paper_limit = 2)
       or (id <> 'free' and monthly_paper_limit is null));
 
 -- A short-window limit protects the provider even when a paid teacher has a
@@ -232,8 +232,10 @@ end $$;
 -- are optional for legacy reconciliation calls, but online paper creation
 -- supplies them so the same safety ceiling is enforced server-side.
 drop function if exists public.claim_paper_creation(text);
+drop function if exists public.claim_paper_creation(text, integer, integer, integer);
 create or replace function public.claim_paper_creation(
   p_request_id text default null,
+  p_exam_format text default 'model_test',
   p_mcq_count integer default null,
   p_saq_count integer default null,
   p_cq_count integer default null
@@ -281,6 +283,15 @@ begin
 
   select * into e from public.effective_entitlement(teacher);
   if not found then raise exception 'Subscription policy unavailable'; end if;
+
+  -- Free papers are deliberately limited to the Model Test experience. The
+  -- format is supplied by the client for policy evaluation, but the plan and
+  -- allowance are always resolved from the locked server entitlement.
+  if e.plan_id = 'free' and lower(trim(coalesce(p_exam_format, ''))) <> 'model_test' then
+    return query select false, null::uuid, 0, e.monthly_paper_limit,
+      month_start, e.plan_id, 'format_locked';
+    return;
+  end if;
 
   if p_mcq_count is not null or p_saq_count is not null or p_cq_count is not null then
     if p_mcq_count is null or p_saq_count is null or p_cq_count is null
@@ -394,12 +405,12 @@ revoke insert, update, delete on public.user_subjects from public, anon, authent
 revoke all on function public.effective_entitlement(uuid) from public, anon;
 revoke all on function public.select_user_subject(text) from public, anon;
 revoke all on function public.remove_user_subject(text) from public, anon;
-revoke all on function public.claim_paper_creation(text, integer, integer, integer) from public, anon;
+revoke all on function public.claim_paper_creation(text, text, integer, integer, integer) from public, anon;
 revoke all on function public.complete_paper_creation(uuid) from public, anon;
 revoke all on function public.refund_paper_creation(uuid) from public, anon;
 grant execute on function public.select_user_subject(text) to authenticated;
 grant execute on function public.remove_user_subject(text) to authenticated;
-grant execute on function public.claim_paper_creation(text, integer, integer, integer) to authenticated;
+grant execute on function public.claim_paper_creation(text, text, integer, integer, integer) to authenticated;
 grant execute on function public.complete_paper_creation(uuid) to authenticated;
 grant execute on function public.refund_paper_creation(uuid) to authenticated;
 grant execute on function public.effective_entitlement(uuid) to authenticated, service_role;
@@ -434,7 +445,7 @@ begin
 
   insert into public.ai_usage_daily(user_id, usage_date, request_count)
   values (p_user_id, day, 0)
-  on conflict (user_id, usage_date) do nothing;
+  on conflict on constraint ai_usage_daily_pkey do nothing;
   select u.request_count into current_count
   from public.ai_usage_daily u
   where u.user_id = p_user_id and u.usage_date = day

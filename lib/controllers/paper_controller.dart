@@ -149,6 +149,9 @@ class PaperController extends OperationController {
           mcqCount: draft.mcqCount,
           saqCount: draft.saqCount,
           cqCount: draft.cqCount,
+          examFormat: draft.format == PaperFormat.board
+              ? 'model_test'
+              : draft.format.name,
         );
         if (!claim.allowed) {
           error = claim.message;

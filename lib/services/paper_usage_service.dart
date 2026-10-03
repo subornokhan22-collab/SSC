@@ -24,7 +24,9 @@ class PaperUsageClaim {
 
   String get message => switch (reason) {
         'monthly_limit' =>
-          'You have used this month\'s 3 Free papers. Upgrade for unlimited paper creation.',
+          'You have used this month\'s 2 Free papers. Upgrade for unlimited paper creation.',
+        'format_locked' =>
+            'Free plan paper generation is limited to Model Test. Upgrade to unlock other formats.',
         'server_required' =>
           'Connect to verify your Free paper allowance before creating a new paper.',
         'safety_limit' =>
@@ -40,7 +42,9 @@ class PaperUsageService {
   PaperUsageService({SupabaseClient? client}) : _client = client;
 
   SupabaseClient? _client;
-  static const _cachePrefix = 'paper_allowance_v1_';
+  // Versioned when the policy changed from three legacy papers to two Model
+  // Tests. Stale v1 caches must not extend the new server allowance offline.
+  static const _cachePrefix = 'paper_allowance_v2_';
   static const _cacheMonthSuffix = '_month';
   static const _pendingPrefix = 'paper_allowance_pending_v1_';
   final _random = Random();
@@ -70,6 +74,7 @@ class PaperUsageService {
     required int mcqCount,
     required int saqCount,
     required int cqCount,
+    String examFormat = 'model_test',
   }) async {
     final requestId =
         '${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(1 << 20)}';
@@ -81,6 +86,7 @@ class PaperUsageService {
           'claim_paper_creation',
           params: {
             'p_request_id': requestId,
+            'p_exam_format': examFormat,
             'p_mcq_count': mcqCount,
             'p_saq_count': saqCount,
             'p_cq_count': cqCount,
@@ -154,6 +160,7 @@ class PaperUsageService {
         'claim_paper_creation',
         params: {
           'p_request_id': requestId,
+          'p_exam_format': 'model_test',
           // Offline papers were checked by PaperLimits before being queued.
           'p_mcq_count': 0,
           'p_saq_count': 0,
@@ -182,7 +189,7 @@ class PaperUsageService {
         allowed: false,
         reservationId: null,
         paperCount: null,
-        monthlyLimit: 3,
+        monthlyLimit: 2,
         offline: true,
         reason: 'server_required',
       );
@@ -193,7 +200,7 @@ class PaperUsageService {
         allowed: false,
         reservationId: null,
         paperCount: null,
-        monthlyLimit: 3,
+        monthlyLimit: 2,
         offline: true,
         reason: 'server_required',
       );
@@ -204,7 +211,7 @@ class PaperUsageService {
       allowed: true,
       reservationId: null,
       paperCount: null,
-      monthlyLimit: 3,
+      monthlyLimit: 2,
       offline: true,
       reason: 'offline_cache',
     );

@@ -51,6 +51,7 @@ flutter:
   assets:
     - assets/questions/
     - New UI 4.0/
+    - New UI 4.0/Logo 2.png
     - assets/question_figures/
     - assets/icon/icon.png
     - assets/icon/icon_foreground.png

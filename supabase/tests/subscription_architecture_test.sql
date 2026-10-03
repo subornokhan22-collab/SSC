@@ -56,7 +56,7 @@ select public.test_assert(
    from public.subscription_plans),
   'stable server plan matrix');
 select public.test_assert(
-  (select monthly_paper_limit = 3 from public.subscription_plans where id = 'free'),
+  (select monthly_paper_limit = 2 from public.subscription_plans where id = 'free'),
   'Free has a server monthly paper limit');
 select public.test_assert(
   (select monthly_paper_limit is null from public.subscription_plans where id = 'pro'),
@@ -175,7 +175,8 @@ select public.test_assert(
   'failed payments leave the active subscription unchanged');
 
 -- Free paper creation is a server-monthly allowance, not a per-paper size
--- check. A fourth claim is blocked until one failed reservation is refunded.
+-- check. Only Model Test is claimable on Free; other formats stay visible in
+-- the app but are rejected by this server function.
 update public.profiles
 set subscription_plan = 'free', subscription_status = 'active',
     subscription_expires_at = null
@@ -183,30 +184,32 @@ where id = '11111111-1111-4111-8111-111111111111';
 set role authenticated;
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', true);
+select public.test_assert(
+  (select not allowed from public.claim_paper_creation('paper-chapter', 'chapter', 30, 15, 8)),
+  'Free non-Model-Test formats are blocked');
 select * from public.claim_paper_creation('paper-1');
 select * from public.claim_paper_creation('paper-2');
-select * from public.claim_paper_creation('paper-3');
 select public.test_assert(
-  (select paper_count = 3 from public.paper_usage_monthly
+  (select paper_count = 2 from public.paper_usage_monthly
    where user_id = auth.uid()),
-  'Free paper count reaches three');
+  'Free paper count reaches two');
 select public.test_assert(
-  (select not allowed from public.claim_paper_creation('paper-4')),
-  'fourth Free paper is blocked');
+  (select not allowed from public.claim_paper_creation('paper-3')),
+  'third Free paper is blocked');
 select public.test_assert(
-  (select not allowed from public.claim_paper_creation('paper-too-large', 101, 0, 0)),
+  (select not allowed from public.claim_paper_creation('paper-too-large', 'model_test', 101, 0, 0)),
   'paper safety maximum is enforced for every plan');
 do $$
 declare reservation uuid; refunded boolean;
 begin
   select id into reservation
   from public.paper_creation_reservations
-  where user_id = auth.uid() and client_request_id = 'paper-3';
+  where user_id = auth.uid() and client_request_id = 'paper-2';
   select public.refund_paper_creation(reservation) into refunded;
   if not refunded then raise exception 'FAIL: paper reservation was not refunded'; end if;
 end $$;
 select public.test_assert(
-  (select allowed from public.claim_paper_creation('paper-4-retry')),
+  (select allowed from public.claim_paper_creation('paper-3-retry')),
   'refunded paper claim can be retried');
 reset role;
 select set_config('request.jwt.claim.role', 'service_role', true);

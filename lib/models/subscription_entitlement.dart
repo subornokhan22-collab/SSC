@@ -61,7 +61,7 @@ class SubscriptionEntitlement {
   /// is kept here rather than hidden in a screen so the free/demo policy is
   /// covered by the same subject gate as paid plans.
   static const int freeSubjectLimit = 1;
-  static const int freeMonthlyPaperLimit = 3;
+  static const int freeMonthlyPaperLimit = 2;
   static const int basicSubjectLimit = 3;
   static const int proSubjectLimit = 5;
   static const int proAiDailyLimit = 20;

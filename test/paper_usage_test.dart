@@ -31,8 +31,8 @@ void main() {
     final now = DateTime.now().toUtc().add(const Duration(hours: 6));
     final month = '${now.year}-${now.month.toString().padLeft(2, '0')}';
     SharedPreferences.setMockInitialValues({
-      'paper_allowance_v1_offline': 1,
-      'paper_allowance_v1_offline_month': month,
+      'paper_allowance_v2_offline': 1,
+      'paper_allowance_v2_offline_month': month,
     });
     final service = PaperUsageService();
     Future<PaperUsageClaim> claim() => service.claim(
@@ -42,6 +42,7 @@ void main() {
         );
     final first = await claim();
     expect(first.allowed, isTrue);
+    expect(first.monthlyLimit, 2);
     expect(first.offline, isTrue);
     final second = await claim();
     expect(second.allowed, isFalse);
