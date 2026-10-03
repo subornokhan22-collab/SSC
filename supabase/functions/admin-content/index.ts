@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { readJsonObject, RequestBodyError } from "../mimi/request_body.ts";
 import schemas from "./english_schema.json" with { type: "json" };
 import { validateAttachments } from "./attachments.ts";

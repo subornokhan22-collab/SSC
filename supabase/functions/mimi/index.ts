@@ -27,7 +27,7 @@
 //   PAYLOAD_TOO_LARGE · MODEL_UNAVAILABLE · GEMINI_ERROR
 // ─────────────────────────────────────────────────────────────────────
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { readJsonObject, RequestBodyError } from "./request_body.ts";
 import { toolRequest, runTeacherTool, ToolError } from "./teacher_tools.ts";
 import { teacherAttachments } from "./attachments.ts";

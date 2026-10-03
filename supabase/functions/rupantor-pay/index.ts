@@ -7,7 +7,7 @@
 //   RUPANTOR_CREATE_URL, RUPANTOR_VERIFY_URL
 //   RUPANTOR_API_KEY, RUPANTOR_CLIENT
 //   RUPANTOR_SUCCESS_URL, RUPANTOR_CANCEL_URL, RUPANTOR_APP_REDIRECT_URL
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
 const supa = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
