@@ -57,10 +57,13 @@ class AiController extends OperationController {
           await subscription.initialize(refresh: false);
         }
         final current = entitlementOverride ?? subscription.entitlement;
-        if (!current.canUse(PremiumFeature.aiAssistant)) {
+        final canUse = entitlementOverride != null
+            ? current.canUse(PremiumFeature.aiAssistant)
+            : subscription.canUse(PremiumFeature.aiAssistant);
+        if (!canUse) {
           final reason = current.aiAssistant
-              ? 'Daily AI limit reached. Resets at midnight.'
-              : 'AI Assistant requires an active Pro or Professional plan.';
+                  ? 'Daily AI limit reached. Resets at midnight.'
+                  : 'AI Assistant requires an active Pro or Professional plan.';
           throw StateError(reason);
         }
         TeacherAttachment.validate(attachments);
