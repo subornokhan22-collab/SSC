@@ -6,7 +6,6 @@ import '../widgets/app_logo.dart';
 import '../widgets/animations.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
-import 'teacher_home_screen.dart';
 
 class AuthChoiceScreen extends StatelessWidget {
   const AuthChoiceScreen({super.key});
@@ -37,20 +36,19 @@ class AuthChoiceScreen extends StatelessWidget {
                       'Choose from the SSC question bank, review a printable paper and grade OMR sheets. Offline paper building works without an account.',
                     ),
                     const SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const TeacherHomeScreen(),
-                          ),
-                        ),
-                        child: const Text('Start creating a paper'),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     if (AuthService.ready) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SignUpScreen()),
+                          ),
+                          child: const Text('Sign up'),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
@@ -62,23 +60,14 @@ class AuthChoiceScreen extends StatelessWidget {
                           child: const Text('Sign in'),
                         ),
                       ),
-                      Center(
-                        child: TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SignUpScreen()),
-                          ),
-                          child: const Text('Create a teacher account'),
-                        ),
-                      ),
+                      const SizedBox(height: 12),
                       const Text(
-                        'Sign in to use server AI and sync your Pro access.',
+                        'Create an account to sync papers and use server AI. Already have an account? Sign in above.',
                         style: TextStyle(color: AppTheme.muted, fontSize: 12),
                       ),
                     ] else
                       const Text(
-                        'Sign-in is not configured. You can still work with the offline question bank.',
+                        'Sign-in is not configured. Connect the Tutor\'s Desk account service to create an account.',
                         style: TextStyle(color: AppTheme.muted, fontSize: 12),
                       ),
                   ]),

@@ -19,22 +19,31 @@ Configure the exact field contract and endpoints supplied by Rupantor Pay:
 
 ```sh
 supabase secrets set \
-  RUPANTOR_CREATE_URL=https://provider.example/create \
-  RUPANTOR_VERIFY_URL=https://provider.example/verify \
+  RUPANTOR_CREATE_URL=https://provider.example/api/payment/create-payment \
+  RUPANTOR_VERIFY_URL=https://provider.example/api/payment/verify-payment \
   RUPANTOR_API_KEY=... \
-  RUPANTOR_API_SECRET=... \
-  RUPANTOR_WEBHOOK_SECRET=... \
-  RUPANTOR_SUCCESS_URL=https://your-app.example/payment/success \
-  RUPANTOR_CANCEL_URL=https://your-app.example/payment/cancel
+  RUPANTOR_CLIENT=... \
+  RUPANTOR_SUCCESS_URL=https://<project-ref>.supabase.co/functions/v1/rupantor-pay \
+  RUPANTOR_CANCEL_URL=https://<project-ref>.supabase.co/functions/v1/rupantor-pay \
+  RUPANTOR_APP_REDIRECT_URL=tutorsdesk://payment/result
 ```
 
-The adapter sends the price loaded from `subscription_plans`, never a price supplied by Flutter. If Rupantor Pay uses different request or response field names, update only `supabase/functions/rupantor-pay/index.ts` to match its current documentation; credentials must remain Edge Function secrets.
+The adapter sends the documented checkout fields (`fullname`, `email`, `amount`, `success_url`, `cancel_url`, `webhook_url`, and `meta_data`) with the documented `X-API-KEY` and `X-CLIENT` headers. Checkout returns a `payment_url`; the internal order id is kept until the provider supplies `transaction_id` through a webhook or completion redirect. The function then calls `verify-payment` and checks `COMPLETED`, `BDT`, and the exact server plan amount before activation. Credentials must remain Edge Function secrets; never put them in Flutter.
 
 ## AI limits
 
 `mimi` calls `claim_ai_request` before the provider call. The RPC computes the date in `Asia/Dhaka`, locks the daily row, and rejects requests over the plan limit. Provider failures call `refund_ai_request`; the client counter is display-only. The disposable regression test in `supabase/tests/subscription_architecture_test.sql` covers the RLS, idempotent activation, expiry, and same-day upgrade paths.
 
-Set `GEMINI_API_KEY` as an Edge Function secret as before. Never put a Rupantor or Gemini secret in the APK.
+Set the server AI configuration as Edge Function secrets too:
+
+```sh
+supabase secrets set \
+  GEMINI_API_KEY=... \
+  GEMINI_GENERATOR_MODEL=gemini-3.8-flash \
+  GEMINI_VALIDATOR_MODEL=gemini-3.5-flash
+```
+
+The gateway sends no deprecated temperature/top-p/top-k sampling parameters to Gemini 3.8. Never put a Rupantor or Gemini secret in the APK.
 
 ## Admin
 

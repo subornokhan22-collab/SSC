@@ -129,23 +129,23 @@ class RupantorPayService {
 
   Future<RupantorPayment> initiate({required SubscriptionPlan plan}) async {
     final j = await _invoke({'action': 'initiate', 'plan': plan.id});
-    final transactionId = j['transactionId']?.toString();
+    final orderId = (j['orderId'] ?? j['transactionId'])?.toString();
     final checkoutUrl = j['checkoutUrl']?.toString();
-    if (transactionId == null || checkoutUrl == null || checkoutUrl.isEmpty) {
+    if (orderId == null || checkoutUrl == null || checkoutUrl.isEmpty) {
       throw const RupantorPayError(
-          'Rupantor Pay returned an incomplete payment.');
+          'Rupantor Pay returned an incomplete payment link.');
     }
     return RupantorPayment(
-      transactionId: transactionId,
+      orderId: orderId,
       checkoutUrl: checkoutUrl,
       status: j['status']?.toString() ?? 'pending',
     );
   }
 
-  Future<String> verify(String transactionId) async {
+  Future<String> verify(String orderId) async {
     final j = await _invoke({
       'action': 'verify',
-      'transactionId': transactionId,
+      'orderId': orderId,
     });
     return j['status']?.toString() ?? 'pending';
   }
@@ -204,11 +204,13 @@ class RupantorPayService {
 }
 
 class RupantorPayment {
-  final String transactionId;
+  /// Internal Tutor's Desk order id. Rupantor's transaction id is supplied
+  /// later by the completion redirect/webhook.
+  final String orderId;
   final String checkoutUrl;
   final String status;
   const RupantorPayment({
-    required this.transactionId,
+    required this.orderId,
     required this.checkoutUrl,
     required this.status,
   });

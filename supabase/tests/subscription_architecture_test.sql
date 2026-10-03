@@ -110,7 +110,9 @@ insert into public.subscription_transactions(
 ) values (
   '11111111-1111-4111-8111-111111111111', 'pro', 200, 'fixture-transaction-1', 'pending'
 );
-select public.activate_subscription_transaction('fixture-transaction-1');
+select public.activate_subscription_transaction(
+  'fixture-transaction-1', 'paid', 200, 'BDT'
+);
 select public.test_assert(
   (select status = 'paid' and provider_transaction_id = 'fixture-transaction-1'
    from public.subscription_transactions where provider_transaction_id = 'fixture-transaction-1'),
@@ -119,7 +121,9 @@ select public.test_assert(
   (select subscription_expires_at > now() + interval '39 days'
    from public.profiles where id = '11111111-1111-4111-8111-111111111111'),
   'activation extends from current active expiry');
-select public.activate_subscription_transaction('fixture-transaction-1');
+select public.activate_subscription_transaction(
+  'fixture-transaction-1', 'paid', 200, 'BDT'
+);
 select public.test_assert(
   (select count(*) = 1 from public.subscription_transactions
    where provider_transaction_id = 'fixture-transaction-1' and status = 'paid'),

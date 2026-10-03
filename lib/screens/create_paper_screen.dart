@@ -15,6 +15,7 @@ import '../theme/design_tokens.dart';
 import '../services/app_style.dart';
 import '../services/paper_composer.dart';
 import '../services/paper_export.dart';
+import '../services/paper_license.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
 import '../services/subscription_guard.dart';
@@ -84,12 +85,23 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             widget.initialFormat == null &&
             widget.initialQuestions == null);
     if (!mounted) return;
+    // Register the opening subject too. Otherwise a Free teacher could open
+    // one subject by default and then select a second subject without the
+    // same subject entitlement check ever seeing the first one.
+    try {
+      await subjectEntitlements.select(c.draft.subjectId);
+    } catch (_) {
+      // The local subject cache still protects offline sessions; a missing
+      // remote migration must not prevent paper creation.
+    }
     if (widget.initialQuestions?.isNotEmpty == true) {
       c.useAiQuestions(widget.initialQuestions!);
       step = 3;
     }
     if (widget.quickStart && widget.initialQuestions == null) {
-      if (await c.generate() && mounted) step = 3;
+      if (await _allowPaperCreation() && await c.generate() && mounted) {
+        step = 3;
+      }
     }
     sync();
   }
@@ -148,8 +160,47 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     super.dispose();
   }
 
+  Future<bool> _allowPaperCreation() async {
+    final state = SubscriptionState.instance;
+    if (!state.initialized) await state.initialize(refresh: false);
+    if (state.plan != SubscriptionPlan.free) return true;
+    final exceedsDemo =
+        c.draft.mcqCount > PaperLicense.demoMcqLimit ||
+        c.draft.cqCount > PaperLicense.demoCqLimit;
+    if (!exceedsDemo || !mounted) return true;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Free demo limit reached'),
+        content: const Text(
+          'The Free plan supports a demo paper with up to 6 MCQs and 2 creative questions. Upgrade to create a larger paper.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Keep Free plan'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SubscriptionScreen(),
+                ),
+              );
+            },
+            child: const Text('Upgrade Plan'),
+          ),
+        ],
+      ),
+    );
+    return false;
+  }
+
   Future<void> next() async {
     if (step == 2) {
+      if (!await _allowPaperCreation()) return;
       if (c.paper == null && !await c.generate()) return;
     }
     if (step == 3) {

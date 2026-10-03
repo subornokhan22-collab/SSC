@@ -20,7 +20,7 @@
 //
 // Success: 200, text/event-stream — the raw Gemini alt=sse stream
 // (identical line format to the direct API, so the app reuses one
-// parser for server and device-key paths).
+// parser for the server stream).
 // Failure: JSON { ok: false, error, code } with code one of
 //   UNAUTHORIZED · BAD_REQUEST · NOT_CONFIGURED · KEY_INVALID ·
 //   QUOTA · PAYLOAD_TOO_LARGE · MODEL_UNAVAILABLE · GEMINI_ERROR
@@ -33,18 +33,9 @@ import { ProviderError, readProviderError, providerTransportError } from "./prov
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
-// Stable flash models, best-first. Mirrors the app's fallback list so
-// server and device-key paths degrade the same way.
-const MODELS = [
-  "gemini-3.8-flash",
-  "gemini-3.7-flash",
-  "gemini-3.6-flash",
-  "gemini-3.5-flash",
-  "gemini-2.5-flash",
-];
-
-// Kept in sync with the app's limits after resize; anything above the
-// edge-function payload budget is routed by the app to a device key.
+// Model ids are deployment configuration, not a client-side fallback list.
+// Set GEMINI_GENERATOR_MODEL and GEMINI_VALIDATOR_MODEL as Edge Function
+// secrets/configuration before deploying this function.
 const MAX_ATTACHMENTS = 3;
 
 const DEFAULT_SYSTEM =
@@ -186,7 +177,12 @@ Deno.serve(async (req: Request) => {
         };
         try {
           const result = await runTeacherTool(command, async (system, input, schema, validator=false) => {
-            const model = Deno.env.get(validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL") || MODELS[0];
+            const model = Deno.env.get(
+              validator ? "GEMINI_VALIDATOR_MODEL" : "GEMINI_GENERATOR_MODEL",
+            )?.trim();
+            if (!model) throw new ToolError(
+              `The server ${validator ? "validator" : "generator"} model is not configured.`,
+            );
             if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new ToolError("The server model configuration is invalid.");
             const stage = validator ? "validator" : "generator";
             const remaining = commandDeadline - Date.now();
@@ -196,7 +192,7 @@ Deno.serve(async (req: Request) => {
               resp = await fetch(`${GEMINI_BASE}/models/${model}:generateContent`, {
                 method:"POST", headers:{"Content-Type":"application/json", "x-goog-api-key":key},
                 signal:AbortSignal.any([cancellation.signal,AbortSignal.timeout(Math.min(75000, remaining))]),
-                body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}, ...(!validator ? (command.attachments ?? []).map(a=>({inline_data:{mime_type:a.mimeType,data:a.data}})) : [])]}],generationConfig:{temperature:validator?0:0.4,maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
+                body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:input}, ...(!validator ? (command.attachments ?? []).map(a=>({inline_data:{mime_type:a.mimeType,data:a.data}})) : [])]}],generationConfig:{maxOutputTokens:16384,responseMimeType:"application/json",responseSchema:schema}}),
               });
             } catch (error) {
               if (cancellation.signal.aborted) throw error;
@@ -272,57 +268,56 @@ Deno.serve(async (req: Request) => {
       ...history.map((h) => ({ role: h.role, parts: [{ text: h.text }] })),
       { role: "user", parts },
     ],
-    generationConfig: { temperature: 0.4, maxOutputTokens: 8192 },
+    generationConfig: { maxOutputTokens: 8192 },
   });
 
-  let lastMsg = "No Gemini model available on the server.";
-  for (const model of MODELS) {
-    let resp: Response;
-    try {
-      resp = await fetch(
-        `${GEMINI_BASE}/models/${model}:streamGenerateContent?alt=sse&key=${key}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: geminiBody,
-          signal: AbortSignal.timeout(180_000),
-        },
-      );
-    } catch (_) {
-      await refundAiRequest(authenticatedUserId, usage.usage_date);
-      return fail("Could not reach Gemini from the server.", 502, "GEMINI_ERROR");
-    }
-
-    if (resp.ok) {
-      // Pass the SSE stream straight through — same wire format as the
-      // direct API, so the app parses it with one code path.
-      return new Response(resp.body, {
-        status: 200,
-        headers: { "Content-Type": "text/event-stream", ...corsHeaders() },
-      });
-    }
-
-    let msg = `Gemini error (code ${resp.status}).`;
-    try {
-      const j = JSON.parse(await resp.text()) as { error?: { message?: string } };
-      if (j.error?.message) msg = j.error.message.split("\n")[0].trim();
-    } catch (_) {}
-
-    const code =
-      resp.status === 404 || /not found/i.test(msg)
-        ? "MODEL_UNAVAILABLE"
-        : /API key not valid|API_KEY_INVALID/.test(msg)
-          ? "KEY_INVALID"
-          : /quota|RESOURCE_EXHAUSTED|limit exceeded|billing/i.test(msg)
-            ? "QUOTA"
-            : /PAYLOAD_TOO_LARGE|too large/i.test(msg)
-              ? "PAYLOAD_TOO_LARGE"
-              : "GEMINI_ERROR";
-    lastMsg = msg;
-    if (code === "MODEL_UNAVAILABLE") continue; // try the next model
+  const model = Deno.env.get("GEMINI_GENERATOR_MODEL")?.trim();
+  if (!model || !/^[a-zA-Z0-9._-]+$/.test(model)) {
     await refundAiRequest(authenticatedUserId, usage.usage_date);
-    return fail(msg, resp.status >= 500 ? 502 : 400, code);
+    return fail("The server generator model is not configured.", 503, "MODEL_NOT_CONFIGURED");
   }
+
+  let resp: Response;
+  try {
+    resp = await fetch(
+      `${GEMINI_BASE}/models/${model}:streamGenerateContent?alt=sse&key=${key}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: geminiBody,
+        signal: AbortSignal.timeout(180_000),
+      },
+    );
+  } catch (_) {
+    await refundAiRequest(authenticatedUserId, usage.usage_date);
+    return fail("Could not reach Gemini from the server.", 502, "GEMINI_ERROR");
+  }
+
+  if (resp.ok) {
+    // Pass the SSE stream straight through — same wire format as the
+    // direct API, so the app parses it with one code path.
+    return new Response(resp.body, {
+      status: 200,
+      headers: { "Content-Type": "text/event-stream", ...corsHeaders() },
+    });
+  }
+
+  let msg = `Gemini error (code ${resp.status}).`;
+  try {
+    const j = JSON.parse(await resp.text()) as { error?: { message?: string } };
+    if (j.error?.message) msg = j.error.message.split("\n")[0].trim();
+  } catch (_) {}
+
+  const code =
+    resp.status === 404 || /not found/i.test(msg)
+      ? "MODEL_UNAVAILABLE"
+      : /API key not valid|API_KEY_INVALID/.test(msg)
+        ? "KEY_INVALID"
+        : /quota|RESOURCE_EXHAUSTED|limit exceeded|billing/i.test(msg)
+          ? "QUOTA"
+          : /PAYLOAD_TOO_LARGE|too large/i.test(msg)
+            ? "PAYLOAD_TOO_LARGE"
+            : "GEMINI_ERROR";
   await refundAiRequest(authenticatedUserId, usage.usage_date);
-  return fail(lastMsg, 502, "MODEL_UNAVAILABLE");
+  return fail(msg, resp.status >= 500 ? 502 : 400, code);
 });

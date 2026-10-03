@@ -142,7 +142,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         );
         return;
       }
-      _showWaiting(payment.transactionId);
+      _showWaiting(payment.orderId);
     } on RupantorPayError catch (e) {
       if (mounted) await _problem('Payment could not be started', e.message);
     } catch (e) {

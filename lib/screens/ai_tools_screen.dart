@@ -14,6 +14,9 @@ import '../widgets/paper_question_card.dart';
 import '../widgets/workflow_progress.dart';
 import '../services/ai/teacher_attachment.dart';
 import '../services/ai/ai_text_formatter.dart';
+import '../services/subscription_state.dart';
+import '../models/subscription_entitlement.dart';
+import 'subscription_screen.dart';
 import '../widgets/teacher_attachment_panel.dart';
 
 class AiToolsScreen extends StatefulWidget {
@@ -49,9 +52,13 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
   bool pickingAttachment = false;
   final input = TextEditingController();
   final instruction = TextEditingController();
+  bool _accessChecked = false;
+  bool _accessAllowed = false;
+
   @override
   void initState() {
     super.initState();
+    _checkAccess();
     c = AiController(bank: allMCQs, currentPaper: widget.currentPaper)
       ..addListener(refresh);
     subject = widget.subjectId ?? 'physics';
@@ -61,6 +68,16 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
     chapter = widget.chapter;
     if (chapter != null && !chapters.contains(chapter)) chapter = null;
     chapter ??= chapters.isEmpty ? null : chapters.first;
+  }
+
+  Future<void> _checkAccess() async {
+    final state = SubscriptionState.instance;
+    if (!state.initialized) await state.initialize(refresh: false);
+    if (!mounted) return;
+    setState(() {
+      _accessAllowed = state.canUse(PremiumFeature.aiAssistant);
+      _accessChecked = true;
+    });
   }
 
   List<String> get chapters => ChapterCatalog.ordered({
@@ -97,8 +114,45 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
         TeacherCommand.check => 'Check',
         TeacherCommand.explain => 'Explain',
       };
+  Widget _lockedBody() => Scaffold(
+        appBar: AppBar(title: const Text('AI Tools')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(PhosphorIcons.lock, size: 42),
+                const SizedBox(height: 14),
+                const Text(
+                  'AI Assistant requires an active Pro or Professional plan.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SubscriptionScreen(),
+                    ),
+                  ),
+                  child: const Text('View plans'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    if (!_accessChecked) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (!_accessAllowed) return _lockedBody();
+    return Scaffold(
         appBar: AppBar(
           title: const Text('AI Tools'),
         ),
@@ -433,4 +487,5 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
           ],
         ),
       );
+  }
 }

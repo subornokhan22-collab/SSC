@@ -209,9 +209,14 @@ before insert or update on public.profiles
 for each row execute function public.protect_subscription_entitlements();
 
 -- Trusted activation is the only operation that can grant a paid plan.
+-- Drop the earlier two-argument overload so a deployed migration cannot leave
+-- a service-role activation path that skips provider amount verification.
+drop function if exists public.activate_subscription_transaction(text, text);
 create or replace function public.activate_subscription_transaction(
   p_provider_transaction_id text,
-  p_status text default 'paid'
+  p_status text default 'paid',
+  p_provider_amount numeric default null,
+  p_provider_currency text default null
 )
 returns jsonb
 language plpgsql
@@ -244,6 +249,17 @@ begin
   end if;
   if tx.status <> 'pending' then
     return jsonb_build_object('ok', false, 'status', tx.status);
+  end if;
+
+  -- A paid provider response is not enough by itself. The verified response
+  -- must match the currency and the server-authoritative plan amount exactly.
+  if p_provider_amount is null
+     or upper(trim(coalesce(p_provider_currency, ''))) <> 'BDT'
+     or abs(p_provider_amount - tx.amount_bdt) > 0.001 then
+    update public.subscription_transactions
+    set status = 'invalid', verified_at = now()
+    where id = tx.id and status = 'pending';
+    return jsonb_build_object('ok', false, 'status', 'invalid');
   end if;
 
   select * into plan from public.subscription_plans where id = tx.plan_id and is_active;
@@ -423,10 +439,10 @@ begin
   end if;
 end $$;
 
-revoke all on function public.activate_subscription_transaction(text, text) from public, anon, authenticated;
+revoke all on function public.activate_subscription_transaction(text, text, numeric, text) from public, anon, authenticated;
 revoke all on function public.claim_ai_request(uuid) from public, anon, authenticated;
 revoke all on function public.refund_ai_request(uuid, date) from public, anon, authenticated;
-grant execute on function public.activate_subscription_transaction(text, text) to service_role;
+grant execute on function public.activate_subscription_transaction(text, text, numeric, text) to service_role;
 grant execute on function public.claim_ai_request(uuid) to service_role;
 grant execute on function public.refund_ai_request(uuid, date) to service_role;
 

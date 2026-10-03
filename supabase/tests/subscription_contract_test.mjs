@@ -14,7 +14,23 @@ test("Rupantor is the only deployable payment function", () => {
   assert.equal(existsSync("supabase/functions/bkash/index.ts"), false);
   assert.match(payment, /subscription_plans/);
   assert.match(payment, /activate_subscription_transaction/);
+  assert.match(payment, /fullname:/);
+  assert.match(payment, /meta_data:/);
+  assert.match(payment, /X-API-KEY/);
+  assert.match(payment, /X-CLIENT/);
+  assert.match(payment, /payment_url/);
+  assert.doesNotMatch(payment, /x-rupantor-signature/);
+  assert.doesNotMatch(payment, /RUPANTOR_WEBHOOK_SECRET/);
   assert.doesNotMatch(payment, /299|2499|799|monthly|yearly|lifetime/);
+});
+
+test("Rupantor activation verifies status, currency, and amount", () => {
+  assert.match(payment, /RUPANTOR_VERIFY_URL/);
+  assert.match(payment, /transaction_id/);
+  assert.match(payment, /p_provider_amount/);
+  assert.match(payment, /p_provider_currency/);
+  assert.match(migration, /upper\(trim\(coalesce\(p_provider_currency/);
+  assert.match(migration, /abs\(p_provider_amount - tx\.amount_bdt\)/);
 });
 
 test("payment activation is server-authoritative and idempotent", () => {

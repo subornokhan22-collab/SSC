@@ -182,24 +182,20 @@ void main() {
     expect(changed, isEmpty);
     expect(tester.takeException(), isNull);
   });
-  testWidgets(
-      'selected files do not create a consent checkbox or provider banner',
+  testWidgets('direct AI route requires an entitled subscription',
       (tester) async {
     tester.view.physicalSize = const Size(1000, 2400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(const MaterialApp(home: AiToolsScreen()));
-    final panel = tester
-        .widget<TeacherAttachmentPanel>(find.byType(TeacherAttachmentPanel));
-    panel.onChanged([pdf()]);
-    await tester.pump();
-    expect(find.text('reference.pdf'), findsOneWidget);
-    expect(find.byType(CheckboxListTile), findsNothing);
-    expect(find.textContaining('Send these files'), findsNothing);
-    expect(find.textContaining('Gemini'), findsNothing);
-    expect(find.textContaining('Supabase'), findsNothing);
-    expect(find.text('Create with AI'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(
+      find.text('AI Assistant requires an active Pro or Professional plan.'),
+      findsOneWidget,
+    );
+    expect(find.byType(TeacherAttachmentPanel), findsNothing);
+    expect(find.text('Create with AI'), findsNothing);
     expect(tester.takeException(), isNull);
   });
   test('scientific symbol fallback fonts are shipped with the APK', () async {

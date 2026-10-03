@@ -85,18 +85,14 @@ class SubscriptionRepository {
       if (row == null) return current;
       _profile = Map<String, dynamic>.from(row);
       final profile = _profile!;
-      final legacyPlan = subscriptionPlanFromString(
-        (profile['subscription_plan'] ?? profile['pro_plan'])?.toString(),
-      );
-      final effectivePlan = profile['is_pro'] == true &&
-              profile['subscription_plan'] == null &&
-              profile['pro_plan'] == null
-          ? SubscriptionPlan.pro
-          : (profile['subscription_plan'] == null &&
-                  profile['pro_plan'] == null &&
-                  profile['is_pro'] != true
-              ? SubscriptionPlan.free
-              : legacyPlan);
+      // The new subscription columns are authoritative. Legacy is_pro,
+      // pro_plan, and pro_until are migrated by SQL only; an old or malformed
+      // profile with no new plan value must fail safe to Free rather than
+      // accidentally receiving paid capabilities.
+      final planValue = profile['subscription_plan']?.toString();
+      final effectivePlan = planValue == null
+          ? SubscriptionPlan.free
+          : subscriptionPlanFromString(planValue);
 
       Map<String, dynamic>? planRow;
       if (effectivePlan != SubscriptionPlan.free) {
