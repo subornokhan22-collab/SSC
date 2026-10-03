@@ -74,6 +74,27 @@ const supa = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
 );
 
+async function claimAiRequest(userId: string) {
+  const { data, error } = await supa.rpc("claim_ai_request", {
+    p_user_id: userId,
+  });
+  if (error || !data?.[0]) throw new Error("AI entitlement service unavailable.");
+  return data[0] as {
+    allowed: boolean;
+    request_count: number;
+    daily_limit: number;
+    usage_date: string;
+    reason: string;
+  };
+}
+
+async function refundAiRequest(userId: string, usageDate: string) {
+  await supa.rpc("refund_ai_request", {
+    p_user_id: userId,
+    p_usage_date: usageDate,
+  });
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders() });
@@ -84,11 +105,13 @@ Deno.serve(async (req: Request) => {
   const authHeader = req.headers.get("Authorization") ?? "";
   const token = /^Bearer\s+(\S+)$/i.exec(authHeader)?.[1];
   if (!token) return fail("Sign in to use AI Tools.", 401, "UNAUTHORIZED");
+  let authenticatedUserId: string;
   try {
     const { data: userData, error: authError } = await supa.auth.getUser(token);
     if (!userData?.user || authError) {
       return fail("Sign in to use AI Tools.", 401, "UNAUTHORIZED");
     }
+    authenticatedUserId = userData.user.id;
   } catch {
     return fail("Could not verify your session. Try again.", 503, "AUTH_UNAVAILABLE");
   }
@@ -111,7 +134,35 @@ Deno.serve(async (req: Request) => {
     }
     return fail("Could not read request body.", 400, "BAD_REQUEST");
   }
-  if (["generate", "improve", "check", "explain"].includes(String(payload.action))) {
+
+  const action = String(payload.action ?? "");
+  const toolActions = ["generate", "improve", "check", "explain"];
+  if (!toolActions.includes(action) && action !== "chat") {
+    return fail("Unknown action.", 400, "BAD_REQUEST");
+  }
+  let usage: {
+    allowed: boolean;
+    request_count: number;
+    daily_limit: number;
+    usage_date: string;
+    reason: string;
+  };
+  try {
+    usage = await claimAiRequest(authenticatedUserId);
+  } catch (_) {
+    return fail("The AI entitlement service is unavailable. Try again.", 503, "ENTITLEMENT_UNAVAILABLE");
+  }
+  if (!usage.allowed) {
+    return fail(
+      usage.reason === "daily_limit"
+        ? "Daily AI limit reached. Resets at midnight."
+        : "AI Assistant requires an active Pro or Professional plan.",
+      429,
+      usage.reason === "daily_limit" ? "AI_DAILY_LIMIT" : "AI_UPGRADE_REQUIRED",
+    );
+  }
+
+  if (toolActions.includes(action)) {
     let command;
     try { command = toolRequest(payload); } catch (e) {
       return fail(e instanceof ToolError || e instanceof RequestBodyError ? e.message : "Invalid teacher command.", e instanceof RequestBodyError ? e.status : 400, "BAD_REQUEST");
@@ -121,6 +172,7 @@ Deno.serve(async (req: Request) => {
     // A language repair must not multiply the total Edge Function time budget.
     const commandDeadline = Date.now() + 120000;
     req.signal.addEventListener("abort", () => cancellation.abort(), {once:true});
+    let completed = false;
     const stream = new ReadableStream({
       async start(controller) {
         const send = (event:string, data:unknown) => {
@@ -154,8 +206,10 @@ Deno.serve(async (req: Request) => {
             const text=(candidate.content?.parts??[]).map((p:{text?:string})=>p.text??"").join("");
             try{return JSON.parse(text);}catch{throw new ToolError("The AI response did not match the required JSON schema.");}
           }, phase=>send("phase",{message:phase}));
-          send("result",result);
+          send("result",{...result, aiUsedToday: usage.request_count, aiRemainingToday: Math.max(0, usage.daily_limit - usage.request_count)});
+          completed = true;
         } catch(e) {
+          if (!completed) await refundAiRequest(authenticatedUserId, usage.usage_date);
           const diagnostic = e instanceof ProviderError
             ? {code:e.code, upstreamStatus:e.upstreamStatus, stage:e.stage}
             : {};
@@ -169,9 +223,9 @@ Deno.serve(async (req: Request) => {
       },
       cancel(){cancellation.abort();},
     });
-    return new Response(stream,{headers:{...corsHeaders(),"Content-Type":"text/event-stream","Cache-Control":"no-cache","X-Teacher-Attachments-Version":"1"}});
+    return new Response(stream,{headers:{...corsHeaders(),"Content-Type":"text/event-stream","Cache-Control":"no-cache","X-Teacher-Attachments-Version":"1","X-AI-Remaining":String(Math.max(0, usage.daily_limit - usage.request_count))}});
   }
-  if (payload.action !== "chat") return fail("Unknown action.", 400, "BAD_REQUEST");
+  if (action !== "chat") return fail("Unknown action.", 400, "BAD_REQUEST");
 
   if (payload.attachments !== undefined && !Array.isArray(payload.attachments)) {
     return fail("Attachments must be an array.", 400, "BAD_REQUEST");
@@ -232,6 +286,7 @@ Deno.serve(async (req: Request) => {
         },
       );
     } catch (_) {
+      await refundAiRequest(authenticatedUserId, usage.usage_date);
       return fail("Could not reach Gemini from the server.", 502, "GEMINI_ERROR");
     }
 
@@ -262,7 +317,9 @@ Deno.serve(async (req: Request) => {
               : "GEMINI_ERROR";
     lastMsg = msg;
     if (code === "MODEL_UNAVAILABLE") continue; // try the next model
+    await refundAiRequest(authenticatedUserId, usage.usage_date);
     return fail(msg, resp.status >= 500 ? 502 : 400, code);
   }
+  await refundAiRequest(authenticatedUserId, usage.usage_date);
   return fail(lastMsg, 502, "MODEL_UNAVAILABLE");
 });

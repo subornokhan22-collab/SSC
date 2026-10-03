@@ -21,6 +21,8 @@ import '../services/app_settings.dart';
 import '../services/app_style.dart';
 import '../services/paper_library.dart';
 import '../services/paper_pdf.dart';
+import '../services/subscription_guard.dart';
+import '../models/subscription_entitlement.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/app_button.dart';
@@ -115,7 +117,16 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     );
     _subjectCtrl = TextEditingController(text: widget.initialSubject);
     _loadHistory();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!await SubscriptionGuard.require(context, PremiumFeature.omrScanner) &&
+          mounted) {
+        Navigator.of(context).maybePop();
+      }
+    });
   }
+
+  Future<bool> _canUseScanner() =>
+      SubscriptionGuard.require(context, PremiumFeature.omrScanner);
 
   Future<void> _loadHistory() async {
     final h = await OmrStore.loadHistory();
@@ -132,6 +143,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   // ── photo ─────────────────────────────────────────────────────────
 
   Future<void> _pickPhoto(ImageSource source) async {
+    if (!await _canUseScanner()) return;
     try {
       final xfile = await ImagePicker().pickImage(
         source: source,
@@ -185,6 +197,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// stain/finger-cleaning ML models from Play services — an extra
   /// failure point for clean printed OMR sheets that never use it.
   Future<void> _openCamera() async {
+    if (!await _canUseScanner()) return;
     if (_key.any((k) => k < 0)) {
       await _problem(
         'Answer key incomplete',
@@ -393,6 +406,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// Guided live-camera capture: the in-app preview shows an A4 guide,
   /// sheet/marks/sharp indicators and auto-captures a steady frame.
   Future<void> _openLiveScan() async {
+    if (!await _canUseScanner()) return;
     if (_key.any((k) => k < 0)) {
       await _problem(
         'Answer key incomplete',
@@ -450,6 +464,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   // ── scan ──────────────────────────────────────────────────────────
 
   Future<void> _scan({bool rectified = false}) async {
+    if (!await _canUseScanner()) return;
     final photo = _photoBytes;
     if (photo == null) {
       await _problem(

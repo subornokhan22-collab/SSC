@@ -16,8 +16,11 @@ import '../services/app_style.dart';
 import '../services/paper_composer.dart';
 import '../services/paper_export.dart';
 import '../services/paper_library.dart';
-import '../services/paper_license.dart';
 import '../services/paper_pdf.dart';
+import '../services/subscription_guard.dart';
+import '../services/subscription_state.dart';
+import '../services/subject_entitlement_service.dart';
+import '../models/subscription_entitlement.dart';
 import '../theme/app_theme.dart';
 import '../widgets/paper_question_card.dart';
 import '../widgets/written_question_card.dart';
@@ -48,6 +51,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   int step = 0;
   int page = 0;
   RenderedPaper? preview;
+  final SubjectEntitlementService subjectEntitlements =
+      SubjectEntitlementService();
   static const steps = [
     'Subject',
     'Chapters & format',
@@ -89,6 +94,43 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     sync();
   }
 
+  Future<void> _selectSubject(String id) async {
+    final result = await subjectEntitlements.select(id);
+    if (!mounted) return;
+    if (!result.allowed) {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Subject limit reached'),
+          content: Text(result.message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('OK'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SubscriptionScreen(),
+                  ),
+                );
+              },
+              child: const Text('Upgrade Plan'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    c.selectSubject(id);
+    AppStyle.mood.value = PaperComposer.isEnglish(id)
+        ? WorkspaceMood.english
+        : WorkspaceMood.home;
+  }
+
   void sync() {
     if (!mounted) return;
     if (title.text != c.draft.title)
@@ -113,7 +155,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     if (step == 3) {
       if (c.paper == null) return;
       final ok = await c.run('Rendering the exact print layout…', () async {
-        final result = await PaperExport.render(c.draft, c.paper!);
+        final result = await PaperExport.render(
+          c.draft,
+          c.paper!,
+          watermark: SubscriptionState.instance.shouldShowWatermark,
+        );
         if (mounted) {
           preview = result;
           page = 0;
@@ -124,32 +170,20 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     if (mounted) setState(() => step = (step + 1).clamp(0, 4).toInt());
   }
 
-  Future<bool> allowExport() async {
-    if (await PaperLicense.isPro()) return mounted;
-    if (!mounted) return false;
-    final upgrade = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-                title: const Text('Export with Pro'),
-                content: const Text(
-                    'You can create and review the complete paper for free. Pro unlocks saving, PDF export, printing and OMR sheets.'),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('Keep reviewing')),
-                  FilledButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      child: const Text('View plans'))
-                ]));
-    if (upgrade == true && mounted)
-      await Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
-    return false;
+  Future<bool> allowExport(String action) async {
+    final state = SubscriptionState.instance;
+    if (!state.initialized) await state.initialize(refresh: false);
+    if (action == 'omr' && mounted) {
+      return SubscriptionGuard.require(context, PremiumFeature.omrScanner);
+    }
+    // Free and Basic may export with a watermark. Entitlements decide the
+    // watermark itself; export is not silently blocked by the pricing UI.
+    return mounted;
   }
 
   Future<void> export(String action) async {
     if (c.busy || preview == null || c.paper == null) return;
-    if (!await allowExport()) return;
+    if (!await allowExport(action)) return;
     await c.run(action == 'save' ? 'Saving your paper…' : 'Preparing export…',
         () async {
       final d = c.draft;
@@ -388,10 +422,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                   value: s.id,
                   groupValue: c.draft.subjectId,
                   onChanged: (id) {
-                    c.selectSubject(id!);
-                    AppStyle.mood.value = PaperComposer.isEnglish(id)
-                        ? WorkspaceMood.english
-                        : WorkspaceMood.home;
+                    if (id != null) _selectSubject(id);
                   })),
       ]);
   Widget chapterStep() =>

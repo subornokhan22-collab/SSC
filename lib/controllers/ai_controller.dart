@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../data/question_bank.dart';
 import '../services/auth_service.dart';
+import '../services/subscription_state.dart';
+import '../models/subscription_entitlement.dart';
 import '../services/ai/teacher_ai_client.dart';
 import '../services/ai/teacher_attachment.dart';
 import '../services/ai/ai_text_formatter.dart';
@@ -48,6 +50,17 @@ class AiController extends OperationController {
     List<TeacherAttachment> attachments = const [],
   }) =>
       run('Reading selected chapter metadata…', () async {
+        final subscription = SubscriptionState.instance;
+        if (!subscription.initialized) {
+          await subscription.initialize(refresh: false);
+        }
+        if (!subscription.canUse(PremiumFeature.aiAssistant)) {
+          final reason = subscription.aiRemainingToday <= 0 &&
+                  subscription.entitlement.aiAssistant
+              ? 'Daily AI limit reached. Resets at midnight.'
+              : 'AI Assistant requires an active Pro or Professional plan.';
+          throw StateError(reason);
+        }
         TeacherAttachment.validate(attachments);
         if (chapters.isEmpty)
           throw StateError('Choose a chapter from the local question bank.');
@@ -69,7 +82,9 @@ class AiController extends OperationController {
             'AI history could not be read. Restore device storage before generating, so duplicate checking is not bypassed.',
           );
         }
-        final response = await client.request({
+        late final Map<String, dynamic> response;
+        try {
+          response = await client.request({
           'action':
               command == TeacherCommand.create ? 'generate' : command.name,
           'subjectId': subjectId,
@@ -83,8 +98,8 @@ class AiController extends OperationController {
           // Running the tool submits the selected files; picking never uploads.
           // Keep this wire flag for compatibility with the existing gateway.
           if (attachments.isNotEmpty) 'attachmentConsent': true,
-        }, progress);
-        if (disposed) return;
+          }, progress);
+          if (disposed) return;
         if (response['kind'] == 'review') {
           summary = AiTextFormatter.format(response['summary'] as String);
           findings = [
@@ -172,6 +187,9 @@ class AiController extends OperationController {
               'AI history could not be saved. Duplicate checks across restarts may be incomplete.';
         } else {
           historyWarning = null;
+        }
+        } finally {
+          await SubscriptionState.instance.refreshAiUsage();
         }
       });
   Future<void> replace(int index) async {

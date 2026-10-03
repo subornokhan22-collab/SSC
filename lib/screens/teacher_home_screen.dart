@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,10 @@ import '../widgets/reference_ui.dart';
 import '../navigation/app_routes.dart';
 import '../services/auth_service.dart';
 import '../services/paper_library.dart';
-import '../services/paper_license.dart';
 import '../services/promotion_service.dart';
+import '../services/subscription_guard.dart';
+import '../models/subscription_entitlement.dart';
+import '../services/subscription_state.dart';
 import '../theme/app_theme.dart';
 import 'ai_tools_screen.dart';
 import 'omr_scanner_screen.dart';
@@ -61,7 +64,12 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
 
   Future<void> load() async {
     final generation = ++loadGeneration;
-    final localPro = await PaperLicense.isPro();
+    final subscription = SubscriptionState.instance;
+    if (!subscription.initialized) {
+      await subscription.initialize(refresh: false);
+    }
+    final localPro = subscription.entitlement.isPaid;
+    unawaited(subscription.refresh());
     String? storedTitle;
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -278,6 +286,13 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   Future<void> _openSettings() async {
     await Navigator.pushNamed(context, AppRoutes.settings);
     if (mounted) load();
+  }
+
+  Future<void> _openPremium(Widget screen, PremiumFeature feature) async {
+    if (!mounted) return;
+    if (await SubscriptionGuard.require(context, feature)) {
+      await _openScreen(screen);
+    }
   }
 
   @override
@@ -642,7 +657,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                                 icon: PhosphorIcons.magicWand,
                                 asset: 'New UI 4.0/Ai assistant.png',
                                 label: 'Assistant',
-                                onTap: () => _openScreen(const AiToolsScreen()),
+                                onTap: () => _openPremium(
+                                    const AiToolsScreen(),
+                                    PremiumFeature.aiAssistant,
+                                  ),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -678,7 +696,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.chartBar,
                           label: 'Statistics',
-                          onTap: () => _openScreen(const OMrAnalyticsScreen()),
+                          onTap: () => _openPremium(
+                              const OMrAnalyticsScreen(),
+                              PremiumFeature.omrScanner,
+                            ),
                         ),
                       ),
                     ],
@@ -691,7 +712,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     icon: PhosphorIcons.scan,
                     label: 'OMR Scanner',
                     multiline: true,
-                    onTap: () => _openScreen(const OMrScannerScreen()),
+                    onTap: () => _openPremium(
+                      const OMrScannerScreen(),
+                      PremiumFeature.omrScanner,
+                    ),
                   ),
                 ),
               ],

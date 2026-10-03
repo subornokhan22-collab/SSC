@@ -21,8 +21,9 @@ class RenderedPaper {
 class PaperExport {
   static Future<RenderedPaper> render(
     PaperDraft draft,
-    ComposedPaper paper,
-  ) async {
+    ComposedPaper paper, {
+    bool watermark = false,
+  }) async {
     final subject = subjectById(draft.subjectId);
     if (subject == null) throw StateError('Subject not found');
     final title =
@@ -86,11 +87,31 @@ class PaperExport {
         pw.Page(
           pageFormat: PdfPageFormat.a4,
           margin: pw.EdgeInsets.zero,
-          build: (_) => pw.Image(
-            pw.MemoryImage(png),
-            width: PdfPageFormat.a4.width,
-            height: PdfPageFormat.a4.height,
-            fit: pw.BoxFit.fill,
+          build: (_) => pw.Stack(
+            children: [
+              pw.Positioned.fill(
+                child: pw.Image(
+                  pw.MemoryImage(png),
+                  fit: pw.BoxFit.fill,
+                ),
+              ),
+              if (watermark)
+                pw.Positioned.fill(
+                  child: pw.Center(
+                    child: pw.Opacity(
+                      opacity: .12,
+                      child: pw.Text(
+                        'DEMO • TUTOR’S DESK',
+                        style: pw.TextStyle(
+                          color: PdfColors.grey700,
+                          fontSize: 42,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       );

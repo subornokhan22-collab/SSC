@@ -229,13 +229,13 @@ create policy figures_admin_delete on storage.objects
   for delete to authenticated
   using (bucket_id = 'question-figures' and public.is_question_admin());
 -- Tutor's Desk — Offers, prizes, in-app announcements and offer ads.
--- Run after 20260925000001_content_manager.sql and the bKash migration.
+-- Run after 20260925000001_content_manager.sql and the subscription architecture migration.
 -- This does not create an administrator or expose payment secrets.
 begin;
 
 create table if not exists public.paid_plan_offers (
   id text primary key check (id ~ '^[a-zA-Z0-9_-]+$'),
-  plan_id text not null check (plan_id in ('monthly', 'yearly', 'lifetime')),
+  plan_id text not null check (plan_id in ('basic', 'pro', 'professional')),
   title text not null,
   description text not null default '',
   price numeric(10,2) not null check (price >= 0),

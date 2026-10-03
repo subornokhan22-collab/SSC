@@ -1,16 +1,18 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'paper_license.dart';
 import 'supabase_config.dart';
+import 'subscription_state.dart';
 
-/// Email + password sign-in, tutor profile (name / phone), Pro sync (Supabase).
+/// Email + password sign-in and tutor profile (name / phone) service.
+///
+/// Subscription state is refreshed separately through SubscriptionRepository;
+/// this class only owns authentication and profile identity.
 ///
 /// Flow:
 ///  1) Sign up — name, +880 phone, email + password. Supabase emails a
 ///     one-time code to confirm the address, then a `profiles` row is created
 ///     with role `teacher`. This is the ONLY time a code is sent.
 ///  2) Sign in — email + password. No code, no email round-trip.
-///  3) If `profiles.is_pro` is true, syncing turns Pro on for this device.
 ///
 /// Tutor's Desk is a tutor-only product, so every account is a teacher account.
 /// When Supabase is not configured ([SupabaseConfig] empty) every call degrades
@@ -271,7 +273,7 @@ class AuthService {
     return p;
   }
 
-  /// Updates name / phone only — email, role and is_pro are never touched.
+  /// Updates name / phone only — email, role and subscription authority are never touched.
   static Future<void> updateProfile({String? name, String? phone}) async {
     _requireReady();
     final u = _c.auth.currentUser;
@@ -288,35 +290,25 @@ class AuthService {
     await fetchProfile();
   }
 
-  /// Turns Pro on for this device when the server has it enabled.
-  /// Carries the subscription end date (monthly / yearly plans); a
-  /// one-time unlock leaves it null = forever.
+  /// Refreshes the centralized server-authoritative entitlement.
+  ///
+  /// Kept as a compatibility entry point for older auth screens during the
+  /// migration; it no longer writes a local Pro flag or reads plan rules.
   static Future<bool> syncProFromServer() async {
     if (!isLoggedIn) return false;
-    final p = await fetchProfile();
-    if (p == null) return false;
-    DateTime? until;
-    final raw = p['pro_until']?.toString();
-    if (raw != null && raw.isNotEmpty) {
-      until = DateTime.tryParse(raw.replaceFirst('Z', '+00:00'));
-    }
-    final active =
-        p['is_pro'] == true && (until == null || until.isAfter(DateTime.now()));
-    if (!active) {
-      // The server is authoritative. Do not leave a stale local unlock on a
-      // device after an expired/revoked account is refreshed.
-      await PaperLicense.deactivate();
-      return false;
-    }
-    await PaperLicense.markProFromServer(until: until);
-    return true;
+    await SubscriptionState.instance.refresh();
+    return SubscriptionState.instance.entitlement.isPaid;
   }
 
   static Future<void> signOut() async {
+    final accountId = userId;
     try {
       if (ready) await _c.auth.signOut();
     } catch (_) {}
     _profileCache = null;
+    // Clear the account-scoped in-memory state and cache for the account that
+    // just signed out, not the anonymous key after Supabase clears the user.
+    SubscriptionState.clear(accountId: accountId);
   }
 
   static void _requireReady() {

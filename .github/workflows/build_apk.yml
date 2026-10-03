@@ -45,8 +45,8 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Type-check Gemini edge function
-        run: deno check supabase/functions/mimi/index.ts supabase/functions/admin-content/index.ts
+      - name: Type-check subscription and AI edge functions
+        run: deno check supabase/functions/mimi/index.ts supabase/functions/admin-content/index.ts supabase/functions/rupantor-pay/index.ts
       - name: Gateway request boundary tests
         run: node --experimental-strip-types --test supabase/tests/*_test.mjs
       - name: Profiles RLS and audit regression tests (disposable database)

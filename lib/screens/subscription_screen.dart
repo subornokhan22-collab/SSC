@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_style.dart';
 import '../services/auth_service.dart';
-import '../services/bkash_service.dart';
-import '../services/paper_license.dart';
+import '../services/rupantor_pay_service.dart';
+import '../services/subscription_state.dart';
 import '../services/promotion_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
@@ -15,8 +14,8 @@ import '../widgets/glass_card.dart';
 import '../widgets/problem_dialog.dart';
 
 /// Subscription screen.
-///  • Free tutors: what Pro unlocks, the plans, and the bKash buy flow
-///    (tap a plan → pay in bKash → Pro turns on automatically).
+///  • Free tutors: what Pro unlocks, the plans, and the Rupantor Pay buy flow
+///    (tap a plan → pay in Rupantor Pay → Pro turns on automatically).
 ///  • Pro tutors : a celebratory confirmation, nothing to sell.
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -28,12 +27,14 @@ class SubscriptionScreen extends StatefulWidget {
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
 }
 
-class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  bool _isPro = false;
+class _SubscriptionScreenState extends State<SubscriptionScreen>
+    with WidgetsBindingObserver {
+  bool _hasPaidPlan = false;
   bool _loading = true;
 
-  List<BkashPlan> _plans = List<BkashPlan>.from(BkashService.plans);
-  BkashPlan _plan = BkashService.plans.first;
+  final RupantorPayService _payments = RupantorPayService();
+  List<RupantorPlan> _plans = const [];
+  RupantorPlan? _plan;
   bool _buying = false;
   Timer? _poll;
   String? _waitingTrx;
@@ -41,53 +42,51 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     AppStyle.load();
     _load();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      SubscriptionState.instance.refresh().then((_) {
+        if (mounted) {
+          setState(() => _hasPaidPlan =
+              SubscriptionState.instance.entitlement.isPaid);
+        }
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _poll?.cancel();
     super.dispose();
   }
 
   Future<void> _load() async {
-    // Refresh the account entitlement before deciding whether to show the
-    // purchase screen. This keeps a purchase made on another device from
-    // being mistaken for a free account.
-    if (AuthService.isLoggedIn) {
-      try {
-        await AuthService.syncProFromServer();
-      } catch (_) {
-        // Keep the cached licence when the account is temporarily offline.
-      }
-    }
-    final pro = await PaperLicense.isPro();
+    final state = SubscriptionState.instance;
+    await state.initialize(refresh: false);
     final feed = await PromotionService.load();
-    final configuredByPlan = <String, BkashPlan>{};
-    for (final offer in feed.offers) {
-      if (!const {'monthly', 'yearly', 'lifetime'}.contains(offer.planId) ||
-          offer.price <= 0 ||
-          configuredByPlan.containsKey(offer.planId)) {
-        continue;
-      }
-      configuredByPlan[offer.planId] = BkashPlan(
-        offer.planId,
-        offer.price,
-        offer.title,
-        offer.periodText,
-      );
-    }
-    final configured = configuredByPlan.values.toList();
+    List<RupantorPlan> plans = const [];
+    try {
+      plans = await _payments.plans();
+    } catch (_) {}
     if (mounted) {
       setState(() {
-        _isPro = pro;
-        if (configured.isNotEmpty) {
-          _plans = configured;
-          _plan = configured.first;
-        }
+        _hasPaidPlan = state.entitlement.isPaid && !state.isExpired;
+        _plans = plans;
+        _plan = plans.isEmpty ? null : (_plan ?? plans.first);
         _loading = false;
       });
+      // Payment status is reconciled in the background; the cached state is
+      // enough to render the pricing screen immediately.
+      unawaited(state.refresh());
+      if (feed.offers.isNotEmpty) {
+        // Promotion content remains available to the existing pricing UI.
+      }
     }
   }
 
@@ -99,117 +98,36 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         detail: detail,
       );
 
-  // ── bKash flow ───────────────────────────────────────────────────
+  // ── Rupantor Pay flow ───────────────────────────────────────────────────
 
   Future<void> _buy() async {
-    if (_buying) return;
+    final plan = _plan;
+    if (_buying || plan == null) return;
     if (!AuthService.isLoggedIn) {
       await _problem(
         'Sign in first',
-        'Pro is linked to your tutor account, so sign in (or create a free '
-            'account) before paying. Your papers work offline either way.',
+        'Subscriptions are linked to your Tutor's Desk account. Sign in before paying.',
       );
       return;
     }
-    // Confirm the bKash number that will receive the payment.
-    final profile = await AuthService.fetchProfile(refresh: false);
-    var phone = (profile?['phone']?.toString() ?? '').replaceAll(
-      RegExp(r'[^\d]'),
-      '',
-    );
-    if (phone.startsWith('880')) phone = phone.substring(3);
-    if (phone.startsWith('0')) phone = phone.substring(1);
-    final ctrl = TextEditingController(text: phone);
-    String? err;
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (c) => StatefulBuilder(
-        builder: (c, setD) => AlertDialog(
-          title: const Text('Pay with bKash'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${_plan.label} — ${_plan.periodText}\n'
-                'Enter the bKash number that will make the payment.',
-                style: const TextStyle(fontSize: 13, height: 1.55),
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: ctrl,
-                keyboardType: TextInputType.phone,
-                autofocus: true,
-                maxLength: 11,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  labelText: 'bKash number',
-                  hintText: '01XXXXXXXXX',
-                  counterText: '',
-                  prefixText: '+880 ',
-                  prefixStyle: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-              ),
-              if (err != null) ...[
-                const SizedBox(height: 10),
-                Text(
-                  err!,
-                  style: const TextStyle(
-                    color: AppTheme.danger,
-                    fontSize: 12.5,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(c, false),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                final p = ctrl.text.trim();
-                if (!RegExp(r'^01\d{9}$').hasMatch(p)) {
-                  setD(
-                    () => err = 'Enter a valid bKash number, e.g. 01712345678.',
-                  );
-                  return;
-                }
-                Navigator.pop(c, true);
-              },
-              child: const Text('Continue'),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (saved != true || !mounted) return;
-
     setState(() {
       _buying = true;
       _waitingTrx = null;
     });
     try {
-      final (trxId, url) = await BkashService.initiate(
-        plan: _plan,
-        phone: ctrl.text.trim(),
-        name: AuthService.displayName,
-        email: AuthService.email ?? '',
-      );
+      final payment = await _payments.initiate(plan: plan.plan);
       if (!mounted) return;
-      // Open bKash, then wait for the money to be confirmed.
-      final opened = await BkashService.openCheckout(url);
+      final opened = await RupantorPayService.openCheckout(payment.checkoutUrl);
       if (!mounted) return;
       if (!opened) {
         await _problem(
-          'Could not open bKash',
-          'bKash did not open. Install the bKash app or check your browser, then tap the plan again.',
+          'Could not open Rupantor Pay',
+          'The payment page could not be opened. Check your browser and try again.',
         );
         return;
       }
-      _showWaiting(trxId);
-    } on BkashError catch (e) {
+      _showWaiting(payment.transactionId);
+    } on RupantorPayError catch (e) {
       if (mounted) await _problem('Payment could not be started', e.message);
     } catch (e) {
       if (mounted) {
@@ -233,7 +151,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       attempts++;
       if (!mounted) return;
       try {
-        final status = await BkashService.verify(trxId);
+        final status = await _payments.verify(trxId);
         if (!mounted) return;
         if (status == 'active') {
           _poll?.cancel();
@@ -245,8 +163,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           _poll?.cancel();
           Navigator.of(context).pop();
           await _problem(
-            'This bKash payment failed',
-            'bKash rejected this payment — no money left your account. '
+            'This Rupantor Pay payment failed',
+            'Rupantor Pay rejected this payment — no money left your account. '
                 'You can try again straight away.',
           );
           return;
@@ -256,12 +174,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           Navigator.of(context).pop();
           await _problem(
             'Payment not detected yet',
-            'bKash has not confirmed the money yet. It can take a little '
+            'Rupantor Pay has not confirmed the money yet. It can take a little '
                 'while — tap "Check again" any time, or contact support if '
                 'it still does not activate.',
           );
         }
-      } on BkashError {
+      } on RupantorPayError {
         // Network blip while polling — just wait for the next tick.
       }
     });
@@ -271,7 +189,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       builder: (c) => PopScope(
         canPop: false,
         child: AlertDialog(
-          title: const Text('Waiting for bKash…'),
+          title: const Text('Waiting for Rupantor Pay…'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +204,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      'Complete the payment in bKash, then come back here — the app activates Pro by itself.',
+                      'Complete the payment in Rupantor Pay, then come back here — the app activates Pro by itself.',
                     ),
                   ),
                 ],
@@ -316,23 +234,23 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Future<void> _manualCheck(String trxId) async {
     setState(() => _buying = true);
     try {
-      final status = await BkashService.verify(trxId);
+      final status = await _payments.verify(trxId);
       if (!mounted) return;
       if (status == 'active') {
         await _activate();
       } else if (status == 'failed') {
         await _problem(
-          'This bKash payment failed',
-          'bKash rejected this payment — no money left your account.',
+          'This Rupantor Pay payment failed',
+          'Rupantor Pay rejected this payment — no money left your account.',
         );
       } else {
         await _problem(
           'Still waiting',
-          'bKash has not confirmed the payment yet. Try again in a minute, '
+          'Rupantor Pay has not confirmed the payment yet. Try again in a minute, '
               'or contact support with the payment reference.',
         );
       }
-    } on BkashError catch (e) {
+    } on RupantorPayError catch (e) {
       if (mounted) await _problem('Could not check the payment', e.message);
     } finally {
       if (mounted) setState(() => _buying = false);
@@ -340,21 +258,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _activate() async {
-    try {
-      await AuthService.syncProFromServer();
-    } catch (_) {}
     if (!mounted) return;
-    setState(() => _isPro = true);
+    await SubscriptionState.instance.refreshAfterPayment();
+    if (mounted) {
+      setState(() => _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid);
+    }
     await _load();
     if (!mounted) return;
+    final planName = SubscriptionState.instance.entitlement.plan.displayName;
     showDialog<void>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('🎉 Pro is active!'),
+        title: Text('🎉 $planName is active!'),
         content: const Text(
           'Thank you for supporting Tutor\'s Desk.\n\n'
-          'Full papers, no watermark, PDF and printing — every feature '
-          'is unlocked.',
+          'Your verified subscription is now active. Premium features '
+          'will refresh without restarting the app.',
         ),
         actions: [
           FilledButton(
@@ -371,7 +290,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isPro ? "Tutor's Desk Pro" : 'Upgrade to Pro'),
+        title: Text(_hasPaidPlan ? "Tutor's Desk Pro" : 'Upgrade to Pro'),
       ),
       body: SafeArea(
         child: SoftSwitcher(
@@ -380,7 +299,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   key: ValueKey('loading'),
                   message: 'Checking your licence...',
                 )
-              : (_isPro ? _proBody() : _buyBody()),
+              : (_hasPaidPlan ? _proBody() : _buyBody()),
         ),
       ),
     );
@@ -432,7 +351,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 const SizedBox(height: 22),
                 const Text(
-                  'You are on Pro',
+                  'Your subscription is active',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppTheme.textDark,
@@ -521,7 +440,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Pay with bKash — Pro turns on automatically after payment.',
+                'Pay with Rupantor Pay — Pro turns on automatically after payment.',
                 style: TextStyle(
                   color: AppTheme.accent,
                   fontSize: 14.5,
@@ -590,9 +509,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           icon: PhosphorIcons.receipt,
         ),
         for (final plan in _plans) _planCard(plan),
+        if (_plans.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 14),
+            child: Text(
+              'Plans are temporarily unavailable. Check your connection and try again.',
+              style: TextStyle(color: AppTheme.muted),
+            ),
+          ),
         const SizedBox(height: 16),
         PressableScale(
-          onTap: _buying ? null : _buy,
+          onTap: _buying || _plan == null ? null : _buy,
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -630,8 +557,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 const SizedBox(width: 10),
                 Text(
                   _buying
-                      ? 'Starting bKash payment…'
-                      : 'Pay ${_plan.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} with bKash',
+                      ? 'Starting Rupantor Pay payment…'
+                      : _plan == null
+                          ? 'Plans unavailable'
+                          : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} with Rupantor Pay',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15.5,
@@ -645,8 +574,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         const SizedBox(height: 8),
         const Center(
           child: Text(
-            'You will be redirected to bKash. The app activates Pro '
-            'automatically as soon as bKash confirms the payment.',
+            'You will be redirected to Rupantor Pay. The app activates Pro '
+            'automatically as soon as Rupantor Pay confirms the payment.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: AppTheme.muted, height: 1.5),
           ),
@@ -662,7 +591,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
               const Text(
                 'Payment problems, refunds or questions — contact support. '
-                'Never share your bKash PIN or payment credentials inside '
+                'Never share your Rupantor Pay PIN or payment credentials inside '
                 'the app.',
                 style: TextStyle(
                   fontSize: 12.5,
@@ -727,8 +656,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  Widget _planCard(BkashPlan plan) {
-    final selected = _plan.id == plan.id;
+  Widget _planCard(RupantorPlan plan) {
+    final selected = _plan?.id == plan.id;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: PressableScale(

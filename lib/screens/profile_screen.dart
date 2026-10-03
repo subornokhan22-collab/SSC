@@ -4,7 +4,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_style.dart';
 import '../services/auth_service.dart';
-import '../services/paper_license.dart';
+import '../services/subscription_state.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/animations.dart';
@@ -49,25 +49,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refresh() async {
-    final cachedPro = await PaperLicense.isPro();
+    final subscription = SubscriptionState.instance;
+    if (!subscription.initialized) {
+      await subscription.initialize(refresh: false);
+    }
+    final wasPaid = subscription.entitlement.isPaid;
     Map<String, dynamic>? p;
-    var synced = false;
     if (AuthService.isLoggedIn) {
       try {
         p = await AuthService.fetchProfile();
-        synced = await AuthService.syncProFromServer();
+        await subscription.refresh();
       } catch (_) {
-        // Offline — keep whatever is cached locally.
+        // Offline — use the last verified entitlement.
       }
     }
-    // Re-read after sync: a server-side expiry/revocation may have removed a
-    // stale local unlock. If the server could not be reached, retain cache.
-    final proNow = synced ? true : await PaperLicense.isPro();
     if (!mounted) return;
+    final paidNow = subscription.entitlement.isPaid;
     setState(() {
       _profile = p;
-      _devicePro = proNow;
-      if (synced && !cachedPro) _msg = 'Pro is now active on this device.';
+      _devicePro = paidNow;
+      if (paidNow && !wasPaid) _msg = 'Your subscription is now active on this device.';
     });
   }
 
@@ -397,14 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _accountCard() {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
-    // Expired subscription = not Pro (a past pro_until with is_pro left
-    // true means the plan ran out).
-    DateTime? pu;
-    final puRaw = _profile?['pro_until']?.toString() ?? '';
-    if (puRaw.isNotEmpty)
-      pu = DateTime.tryParse(puRaw.replaceFirst('Z', '+00:00'));
-    final serverPro = _profile?['is_pro'] == true &&
-        (pu == null || pu.isAfter(DateTime.now()));
+    final serverPro = _devicePro;
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
     final initial =
         (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();

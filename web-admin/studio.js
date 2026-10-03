@@ -73,6 +73,7 @@ const ICONS = Object.freeze({
   arrow: '<path d="M5 12h13M13 6l6 6-6 6"/>',
   spark: '<path d="m12 3 1.7 6.3L20 11l-6.3 1.7L12 19l-1.7-6.3L4 11l6.3-1.7L12 3Z"/>',
   book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v15M8 7h8M8 11h8"/>',
+  subscriptions: '<path d="M4 7h16v13H4zM7 4h10M8 12h8M8 16h5"/><path d="M8 7V4M16 7V4"/>',
 });
 function icon(name, className = "ui-icon") {
   return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.spark}</svg>`;
@@ -84,6 +85,7 @@ const nav = [
   ["all", "all", "All"],
   ["import", "import", "Import"],
   ["promotions", "promotions", "Promotions"],
+  ["subscriptions", "subscriptions", "Subscriptions"],
   ["figures", "figures", "Figures"],
   ["validation", "validation", "Validate"],
   ["archived", "archived", "Archive"],
@@ -123,11 +125,11 @@ let demoEnglish = [],
   demoPromotions = {
     offers: [
       {
-        id: "demo_monthly",
-        plan_id: "monthly",
-        title: "Pro Monthly",
+        id: "demo_basic",
+        plan_id: "basic",
+        title: "Basic",
         description: "Full papers, PDF export and no watermark.",
-        price: 299,
+        price: 100,
         currency: "BDT",
         period_days: 30,
         badge: "Popular",
@@ -135,11 +137,11 @@ let demoEnglish = [],
         sort_order: 1,
       },
       {
-        id: "demo_lifetime",
-        plan_id: "lifetime",
-        title: "Pro Lifetime",
+        id: "demo_professional",
+        plan_id: "professional",
+        title: "Professional",
         description: "One payment for permanent Pro access.",
-        price: 799,
+        price: 400,
         currency: "BDT",
         period_days: null,
         badge: "Best value",
@@ -516,6 +518,7 @@ async function render() {
       archived: listView,
       import: importView,
       promotions: promotionsView,
+      subscriptions: subscriptionsView,
       validation: validationView,
       figures: figuresView,
       activity: activityView,
@@ -1743,6 +1746,30 @@ async function runHealth(kind) {
       }),
   );
 }
+async function subscriptionsView() {
+  let plans = [], teachers = [];
+  if (state.demo) {
+    plans = [
+      { id: 'free', name: 'Free', price_bdt: 0, duration_days: null, subject_limit: 1, no_watermark: false, ai_assistant: false, ai_daily_limit: 0, omr_scanner: false, is_active: true, sort_order: 0 },
+      { id: 'basic', name: 'Basic', price_bdt: 100, duration_days: 30, subject_limit: 3, no_watermark: false, ai_assistant: false, ai_daily_limit: 0, omr_scanner: false, is_active: true, sort_order: 1 },
+      { id: 'pro', name: 'Pro', price_bdt: 200, duration_days: 30, subject_limit: 5, no_watermark: true, ai_assistant: true, ai_daily_limit: 20, omr_scanner: false, is_active: true, sort_order: 2 },
+      { id: 'professional', name: 'Professional', price_bdt: 400, duration_days: 30, subject_limit: null, no_watermark: true, ai_assistant: true, ai_daily_limit: 50, omr_scanner: true, is_active: true, sort_order: 3 },
+    ];
+  } else {
+    const [planResult, teacherResult] = await Promise.all([
+      client.from('subscription_plans').select('*').order('sort_order'),
+      client.rpc('admin_subscription_overview'),
+    ]);
+    if (planResult.error) throw planResult.error;
+    if (teacherResult.error) throw teacherResult.error;
+    plans = planResult.data || [];
+    teachers = teacherResult.data || [];
+  }
+  const planRows = plans.map((p) => `<tr><td><strong>${esc(p.name || p.id)}</strong><small>${esc(p.id)}</small></td><td><input class="admin-number" id="sub-price-${esc(p.id)}" type="number" min="0" value="${esc(p.price_bdt)}"></td><td><input class="admin-number" id="sub-days-${esc(p.id)}" type="number" min="1" value="${esc(p.duration_days ?? '')}"></td><td><input class="admin-number" id="sub-subjects-${esc(p.id)}" type="number" min="1" value="${esc(p.subject_limit ?? '')}" placeholder="Unlimited"></td><td><input id="sub-ai-${esc(p.id)}" type="number" min="0" value="${esc(p.ai_daily_limit)}"></td><td><label><input id="sub-watermark-${esc(p.id)}" type="checkbox" ${p.no_watermark ? 'checked' : ''}> no watermark</label><label><input id="sub-ai-access-${esc(p.id)}" type="checkbox" ${p.ai_assistant ? 'checked' : ''}> AI</label><label><input id="sub-omr-${esc(p.id)}" type="checkbox" ${p.omr_scanner ? 'checked' : ''}> OMR</label></td><td><input id="sub-active-${esc(p.id)}" type="checkbox" ${p.is_active ? 'checked' : ''}></td><td><button class="primary small" data-action="save-subscription-plan" data-row="${esc(p.id)}">Save</button></td></tr>`).join('');
+  const teacherRows = teachers.map((t) => `<tr><td>${esc(t.teacher_name || '—')}<small>${esc(t.email || t.teacher_id)}</small></td><td><span class="badge ${t.status === 'active' ? 'published' : 'draft'}">${esc(String(t.plan || 'free').toUpperCase())}</span></td><td>${esc(t.status || 'active')}</td><td>${t.started_at ? esc(new Date(t.started_at).toLocaleDateString()) : '—'}</td><td>${t.expires_at ? esc(new Date(t.expires_at).toLocaleDateString()) : '—'}</td><td>${esc(t.provider || '—')}</td><td>${esc(t.transaction_id || '—')}</td><td>${esc(`${t.ai_used_today || 0} / ${t.ai_daily_limit || 0}`)}</td></tr>`).join('');
+  return `<div class="intro"><div><h2>Subscription architecture</h2><p class="muted">Manage the server-side plan matrix and inspect verified teacher entitlements. Flutter never supplies prices.</p></div><span class="badge">RUPANTOR PAY</span></div><section class="card"><div class="card-head"><h2>Active plan matrix</h2><span class="badge">${plans.length} plans</span></div><div class="table-wrap"><table><thead><tr><th>PLAN</th><th>PRICE BDT</th><th>DAYS</th><th>SUBJECTS</th><th>AI / DAY</th><th>WATERMARK / AI / OMR</th><th>ACTIVE</th><th></th></tr></thead><tbody>${planRows}</tbody></table></div><p class="muted">The server reads this table for payment amounts and feature entitlements. Pro and Professional AI limits are editable without an APK release.</p></section><section class="card"><div class="card-head"><h2>Teacher subscriptions</h2><span class="badge">${teachers.length} teachers</span></div><div class="table-wrap"><table><thead><tr><th>TEACHER</th><th>PLAN</th><th>STATUS</th><th>STARTED</th><th>EXPIRES</th><th>PROVIDER</th><th>TRANSACTION</th><th>AI USED / LIMIT</th></tr></thead><tbody>${teacherRows || '<tr><td colspan="8" class="empty">No teacher subscriptions found.</td></tr>'}</tbody></table></div></section>`;
+}
+
 async function activityView() {
   const rows = (await all("admin_activity")).sort((a, b) =>
     b.created_at.localeCompare(a.created_at),
@@ -1784,7 +1811,7 @@ function promotionRowsMarkup(kind, rows) {
     .join("")}</div>`;
 }
 function promotionFormFields() {
-  return `<input id="promo-offer-id" type="hidden"><label>Title<input id="promo-offer-title" placeholder="Pro Yearly"></label><label>Plan<select id="promo-offer-plan"><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="lifetime">Lifetime</option></select></label><label>Price<input id="promo-offer-price" type="number" min="0" step="0.01" placeholder="2499"></label><label>Duration days<input id="promo-offer-days" type="number" min="1" placeholder="365 · blank for lifetime"></label><label>Badge<input id="promo-offer-badge" placeholder="Best value"></label><label>Sort order<input id="promo-offer-sort" type="number" value="0"></label><label class="wide">Description<textarea id="promo-offer-description" rows="3" placeholder="What this plan unlocks"></textarea></label><label>Starts<input id="promo-offer-starts" type="datetime-local"></label><label>Ends<input id="promo-offer-ends" type="datetime-local"></label><label class="check wide"><input id="promo-offer-active" type="checkbox"> Show this offer in the app</label>`;
+  return `<input id="promo-offer-id" type="hidden"><label>Title<input id="promo-offer-title" placeholder="Professional"></label><label>Plan<select id="promo-offer-plan"><option value="basic">Basic</option><option value="pro">Pro</option><option value="professional">Professional</option></select></label><label>Price<input id="promo-offer-price" type="number" min="0" step="0.01" placeholder="400"></label><label>Duration days<input id="promo-offer-days" type="number" min="1" placeholder="30"></label><label>Badge<input id="promo-offer-badge" placeholder="Best value"></label><label>Sort order<input id="promo-offer-sort" type="number" value="0"></label><label class="wide">Description<textarea id="promo-offer-description" rows="3" placeholder="What this plan unlocks"></textarea></label><label>Starts<input id="promo-offer-starts" type="datetime-local"></label><label>Ends<input id="promo-offer-ends" type="datetime-local"></label><label class="check wide"><input id="promo-offer-active" type="checkbox"> Show this offer in the app</label>`;
 }
 function promotionForm(kind) {
   if (kind === "offers")
@@ -1792,7 +1819,7 @@ function promotionForm(kind) {
   if (kind === "prizes")
     return `<form class="promotion-form" data-promotion-form="prizes"><h3>Create or edit prize</h3><div class="form-grid"><input id="promo-prize-id" type="hidden"><label>Prize title<input id="promo-prize-title" placeholder="Monthly paper challenge"></label><label>Value / reward<input id="promo-prize-value" placeholder="৳1,000 book voucher"></label><label>Stock<input id="promo-prize-stock" type="number" min="0" placeholder="Blank = unlimited"></label><label>Photo URL<input id="promo-prize-image" type="url" placeholder="https://…"></label><label class="wide">Description<textarea id="promo-prize-description" rows="3" placeholder="Who can win and how"></textarea></label><label>Starts<input id="promo-prize-starts" type="datetime-local"></label><label>Ends<input id="promo-prize-ends" type="datetime-local"></label><label class="check wide"><input id="promo-prize-active" type="checkbox"> Show this prize in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-prizes">Save</button><button type="button" class="ghost" data-action="promo-clear-prizes">Clear</button></div></form>`;
   if (kind === "notifications")
-    return `<form class="promotion-form" data-promotion-form="notifications"><h3>Write an in-app notification</h3><p class="muted">Save as a draft, or publish it immediately to the selected audience. This creates an in-app broadcast; OS push delivery needs a push provider and is not fabricated here.</p><div class="form-grid"><input id="promo-notification-id" type="hidden"><label>Title<input id="promo-notification-title" placeholder="New yearly plan available"></label><label>Audience<select id="promo-notification-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-notification-message" rows="4" placeholder="Write the message teachers will see"></textarea></label><label>Action label<input id="promo-notification-action-label" placeholder="View plans"></label><label>Action URL<input id="promo-notification-action-url" value="/plans" placeholder="/plans"></label><label>Schedule<input id="promo-notification-scheduled" type="datetime-local"></label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-send-notifications" aria-label="Publish in app" title="Publish in app">Publish</button><button type="button" class="ghost" data-action="promo-save-notifications">Save</button><button type="button" class="ghost" data-action="promo-clear-notifications">Clear</button></div></form>`;
+    return `<form class="promotion-form" data-promotion-form="notifications"><h3>Write an in-app notification</h3><p class="muted">Save as a draft, or publish it immediately to the selected audience. This creates an in-app broadcast; OS push delivery needs a push provider and is not fabricated here.</p><div class="form-grid"><input id="promo-notification-id" type="hidden"><label>Title<input id="promo-notification-title" placeholder="New plan available"></label><label>Audience<select id="promo-notification-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-notification-message" rows="4" placeholder="Write the message teachers will see"></textarea></label><label>Action label<input id="promo-notification-action-label" placeholder="View plans"></label><label>Action URL<input id="promo-notification-action-url" value="/plans" placeholder="/plans"></label><label>Schedule<input id="promo-notification-scheduled" type="datetime-local"></label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-send-notifications" aria-label="Publish in app" title="Publish in app">Publish</button><button type="button" class="ghost" data-action="promo-save-notifications">Save</button><button type="button" class="ghost" data-action="promo-clear-notifications">Clear</button></div></form>`;
   return `<form class="promotion-form" data-promotion-form="ads"><h3>Create or edit popup offer ad</h3><div class="form-grid"><input id="promo-ad-id" type="hidden"><label>Ad title<input id="promo-ad-title" placeholder="Save more with Pro"></label><label>Audience<select id="promo-ad-audience"><option value="all">All tutors</option><option value="free">Free tutors</option><option value="pro">Pro tutors</option></select></label><label class="wide">Message<textarea id="promo-ad-body" rows="3" placeholder="Short text under the photo"></textarea></label><label class="wide">Photo URL<input id="promo-ad-image" type="url" placeholder="Upload a photo below or paste an https URL"></label><label class="wide">Upload photo<input id="promo-ad-file" type="file" accept="image/png,image/jpeg,image/webp"><small class="muted" id="promo-ad-upload-note">PNG, JPEG or WebP · up to 10 MB</small></label><div class="wide promo-ad-preview" id="promo-ad-preview"><span class="promo-no-image">Photo preview</span></div><label>Button label<input id="promo-ad-button" value="View offer"></label><label>Button URL<input id="promo-ad-url" value="/plans"></label><label>Linked plan<select id="promo-ad-offer"><option value="">No linked plan</option>${promotionRows.offers.map((r) => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join("")}</select></label><label>Priority<input id="promo-ad-priority" type="number" value="0"></label><label>Starts<input id="promo-ad-starts" type="datetime-local"></label><label>Ends<input id="promo-ad-ends" type="datetime-local"></label><label class="check wide"><input id="promo-ad-active" type="checkbox"> Show this popup in the app</label></div><div class="toolbar"><button type="button" class="primary" data-action="promo-save-ads">Save</button><button type="button" class="ghost" data-action="promo-clear-ads">Clear</button></div></form>`;
 }
 async function promotionsView() {
@@ -1800,7 +1827,7 @@ async function promotionsView() {
     Object.keys(promotionTables).map(loadPromotionRows),
   );
   promotionRows = { offers, prizes, notifications, ads };
-  return `<div class="intro"><div><h2>Offers, prizes and announcements</h2><p class="muted">Manage what teachers see in the app. Photos are stored in the separate promotion-assets bucket.</p></div><span class="badge">PROMOTION CONTROL</span></div><div class="promotion-grid"><section class="card promotion-card"><div class="card-head"><h2>Paid plan offers</h2><span class="badge">${offers.length}</span></div><p class="muted">The bKash plan ID and price used for the offer display.</p>${promotionForm("offers")}${promotionRowsMarkup("offers", offers)}</section><section class="card promotion-card"><div class="card-head"><h2>Prizes</h2><span class="badge">${prizes.length}</span></div><p class="muted">Prize announcements, value and optional photo.</p>${promotionForm("prizes")}${promotionRowsMarkup("prizes", prizes)}</section><section class="card promotion-card"><div class="card-head"><h2>In-app notifications</h2><span class="badge">${notifications.length}</span></div>${promotionForm("notifications")}${promotionRowsMarkup("notifications", notifications)}</section><section class="card promotion-card"><div class="card-head"><h2>Popup app offer ads</h2><span class="badge">${ads.length}</span></div><p class="muted">Upload a promotional photo, link it to a plan, then activate it for the app.</p>${promotionForm("ads")}${promotionRowsMarkup("ads", ads)}</section></div>`;
+  return `<div class="intro"><div><h2>Offers, prizes and announcements</h2><p class="muted">Manage what teachers see in the app. Photos are stored in the separate promotion-assets bucket.</p></div><span class="badge">PROMOTION CONTROL</span></div><div class="promotion-grid"><section class="card promotion-card"><div class="card-head"><h2>Paid plan offers</h2><span class="badge">${offers.length}</span></div><p class="muted">The Rupantor Pay plan ID and server price used for the offer display.</p>${promotionForm("offers")}${promotionRowsMarkup("offers", offers)}</section><section class="card promotion-card"><div class="card-head"><h2>Prizes</h2><span class="badge">${prizes.length}</span></div><p class="muted">Prize announcements, value and optional photo.</p>${promotionForm("prizes")}${promotionRowsMarkup("prizes", prizes)}</section><section class="card promotion-card"><div class="card-head"><h2>In-app notifications</h2><span class="badge">${notifications.length}</span></div>${promotionForm("notifications")}${promotionRowsMarkup("notifications", notifications)}</section><section class="card promotion-card"><div class="card-head"><h2>Popup app offer ads</h2><span class="badge">${ads.length}</span></div><p class="muted">Upload a promotional photo, link it to a plan, then activate it for the app.</p>${promotionForm("ads")}${promotionRowsMarkup("ads", ads)}</section></div>`;
 }
 function promotionField(id) {
   return $(id)?.value.trim() || "";
@@ -2231,6 +2258,29 @@ async function action(name, id) {
     table = tableFor(english),
     row = state.rows.find((r) => r.id === id);
   if (name === "reload") return render();
+  if (name === "save-subscription-plan") {
+    if (state.demo) {
+      notify('Demo mode does not save subscription plans.');
+      return;
+    }
+    const planId = id;
+    const row = {
+      price_bdt: Number($("sub-price-" + planId)?.value || 0),
+      duration_days: $("sub-days-" + planId)?.value ? Number($("sub-days-" + planId).value) : null,
+      subject_limit: $("sub-subjects-" + planId)?.value ? Number($("sub-subjects-" + planId).value) : null,
+      ai_daily_limit: Number($("sub-ai-" + planId)?.value || 0),
+      no_watermark: $("sub-watermark-" + planId)?.checked === true,
+      ai_assistant: $("sub-ai-access-" + planId)?.checked === true,
+      omr_scanner: $("sub-omr-" + planId)?.checked === true,
+      is_active: $("sub-active-" + planId)?.checked === true,
+      updated_at: new Date().toISOString(),
+    };
+    if (!Number.isFinite(row.price_bdt) || row.price_bdt < 0 || !Number.isFinite(row.ai_daily_limit) || row.ai_daily_limit < 0) throw Error('Enter valid non-negative price and AI limit values.');
+    const { error } = await client.from('subscription_plans').update(row).eq('id', planId);
+    if (error) throw error;
+    notify(`Plan ${id} updated. Payment and entitlement checks now use the server matrix.`);
+    return render();
+  }
   if (name.startsWith("promo-")) {
     const parts = name.split("-");
     const kind = parts[parts.length - 1];

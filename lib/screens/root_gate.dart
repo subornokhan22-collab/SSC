@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
+import '../services/subscription_state.dart';
 import '../widgets/animations.dart';
 import 'auth_choice_screen.dart';
 import 'teacher_home_screen.dart';
@@ -41,19 +44,19 @@ class _RootGateState extends State<RootGate> {
   /// Warms up the profile/Pro state before showing the workspace so the
   /// home screen never flickers between logged-out and logged-in states.
   Future<bool> _prepare() async {
-    if (!AuthService.ready || !AuthService.isLoggedIn) return false;
-    Future<void> bootSync() async {
-      await AuthService.ensureTeacherProfile();
-      await AuthService.syncProFromServer();
+    if (!AuthService.ready || !AuthService.isLoggedIn) {
+      SubscriptionState.instance.clear();
+      return false;
     }
-
     try {
-      // Hard cap: a dead network must never hold the boot screen — the
-      // profile sync gets 8 seconds, then the app opens with local state.
-      await bootSync().timeout(const Duration(seconds: 8));
+      await AuthService.ensureTeacherProfile();
+      // Cached entitlements are loaded before the first workspace frame. The
+      // server refresh runs reactively and never holds the app at the splash.
+      await SubscriptionState.instance.initialize(refresh: false);
+      unawaited(SubscriptionState.instance.refresh());
     } catch (_) {
-      // Offline / slow network — the local Pro flag and banked questions
-      // still work.
+      // Offline / slow network — cached entitlement and banked questions still
+      // work, while the view model can refresh when connectivity returns.
     }
     return true;
   }
