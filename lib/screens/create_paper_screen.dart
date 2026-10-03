@@ -78,8 +78,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             saqCount: counts.$2,
             cqCount: counts.$3),
         paperUsage: PaperUsageService());
-    _subjectChosen =
-        widget.initialSubjectId != null || widget.initialQuestions?.isNotEmpty == true;
+    _subjectChosen = widget.initialSubjectId != null ||
+        widget.initialQuestions?.isNotEmpty == true;
     c.addListener(sync);
     unawaited(initialize());
   }
@@ -521,7 +521,10 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
 
   Widget subjectStep() =>
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(_subjectChosen ? 'What are you teaching?' : 'Choose a subject first',
+        Text(
+            _subjectChosen
+                ? 'What are you teaching?'
+                : 'Choose a subject first',
             style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 8),
         const Text(

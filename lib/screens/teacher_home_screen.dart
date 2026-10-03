@@ -183,9 +183,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     await Navigator.pushNamed(
       context,
       AppRoutes.createPaper,
-      arguments: quick
-          ? const CreatePaperArgs(quickStart: true)
-          : null,
+      arguments: quick ? const CreatePaperArgs(quickStart: true) : null,
     );
     // The editor can move the workspace tint (English is pink); coming back to
     // the desk restores the accent for the tab the teacher is actually on.
