@@ -310,10 +310,10 @@ begin
 
   insert into public.ai_usage_daily(user_id, usage_date, request_count)
   values (p_user_id, day, 0)
-  on conflict (user_id, usage_date) do nothing;
-  select request_count into current_count
-  from public.ai_usage_daily
-  where user_id = p_user_id and usage_date = day
+  on conflict on constraint ai_usage_daily_pkey do nothing;
+  select u.request_count into current_count
+  from public.ai_usage_daily as u
+  where u.user_id = p_user_id and u.usage_date = day
   for update;
 
   if plan_row.ai_daily_limit <= 0 then
@@ -324,10 +324,10 @@ begin
     return query select false, current_count, plan_row.ai_daily_limit, day, 'daily_limit';
     return;
   end if;
-  update public.ai_usage_daily
-  set request_count = request_count + 1, updated_at = now()
-  where user_id = p_user_id and usage_date = day
-  returning request_count into current_count;
+  update public.ai_usage_daily as u
+  set request_count = u.request_count + 1, updated_at = now()
+  where u.user_id = p_user_id and u.usage_date = day
+  returning u.request_count into current_count;
   return query select true, current_count, plan_row.ai_daily_limit, day, 'ok';
 end $$;
 
