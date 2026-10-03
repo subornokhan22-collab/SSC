@@ -8,7 +8,7 @@ Run the migrations in order in the Supabase SQL editor or deploy them with the S
 
 ## Rupantor Pay Edge Function
 
-Deploy:
+Deploy after applying the migration:
 
 ```sh
 supabase functions deploy rupantor-pay
