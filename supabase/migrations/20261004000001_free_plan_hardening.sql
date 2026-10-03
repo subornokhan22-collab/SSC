@@ -333,10 +333,10 @@ begin
     return;
   end if;
 
-  update public.paper_usage_monthly
-  set paper_count = paper_count + 1, updated_at = now()
-  where user_id = teacher and usage_month = month_start
-  returning * into usage;
+  update public.paper_usage_monthly as pu
+  set paper_count = pu.paper_count + 1, updated_at = now()
+  where pu.user_id = teacher and pu.usage_month = month_start
+  returning pu.* into usage;
 
   insert into public.paper_creation_reservations(
     user_id, usage_month, client_request_id
