@@ -292,9 +292,9 @@ class AuthService {
 
   /// Refreshes the centralized server-authoritative entitlement.
   ///
-  /// Kept as a compatibility entry point for older auth screens during the
-  /// migration; it no longer writes a local Pro flag or reads plan rules.
-  static Future<bool> syncProFromServer() async {
+  /// Refreshes the centralized, server-authoritative entitlement after auth
+  /// changes. It does not write a local paid flag or read plan rules itself.
+  static Future<bool> refreshSubscription() async {
     if (!isLoggedIn) return false;
     await SubscriptionState.instance.refresh();
     return SubscriptionState.instance.entitlement.isPaid;

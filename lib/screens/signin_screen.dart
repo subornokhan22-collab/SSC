@@ -54,7 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
       // Every Tutor's Desk account is a tutor account; make sure the
       // row exists so returning users are never blocked by a missing profile.
       await AuthService.ensureTeacherProfile();
-      await AuthService.syncProFromServer();
+      await AuthService.refreshSubscription();
       if (!mounted) return;
       RootGate.restart(context);
     } catch (e) {

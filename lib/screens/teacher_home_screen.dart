@@ -41,7 +41,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   List<PaperEntry> recent = [];
   PromotionFeed promotions = const PromotionFeed();
   bool loading = true;
-  bool devicePro = false;
+  bool hasPaidSubscription = false;
   String? error;
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     if (!subscription.initialized) {
       await subscription.initialize(refresh: false);
     }
-    final localPro = subscription.entitlement.isPaid;
+    final cachedSubscriptionActive = subscription.entitlement.isPaid;
     unawaited(subscription.refresh());
     String? storedTitle;
     try {
@@ -104,7 +104,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         draftTitle = storedTitle;
         recent = entries.take(8).toList();
         promotions = feed;
-        devicePro = localPro;
+        hasPaidSubscription = cachedSubscriptionActive;
         loading = false;
         error = libraryFailed
             ? 'Your papers could not be loaded. Pull down to retry.'
@@ -342,7 +342,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
                 children: [
                   _referenceDashboard(),
-                  if (!devicePro) ...[
+                  if (!hasPaidSubscription) ...[
                     const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,

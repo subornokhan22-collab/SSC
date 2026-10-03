@@ -386,6 +386,43 @@ end $$;
 
 grant execute on function public.admin_subscription_overview() to authenticated;
 
+-- The promotion studio's old paid audience policy used the legacy is_pro
+-- flag. Keep the policy name/API stable while making its decision use the
+-- effective centralized entitlement instead.
+do $$
+begin
+  if to_regclass('public.app_notifications') is not null then
+    execute 'drop policy if exists app_notifications_user_read on public.app_notifications';
+    execute $policy$
+      create policy app_notifications_user_read on public.app_notifications
+      for select to authenticated
+      using (
+        is_active and sent_at is not null and sent_at <= now()
+        and (scheduled_at is null or scheduled_at <= now())
+        and (
+          audience = 'all'
+          or (audience = 'free' and exists (
+            select 1 from public.profiles p
+            where p.id = auth.uid()
+              and (p.subscription_plan = 'free'
+                or p.subscription_status <> 'active'
+                or (p.subscription_expires_at is not null
+                  and p.subscription_expires_at <= now()))
+          ))
+          or (audience = 'pro' and exists (
+            select 1 from public.profiles p
+            where p.id = auth.uid()
+              and p.subscription_plan <> 'free'
+              and p.subscription_status = 'active'
+              and (p.subscription_expires_at is null
+                or p.subscription_expires_at > now())
+          ))
+        )
+      )
+    $policy$;
+  end if;
+end $$;
+
 revoke all on function public.activate_subscription_transaction(text, text) from public, anon, authenticated;
 revoke all on function public.claim_ai_request(uuid) from public, anon, authenticated;
 revoke all on function public.refund_ai_request(uuid, date) from public, anon, authenticated;

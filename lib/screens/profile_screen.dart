@@ -13,10 +13,10 @@ import '../widgets/glass_card.dart';
 import 'root_gate.dart';
 import 'subscription_screen.dart';
 
-/// Profile & settings — account details, workspace theme, Pro sync, sign out.
+/// Profile & settings — account details, workspace theme, subscription refresh, sign out.
 ///
 /// If Supabase is not configured the screen still works: it simply shows the
-/// offline notice and the local Pro state, and never throws.
+/// offline notice and the last verified subscription state, and never throws.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _msg;
   String? _err;
   Map<String, dynamic>? _profile;
-  bool _devicePro = false;
+  bool _hasPaidSubscription = false;
 
   @override
   void initState() {
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final paidNow = subscription.entitlement.isPaid;
     setState(() {
       _profile = p;
-      _devicePro = paidNow;
+      _hasPaidSubscription = paidNow;
       if (paidNow && !wasPaid)
         _msg = 'Your subscription is now active on this device.';
     });
@@ -262,20 +262,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) await _refresh();
   }
 
-  Future<void> _syncPro() async {
+  Future<void> _refreshSubscription() async {
     setState(() {
       _busy = true;
       _err = null;
       _msg = null;
     });
     try {
-      final ok = await AuthService.syncProFromServer();
+      final ok = await AuthService.refreshSubscription();
       await _refresh();
       if (!mounted) return;
       setState(
         () => _msg = ok
-            ? 'Pro is now active on this device.'
-            : 'No active Pro purchase was found for this account.',
+            ? 'Subscription is now active on this device.'
+            : 'No active subscription was found for this account.',
       );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
@@ -399,7 +399,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _accountCard() {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
-    final serverPro = _devicePro;
+    final hasPaidSubscription = _hasPaidSubscription;
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
     final initial =
         (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
@@ -481,22 +481,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text('Edit details'),
                 ),
               ),
-              if (!serverPro) ...[
+              if (!hasPaidSubscription) ...[
                 const SizedBox(width: 10),
                 Expanded(
                   child: FilledButton.icon(
                     onPressed: _busy ? null : _openPlans,
                     icon: const Icon(PhosphorIcons.crown, size: 18),
-                    label: const Text('Buy Pro plan'),
+                    label: const Text('View plans'),
                   ),
                 ),
               ],
             ],
           ),
-          if (!serverPro)
+          if (!hasPaidSubscription)
             Center(
               child: TextButton.icon(
-                onPressed: _busy ? null : _syncPro,
+                onPressed: _busy ? null : _refreshSubscription,
                 icon: _busy
                     ? const SizedBox(
                         width: 15,
@@ -504,7 +504,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(PhosphorIcons.arrowsClockwise, size: 17),
-                label: const Text('Already paid? Refresh Pro access'),
+                label: const Text('Already paid? Refresh subscription'),
               ),
             ),
           const SizedBox(height: 4),
@@ -523,7 +523,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _proCard() {
-    if (_devicePro) {
+    if (_hasPaidSubscription) {
       return GlassCard(
         highlighted: true,
         child: Row(

@@ -172,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       name: _nameCtrl.text.trim(),
       phone: _fullPhone,
     );
-    await AuthService.syncProFromServer();
+    await AuthService.refreshSubscription();
     if (!mounted) return;
     RootGate.restart(context);
   }

@@ -391,8 +391,19 @@ create policy app_notifications_user_read on public.app_notifications for select
     and (scheduled_at is null or scheduled_at <= now())
     and (
       audience = 'all'
-      or (audience = 'free' and exists (select 1 from public.profiles p where p.id = auth.uid() and not coalesce(p.is_pro, false)))
-      or (audience = 'pro' and exists (select 1 from public.profiles p where p.id = auth.uid() and coalesce(p.is_pro, false)))
+      or (audience = 'free' and exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and (p.subscription_plan = 'free' or p.subscription_status <> 'active'
+            or (p.subscription_expires_at is not null and p.subscription_expires_at <= now()))
+      ))
+      or (audience = 'pro' and exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.subscription_plan <> 'free'
+          and p.subscription_status = 'active'
+          and (p.subscription_expires_at is null or p.subscription_expires_at > now())
+      ))
     )
   );
 
