@@ -62,8 +62,8 @@ class AiController extends OperationController {
             : subscription.canUse(PremiumFeature.aiAssistant);
         if (!canUse) {
           final reason = current.aiAssistant
-                  ? 'Daily AI limit reached. Resets at midnight.'
-                  : 'AI Assistant requires an active Pro or Professional plan.';
+              ? 'Daily AI limit reached. Resets at midnight.'
+              : 'AI Assistant requires an active Pro or Professional plan.';
           throw StateError(reason);
         }
         TeacherAttachment.validate(attachments);
