@@ -164,8 +164,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     final state = SubscriptionState.instance;
     if (!state.initialized) await state.initialize(refresh: false);
     if (state.plan != SubscriptionPlan.free) return true;
-    final exceedsDemo =
-        c.draft.mcqCount > PaperLicense.demoMcqLimit ||
+    final exceedsDemo = c.draft.mcqCount > PaperLicense.demoMcqLimit ||
         c.draft.cqCount > PaperLicense.demoCqLimit;
     if (!exceedsDemo || !mounted) return true;
     await showDialog<void>(
