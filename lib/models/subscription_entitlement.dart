@@ -177,7 +177,7 @@ class SubscriptionEntitlement {
     String? transactionId,
     DateTime? lastVerifiedAt,
   }) {
-    final fallback = defaults(
+    final fallback = SubscriptionEntitlement.defaults(
       requestedPlan ?? subscriptionPlanFromString(row['id']?.toString()),
       status: status,
       startedAt: startedAt,
@@ -296,7 +296,7 @@ class SubscriptionEntitlement {
 
   factory SubscriptionEntitlement.fromJson(Map<String, dynamic> json) {
     final plan = subscriptionPlanFromString(json['plan']?.toString());
-    final fallback = defaults(plan);
+    final fallback = SubscriptionEntitlement.defaults(plan);
     DateTime? date(String key) => DateTime.tryParse(json[key]?.toString() ?? '');
     return SubscriptionEntitlement(
       plan: plan,

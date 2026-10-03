@@ -106,7 +106,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     if (!AuthService.isLoggedIn) {
       await _problem(
         'Sign in first',
-        'Subscriptions are linked to your Tutor's Desk account. Sign in before paying.',
+        "Subscriptions are linked to your Tutor's Desk account. Sign in before paying",
       );
       return;
     }
