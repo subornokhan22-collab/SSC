@@ -17,6 +17,21 @@ class FakeSubscriptionRepository extends SubscriptionRepository {
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  test('Free allows choosing one subject before locking the rest', () async {
+    final service = SubjectEntitlementService(
+      subscriptions: FakeSubscriptionRepository(
+        SubscriptionEntitlement.defaults(SubscriptionPlan.free),
+      ),
+    );
+
+    expect((await service.select('physics')).allowed, isTrue);
+    final blocked = await service.check('chemistry');
+
+    expect(blocked.allowed, isFalse);
+    expect(blocked.selectedCount, 1);
+    expect(blocked.limit, 1);
+  });
+
   test('Basic allows three selected subjects and preserves existing ones',
       () async {
     final service = SubjectEntitlementService(
@@ -35,6 +50,28 @@ void main() {
     expect(blocked.selectedCount, 3);
     expect(blocked.reason, UpgradeReason.subjectLimit);
     expect(service.selectedSubjects, {'math', 'physics', 'english'});
+  });
+
+  test('Pro allows five subjects and blocks the sixth', () async {
+    final service = SubjectEntitlementService(
+      subscriptions: FakeSubscriptionRepository(
+        SubscriptionEntitlement.defaults(SubscriptionPlan.pro),
+      ),
+    );
+    for (final subject in [
+      'math',
+      'physics',
+      'english',
+      'biology',
+      'chemistry',
+    ]) {
+      expect((await service.select(subject)).allowed, isTrue);
+    }
+
+    final blocked = await service.check('ict');
+    expect(blocked.allowed, isFalse);
+    expect(blocked.selectedCount, 5);
+    expect(blocked.limit, 5);
   });
 
   test('Professional allows a new subject after more than five existing ones',

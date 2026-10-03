@@ -53,6 +53,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   int step = 0;
   int page = 0;
   RenderedPaper? preview;
+  bool _subjectChosen = false;
   final SubjectEntitlementService subjectEntitlements =
       SubjectEntitlementService();
   static const steps = [
@@ -77,6 +78,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             saqCount: counts.$2,
             cqCount: counts.$3),
         paperUsage: PaperUsageService());
+    _subjectChosen =
+        widget.initialSubjectId != null || widget.initialQuestions?.isNotEmpty == true;
     c.addListener(sync);
     unawaited(initialize());
   }
@@ -99,21 +102,21 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       // policy. Model Test is the only Free generation format.
       c.update(c.draft.copyWith(format: PaperFormat.board, chapters: []));
     }
-    if (!mounted) return;
-    // Register the opening subject too. Otherwise a Free teacher could open
-    // one subject by default and then select a second subject without the
-    // same subject entitlement check ever seeing the first one.
-    try {
-      await subjectEntitlements.select(c.draft.subjectId);
-    } catch (_) {
-      // The local subject cache still protects offline sessions; a missing
-      // remote migration must not prevent paper creation.
+    await subjectEntitlements.load();
+    if (_subjectChosen) {
+      // A subject supplied by another flow is still checked against the same
+      // server-authoritative subject allowance before it can generate.
+      final result = await subjectEntitlements.select(c.draft.subjectId);
+      if (!result.allowed) _subjectChosen = false;
     }
-    if (widget.initialQuestions?.isNotEmpty == true) {
+    if (!mounted) return;
+    if (_subjectChosen && widget.initialQuestions?.isNotEmpty == true) {
       c.useAiQuestions(widget.initialQuestions!);
       step = 3;
     }
-    if (widget.quickStart && widget.initialQuestions == null) {
+    if (widget.quickStart &&
+        _subjectChosen &&
+        widget.initialQuestions == null) {
       if (await c.generate() && mounted) step = 3;
     }
     sync();
@@ -202,7 +205,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           '${subject.bengaliName} · ${english ? 'English sections available' : '${allMCQs.where((q) => q.subjectId == subject.id).length} MCQs in bank'}${locked ? ' · Upgrade to unlock' : ''}',
         ),
         value: subject.id,
-        groupValue: c.draft.subjectId,
+        groupValue: _subjectChosen ? c.draft.subjectId : null,
         onChanged: (id) {
           if (id != null) _selectSubject(id);
         },
@@ -241,6 +244,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       );
       return;
     }
+    _subjectChosen = true;
     c.selectSubject(id);
     AppStyle.mood.value = PaperComposer.isEnglish(id)
         ? WorkspaceMood.english
@@ -265,6 +269,12 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   }
 
   Future<void> next() async {
+    if (step == 0 && !_subjectChosen) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Choose a subject before continuing.')),
+      );
+      return;
+    }
     if (step == 2) {
       if (c.paper == null && !await c.generate()) return;
     }
@@ -511,10 +521,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
 
   Widget subjectStep() =>
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('What are you teaching?',
+        Text(_subjectChosen ? 'What are you teaching?' : 'Choose a subject first',
             style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 8),
-        const Text('Choose a subject. Questions come from the saved SSC bank.'),
+        const Text(
+            'Choose a subject. Questions come from the saved SSC bank. Your plan controls how many subjects you can keep selected.'),
         const SizedBox(height: 20),
         for (final s in allSubjects) _subjectTile(s),
       ]);

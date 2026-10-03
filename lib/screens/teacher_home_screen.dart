@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
-import '../models/paper_draft.dart';
 import '../controllers/paper_controller.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/app_icon.dart';
@@ -185,11 +184,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
       context,
       AppRoutes.createPaper,
       arguments: quick
-          ? const CreatePaperArgs(
-              quickStart: true,
-              subjectId: 'physics',
-              format: PaperFormat.board,
-            )
+          ? const CreatePaperArgs(quickStart: true)
           : null,
     );
     // The editor can move the workspace tint (English is pink); coming back to
