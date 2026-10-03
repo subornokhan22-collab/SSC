@@ -273,9 +273,9 @@ begin
     update public.paper_creation_reservations
     set status = 'refunded', completed_at = now()
     where id = existing.id;
-    update public.paper_usage_monthly
-    set paper_count = greatest(paper_count - 1, 0), updated_at = now()
-    where user_id = teacher and usage_month = existing.usage_month;
+    update public.paper_usage_monthly as pu
+    set paper_count = greatest(pu.paper_count - 1, 0), updated_at = now()
+    where pu.user_id = teacher and pu.usage_month = existing.usage_month;
   end loop;
 
   select * into e from public.effective_entitlement(teacher);
@@ -304,9 +304,9 @@ begin
     where user_id = teacher and client_request_id = p_request_id
     for update;
     if found and existing.status in ('reserved', 'consumed') then
-      select coalesce(paper_count, 0) into usage.paper_count
-      from public.paper_usage_monthly
-      where user_id = teacher and usage_month = existing.usage_month;
+      select coalesce(pu.paper_count, 0) into usage.paper_count
+      from public.paper_usage_monthly as pu
+      where pu.user_id = teacher and pu.usage_month = existing.usage_month;
       return query select true, existing.id, coalesce(usage.paper_count, 0),
         e.monthly_paper_limit, existing.usage_month, e.plan_id, 'already_claimed';
       return;
@@ -322,9 +322,9 @@ begin
 
   insert into public.paper_usage_monthly(user_id, usage_month, paper_count)
   values (teacher, month_start, 0)
-  on conflict (user_id, usage_month) do nothing;
-  select * into usage from public.paper_usage_monthly
-  where user_id = teacher and usage_month = month_start
+  on conflict on constraint paper_usage_monthly_pkey do nothing;
+  select pu.* into usage from public.paper_usage_monthly as pu
+  where pu.user_id = teacher and pu.usage_month = month_start
   for update;
 
   if usage.paper_count >= e.monthly_paper_limit then
