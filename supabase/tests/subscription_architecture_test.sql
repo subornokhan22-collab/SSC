@@ -59,6 +59,7 @@ insert into auth.users(id, email)
 values ('11111111-1111-4111-8111-111111111111', 'teacher@example.com');
 insert into public.profiles(id, email, name, role)
 values ('11111111-1111-4111-8111-111111111111', 'teacher@example.com', 'Teacher', 'teacher');
+begin;
 select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 set local role authenticated;
@@ -111,7 +112,7 @@ insert into public.subscription_transactions(
 );
 select public.activate_subscription_transaction('fixture-transaction-1');
 select public.test_assert(
-  (select status = 'completed' and transaction_id = 'fixture-transaction-1'
+  (select status = 'paid' and provider_transaction_id = 'fixture-transaction-1'
    from public.subscription_transactions where provider_transaction_id = 'fixture-transaction-1'),
   'verified transaction completed');
 select public.test_assert(
@@ -121,7 +122,7 @@ select public.test_assert(
 select public.activate_subscription_transaction('fixture-transaction-1');
 select public.test_assert(
   (select count(*) = 1 from public.subscription_transactions
-   where provider_transaction_id = 'fixture-transaction-1' and status = 'completed'),
+   where provider_transaction_id = 'fixture-transaction-1' and status = 'paid'),
   'repeated activation remains idempotent');
 
 -- The atomic daily claim is keyed to the Asia/Dhaka date and preserves usage
