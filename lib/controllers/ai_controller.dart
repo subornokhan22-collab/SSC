@@ -91,9 +91,8 @@ class AiController extends OperationController {
         try {
           try {
             response = await client.request({
-              'action': command == TeacherCommand.create
-                  ? 'generate'
-                  : command.name,
+              'action':
+                  command == TeacherCommand.create ? 'generate' : command.name,
               'subjectId': subjectId,
               'chapters': chapters,
               'count': count,

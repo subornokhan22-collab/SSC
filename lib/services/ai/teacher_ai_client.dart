@@ -21,7 +21,8 @@ class TeacherAiError extends StateError {
   String get userMessage => switch (code) {
         'AI_DAILY_LIMIT' =>
           "You've used today's AI allowance. It resets at midnight.",
-        'AI_BURST_LIMIT' || 'GEMINI_RATE_LIMIT' =>
+        'AI_BURST_LIMIT' ||
+        'GEMINI_RATE_LIMIT' =>
           'AI is temporarily busy. Try again shortly.',
         'GEMINI_QUOTA' =>
           'The AI service quota is temporarily unavailable. Try again later.',

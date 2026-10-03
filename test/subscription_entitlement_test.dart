@@ -41,7 +41,8 @@ void main() {
       expect(e.canUse(PremiumFeature.omrScanner), isTrue);
     });
 
-    test('expired, cancelled, and pending paid states immediately become Free', () {
+    test('expired, cancelled, and pending paid states immediately become Free',
+        () {
       final expired = SubscriptionEntitlement.defaults(
         SubscriptionPlan.professional,
         expiresAt: DateTime.now().toUtc().subtract(const Duration(minutes: 1)),

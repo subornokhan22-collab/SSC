@@ -130,7 +130,8 @@ class PaperExport {
     final logo = await _watermarkLogo();
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final pageSize = Size(pageImage.width.toDouble(), pageImage.height.toDouble());
+    final pageSize =
+        Size(pageImage.width.toDouble(), pageImage.height.toDouble());
     canvas.drawImage(pageImage, Offset.zero, Paint());
 
     // Keep the original supplied artwork and proportions. A translucent layer
@@ -168,7 +169,8 @@ class PaperExport {
     pageImage.dispose();
     output.dispose();
     picture.dispose();
-    if (bytes == null) throw StateError('Could not render the paper watermark.');
+    if (bytes == null)
+      throw StateError('Could not render the paper watermark.');
     return bytes.buffer.asUint8List();
   }
 

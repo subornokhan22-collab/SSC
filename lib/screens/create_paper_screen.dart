@@ -136,8 +136,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           format != PaperFormat.board);
 
   Future<void> _explainLockedFormat(PaperFormat format) async {
-    final englishLocked =
-        PaperComposer.isEnglish(c.draft.subjectId) && format != PaperFormat.board;
+    final englishLocked = PaperComposer.isEnglish(c.draft.subjectId) &&
+        format != PaperFormat.board;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -552,7 +552,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                       ? const Icon(PhosphorIcons.lock)
                       : null,
                   title: Text(switch (f) {
-                    PaperFormat.board => _isFreePlan ? 'Model Test' : 'Board Pattern',
+                    PaperFormat.board =>
+                      _isFreePlan ? 'Model Test' : 'Board Pattern',
                     PaperFormat.chapter => 'Chapter Test',
                     PaperFormat.custom => 'Custom Paper',
                     PaperFormat.mcq => 'MCQ + OMR'

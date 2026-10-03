@@ -23,8 +23,10 @@ class PaperLimits {
     required int cq,
   }) {
     if (mcq > maxMcq) return 'A paper supports at most $maxMcq MCQs.';
-    if (saq > maxSaq) return 'A paper supports at most $maxSaq short questions.';
-    if (cq > maxCq) return 'A paper supports at most $maxCq creative questions.';
+    if (saq > maxSaq)
+      return 'A paper supports at most $maxSaq short questions.';
+    if (cq > maxCq)
+      return 'A paper supports at most $maxCq creative questions.';
     return 'This paper exceeds the supported question count.';
   }
 }

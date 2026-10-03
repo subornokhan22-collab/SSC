@@ -118,7 +118,8 @@ class SubjectEntitlementService {
           params: {'p_subject_id': subjectId},
         );
         final row = _rpcRow(data);
-        final serverPlan = subscriptionPlanFromString(row['plan_id']?.toString());
+        final serverPlan =
+            subscriptionPlanFromString(row['plan_id']?.toString());
         final allowed = row['allowed'] == true;
         if (!allowed) {
           return SubjectLimitResult(
