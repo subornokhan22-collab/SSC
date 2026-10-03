@@ -15,10 +15,24 @@ import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/problem_dialog.dart';
 
+class _PlanFeature {
+  final IconData icon;
+  final String title;
+  final String detail;
+  final bool included;
+
+  const _PlanFeature({
+    required this.icon,
+    required this.title,
+    required this.detail,
+    this.included = true,
+  });
+}
+
 /// Subscription screen.
-///  • Free tutors: what Pro unlocks, the plans, and the Rupantor Pay buy flow
-///    (tap a plan → pay in Rupantor Pay → Pro turns on automatically).
-///  • Pro tutors : a celebratory confirmation, nothing to sell.
+///  • Free tutors: plan-specific features and the Rupantor Pay buy flow
+///    (tap a plan → pay in Rupantor Pay → that plan activates automatically).
+///  • Paid tutors: a confirmation showing the capabilities of the active plan.
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
 
@@ -288,12 +302,76 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     );
   }
 
+  RupantorPlan _displayPlan(SubscriptionEntitlement entitlement) {
+    return RupantorPlan(
+      plan: entitlement.plan,
+      priceBdt: 0,
+      durationDays: 0,
+      subjectLimit: entitlement.subjectLimit,
+      noWatermark: entitlement.noWatermark,
+      aiAssistant: entitlement.aiAssistant,
+      aiDailyLimit: entitlement.aiDailyLimit,
+      omrScanner: entitlement.omrScanner,
+      label: entitlement.plan.displayName,
+    );
+  }
+
+  List<_PlanFeature> _featuresFor(RupantorPlan plan) {
+    final subjectText = plan.subjectLimit == null
+        ? 'Unlimited subject selection'
+        : 'Up to ${plan.subjectLimit} selected subjects';
+    return [
+      _PlanFeature(
+        icon: PhosphorIcons.fileText,
+        title: 'Paper creation',
+        detail: subjectText,
+      ),
+      _PlanFeature(
+        icon: PhosphorIcons.filePdf,
+        title: 'PDF export & printing',
+        detail: plan.noWatermark
+            ? 'Clean papers with no watermark'
+            : 'Available with the Tutor\'s Desk watermark',
+      ),
+      _PlanFeature(
+        icon: PhosphorIcons.rocketLaunch,
+        title: 'AI Assistant',
+        detail: plan.aiAssistant
+            ? '${plan.aiDailyLimit} requests per Asia/Dhaka day'
+            : 'Not included in this plan',
+        included: plan.aiAssistant && plan.aiDailyLimit > 0,
+      ),
+      _PlanFeature(
+        icon: PhosphorIcons.scan,
+        title: 'OMR Scanner',
+        detail: plan.omrScanner
+            ? 'Scan and process answer sheets'
+            : 'Included with Professional only',
+        included: plan.omrScanner,
+      ),
+    ];
+  }
+
+  String _planSummary(RupantorPlan plan) {
+    final subjects = plan.subjectLimit == null
+        ? 'Unlimited subjects'
+        : '${plan.subjectLimit} subjects';
+    final watermark = plan.noWatermark ? 'no watermark' : 'watermark on';
+    final ai = plan.aiAssistant ? '${plan.aiDailyLimit} AI/day' : 'no AI';
+    final omr = plan.omrScanner ? 'OMR' : 'no OMR';
+    return '$subjects • $watermark • $ai • $omr';
+  }
+
   // ── UI ───────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_hasPaidPlan ? "Tutor's Desk Pro" : 'Upgrade to Pro'),
+        title: Text(
+          _hasPaidPlan
+              ? "Tutor's Desk ${SubscriptionState.instance.entitlement.plan.displayName}"
+              : 'Choose a plan',
+        ),
       ),
       body: SafeArea(
         child: SoftSwitcher(
@@ -310,6 +388,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
   // ══ Pro tutors ══════════════════════════════════════════════════
   Widget _proBody() {
+    final activePlan = _displayPlan(SubscriptionState.instance.entitlement);
+    final activeFeatures = _featuresFor(activePlan);
     return Center(
       key: const ValueKey('pro'),
       child: SingleChildScrollView(
@@ -353,10 +433,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   ),
                 ),
                 const SizedBox(height: 22),
-                const Text(
-                  'Your subscription is active',
+                Text(
+                  '${activePlan.label} is active',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.textDark,
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
@@ -364,15 +444,44 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Full papers, no watermark, unlimited PDF export and printing — every feature is unlocked. Thank you!',
+                Text(
+                  _planSummary(activePlan),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.muted,
                     fontSize: 13.5,
                     height: 1.7,
                   ),
                 ),
+                const SizedBox(height: 18),
+                for (final feature in activeFeatures)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 7),
+                    child: Row(
+                      children: [
+                        Icon(
+                          feature.included
+                              ? PhosphorIcons.checkCircle
+                              : PhosphorIcons.lock,
+                          color: feature.included
+                              ? AppTheme.accent
+                              : AppTheme.muted,
+                          size: 17,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${feature.title}: ${feature.detail}',
+                            style: const TextStyle(
+                              color: AppTheme.muted,
+                              fontSize: 12,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -383,28 +492,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
   // ══ Free tutors ═════════════════════════════════════════════════
   Widget _buyBody() {
-    const perks = [
-      (
-        PhosphorIcons.fileText,
-        'Full question papers',
-        'Every banked question, no demo cut-off',
-      ),
-      (
-        PhosphorIcons.filePdf,
-        'PDF export & printing',
-        'Share or print straight from your phone',
-      ),
-      (
-        PhosphorIcons.drop,
-        'No watermark',
-        'Clean, classroom-ready papers',
-      ),
-      (
-        PhosphorIcons.rocketLaunch,
-        'New features first',
-        'Get every improvement as it ships',
-      ),
-    ];
+    final selectedPlan = _plan;
+    final features = selectedPlan == null
+        ? const <_PlanFeature>[]
+        : _featuresFor(selectedPlan);
 
     return ListView(
       key: const ValueKey('buy'),
@@ -429,10 +520,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      "Tutor's Desk Pro",
-                      style: TextStyle(
+                      selectedPlan == null
+                          ? "Choose a Tutor's Desk plan"
+                          : '${selectedPlan.label} plan',
+                      style: const TextStyle(
                         color: AppTheme.textDark,
                         fontSize: 21,
                         fontWeight: FontWeight.w900,
@@ -442,9 +535,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                 ],
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Pay with Rupantor Pay — Pro turns on automatically after payment.',
-                style: TextStyle(
+              Text(
+                selectedPlan == null
+                    ? 'Select a plan to see exactly what is included.'
+                    : 'Pay with Rupantor Pay — ${selectedPlan.label} activates automatically after payment.',
+                style: const TextStyle(
                   color: AppTheme.accent,
                   fontSize: 14.5,
                   fontWeight: FontWeight.w700,
@@ -455,57 +550,88 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           ),
         ),
         const SizedBox(height: 18),
-        const SectionTitle(
-          title: "What's included",
+        SectionTitle(
+          title: selectedPlan == null
+              ? "What's included"
+              : '${selectedPlan.label} includes',
           icon: PhosphorIcons.checkCircle,
         ),
-        for (final perk in perks)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: GlassCard(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppTheme.primary.withOpacity(.12),
-                      border: Border.all(
-                        color: AppTheme.primary.withOpacity(.32),
-                      ),
-                    ),
-                    child: Icon(perk.$1, color: AppTheme.accent, size: 19),
-                  ),
-                  const SizedBox(width: 13),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          child: Column(
+            key: ValueKey(selectedPlan?.id ?? 'no-plan'),
+            children: [
+              for (final feature in features)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: GlassCard(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
                       children: [
-                        Text(
-                          perk.$2,
-                          style: const TextStyle(
-                            color: AppTheme.textDark,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: feature.included
+                                ? AppTheme.primary.withOpacity(.12)
+                                : AppTheme.muted.withOpacity(.08),
+                            border: Border.all(
+                              color: feature.included
+                                  ? AppTheme.primary.withOpacity(.32)
+                                  : AppTheme.border,
+                            ),
+                          ),
+                          child: Icon(
+                            feature.icon,
+                            color: feature.included
+                                ? AppTheme.accent
+                                : AppTheme.muted,
+                            size: 19,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          perk.$3,
-                          style: TextStyle(
-                            color: AppTheme.muted,
-                            fontSize: 11.8,
-                            height: 1.4,
+                        const SizedBox(width: 13),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                feature.title,
+                                style: TextStyle(
+                                  color: feature.included
+                                      ? AppTheme.textDark
+                                      : AppTheme.muted,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                feature.detail,
+                                style: const TextStyle(
+                                  color: AppTheme.muted,
+                                  fontSize: 11.8,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                        Icon(
+                          feature.included
+                              ? PhosphorIcons.checkCircle
+                              : PhosphorIcons.lock,
+                          color: feature.included
+                              ? AppTheme.accent
+                              : AppTheme.muted,
+                          size: 19,
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+            ],
           ),
+        ),
         const SizedBox(height: 12),
         const SectionTitle(
           title: 'Choose a plan',
@@ -575,12 +701,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           ),
         ),
         const SizedBox(height: 8),
-        const Center(
+        Center(
           child: Text(
-            'You will be redirected to Rupantor Pay. The app activates Pro '
-            'automatically as soon as Rupantor Pay confirms the payment.',
+            selectedPlan == null
+                ? 'Select a plan before starting payment.'
+                : 'You will be redirected to Rupantor Pay. The app activates '
+                    '${selectedPlan.label} automatically after server verification.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: AppTheme.muted, height: 1.5),
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppTheme.muted,
+              height: 1.5,
+            ),
           ),
         ),
         const SizedBox(height: 14),
@@ -730,6 +862,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppTheme.muted,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _planSummary(plan),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppTheme.muted,
+                        height: 1.25,
                       ),
                     ),
                   ],

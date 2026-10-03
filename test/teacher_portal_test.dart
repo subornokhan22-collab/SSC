@@ -194,6 +194,15 @@ void main() {
       );
     });
 
+    test('plan selection renders the selected plan features', () {
+      final screen = File('lib/screens/subscription_screen.dart');
+      final source = screen.readAsStringSync();
+      expect(source, contains('_featuresFor(selectedPlan)'));
+      expect(source, contains('plan.aiDailyLimit'));
+      expect(source, contains('plan.omrScanner'));
+      expect(source, contains('_planSummary(plan)'));
+    });
+
     test('the logo widget points at the supplied New UI 4.0 artwork', () {
       final logo = File('lib/widgets/app_logo.dart');
       expect(logo.existsSync(), isTrue);

@@ -116,7 +116,7 @@ class RupantorPayService {
       final plans = [
         for (final row in rows)
           RupantorPlan.fromJson(Map<String, dynamic>.from(row))
-      ];
+      ]..removeWhere((plan) => plan.plan == SubscriptionPlan.free);
       return plans.isEmpty ? RupantorPlan.fallbackPlans : plans;
     } catch (_) {
       // Keep the pricing screen usable during a transient outage or before
