@@ -62,6 +62,7 @@ flutter:
 
 flutter_launcher_icons:
   android: true
+  # Logo 1: use the supplied launcher artwork exactly; do not redraw or wrap it.
   image_path: "New UI 4.0/NEW LOGO launcher.png"
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "New UI 4.0/NEW LOGO launcher.png"
