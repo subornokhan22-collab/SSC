@@ -209,11 +209,8 @@ void main() {
         pubspec,
         contains('image_path: "New UI 4.0/Logo 1.jpg"'),
       );
-      expect(
-        pubspec,
-        contains('adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"'),
-      );
-      expect(pubspec, contains('adaptive_icon_background: "#FFFFFF"'));
+      expect(pubspec, isNot(contains('adaptive_icon_foreground')));
+      expect(pubspec, isNot(contains('adaptive_icon_background')));
     });
   });
 }

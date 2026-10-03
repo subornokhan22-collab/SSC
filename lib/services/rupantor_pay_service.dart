@@ -47,6 +47,46 @@ class RupantorPlan {
   String get id => plan.id;
   int get amount => priceBdt;
   String get periodText => '$durationDays days';
+
+  /// Used only to keep the pricing screen useful while the server plan table
+  /// is temporarily unreachable. Payment initiation still goes through the
+  /// Edge Function, which reloads and validates the authoritative row before
+  /// creating a transaction.
+  static const fallbackPlans = <RupantorPlan>[
+    RupantorPlan(
+      plan: SubscriptionPlan.basic,
+      priceBdt: 100,
+      durationDays: 30,
+      subjectLimit: 3,
+      noWatermark: false,
+      aiAssistant: false,
+      aiDailyLimit: 0,
+      omrScanner: false,
+      label: 'Basic',
+    ),
+    RupantorPlan(
+      plan: SubscriptionPlan.pro,
+      priceBdt: 200,
+      durationDays: 30,
+      subjectLimit: 5,
+      noWatermark: true,
+      aiAssistant: true,
+      aiDailyLimit: 20,
+      omrScanner: false,
+      label: 'Pro',
+    ),
+    RupantorPlan(
+      plan: SubscriptionPlan.professional,
+      priceBdt: 400,
+      durationDays: 30,
+      subjectLimit: null,
+      noWatermark: true,
+      aiAssistant: true,
+      aiDailyLimit: 50,
+      omrScanner: true,
+      label: 'Professional',
+    ),
+  ];
 }
 
 class RupantorPayError implements Exception {
@@ -71,15 +111,19 @@ class RupantorPayService {
           .from('subscription_plans')
           .select()
           .eq('is_active', true)
+          .neq('id', 'free')
           .order('sort_order');
-      return [
+      final plans = [
         for (final row in rows)
           RupantorPlan.fromJson(Map<String, dynamic>.from(row))
       ];
+      return plans.isEmpty ? RupantorPlan.fallbackPlans : plans;
     } catch (_) {
-      // Prices are server authority. Do not invent a local price when the
-      // plans table is unavailable; the UI will show a retry state instead.
-      return const [];
+      // Keep the pricing screen usable during a transient outage or before
+      // the migration has reached the configured Supabase project. The
+      // server remains authoritative: initiate() never sends a client price
+      // and the Edge Function rejects unknown/unconfigured plans.
+      return RupantorPlan.fallbackPlans;
     }
   }
 

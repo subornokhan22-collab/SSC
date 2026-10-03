@@ -62,8 +62,8 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  # Logo 1: use the supplied app-icon artwork exactly; do not redraw or wrap it.
+  # Logo 1: use the supplied app-icon artwork at its full supplied canvas.
+  # Do not pass it as an adaptive foreground: Android's adaptive safe-zone
+  # crop zooms the artwork and changes the supplied proportions.
   image_path: "New UI 4.0/Logo 1.jpg"
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"
   min_sdk_android: 21
