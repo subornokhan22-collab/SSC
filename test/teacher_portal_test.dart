@@ -199,15 +199,19 @@ void main() {
       expect(logo.existsSync(), isTrue);
       expect(
         logo.readAsStringSync().contains(
-              "assetPath = 'New UI 4.0/NEW LOGO.png'",
+              "assetPath = 'New UI 4.0/Logo 2.png'",
             ),
         isTrue,
       );
-      expect(File('New UI 4.0/NEW LOGO.png').existsSync(), isTrue);
+      expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
       final pubspec = File('pubspec.yaml').readAsStringSync();
       expect(
         pubspec,
-        contains('image_path: "New UI 4.0/NEW LOGO launcher.png"'),
+        contains('image_path: "New UI 4.0/Logo 1.jpg"'),
+      );
+      expect(
+        pubspec,
+        contains('adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"'),
       );
       expect(pubspec, contains('adaptive_icon_background: "#FFFFFF"'));
     });
