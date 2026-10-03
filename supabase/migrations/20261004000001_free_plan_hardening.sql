@@ -106,6 +106,7 @@ create policy paper_creation_reservations_read_own on public.paper_creation_rese
   for select to authenticated using (user_id = auth.uid());
 revoke insert, update, delete on public.paper_usage_monthly from public, anon, authenticated;
 revoke insert, update, delete on public.paper_creation_reservations from public, anon, authenticated;
+grant select on public.paper_usage_monthly, public.paper_creation_reservations to authenticated;
 
 -- Central effective policy. A paid row is effective only while its status is
 -- active and its expiry is in the future (or has no expiry). Cancelled,
