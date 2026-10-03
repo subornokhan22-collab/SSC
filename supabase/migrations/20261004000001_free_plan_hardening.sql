@@ -564,6 +564,10 @@ grant execute on function public.admin_subscription_overview() to authenticated;
 do $$
 declare r record;
 begin
+  if to_regclass('public.app_notifications') is null
+     or to_regclass('public.app_offer_ads') is null then
+    return;
+  end if;
   for r in
     select conrelid::regclass as table_name, conname
     from pg_constraint
@@ -581,30 +585,41 @@ begin
     check (audience in ('all', 'free', 'basic', 'pro', 'professional', 'paid'));
 end $$;
 
-drop policy if exists app_notifications_user_read on public.app_notifications;
-create policy app_notifications_user_read on public.app_notifications
-for select to authenticated
-using (
-  is_active and sent_at is not null and sent_at <= now()
-  and (scheduled_at is null or scheduled_at <= now())
-  and exists (
-    select 1 from public.effective_entitlement(auth.uid()) e
-    where audience = 'all'
-      or audience = e.plan_id
-      or (audience = 'paid' and e.plan_id <> 'free')
-  )
-);
-
-drop policy if exists app_offer_ads_public_read on public.app_offer_ads;
-create policy app_offer_ads_public_read on public.app_offer_ads
-for select to anon, authenticated
-using (
-  is_active and (starts_at is null or starts_at <= now())
-  and (audience = 'all' or (auth.uid() is not null and exists (
-    select 1 from public.effective_entitlement(auth.uid()) e
-    where audience = e.plan_id
-      or (audience = 'paid' and e.plan_id <> 'free')
-  )))
-);
+do $policy$
+begin
+  if to_regclass('public.app_notifications') is not null then
+    execute $sql$
+      drop policy if exists app_notifications_user_read on public.app_notifications;
+      create policy app_notifications_user_read on public.app_notifications
+      for select to authenticated
+      using (
+        is_active and sent_at is not null and sent_at <= now()
+        and (scheduled_at is null or scheduled_at <= now())
+        and exists (
+          select 1 from public.effective_entitlement(auth.uid()) e
+          where audience = 'all'
+            or audience = e.plan_id
+            or (audience = 'paid' and e.plan_id <> 'free')
+        )
+      )
+    $sql$;
+  end if;
+  if to_regclass('public.app_offer_ads') is not null then
+    execute $sql$
+      drop policy if exists app_offer_ads_public_read on public.app_offer_ads;
+      create policy app_offer_ads_public_read on public.app_offer_ads
+      for select to anon, authenticated
+      using (
+        is_active and (starts_at is null or starts_at <= now())
+        and (audience = 'all' or (auth.uid() is not null and exists (
+          select 1 from public.effective_entitlement(auth.uid()) e
+          where audience = e.plan_id
+            or (audience = 'paid' and e.plan_id <> 'free')
+        )))
+      )
+    $sql$;
+  end if;
+end
+$policy$;
 
 commit;
