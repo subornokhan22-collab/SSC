@@ -213,6 +213,10 @@ select public.test_assert(
   'refunded paper claim can be retried');
 reset role;
 select set_config('request.jwt.claim.role', 'service_role', true);
+update public.profiles
+set subscription_plan = 'pro', subscription_status = 'active',
+    subscription_expires_at = now() + interval '30 days'
+where id = '11111111-1111-4111-8111-111111111111';
 
 -- The atomic daily claim is keyed to the Asia/Dhaka date and preserves usage
 -- when the same account upgrades from Pro to Professional.
