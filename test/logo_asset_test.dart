@@ -7,12 +7,12 @@ void main() {
     final pubspec = File('pubspec.yaml').readAsStringSync();
     final appLogo = File('lib/widgets/app_logo.dart').readAsStringSync();
 
-    expect(File('New UI 4.0/NEW LOGO launcher.png').existsSync(), isTrue);
-    expect(File('New UI 4.0/NEW LOGO.png').existsSync(), isTrue);
-    expect(pubspec, contains('image_path: "New UI 4.0/NEW LOGO launcher.png"'));
+    expect(File('New UI 4.0/Logo 1.jpg').existsSync(), isTrue);
+    expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
+    expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
     expect(pubspec,
-        contains('adaptive_icon_foreground: "New UI 4.0/NEW LOGO launcher.png"'));
-    expect(appLogo, contains("New UI 4.0/NEW LOGO.png"));
+        contains('adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"'));
+    expect(appLogo, contains("New UI 4.0/Logo 2.png"));
     expect(appLogo, isNot(contains('ClipOval')));
     expect(appLogo, isNot(contains('BoxShape.circle')));
   });

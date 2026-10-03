@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// and the teacher home screen. It is rendered as-is: no circle, ring, halo,
 /// clipping, or replacement artwork is added around it.
 class AppLogo extends StatelessWidget {
-  static const assetPath = 'New UI 4.0/NEW LOGO.png';
+  static const assetPath = 'New UI 4.0/Logo 2.png';
 
   final double size;
 
