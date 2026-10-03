@@ -10,8 +10,8 @@ void main() {
     expect(File('New UI 4.0/Logo 1.jpg').existsSync(), isTrue);
     expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
     expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
-    expect(pubspec,
-        contains('adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"'));
+    expect(
+        pubspec, contains('adaptive_icon_foreground: "New UI 4.0/Logo 1.jpg"'));
     expect(appLogo, contains("New UI 4.0/Logo 2.png"));
     expect(appLogo, isNot(contains('ClipOval')));
     expect(appLogo, isNot(contains('BoxShape.circle')));
