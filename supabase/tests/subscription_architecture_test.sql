@@ -108,7 +108,7 @@ where id = '11111111-1111-4111-8111-111111111111';
 insert into public.subscription_transactions(
   user_id, plan_id, amount_bdt, provider_transaction_id, status
 ) values (
-  '11111111-1111-4111-8111-111111111111', 'pro', 200, 'fixture-transaction-1', 'verified'
+  '11111111-1111-4111-8111-111111111111', 'pro', 200, 'fixture-transaction-1', 'pending'
 );
 select public.activate_subscription_transaction('fixture-transaction-1');
 select public.test_assert(
