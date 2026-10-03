@@ -66,17 +66,14 @@ set local role authenticated;
 -- A client may edit profile identity, but cannot self-activate or alter the
 -- server-authoritative plan, dates, payment provider, or AI counters.
 update public.profiles set name = 'Renamed' where id = auth.uid();
-do $$
-begin
-  begin
-    update public.profiles
-       set subscription_plan = 'professional',
-           subscription_expires_at = now() + interval '1 year';
-    raise exception 'FAIL: client changed subscription authority';
-  exception when others then
-    if sqlerrm not like '%server-authoritative%' then raise; end if;
-  end;
-end $$;
+update public.profiles
+   set subscription_plan = 'professional',
+       subscription_expires_at = now() + interval '1 year'
+ where id = auth.uid();
+select public.test_assert(
+  (select subscription_plan = 'free' and subscription_expires_at is null
+   from public.profiles where id = auth.uid()),
+  'client subscription authority edit reverted');
 
 -- Client roles can read their own plan/transaction/usage state, but cannot
 -- write any authority rows.
