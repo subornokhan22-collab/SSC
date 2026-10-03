@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutors_desk/controllers/ai_controller.dart';
 import 'package:tutors_desk/data/questions_data.dart';
+import 'package:tutors_desk/models/subscription_entitlement.dart';
 import 'package:tutors_desk/services/ai/teacher_ai_client.dart';
 
 class FakeTeacherClient extends TeacherAiClient {
@@ -37,6 +38,9 @@ Map<String, dynamic> result({bool checked = true}) => {
         }
       ]
     };
+SubscriptionEntitlement testEntitlement() =>
+    SubscriptionEntitlement.defaults(SubscriptionPlan.pro);
+
 Future<bool> execute(AiController c) => c.execute(
     command: TeacherCommand.create,
     subjectId: 'physics',
@@ -51,7 +55,7 @@ void main() {
   test('only a completed independent check earns an AI checked label',
       () async {
     final c =
-        AiController(bank: [], client: FakeTeacherClient(() async => result()));
+        AiController(bank: [], entitlementOverride: testEntitlement(), client: FakeTeacherClient(() async => result()));
     expect(await execute(c), isTrue);
     expect(c.canUse, isTrue);
     expect(c.checkedIds.length, 1);
@@ -73,6 +77,7 @@ void main() {
   test('unchecked or incomplete batches never reach paper selection', () async {
     final c = AiController(
         bank: [],
+        entitlementOverride: testEntitlement(),
         client: FakeTeacherClient(() async => result(checked: false)));
     expect(await execute(c), isFalse);
     expect(c.questions, isEmpty);
@@ -83,11 +88,11 @@ void main() {
   test('previous AI questions remain in the duplicate gate across controllers',
       () async {
     final first =
-        AiController(bank: [], client: FakeTeacherClient(() async => result()));
+        AiController(bank: [], entitlementOverride: testEntitlement(), client: FakeTeacherClient(() async => result()));
     expect(await execute(first), isTrue);
     first.dispose();
     final second =
-        AiController(bank: [], client: FakeTeacherClient(() async => result()));
+        AiController(bank: [], entitlementOverride: testEntitlement(), client: FakeTeacherClient(() async => result()));
     expect(await execute(second), isTrue);
     expect(second.duplicates, isNotEmpty);
     expect(second.canUse, isFalse);
@@ -97,7 +102,7 @@ void main() {
       () async {
     final completer = Completer<Map<String, dynamic>>();
     final client = FakeTeacherClient(() => completer.future);
-    final c = AiController(bank: [], client: client);
+    final c = AiController(bank: [], entitlementOverride: testEntitlement(), client: client);
     final pending = execute(c);
     await Future<void>.delayed(Duration.zero);
     c.dispose();

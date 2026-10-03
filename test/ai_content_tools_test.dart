@@ -9,6 +9,7 @@ import 'package:http/testing.dart';
 import 'package:image/image.dart' as img;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutors_desk/controllers/ai_controller.dart';
+import 'package:tutors_desk/models/subscription_entitlement.dart';
 import 'package:tutors_desk/services/ai/ai_text_formatter.dart';
 import 'package:tutors_desk/services/ai/teacher_attachment.dart';
 import 'package:tutors_desk/services/ai/teacher_ai_client.dart';
@@ -96,7 +97,10 @@ void main() {
   test('running a tool submits attachments without a separate consent step',
       () async {
     final client = CaptureTeacherClient();
-    final c = AiController(bank: [], client: client);
+    final c = AiController(
+        bank: [],
+        entitlementOverride: SubscriptionEntitlement.defaults(SubscriptionPlan.pro),
+        client: client);
     Future<bool> run(TeacherCommand command) => c.execute(
         command: command,
         subjectId: 'physics',

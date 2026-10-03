@@ -21,6 +21,7 @@ class AiController extends OperationController {
   final TeacherAiClient client;
   final List<Question> bank;
   final List<Question> currentPaper;
+  final SubscriptionEntitlement? entitlementOverride;
   List<Question> questions = [];
   final Set<String> checkedIds = {};
   final Map<String, String> difficulty = {};
@@ -33,6 +34,7 @@ class AiController extends OperationController {
   AiController({
     required this.bank,
     this.currentPaper = const [],
+    this.entitlementOverride,
     TeacherAiClient? client,
   }) : client = client ?? TeacherAiClient();
   bool get canUse => !busy && questions.isNotEmpty && duplicates.isEmpty;
@@ -51,12 +53,12 @@ class AiController extends OperationController {
   }) =>
       run('Reading selected chapter metadata…', () async {
         final subscription = SubscriptionState.instance;
-        if (!subscription.initialized) {
+        if (entitlementOverride == null && !subscription.initialized) {
           await subscription.initialize(refresh: false);
         }
-        if (!subscription.canUse(PremiumFeature.aiAssistant)) {
-          final reason = subscription.aiRemainingToday <= 0 &&
-                  subscription.entitlement.aiAssistant
+        final current = entitlementOverride ?? subscription.entitlement;
+        if (!current.canUse(PremiumFeature.aiAssistant)) {
+          final reason = current.aiAssistant
               ? 'Daily AI limit reached. Resets at midnight.'
               : 'AI Assistant requires an active Pro or Professional plan.';
           throw StateError(reason);
