@@ -16,12 +16,14 @@ class SubscriptionGuard {
     if (state.canUse(feature)) return true;
     final reason = state.reasonFor(feature);
     final message = switch (reason) {
-      UpgradeReason.aiDailyLimit => 'Daily AI limit reached. Resets at midnight.',
+      UpgradeReason.aiDailyLimit =>
+        'Daily AI limit reached. Resets at midnight.',
       UpgradeReason.aiAssistant =>
         'AI Assistant requires an active Pro or Professional plan.',
       UpgradeReason.omrScanner => 'OMR Scanner is available on Professional.',
       UpgradeReason.watermark => 'Upgrade to remove the PDF watermark.',
-      UpgradeReason.subjectLimit => 'Your current plan has reached its subject limit.',
+      UpgradeReason.subjectLimit =>
+        'Your current plan has reached its subject limit.',
       null => 'This feature is not available on your current plan.',
     };
     if (context.mounted) {

@@ -54,8 +54,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     if (state == AppLifecycleState.resumed && mounted) {
       SubscriptionState.instance.refresh().then((_) {
         if (mounted) {
-          setState(() => _hasPaidPlan =
-              SubscriptionState.instance.entitlement.isPaid);
+          setState(() =>
+              _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid);
         }
       });
     }
@@ -263,7 +263,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     if (!mounted) return;
     await SubscriptionState.instance.refreshAfterPayment();
     if (mounted) {
-      setState(() => _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid);
+      setState(
+          () => _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid);
     }
     await _load();
     if (!mounted) return;

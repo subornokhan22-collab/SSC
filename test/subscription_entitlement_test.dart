@@ -22,7 +22,8 @@ void main() {
       expect(e.omrScanner, isFalse);
     });
 
-    test('Pro allows five subjects, watermark-free export, and 20 AI requests', () {
+    test('Pro allows five subjects, watermark-free export, and 20 AI requests',
+        () {
       final e = SubscriptionEntitlement.defaults(SubscriptionPlan.pro);
       expect(e.subjectLimit, 5);
       expect(e.noWatermark, isTrue);
@@ -55,7 +56,8 @@ void main() {
       expect(subscriptionPlanFromString('monthly'), SubscriptionPlan.pro);
       expect(subscriptionPlanFromString('yearly'), SubscriptionPlan.pro);
       expect(subscriptionPlanFromString('lifetime'), SubscriptionPlan.pro);
-      expect(subscriptionPlanFromString('professional'), SubscriptionPlan.professional);
+      expect(subscriptionPlanFromString('professional'),
+          SubscriptionPlan.professional);
       expect(subscriptionPlanFromString('unknown'), SubscriptionPlan.free);
     });
 

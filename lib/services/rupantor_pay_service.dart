@@ -63,8 +63,7 @@ class RupantorPayService {
   RupantorPayService({SupabaseClient? client}) : _client = client;
   final SupabaseClient? _client;
 
-  SupabaseClient get _supabase =>
-      _client ?? Supabase.instance.client;
+  SupabaseClient get _supabase => _client ?? Supabase.instance.client;
 
   Future<List<RupantorPlan>> plans() async {
     try {
@@ -89,7 +88,8 @@ class RupantorPayService {
     final transactionId = j['transactionId']?.toString();
     final checkoutUrl = j['checkoutUrl']?.toString();
     if (transactionId == null || checkoutUrl == null || checkoutUrl.isEmpty) {
-      throw const RupantorPayError('Rupantor Pay returned an incomplete payment.');
+      throw const RupantorPayError(
+          'Rupantor Pay returned an incomplete payment.');
     }
     return RupantorPayment(
       transactionId: transactionId,

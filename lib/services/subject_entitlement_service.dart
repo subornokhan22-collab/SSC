@@ -103,7 +103,8 @@ class SubjectEntitlementService {
     );
   }
 
-  Future<SubjectLimitResult> canUseSubject(String subjectId) => check(subjectId);
+  Future<SubjectLimitResult> canUseSubject(String subjectId) =>
+      check(subjectId);
 
   Future<SubjectLimitResult> select(String subjectId) async {
     final result = await check(subjectId);
@@ -151,4 +152,3 @@ class SubjectEntitlementService {
     _loaded = false;
   }
 }
-

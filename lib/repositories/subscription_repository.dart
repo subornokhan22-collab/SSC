@@ -130,8 +130,7 @@ class SubscriptionRepository {
               startedAt: startedAt,
               expiresAt: expiresAt,
               provider: profile['subscription_provider']?.toString(),
-              transactionId:
-                  profile['subscription_transaction_id']?.toString(),
+              transactionId: profile['subscription_transaction_id']?.toString(),
               lastVerifiedAt: DateTime.now().toUtc(),
             )
           : SubscriptionEntitlement.fromPlanRow(
@@ -141,8 +140,7 @@ class SubscriptionRepository {
               startedAt: startedAt,
               expiresAt: expiresAt,
               provider: profile['subscription_provider']?.toString(),
-              transactionId:
-                  profile['subscription_transaction_id']?.toString(),
+              transactionId: profile['subscription_transaction_id']?.toString(),
               lastVerifiedAt: DateTime.now().toUtc(),
             );
       _current = next;
@@ -155,9 +153,8 @@ class SubscriptionRepository {
     }
   }
 
-  static DateTime? _date(Object? value) => value == null
-      ? null
-      : DateTime.tryParse(value.toString())?.toUtc();
+  static DateTime? _date(Object? value) =>
+      value == null ? null : DateTime.tryParse(value.toString())?.toUtc();
 
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
@@ -212,4 +209,3 @@ class SubscriptionRepository {
     _lastRefresh = null;
   }
 }
-

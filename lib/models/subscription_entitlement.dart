@@ -190,9 +190,8 @@ class SubscriptionEntitlement {
     final rawAiLimit = row['ai_daily_limit'];
     return SubscriptionEntitlement(
       plan: fallback.plan,
-      subjectLimit: rawLimit == null
-          ? fallback.subjectLimit
-          : (rawLimit as num).toInt(),
+      subjectLimit:
+          rawLimit == null ? fallback.subjectLimit : (rawLimit as num).toInt(),
       noWatermark: row['no_watermark'] is bool
           ? row['no_watermark'] as bool
           : fallback.noWatermark,
@@ -216,28 +215,32 @@ class SubscriptionEntitlement {
 
   bool get isPaid => plan != SubscriptionPlan.free;
 
-  bool get isExpired => isPaid &&
+  bool get isExpired =>
+      isPaid &&
       (status == SubscriptionStatus.expired ||
           (expiresAt != null && !expiresAt!.isAfter(DateTime.now().toUtc())));
 
-  bool get isActive => !isPaid ||
-      (status == SubscriptionStatus.active && !isExpired);
+  bool get isActive =>
+      !isPaid || (status == SubscriptionStatus.active && !isExpired);
 
   /// Returns the safe effective entitlement. A stale paid profile can never
   /// keep premium capabilities enabled after its expiry.
-  SubscriptionEntitlement get effective =>
-      isExpired ? SubscriptionEntitlement.free(lastVerifiedAt: lastVerifiedAt) : this;
+  SubscriptionEntitlement get effective => isExpired
+      ? SubscriptionEntitlement.free(lastVerifiedAt: lastVerifiedAt)
+      : this;
 
   bool canUse(PremiumFeature feature) {
     final current = effective;
     return switch (feature) {
-      PremiumFeature.aiAssistant => current.aiAssistant && current.aiDailyLimit > 0,
+      PremiumFeature.aiAssistant =>
+        current.aiAssistant && current.aiDailyLimit > 0,
       PremiumFeature.omrScanner => current.omrScanner,
       PremiumFeature.watermarkFree => current.noWatermark,
     };
   }
 
-  UpgradeReason? reasonFor(PremiumFeature feature, {bool dailyLimitReached = false}) {
+  UpgradeReason? reasonFor(PremiumFeature feature,
+      {bool dailyLimitReached = false}) {
     final current = effective;
     if (feature == PremiumFeature.aiAssistant && dailyLimitReached) {
       return UpgradeReason.aiDailyLimit;
@@ -297,7 +300,8 @@ class SubscriptionEntitlement {
   factory SubscriptionEntitlement.fromJson(Map<String, dynamic> json) {
     final plan = subscriptionPlanFromString(json['plan']?.toString());
     final fallback = SubscriptionEntitlement.defaults(plan);
-    DateTime? date(String key) => DateTime.tryParse(json[key]?.toString() ?? '');
+    DateTime? date(String key) =>
+        DateTime.tryParse(json[key]?.toString() ?? '');
     return SubscriptionEntitlement(
       plan: plan,
       subjectLimit: json.containsKey('subjectLimit')

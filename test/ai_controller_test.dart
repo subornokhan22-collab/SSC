@@ -54,8 +54,10 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test('only a completed independent check earns an AI checked label',
       () async {
-    final c =
-        AiController(bank: [], entitlementOverride: testEntitlement(), client: FakeTeacherClient(() async => result()));
+    final c = AiController(
+        bank: [],
+        entitlementOverride: testEntitlement(),
+        client: FakeTeacherClient(() async => result()));
     expect(await execute(c), isTrue);
     expect(c.canUse, isTrue);
     expect(c.checkedIds.length, 1);
@@ -87,12 +89,16 @@ void main() {
   });
   test('previous AI questions remain in the duplicate gate across controllers',
       () async {
-    final first =
-        AiController(bank: [], entitlementOverride: testEntitlement(), client: FakeTeacherClient(() async => result()));
+    final first = AiController(
+        bank: [],
+        entitlementOverride: testEntitlement(),
+        client: FakeTeacherClient(() async => result()));
     expect(await execute(first), isTrue);
     first.dispose();
-    final second =
-        AiController(bank: [], entitlementOverride: testEntitlement(), client: FakeTeacherClient(() async => result()));
+    final second = AiController(
+        bank: [],
+        entitlementOverride: testEntitlement(),
+        client: FakeTeacherClient(() async => result()));
     expect(await execute(second), isTrue);
     expect(second.duplicates, isNotEmpty);
     expect(second.canUse, isFalse);
@@ -102,7 +108,8 @@ void main() {
       () async {
     final completer = Completer<Map<String, dynamic>>();
     final client = FakeTeacherClient(() => completer.future);
-    final c = AiController(bank: [], entitlementOverride: testEntitlement(), client: client);
+    final c = AiController(
+        bank: [], entitlementOverride: testEntitlement(), client: client);
     final pending = execute(c);
     await Future<void>.delayed(Duration.zero);
     c.dispose();

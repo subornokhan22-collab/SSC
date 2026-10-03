@@ -99,7 +99,8 @@ void main() {
     final client = CaptureTeacherClient();
     final c = AiController(
         bank: [],
-        entitlementOverride: SubscriptionEntitlement.defaults(SubscriptionPlan.pro),
+        entitlementOverride:
+            SubscriptionEntitlement.defaults(SubscriptionPlan.pro),
         client: client);
     Future<bool> run(TeacherCommand command) => c.execute(
         command: command,

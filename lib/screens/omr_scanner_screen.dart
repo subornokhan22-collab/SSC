@@ -118,7 +118,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     _subjectCtrl = TextEditingController(text: widget.initialSubject);
     _loadHistory();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!await SubscriptionGuard.require(context, PremiumFeature.omrScanner) &&
+      if (!await SubscriptionGuard.require(
+              context, PremiumFeature.omrScanner) &&
           mounted) {
         Navigator.of(context).maybePop();
       }

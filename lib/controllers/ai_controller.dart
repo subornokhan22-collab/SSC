@@ -87,109 +87,110 @@ class AiController extends OperationController {
         late final Map<String, dynamic> response;
         try {
           response = await client.request({
-          'action':
-              command == TeacherCommand.create ? 'generate' : command.name,
-          'subjectId': subjectId,
-          'chapters': chapters,
-          'count': count,
-          'difficulty': level,
-          'text': text,
-          'instruction': instruction,
-          if (attachments.isNotEmpty)
-            'attachments': attachments.map((a) => a.toJson()).toList(),
-          // Running the tool submits the selected files; picking never uploads.
-          // Keep this wire flag for compatibility with the existing gateway.
-          if (attachments.isNotEmpty) 'attachmentConsent': true,
+            'action':
+                command == TeacherCommand.create ? 'generate' : command.name,
+            'subjectId': subjectId,
+            'chapters': chapters,
+            'count': count,
+            'difficulty': level,
+            'text': text,
+            'instruction': instruction,
+            if (attachments.isNotEmpty)
+              'attachments': attachments.map((a) => a.toJson()).toList(),
+            // Running the tool submits the selected files; picking never uploads.
+            // Keep this wire flag for compatibility with the existing gateway.
+            if (attachments.isNotEmpty) 'attachmentConsent': true,
           }, progress);
           if (disposed) return;
-        if (response['kind'] == 'review') {
-          summary = AiTextFormatter.format(response['summary'] as String);
-          findings = [
-            for (final f in response['findings'] as List)
-              Map<String, String>.from(f as Map)
-                  .map((k, v) => MapEntry(k, AiTextFormatter.format(v))),
+          if (response['kind'] == 'review') {
+            summary = AiTextFormatter.format(response['summary'] as String);
+            findings = [
+              for (final f in response['findings'] as List)
+                Map<String, String>.from(f as Map)
+                    .map((k, v) => MapEntry(k, AiTextFormatter.format(v))),
+            ];
+            questions = [];
+            checkedIds.clear();
+            duplicates = [];
+            return;
+          }
+          if (response['kind'] != 'questions' || response['checked'] != true)
+            throw StateError(
+              'The independent answer check did not complete. No questions were accepted.',
+            );
+          progress(
+            'Checking schema and duplicates against your bank and AI history…',
+          );
+          final stamp = DateTime.now().microsecondsSinceEpoch;
+          final rows = response['questions'] as List;
+          if (rows.length != count)
+            throw StateError(
+              'The server returned the wrong question count. Try again.',
+            );
+          final next = <Question>[];
+          final levels = <String, String>{};
+          for (var i = 0; i < rows.length; i++) {
+            final r = rows[i] as Map;
+            final id = 'ai_${stamp}_$i';
+            if (!chapters.contains(r['chapter']))
+              throw StateError('A question was outside the selected chapters.');
+            next.add(
+              Question(
+                id: id,
+                subjectId: subjectId,
+                chapter: r['chapter'] as String,
+                questionText:
+                    AiTextFormatter.format(r['questionText'] as String),
+                options: List<String>.from(r['options'] as List)
+                    .map(AiTextFormatter.format)
+                    .toList(),
+                correctIndex: r['correctIndex'] as int,
+                explanation: AiTextFormatter.format(r['explanation'] as String),
+                source: QuestionSource.ai,
+                sourceLabel: 'AI practice • teacher review required',
+              ),
+            );
+            levels[id] = r['difficulty'] as String;
+          }
+          final validations = QuestionSchemaValidator.validateBatch(
+            next,
+            expectedCount: count,
+          );
+          if (validations.any((v) => !v.valid))
+            throw StateError(
+              'Generated questions failed local validation. Try again.',
+            );
+          _comparison = [
+            ...bank.where((q) => q.subjectId == subjectId),
+            ..._previous,
+            ...currentPaper,
           ];
-          questions = [];
-          checkedIds.clear();
-          duplicates = [];
-          return;
-        }
-        if (response['kind'] != 'questions' || response['checked'] != true)
-          throw StateError(
-            'The independent answer check did not complete. No questions were accepted.',
-          );
-        progress(
-          'Checking schema and duplicates against your bank and AI history…',
-        );
-        final stamp = DateTime.now().microsecondsSinceEpoch;
-        final rows = response['questions'] as List;
-        if (rows.length != count)
-          throw StateError(
-            'The server returned the wrong question count. Try again.',
-          );
-        final next = <Question>[];
-        final levels = <String, String>{};
-        for (var i = 0; i < rows.length; i++) {
-          final r = rows[i] as Map;
-          final id = 'ai_${stamp}_$i';
-          if (!chapters.contains(r['chapter']))
-            throw StateError('A question was outside the selected chapters.');
-          next.add(
-            Question(
-              id: id,
-              subjectId: subjectId,
-              chapter: r['chapter'] as String,
-              questionText: AiTextFormatter.format(r['questionText'] as String),
-              options: List<String>.from(r['options'] as List)
-                  .map(AiTextFormatter.format)
+          questions = next;
+          summary = null;
+          findings = [];
+          checkedIds
+            ..clear()
+            ..addAll(next.map((q) => q.id));
+          difficulty
+            ..clear()
+            ..addAll(levels);
+          _checkDuplicates();
+          // Persist even a rejected/similar batch, so retries cannot repeat it silently.
+          final history = [..._previous, ...next];
+          if (!await prefs.setString(
+            _historyKey,
+            jsonEncode(
+              history
+                  .skip(history.length > 300 ? history.length - 300 : 0)
+                  .map(mcqJson)
                   .toList(),
-              correctIndex: r['correctIndex'] as int,
-              explanation: AiTextFormatter.format(r['explanation'] as String),
-              source: QuestionSource.ai,
-              sourceLabel: 'AI practice • teacher review required',
             ),
-          );
-          levels[id] = r['difficulty'] as String;
-        }
-        final validations = QuestionSchemaValidator.validateBatch(
-          next,
-          expectedCount: count,
-        );
-        if (validations.any((v) => !v.valid))
-          throw StateError(
-            'Generated questions failed local validation. Try again.',
-          );
-        _comparison = [
-          ...bank.where((q) => q.subjectId == subjectId),
-          ..._previous,
-          ...currentPaper,
-        ];
-        questions = next;
-        summary = null;
-        findings = [];
-        checkedIds
-          ..clear()
-          ..addAll(next.map((q) => q.id));
-        difficulty
-          ..clear()
-          ..addAll(levels);
-        _checkDuplicates();
-        // Persist even a rejected/similar batch, so retries cannot repeat it silently.
-        final history = [..._previous, ...next];
-        if (!await prefs.setString(
-          _historyKey,
-          jsonEncode(
-            history
-                .skip(history.length > 300 ? history.length - 300 : 0)
-                .map(mcqJson)
-                .toList(),
-          ),
-        )) {
-          historyWarning =
-              'AI history could not be saved. Duplicate checks across restarts may be incomplete.';
-        } else {
-          historyWarning = null;
-        }
+          )) {
+            historyWarning =
+                'AI history could not be saved. Duplicate checks across restarts may be incomplete.';
+          } else {
+            historyWarning = null;
+          }
         } finally {
           await SubscriptionState.instance.refreshAiUsage();
         }

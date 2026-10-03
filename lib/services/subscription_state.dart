@@ -7,5 +7,6 @@ class SubscriptionState {
   SubscriptionState._();
   static final SubscriptionViewModel instance = SubscriptionViewModel();
 
-  static void clear({String? accountId}) => instance.clear(accountId: accountId);
+  static void clear({String? accountId}) =>
+      instance.clear(accountId: accountId);
 }

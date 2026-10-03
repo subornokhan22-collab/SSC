@@ -68,7 +68,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _profile = p;
       _devicePro = paidNow;
-      if (paidNow && !wasPaid) _msg = 'Your subscription is now active on this device.';
+      if (paidNow && !wasPaid)
+        _msg = 'Your subscription is now active on this device.';
     });
   }
 
