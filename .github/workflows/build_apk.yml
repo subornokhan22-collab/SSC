@@ -58,7 +58,8 @@ jobs:
           PGPASSWORD: ci-only-password
         run: |
           createdb -h 127.0.0.1 -U postgres subscription_test
-          psql -h 127.0.0.1 -U postgres -d subscription_test -v ON_ERROR_STOP=1 -f supabase/tests/subscription_architecture_test.sql
+          set -o pipefail
+          psql -h 127.0.0.1 -U postgres -d subscription_test -v ON_ERROR_STOP=1 -f supabase/tests/subscription_architecture_test.sql 2>&1 | tee subscription-rls.log
 
       - name: Content workflow, English and audit RLS regressions
         env:
@@ -91,7 +92,7 @@ jobs:
           set +e
           {
             echo "## Admin test failure — run $GITHUB_RUN_NUMBER, ${GITHUB_SHA:0:7}"
-            for f in admin-unit.log admin-browser.log; do
+            for f in admin-unit.log admin-browser.log subscription-rls.log; do
               if [ -s "$f" ]; then
                 echo
                 echo "### tail of $f"
