@@ -14,6 +14,7 @@ import '../widgets/paper_question_card.dart';
 import '../widgets/workflow_progress.dart';
 import '../services/ai/teacher_attachment.dart';
 import '../services/ai/ai_text_formatter.dart';
+import '../services/auth_service.dart';
 import '../services/subscription_state.dart';
 import '../models/subscription_entitlement.dart';
 import 'subscription_screen.dart';
@@ -72,7 +73,13 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
 
   Future<void> _checkAccess() async {
     final state = SubscriptionState.instance;
-    if (!state.initialized) await state.initialize(refresh: false);
+    if (!state.initialized) {
+      await state.initialize(refresh: AuthService.isLoggedIn);
+    } else if (AuthService.isLoggedIn) {
+      // A direct route must not trust a stale Free cache for an authenticated
+      // teacher; refresh the server-authoritative plan before rendering tools.
+      await state.refresh();
+    }
     if (!mounted) return;
     setState(() {
       _accessAllowed = state.canUse(PremiumFeature.aiAssistant);

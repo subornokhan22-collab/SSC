@@ -13,6 +13,7 @@ import '../models/paper_draft.dart';
 import '../models/subject_info.dart';
 import '../theme/design_tokens.dart';
 import '../services/app_style.dart';
+import '../services/auth_service.dart';
 import '../services/paper_composer.dart';
 import '../services/paper_export.dart';
 import '../services/paper_license.dart';
@@ -80,6 +81,14 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   }
 
   Future<void> initialize() async {
+    final subscription = SubscriptionState.instance;
+    if (!subscription.initialized) {
+      await subscription.initialize(refresh: AuthService.isLoggedIn);
+    } else if (AuthService.isLoggedIn) {
+      // A direct create-paper route must resolve the current server plan
+      // before subject and paper-size limits are evaluated.
+      await subscription.refresh();
+    }
     await c.initialize(
         restore: widget.initialSubjectId == null &&
             widget.initialFormat == null &&
@@ -162,7 +171,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
 
   Future<bool> _allowPaperCreation() async {
     final state = SubscriptionState.instance;
-    if (!state.initialized) await state.initialize(refresh: false);
+    if (!state.initialized) {
+      await state.initialize(refresh: AuthService.isLoggedIn);
+    } else if (AuthService.isLoggedIn) {
+      await state.refresh();
+    }
     if (state.plan != SubscriptionPlan.free) return true;
     final exceedsDemo = c.draft.mcqCount > PaperLicense.demoMcqLimit ||
         c.draft.cqCount > PaperLicense.demoCqLimit;
