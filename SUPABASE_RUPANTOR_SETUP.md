@@ -32,7 +32,7 @@ The adapter sends the price loaded from `subscription_plans`, never a price supp
 
 ## AI limits
 
-`mimi` calls `claim_ai_request` before the provider call. The RPC computes the date in `Asia/Dhaka`, locks the daily row, and rejects requests over the plan limit. Provider failures call `refund_ai_request`. The client counter is display-only.
+`mimi` calls `claim_ai_request` before the provider call. The RPC computes the date in `Asia/Dhaka`, locks the daily row, and rejects requests over the plan limit. Provider failures call `refund_ai_request`; the client counter is display-only. The disposable regression test in `supabase/tests/subscription_architecture_test.sql` covers the RLS, idempotent activation, expiry, and same-day upgrade paths.
 
 Set `GEMINI_API_KEY` as an Edge Function secret as before. Never put a Rupantor or Gemini secret in the APK.
 
