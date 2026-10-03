@@ -213,6 +213,7 @@ select public.test_assert(
   'refunded paper claim can be retried');
 reset role;
 select set_config('request.jwt.claim.role', 'service_role', true);
+select set_config('request.jwt.claim.sub', '', true);
 update public.profiles
 set subscription_plan = 'pro', subscription_status = 'active',
     subscription_expires_at = now() + interval '30 days'
