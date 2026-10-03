@@ -1,6 +1,10 @@
 /// Stable subscription identifiers shared by the app, database, and payment API.
 enum SubscriptionPlan { free, basic, pro, professional }
 
+int? _asInt(Object? value) => value is num
+    ? value.toInt()
+    : int.tryParse(value?.toString() ?? '');
+
 SubscriptionPlan subscriptionPlanFromString(String? value) {
   switch (value?.trim().toLowerCase()) {
     case 'basic':
@@ -190,17 +194,14 @@ class SubscriptionEntitlement {
     final rawAiLimit = row['ai_daily_limit'];
     return SubscriptionEntitlement(
       plan: fallback.plan,
-      subjectLimit:
-          rawLimit == null ? fallback.subjectLimit : (rawLimit as num).toInt(),
+      subjectLimit: _asInt(rawLimit) ?? fallback.subjectLimit,
       noWatermark: row['no_watermark'] is bool
           ? row['no_watermark'] as bool
           : fallback.noWatermark,
       aiAssistant: row['ai_assistant'] is bool
           ? row['ai_assistant'] as bool
           : fallback.aiAssistant,
-      aiDailyLimit: rawAiLimit == null
-          ? fallback.aiDailyLimit
-          : (rawAiLimit as num).toInt(),
+      aiDailyLimit: _asInt(rawAiLimit) ?? fallback.aiDailyLimit,
       omrScanner: row['omr_scanner'] is bool
           ? row['omr_scanner'] as bool
           : fallback.omrScanner,
@@ -305,12 +306,11 @@ class SubscriptionEntitlement {
     return SubscriptionEntitlement(
       plan: plan,
       subjectLimit: json.containsKey('subjectLimit')
-          ? (json['subjectLimit'] as num?)?.toInt()
+          ? _asInt(json['subjectLimit'])
           : fallback.subjectLimit,
       noWatermark: json['noWatermark'] as bool? ?? fallback.noWatermark,
       aiAssistant: json['aiAssistant'] as bool? ?? fallback.aiAssistant,
-      aiDailyLimit:
-          (json['aiDailyLimit'] as num?)?.toInt() ?? fallback.aiDailyLimit,
+      aiDailyLimit: _asInt(json['aiDailyLimit']) ?? fallback.aiDailyLimit,
       omrScanner: json['omrScanner'] as bool? ?? fallback.omrScanner,
       status: subscriptionStatusFromString(json['status']?.toString()),
       startedAt: date('startedAt'),

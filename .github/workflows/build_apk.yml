@@ -53,6 +53,12 @@ jobs:
         env:
           PGPASSWORD: ci-only-password
         run: psql -h 127.0.0.1 -U postgres -d rls_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles_rls_test.sql
+      - name: Subscription architecture and entitlement RLS regression tests
+        env:
+          PGPASSWORD: ci-only-password
+        run: |
+          createdb -h 127.0.0.1 -U postgres subscription_test
+          psql -h 127.0.0.1 -U postgres -d subscription_test -v ON_ERROR_STOP=1 -f supabase/tests/subscription_architecture_test.sql
 
       - name: Content workflow, English and audit RLS regressions
         env:
