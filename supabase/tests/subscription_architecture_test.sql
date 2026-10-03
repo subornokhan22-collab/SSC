@@ -182,6 +182,7 @@ set subscription_plan = 'free', subscription_status = 'active',
 where id = '11111111-1111-4111-8111-111111111111';
 set role authenticated;
 select set_config('request.jwt.claim.role', 'authenticated', true);
+select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', true);
 select * from public.claim_paper_creation('paper-1');
 select * from public.claim_paper_creation('paper-2');
 select * from public.claim_paper_creation('paper-3');
