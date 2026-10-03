@@ -7,6 +7,25 @@ Existing detailed notes:
 - [`SUPABASE_RUPANTOR_SETUP.md`](SUPABASE_RUPANTOR_SETUP.md) — Rupantor checkout, verification, webhook, idempotency, and acceptance tests.
 - [`SUPABASE_BKASH_SETUP.md`](SUPABASE_BKASH_SETUP.md) — legacy bKash history. Do not add new bKash credentials.
 
+## One-page order
+
+If you only need the order, do this:
+
+1. Install the Supabase CLI.
+2. Create or choose the Supabase project and copy its project reference ID.
+3. From this repository, run `supabase init` and `supabase link --project-ref <project-ref>`.
+4. Run `supabase db push` and confirm the plan matrix in SQL Editor.
+5. Configure Email provider, confirmation emails, SMTP, and reset redirect URLs.
+6. Put only the Supabase URL and anon key in `lib/services/supabase_config.dart`.
+7. Add Gemini and Rupantor values as Edge Function secrets.
+8. Deploy `mimi`, `admin-content`, and `rupantor-pay`.
+9. Add the content administrator and optional Storage bucket.
+10. Test signup, plan limits, AI, RLS, and two Free Model Tests.
+11. Test Rupantor in sandbox or with a very low-value payment.
+12. Only then enable production payment credentials.
+
+The detailed instructions below explain each step. Stop at the first error; do not skip a migration or put a server secret in Flutter.
+
 ## What you need before starting
 
 You need:
