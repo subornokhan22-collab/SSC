@@ -86,6 +86,41 @@ supabase login
 supabase projects list
 ```
 
+### If you are using only a phone
+
+The Supabase Dashboard in a phone browser is useful for settings and SQL queries, but it is not the Supabase CLI. The easiest phone-only method is **GitHub Codespaces**:
+
+1. Open this repository on GitHub in your phone browser.
+2. Tap **Code → Codespaces → Create codespace** on branch `arena/01a0ce12-ssc`.
+3. Open the Codespace terminal and run the commands in this guide there.
+4. Start with:
+
+   ```sh
+   npx supabase --version
+   npx supabase login
+   npx supabase init
+   npx supabase link --project-ref <project-ref>
+   npx supabase db push
+   ```
+
+Codespaces gives you a Linux terminal without putting the CLI or server secrets on the phone. It may require GitHub Codespaces availability for your account.
+
+On Android, **Termux** can also work:
+
+```sh
+pkg update
+pkg install nodejs git
+cd "$HOME"
+git clone https://github.com/subornokhan22-collab/SSC.git
+cd SSC
+npx supabase --version
+npx supabase login
+```
+
+Some Android phones cannot run the Supabase CLI package because of their CPU/OS combination. If `npx supabase --version` fails, use Codespaces instead. Do not paste a service-role key into Termux commands or save it in the repository.
+
+After logging in, continue with Step 2 below. Do not manually paste every migration into SQL Editor unless you have no CLI option; manual execution can lose migration history and order.
+
 ---
 
 ## Step 2 — Create or choose the Supabase project
