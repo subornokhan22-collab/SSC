@@ -165,6 +165,9 @@ Deno.serve(async (req: Request) => {
   if (toolActions.includes(action)) {
     let command;
     try { command = toolRequest(payload); } catch (e) {
+      // Validation failures happen after the atomic claim only for backward
+      // compatibility with the existing gateway order; never charge them.
+      await refundAiRequest(authenticatedUserId, usage.usage_date);
       return fail(e instanceof ToolError || e instanceof RequestBodyError ? e.message : "Invalid teacher command.", e instanceof RequestBodyError ? e.status : 400, "BAD_REQUEST");
     }
     const encoder = new TextEncoder();

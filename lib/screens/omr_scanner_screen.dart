@@ -749,6 +749,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   }
 
   Future<void> _printScorecard() async {
+    if (!await _canUseScanner()) return;
     final res = _result;
     final g = _graded;
     if (res == null || g == null) return;
@@ -807,6 +808,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   Future<void> _confirmReview() async {
     if (_busy || _result == null) return;
+    if (!await _canUseScanner()) return;
     setState(() => _busy = true);
     try {
       final result = _result!;
@@ -1819,6 +1821,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   /// Entry point for batch scanning: pick the source for the whole class.
   Future<void> _batchDialog() async {
+    if (!await _canUseScanner()) return;
     if (_key.any((k) => k < 0)) {
       await _problem(
         'Answer key incomplete',

@@ -125,6 +125,26 @@ select public.test_assert(
    where provider_transaction_id = 'fixture-transaction-1' and status = 'paid'),
   'repeated activation remains idempotent');
 
+insert into public.subscription_transactions(
+  user_id, plan_id, amount_bdt, provider_transaction_id, status
+) values
+  ('11111111-1111-4111-8111-111111111111', 'basic', 100, 'fixture-cancelled', 'pending'),
+  ('11111111-1111-4111-8111-111111111111', 'professional', 400, 'fixture-invalid', 'pending');
+select public.activate_subscription_transaction('fixture-cancelled', 'cancelled');
+select public.activate_subscription_transaction('fixture-invalid', 'invalid');
+select public.test_assert(
+  (select status = 'cancelled' from public.subscription_transactions
+   where provider_transaction_id = 'fixture-cancelled'),
+  'cancelled payment does not activate');
+select public.test_assert(
+  (select status = 'failed' from public.subscription_transactions
+   where provider_transaction_id = 'fixture-invalid'),
+  'invalid payment does not activate');
+select public.test_assert(
+  (select subscription_plan = 'pro' from public.profiles
+   where id = '11111111-1111-4111-8111-111111111111'),
+  'failed payments leave the active subscription unchanged');
+
 -- The atomic daily claim is keyed to the Asia/Dhaka date and preserves usage
 -- when the same account upgrades from Pro to Professional.
 select * from public.claim_ai_request('11111111-1111-4111-8111-111111111111');
