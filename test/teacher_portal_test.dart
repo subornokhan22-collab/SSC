@@ -7,6 +7,7 @@ import 'package:tutors_desk/models/subject_info.dart';
 import 'package:tutors_desk/services/app_style.dart';
 import 'package:tutors_desk/services/auth_service.dart';
 import 'package:tutors_desk/theme/app_theme.dart';
+import 'package:tutors_desk/theme/design_tokens.dart';
 
 /// Guards the teacher-only shape of the app: the student portal must stay
 /// removed, and the shared pieces it used to own must live in their new homes.
@@ -30,8 +31,11 @@ void main() {
 
     test('every student-only screen is gone', () {
       for (final path in removedScreens) {
-        expect(File(path).existsSync(), isFalse,
-            reason: '$path belongs to the removed student portal');
+        expect(
+          File(path).existsSync(),
+          isFalse,
+          reason: '$path belongs to the removed student portal',
+        );
       }
     });
 
@@ -44,9 +48,9 @@ void main() {
           final name = removed.split('/').last;
           // Match a real import of that exact file, not a substring of
           // another name (e.g. home_screen.dart vs teacher_home_screen.dart).
-          final pattern = RegExp("import\\s+'[^']*(?<![\\w])" +
-              RegExp.escape(name) +
-              "'");
+          final pattern = RegExp(
+            "import\\s+'[^']*(?<![\\w])" + RegExp.escape(name) + "'",
+          );
           if (pattern.hasMatch(source)) {
             offenders.add('${entity.path} -> $name');
           }
@@ -67,7 +71,11 @@ void main() {
       expect(File('lib/models/subject_info.dart').existsSync(), isTrue);
       expect(allSubjects, isNotEmpty);
       final ids = allSubjects.map((s) => s.id).toList();
-      expect(ids.toSet().length, ids.length, reason: 'subject ids must be unique');
+      expect(
+        ids.toSet().length,
+        ids.length,
+        reason: 'subject ids must be unique',
+      );
       // The full catalogue stays available even where a subject has no
       // questions yet; the bank is what was trimmed, not the subject list.
       for (final wanted in [
@@ -98,13 +106,19 @@ void main() {
     });
 
     test('index wrapping never throws', () {
-      expect(() => AppStyle.colors[99 % AppStyle.colors.length], returnsNormally);
+      expect(
+        () => AppStyle.colors[99 % AppStyle.colors.length],
+        returnsNormally,
+      );
     });
 
     test('every backdrop preset is light', () {
       for (var i = 0; i < AppStyle.colors.length; i++) {
-        expect(AppStyle.colors[i].computeLuminance(), greaterThan(0.8),
-            reason: '${AppStyle.labels[i]} must be a light backdrop');
+        expect(
+          AppStyle.colors[i].computeLuminance(),
+          greaterThan(0.8),
+          reason: '${AppStyle.labels[i]} must be a light backdrop',
+        );
       }
     });
 
@@ -113,6 +127,7 @@ void main() {
       expect(theme.brightness, Brightness.light);
       expect(AppTheme.canvas.computeLuminance(), greaterThan(0.8));
       expect(AppTheme.surface.computeLuminance(), greaterThan(0.9));
+      expect(AppTheme.textDark, AppColors.text);
       expect(AppTheme.textDark.computeLuminance(), lessThan(0.2));
       final main = File('lib/main.dart').readAsStringSync();
       expect(main.contains('ThemeMode.dark'), isFalse);
@@ -143,8 +158,11 @@ void main() {
 
     test('AuthService no longer exposes a passwordless sign-in', () {
       final src = File('lib/services/auth_service.dart').readAsStringSync();
-      expect(src.contains('signInWithOtp'), isFalse,
-          reason: 'sign-in must never trigger a magic-link/OTP email');
+      expect(
+        src.contains('signInWithOtp'),
+        isFalse,
+        reason: 'sign-in must never trigger a magic-link/OTP email',
+      );
       expect(src.contains('signInWithPassword'), isTrue);
       expect(AuthService.minPasswordLength, greaterThanOrEqualTo(8));
     });
@@ -169,15 +187,39 @@ void main() {
           offenders.add(entity.path);
         }
       }
-      expect(offenders, isEmpty,
-          reason: 'use AppLogo (the real app icon) instead');
+      expect(
+        offenders,
+        isEmpty,
+        reason: 'use AppLogo (the real app icon) instead',
+      );
     });
 
-    test('the logo widget points at the real launcher asset', () {
+    test('plan selection renders the selected plan features', () {
+      final screen = File('lib/screens/subscription_screen.dart');
+      final source = screen.readAsStringSync();
+      expect(source, contains('_featuresFor(selectedPlan)'));
+      expect(source, contains('plan.aiDailyLimit'));
+      expect(source, contains('plan.omrScanner'));
+      expect(source, contains('_planSummary(plan)'));
+    });
+
+    test('the logo widget points at the supplied New UI 4.0 artwork', () {
       final logo = File('lib/widgets/app_logo.dart');
       expect(logo.existsSync(), isTrue);
-      expect(logo.readAsStringSync().contains('assets/icon/icon.png'), isTrue);
-      expect(File('assets/icon/icon.png').existsSync(), isTrue);
+      expect(
+        logo.readAsStringSync().contains(
+              "assetPath = 'New UI 4.0/Logo 2.png'",
+            ),
+        isTrue,
+      );
+      expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(
+        pubspec,
+        contains('image_path: "New UI 4.0/Logo 1.jpg"'),
+      );
+      expect(pubspec, isNot(contains('adaptive_icon_foreground')));
+      expect(pubspec, isNot(contains('adaptive_icon_background')));
     });
   });
 }

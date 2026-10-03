@@ -580,7 +580,7 @@ function buildPrompt(type, raw){
     '- Split the input into as many separate questions as it contains.',
     '- Keep the Bangla text exactly as written; fix only spacing and line breaks.',
     '- Never invent questions, options or answers that are not in the input.',
-    '- correctIndex is 0-based. If the answer is not marked in the input, use 0.',
+    '- correctIndex is 0-based. If the answer is not marked in the input, use -1. Never guess an answer.',
     '- For cq, the four Bangla parts map to questionK/questionKh/questionG/questionGh.',
     '- If a cq has only three parts, leave questionGh empty and use marks [2,4,4].',
     '- Drop anything that is not part of a question.',
@@ -848,7 +848,7 @@ function normalizeQuestion(raw, type){
     }
   }
   ci = Number(ci);
-  out.correctIndex = Number.isInteger(ci) && ci >= 0 && ci < opts.length ? ci : 0;
+  out.correctIndex = Number.isInteger(ci) && ci >= 0 && ci < opts.length ? ci : -1;
 
   const ex = pick('explanation','reason','byakkha','solution');
   if (ex) out.explanation = ex;
@@ -961,7 +961,7 @@ $('imgSave').onclick = async () => {
   const stem = $('imgText').value.trim() || 'চিত্রটি লক্ষ কর।';
   const questions = IMAGES.map(im => {
     const q = { type, figure: { imagePath: im.imagePath, aspect: im.aspect } };
-    if (type === 'mcq'){ q.questionText = stem; q.options = ['ক','খ','গ','ঘ']; q.correctIndex = 0; }
+    if (type === 'mcq'){ q.questionText = stem; q.options = ['ক','খ','গ','ঘ']; q.correctIndex = -1; }
     else if (type === 'saq'){ q.questionText = stem; q.answer = 'উত্তর ছবিতে দেওয়া আছে।'; }
     else { q.stem = stem; q.questionK = 'ক'; q.questionKh = 'খ'; q.questionG = 'গ'; q.questionGh = 'ঘ'; q.marks = [1,2,3,4]; }
     return q;
