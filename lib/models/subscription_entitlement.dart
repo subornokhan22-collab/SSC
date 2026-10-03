@@ -1,9 +1,8 @@
 /// Stable subscription identifiers shared by the app, database, and payment API.
 enum SubscriptionPlan { free, basic, pro, professional }
 
-int? _asInt(Object? value) => value is num
-    ? value.toInt()
-    : int.tryParse(value?.toString() ?? '');
+int? _asInt(Object? value) =>
+    value is num ? value.toInt() : int.tryParse(value?.toString() ?? '');
 
 SubscriptionPlan subscriptionPlanFromString(String? value) {
   switch (value?.trim().toLowerCase()) {
