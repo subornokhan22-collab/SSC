@@ -61,6 +61,7 @@ class PaperSnapshot {
                   'payload': {
                     'questionText': q.questionText,
                     'answer': q.answer,
+                    'answerKey': q.answerKey,
                     'explanation': q.explanation,
                   },
                 },
@@ -80,6 +81,7 @@ class PaperSnapshot {
                     'questionKh': q.questionKh,
                     'questionG': q.questionG,
                     'questionGh': q.questionGh,
+                    'answerKey': q.answerKey,
                     'marks': q.marks,
                   },
                 },

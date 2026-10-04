@@ -83,8 +83,15 @@ class PaperExport {
                 draft.subjectId == 'higher_math',
           );
     final images = List<Uint8List>.of(pages);
-    if (draft.answerKey && paper.mcqs.isNotEmpty)
-      images.add(await _answerPage(title, draft, paper));
+    if (draft.answerKey) {
+      if (paper.mcqs.isNotEmpty) {
+        images.add(await _answerPage(title, draft, paper));
+      }
+      if (paper.saqs.isNotEmpty ||
+          paper.cqs.any((q) => q.answerKey.trim().isNotEmpty)) {
+        images.add(await _writtenAnswerPage(title, draft, paper));
+      }
+    }
     if (images.isEmpty) throw StateError('The paper has no printable pages.');
 
     // Apply the supplied Logo 2 artwork to the page pixels before exposing the
@@ -163,6 +170,30 @@ class PaperExport {
     );
     canvas.restore();
 
+    // The supplied Logo 2 remains the artwork source; the brand name is
+    // drawn separately so the watermark is readable even when the logo's
+    // transparent text is subtle on a white page.
+    final brand = TextPainter(
+      text: TextSpan(
+        text: "TUTOR'S DESK",
+        style: TextStyle(
+          color: Colors.black.withAlpha(56),
+          fontSize: (pageSize.width * .016).clamp(18.0, 32.0),
+          fontWeight: FontWeight.w800,
+          letterSpacing: 2.2,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: pageSize.width * .5);
+    brand.paint(
+      canvas,
+      Offset(
+        (pageSize.width - brand.width) / 2,
+        destination.bottom + pageSize.height * .008,
+      ),
+    );
+    brand.dispose();
+
     final picture = recorder.endRecording();
     final output = await picture.toImage(pageImage.width, pageImage.height);
     final bytes = await output.toByteData(format: ui.ImageByteFormat.png);
@@ -171,6 +202,71 @@ class PaperExport {
     picture.dispose();
     if (bytes == null)
       throw StateError('Could not render the paper watermark.');
+    return bytes.buffer.asUint8List();
+  }
+
+  static Future<Uint8List> _writtenAnswerPage(
+    String title,
+    PaperDraft draft,
+    ComposedPaper paper,
+  ) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    canvas.drawColor(Colors.white, BlendMode.src);
+    void text(String value, double x, double y, double size,
+        {bool bold = false}) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: value,
+          style: TextStyle(
+            color: Colors.black,
+            fontFamily: AppTypography.uiFont,
+            fontSize: size,
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: 680);
+      painter.paint(canvas, Offset(x, y));
+      painter.dispose();
+    }
+
+    text(title, 110, 90, 42, bold: true);
+    text('Written answer key • উত্তরমালা • সেট ${draft.setCode}', 110, 160, 30,
+        bold: true);
+    var y = 250.0;
+    var column = 0;
+    void line(String value, {bool bold = false}) {
+      if (y > 2140) {
+        column++;
+        y = 250;
+      }
+      text(value, 110 + column * 720.0, y, 25, bold: bold);
+      y += 52;
+    }
+
+    for (var i = 0; i < paper.saqs.length; i++) {
+      final q = paper.saqs[i];
+      final isDraft = q.answerKey.trim().isNotEmpty;
+      final key = isDraft ? q.answerKey.trim() : q.answer;
+      line('SQ ${i + 1}', bold: true);
+      if (isDraft) line('AI draft • review: $key');
+      else line(key);
+      y += 10;
+    }
+    for (var i = 0; i < paper.cqs.length; i++) {
+      final key = paper.cqs[i].answerKey.trim();
+      if (key.isEmpty) continue;
+      line('CQ ${i + 1}', bold: true);
+      line('AI draft • review: $key');
+      y += 10;
+    }
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(1654, 2339);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
+    picture.dispose();
+    if (bytes == null) throw StateError('Could not render the written answer key.');
     return bytes.buffer.asUint8List();
   }
 

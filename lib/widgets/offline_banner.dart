@@ -6,6 +6,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
 import 'motion_policy.dart';
+import 'offline_dialog.dart';
 
 /// A global, animated "offline" bar pinned to the top of every screen
 /// (below the status bar).
@@ -28,6 +29,7 @@ class ConnectivityBanner extends StatefulWidget {
 class _ConnectivityBannerState extends State<ConnectivityBanner>
     with SingleTickerProviderStateMixin {
   bool _offline = false;
+  bool _dialogOpen = false;
   StreamSubscription<bool>? _sub;
 
   /// 0 = hidden (slid up), 1 = visible. Driven by plain core animation
@@ -43,17 +45,32 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
     super.initState();
     _offline = !ConnectivityService.instance.isOnline;
     if (_offline) _ctrl.value = 1; // already offline on startup: show at once
-    ConnectivityService.instance.start();
+    // Subscribe before the first check so an offline result cannot be missed.
     _sub = ConnectivityService.instance.changes.listen(_onConnectivity);
+    ConnectivityService.instance.start();
     // The first real check lands asynchronously — sync up when it does.
     ConnectivityService.instance.refresh().then(_onConnectivity);
+  }
+
+  Future<void> _blockOffline() async {
+    if (!mounted || _dialogOpen) return;
+    _dialogOpen = true;
+    await showOfflineDialog(context);
+    _dialogOpen = false;
+    if (mounted && !ConnectivityService.instance.isOnline) {
+      unawaited(_blockOffline());
+    }
   }
 
   void _onConnectivity(bool online) {
     if (!mounted) return;
     final next = !online;
-    if (next == _offline) return;
+    if (next == _offline) {
+      if (next) unawaited(_blockOffline());
+      return;
+    }
     setState(() => _offline = next);
+    if (next) unawaited(_blockOffline());
     if (MotionPolicy.reduce(context)) {
       _ctrl.value = next ? 1 : 0;
     } else if (next) {

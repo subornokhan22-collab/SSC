@@ -16,7 +16,7 @@ import 'subscription_state.dart';
 ///
 /// Tutor's Desk is a tutor-only product, so every account is a teacher account.
 /// When Supabase is not configured ([SupabaseConfig] empty) every call degrades
-/// gracefully instead of throwing, and the offline features keep working.
+/// gracefully instead of throwing, while connectivity is required for the workspace.
 class AuthService {
   AuthService._();
 
@@ -42,6 +42,10 @@ class AuthService {
   }
 
   static SupabaseClient get _c => Supabase.instance.client;
+
+  /// Auth events let the root gate react when Supabase revokes a session on
+  /// another device (for example after a newer device signs in).
+  static Stream<AuthState> get authChanges => _c.auth.onAuthStateChange;
 
   static bool get isLoggedIn {
     if (!ready) return false;
@@ -149,6 +153,15 @@ class AuthService {
     final res = await _c.auth.signInWithPassword(email: e, password: password);
     if (res.session == null) {
       throw const AuthException('Could not sign in — please try again');
+    }
+    // Keep the newly authenticated session and revoke every other refresh
+    // token. Supabase will reject the previous devices when they next refresh;
+    // the app's auth listener then returns them to the sign-in gate.
+    try {
+      await _c.auth.signOut(scope: SignOutScope.others);
+    } catch (_) {
+      // A transient revoke failure must not discard the successful login.
+      // The next authenticated request can retry the device policy.
     }
     _profileCache = null;
   }
@@ -300,6 +313,20 @@ class AuthService {
     return SubscriptionState.instance.entitlement.isPaid;
   }
 
+  /// Confirms the local session is still accepted by Supabase. This is the
+  /// startup/API boundary that turns a newer-device revocation into a clean
+  /// return to authentication instead of leaving a stale workspace visible.
+  static Future<bool> verifyCurrentSession() async {
+    if (!ready || !isLoggedIn) return false;
+    try {
+      final result = await _c.auth.getUser().timeout(const Duration(seconds: 8));
+      return result.user != null;
+    } catch (_) {
+      await signOut();
+      return false;
+    }
+  }
+
   static Future<void> signOut() async {
     final accountId = userId;
     try {
@@ -314,7 +341,7 @@ class AuthService {
   static void _requireReady() {
     if (!ready) {
       throw const AuthException(
-        'Sign-in is not configured yet — offline features still work',
+        'Sign-in is not configured yet — connect to continue.',
       );
     }
   }

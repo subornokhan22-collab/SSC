@@ -12,6 +12,8 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../models/subject_info.dart';
 import '../services/paper_library.dart';
+import '../services/subscription_guard.dart';
+import '../models/subscription_entitlement.dart';
 import '../widgets/problem_dialog.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
@@ -174,6 +176,9 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   /// Opens the OMR scanner with this paper's answer key pre-loaded — the
   /// teacher does not have to fill the key manually.
   Future<void> _scanWith(SavedPaper p) async {
+    if (!await SubscriptionGuard.require(context, PremiumFeature.omrScanner)) {
+      return;
+    }
     await Navigator.push(
       context,
       MaterialPageRoute(

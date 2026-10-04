@@ -23,6 +23,7 @@ import '../services/paper_pdf.dart';
 import '../services/subscription_guard.dart';
 import '../services/subscription_state.dart';
 import '../services/subject_entitlement_service.dart';
+import '../services/ai/teacher_ai_client.dart';
 import '../theme/app_theme.dart';
 import '../widgets/paper_question_card.dart';
 import '../widgets/written_question_card.dart';
@@ -146,7 +147,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       builder: (dialogContext) => AlertDialog(
         title: const Text('Format locked'),
         content: Text(englishLocked
-            ? 'English papers use the synced board format. Choose a board or year above.'
+            ? 'English papers use the randomized full question pool. This format is not available for English.'
             : 'Free includes exactly two Model Test generations per Asia/Dhaka month. Upgrade to unlock Chapter Test, Custom Paper, and MCQ + OMR.'),
         actions: [
           TextButton(
@@ -202,7 +203,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         activeColor: english ? AppColors.writing : AppTheme.primary,
         title: Text(subject.name),
         subtitle: Text(
-          '${subject.bengaliName} · ${english ? 'English sections available' : '${allMCQs.where((q) => q.subjectId == subject.id).length} MCQs in bank'}${locked ? ' · Upgrade to unlock' : ''}',
+          '${subject.bengaliName} · ${english ? 'English sections available' : 'SSC question bank'}${locked ? ' · Upgrade to unlock' : ''}',
         ),
         value: subject.id,
         groupValue: _subjectChosen ? c.draft.subjectId : null,
@@ -353,6 +354,144 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     });
   }
 
+  Future<void> _draftShortAnswerKey(int index, ShortQuestion q) async {
+    if (!await SubscriptionGuard.require(
+        context, PremiumFeature.aiAssistant)) {
+      return;
+    }
+    if (!mounted) return;
+    final client = TeacherAiClient();
+    try {
+      final response = await client.request(
+        {
+          'action': 'draft_answer_key',
+          'subjectId': q.subjectId,
+          'chapters': [q.chapter],
+          'count': 1,
+          'difficulty': 'mixed',
+          'text': jsonEncode({'question': q.questionText}),
+          'instruction':
+              'Draft a concise, mark-aware answer. It must be reviewed by the teacher before use.',
+        },
+        (message) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)));
+        },
+      );
+      final draft = response['answerKey'];
+      if (response['kind'] != 'answer_key' ||
+          response['draft'] != true ||
+          draft is! String ||
+          draft.trim().isEmpty) {
+        throw StateError('The AI answer-key draft was incomplete. Try again.');
+      }
+      if (mounted) {
+        c.editWritten(
+          index,
+          ShortQuestion(
+            id: q.id,
+            subjectId: q.subjectId,
+            chapter: q.chapter,
+            questionText: q.questionText,
+            answer: q.answer,
+            answerKey: draft.trim(),
+            explanation: q.explanation,
+            source: q.source,
+            sourceLabel: q.sourceLabel,
+            figure: q.figure,
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('AI draft key added. Review it before publishing.')));
+      }
+    } on TeacherAiError catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.userMessage)));
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not draft the answer key: $error')));
+      }
+    } finally {
+      client.close();
+    }
+  }
+
+  Future<void> _draftCreativeAnswerKey(int index, CreativeQuestion q) async {
+    if (!await SubscriptionGuard.require(
+        context, PremiumFeature.aiAssistant)) {
+      return;
+    }
+    if (!mounted) return;
+    final client = TeacherAiClient();
+    try {
+      final response = await client.request(
+        {
+          'action': 'draft_answer_key',
+          'subjectId': q.subjectId,
+          'chapters': [q.chapter],
+          'count': 1,
+          'difficulty': 'mixed',
+          'text': jsonEncode({
+            'stem': q.stem,
+            'ক': q.questionK,
+            'খ': q.questionKh,
+            'গ': q.questionG,
+            if (q.questionGh.trim().isNotEmpty) 'ঘ': q.questionGh,
+            'marks': q.marks,
+          }),
+          'instruction':
+              'Give a concise, mark-aware draft answer for each visible part. It must be reviewed by the teacher before use.',
+        },
+        (message) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)));
+        },
+      );
+      final draft = response['answerKey'];
+      if (response['kind'] != 'answer_key' ||
+          response['draft'] != true ||
+          draft is! String ||
+          draft.trim().isEmpty) {
+        throw StateError('The AI answer-key draft was incomplete. Try again.');
+      }
+      final updated = CreativeQuestion(
+        id: q.id,
+        subjectId: q.subjectId,
+        chapter: q.chapter,
+        stem: q.stem,
+        questionK: q.questionK,
+        questionKh: q.questionKh,
+        questionG: q.questionG,
+        questionGh: q.questionGh,
+        answerKey: draft.trim(),
+        marks: q.marks,
+        source: q.source,
+        sourceLabel: q.sourceLabel,
+        figure: q.figure,
+      );
+      if (mounted) {
+        c.editWritten(index, updated);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('AI draft key added. Review it before publishing.')));
+      }
+    } on TeacherAiError catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.userMessage)));
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not draft the answer key: $error')));
+      }
+    } finally {
+      client.close();
+    }
+  }
+
   @override
   Widget build(BuildContext context) => PopScope(
       canPop: step == 0 && !c.busy,
@@ -492,9 +631,13 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                             if (c.paper?.mcqs.isNotEmpty == true)
                               PopupMenuButton<String>(
                                   enabled: !c.busy,
-                                  onSelected: (value) {
+                                  onSelected: (value) async {
+                                    if (!await SubscriptionGuard.require(
+                                        context, PremiumFeature.omrScanner)) {
+                                      return;
+                                    }
                                     if (value == 'scan')
-                                      Navigator.push(
+                                      await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (_) => OMrScannerScreen(
@@ -506,7 +649,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                                                   initialSubject:
                                                       c.subject!.bengaliName)));
                                     else
-                                      export('omr');
+                                      await export('omr');
                                   },
                                   itemBuilder: (_) => const [
                                         PopupMenuItem(
@@ -545,15 +688,10 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                   : '',
               isExpanded: true,
               decoration: const InputDecoration(
-                  labelText: 'Board / year · synced English papers'),
-              items: [
-                const DropdownMenuItem(
-                    value: '', child: Text('Mixed practice set')),
-                for (final e
-                    in EnglishPaperSync.choices(c.draft.subjectId).entries)
-                  DropdownMenuItem(
-                      value: e.key,
-                      child: Text(e.value, overflow: TextOverflow.ellipsis))
+                  labelText: 'Randomized English model pool'),
+              items: const [
+                DropdownMenuItem(
+                    value: '', child: Text('Randomized practice set')),
               ],
               onChanged: (id) => c.update(c.draft
                   .copyWith(englishPaperId: id, clearEnglishPaper: id == ''))),
@@ -655,9 +793,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         ],
         SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Include MCQ answer key in PDF'),
+            title: const Text('Include answer key in PDF'),
             subtitle: const Text(
-                'Keep off for the student copy. The key is always saved with your paper.'),
+                'Includes available MCQ, SQ and reviewed/AI-draft CQ keys.'),
             value: c.draft.answerKey,
             onChanged: (v) => c.update(c.draft.copyWith(answerKey: v),
                 preserveQuestions: true)),
@@ -703,6 +841,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: OutlinedButton.icon(
                 onPressed: () async {
+                  if (!await SubscriptionGuard.require(
+                      context, PremiumFeature.aiAssistant)) return;
                   final questions = await Navigator.push<List<Question>>(
                       context,
                       MaterialPageRoute(
@@ -728,6 +868,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             number: i + 1,
             onReplace: () => c.replaceQuestion(i),
             onImprove: () async {
+              if (!await SubscriptionGuard.require(
+                  context, PremiumFeature.aiAssistant)) return;
               final q = p.mcqs[i];
               final edited = await Navigator.push<List<Question>>(
                   context,
@@ -757,6 +899,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         WrittenQuestionCard(
             question: p.saqs[i],
             number: i + 1,
+            onDraftAnswerKey: () =>
+                _draftShortAnswerKey(i, p.saqs[i]),
             onEdit: (q) => c.editWritten(i, q),
             onReplace: () => c.replaceWritten(i, creative: false),
             onDelete: c.draft.format == PaperFormat.board
@@ -769,6 +913,8 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         WrittenQuestionCard(
             question: p.cqs[i],
             number: i + 1,
+            onDraftAnswerKey: () =>
+                _draftCreativeAnswerKey(i, p.cqs[i]),
             onEdit: (q) => c.editWritten(i, q),
             onReplace: () => c.replaceWritten(i, creative: true),
             onDelete: c.draft.format == PaperFormat.board

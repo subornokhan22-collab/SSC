@@ -34,3 +34,14 @@ test('Check / Explain use structured findings, not an answer-verification badge'
   const result=await runTeacherTool({...request(),action:'explain',text:'Explain speed'},async()=>({summary:'একক সময়ে অতিক্রান্ত দূরত্ব হলো দ্রুতি।',findings:[{title:'সূত্র',detail:'v = d / t'}]}),()=>{});
   assert.equal(result.kind,'review');assert.equal(result.checked,false);
 });
+test('written answer-key drafts are explicitly unverified',async()=>{
+  const phases=[];
+  const result=await runTeacherTool({...request(),action:'draft_answer_key',text:'প্রশ্ন: দ্রুতি কী?',instruction:'Draft answer'},async(_system,_input,schema)=>{
+    assert.deepEqual(schema.required,['answerKey']);
+    return {answerKey:'দ্রুতি হলো একক সময়ে অতিক্রান্ত দূরত্ব।'};
+  },phase=>phases.push(phase));
+  assert.equal(result.kind,'answer_key');
+  assert.equal(result.draft,true);
+  assert.equal(result.checked,false);
+  assert.deepEqual(phases,['Applying SSC chapter constraints','Drafting an answer key for teacher review']);
+});

@@ -158,7 +158,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const action = String(payload.action ?? "");
-  const toolActions = ["generate", "improve", "check", "explain"];
+  const toolActions = ["generate", "improve", "check", "explain", "draft_answer_key"];
   if (!toolActions.includes(action) && action !== "chat") {
     return fail("Unknown action.", 400, "BAD_REQUEST");
   }

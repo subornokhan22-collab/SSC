@@ -8,6 +8,8 @@ import 'package:printing/printing.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/paper_library.dart';
+import '../services/subscription_guard.dart';
+import '../models/subscription_entitlement.dart';
 import 'omr_scanner_screen.dart';
 
 class SavedPaperScreen extends StatefulWidget {
@@ -78,6 +80,25 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
     }
   }
 
+  Future<void> _scanSaved() async {
+    final current = saved;
+    if (current == null || !mounted) return;
+    if (!await SubscriptionGuard.require(context, PremiumFeature.omrScanner)) {
+      return;
+    }
+    if (!mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OMrScannerScreen(
+          initialKey: current.key,
+          paperTitle: widget.entry.title,
+          initialSubject: widget.entry.subject,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -142,16 +163,7 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: OutlinedButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => OMrScannerScreen(
-                          initialKey: saved!.key,
-                          paperTitle: widget.entry.title,
-                          initialSubject: widget.entry.subject,
-                        ),
-                      ),
-                    ),
+                    onPressed: _scanSaved,
                     icon: const AppDuotoneIcon(
                       PhosphorIcons.scanDuotone,
                       color: AppColors.primary,

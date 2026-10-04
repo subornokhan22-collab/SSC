@@ -33,7 +33,7 @@ class AuthChoiceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'Choose from the SSC question bank, review a printable paper and grade OMR sheets. Offline paper building works without an account.',
+                      'Create papers, review the SSC question bank and grade OMR sheets with a secure online account.',
                     ),
                     const SizedBox(height: 32),
                     if (AuthService.ready) ...[

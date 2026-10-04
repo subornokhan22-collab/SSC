@@ -75,6 +75,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   late final TextEditingController _subjectCtrl;
 
   bool _busy = false;
+  bool _accessChecked = false;
   int _step = 0;
   String? _activeRecordId;
   OmScanResult? _result;
@@ -118,11 +119,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     _subjectCtrl = TextEditingController(text: widget.initialSubject);
     _loadHistory();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!await SubscriptionGuard.require(
-              context, PremiumFeature.omrScanner) &&
-          mounted) {
+      final allowed =
+          await SubscriptionGuard.require(context, PremiumFeature.omrScanner);
+      if (!mounted) return;
+      if (!allowed) {
         Navigator.of(context).maybePop();
+        return;
       }
+      setState(() => _accessChecked = true);
     });
   }
 
@@ -846,6 +850,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_accessChecked) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final result = _result;
     final graded = _graded;
     return Scaffold(
@@ -854,9 +863,14 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
         actions: [
           IconButton(
             tooltip: 'Analytics & leaderboard',
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const OMrAnalyticsScreen()),
-            ),
+            onPressed: () async {
+              if (!await SubscriptionGuard.require(
+                  context, PremiumFeature.omrScanner)) return;
+              if (!mounted) return;
+              await Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const OMrAnalyticsScreen()),
+              );
+            },
             icon: const AppDuotoneIcon(PhosphorIcons.chartBarDuotone),
           ),
           IconButton(

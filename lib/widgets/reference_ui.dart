@@ -148,6 +148,7 @@ class ReferenceActionCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool large;
   final bool multiline;
+  final bool locked;
 
   const ReferenceActionCard({
     super.key,
@@ -158,7 +159,28 @@ class ReferenceActionCard extends StatelessWidget {
     required this.onTap,
     this.large = false,
     this.multiline = false,
+    this.locked = false,
   });
+
+  Widget _icon() => Stack(
+        clipBehavior: Clip.none,
+        children: [
+          customIcon ??
+              (asset == null
+                  ? ReferenceIcon(icon, size: _iconSize)
+                  : ReferenceImageIcon(asset!, size: _iconSize)),
+          if (locked)
+            const Positioned(
+              right: -8,
+              top: -8,
+              child: Icon(
+                PhosphorIcons.lock,
+                size: 18,
+                color: ReferencePalette.mutedInk,
+              ),
+            ),
+        ],
+      );
 
   @override
   Widget build(BuildContext context) => ReferenceCard(
@@ -183,18 +205,12 @@ class ReferenceActionCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  customIcon ??
-                      (asset == null
-                          ? ReferenceIcon(icon, size: _iconSize)
-                          : ReferenceImageIcon(asset!, size: _iconSize)),
+                  _icon(),
                 ],
               )
             : Row(
                 children: [
-                  customIcon ??
-                      (asset == null
-                          ? ReferenceIcon(icon, size: _iconSize)
-                          : ReferenceImageIcon(asset!, size: _iconSize)),
+                  _icon(),
                   const SizedBox(width: 12),
                   Expanded(
                     child: multiline

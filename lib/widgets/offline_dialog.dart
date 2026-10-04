@@ -174,8 +174,8 @@ class _OfflineCardState extends State<_OfflineCard> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Papers, printing, saving and OMR scanning still work. '
-                    'AI question generation needs internet.',
+                    'An internet connection is required to use Tutor\'s Desk. '
+                    'Reconnect Wi-Fi or mobile data to continue.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12.5,
@@ -196,65 +196,33 @@ class _OfflineCardState extends State<_OfflineCard> {
                     ),
                   ],
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF16203A),
-                            padding: const EdgeInsets.symmetric(vertical: 13),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: _checking ? null : _check,
-                          icon: _checking
-                              ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(
-                                  PhosphorIcons.wifiHigh,
-                                  size: 17,
-                                ),
-                          label: Text(
-                            _checking ? 'Checking…' : 'Check connection',
-                            style: const TextStyle(
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF16203A),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFFFFB3B5),
-                            side: const BorderSide(
-                              color: Color(0xFFE5484D),
-                              width: 1.3,
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 13),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text(
-                            'Continue offline',
-                            style: TextStyle(
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
+                      onPressed: _checking ? null : _check,
+                      icon: _checking
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(PhosphorIcons.wifiHigh, size: 17),
+                      label: Text(
+                        _checking ? 'Checking…' : 'Check connection',
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),

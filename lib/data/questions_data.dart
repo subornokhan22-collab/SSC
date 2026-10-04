@@ -42,6 +42,8 @@ class ShortQuestion {
   final String chapter;
   final String questionText;
   final String answer;
+  /// Optional AI-generated draft key, always shown as unverified.
+  final String answerKey;
   final String explanation;
   final QuestionSource source;
   final String? sourceLabel;
@@ -53,6 +55,7 @@ class ShortQuestion {
     required this.chapter,
     required this.questionText,
     required this.answer,
+    this.answerKey = '',
     this.explanation = '',
     this.source = QuestionSource.ai,
     this.sourceLabel,
@@ -69,6 +72,8 @@ class CreativeQuestion {
   final String questionKh;
   final String questionG;
   final String questionGh;
+  /// Optional teacher-reviewed or AI-draft answer key for all CQ parts.
+  final String answerKey;
   final List<int> marks;
   final QuestionSource source;
   final String? sourceLabel;
@@ -83,6 +88,7 @@ class CreativeQuestion {
     required this.questionKh,
     required this.questionG,
     required this.questionGh,
+    this.answerKey = '',
     this.marks = const [1, 2, 3, 4],
     this.source = QuestionSource.ai,
     this.sourceLabel,

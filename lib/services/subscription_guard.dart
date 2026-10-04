@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../models/subscription_entitlement.dart';
@@ -14,12 +16,28 @@ class SubscriptionGuard {
   }) async {
     final state = SubscriptionState.instance;
     if (!state.initialized) {
-      await state.initialize(refresh: AuthService.isLoggedIn);
-    } else if (AuthService.isLoggedIn) {
-      await state.refresh();
+      // Load the safe cached entitlement first so a Free user gets the lock
+      // explanation immediately rather than waiting on a network round trip.
+      await state.initialize(refresh: false);
     }
-    if (state.canUse(feature)) return true;
-    final reason = state.reasonFor(feature);
+    if (!state.canUse(feature)) {
+      final reason = state.reasonFor(feature);
+      if (AuthService.isLoggedIn) unawaited(state.refresh());
+      await _showUpgrade(context, reason, title);
+      return false;
+    }
+    // A cached paid entitlement is still expiry-checked by the view model.
+    // Allow the already-authorized tap immediately, then reconcile the server
+    // state in the background so the overlay never feels delayed.
+    if (AuthService.isLoggedIn) unawaited(state.refresh());
+    return true;
+  }
+
+  static Future<void> _showUpgrade(
+    BuildContext context,
+    UpgradeReason? reason,
+    String? title,
+  ) async {
     final message = switch (reason) {
       UpgradeReason.aiDailyLimit =>
         'Daily AI limit reached. Resets at midnight.',
@@ -46,6 +64,5 @@ class SubscriptionGuard {
         ),
       );
     }
-    return false;
   }
 }

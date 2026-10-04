@@ -17,12 +17,12 @@ If you only need the order, do this:
 4. Run `supabase db push` and confirm the plan matrix in SQL Editor.
 5. Configure Email provider, confirmation emails, SMTP, and reset redirect URLs.
 6. Put only the Supabase URL and anon key in `lib/services/supabase_config.dart`.
-7. Add Gemini and Rupantor values as Edge Function secrets.
-8. Deploy `mimi`, `admin-content`, and `rupantor-pay`.
+7. Add the Gemini values as Edge Function secrets; leave Rupantor unset until provider credentials are configured.
+8. Deploy `mimi` and `admin-content`; deploy `rupantor-pay` only in the later payment-enablement step.
 9. Add the content administrator and optional Storage bucket.
-10. Test signup, plan limits, AI, RLS, and two Free Model Tests.
-11. Test Rupantor in sandbox or with a very low-value payment.
-12. Only then enable production payment credentials.
+10. Test signup, plan limits, AI, RLS, offline blocking, and two Free Model Tests.
+11. Verify premium-route guards and the newest-login-wins device session behavior.
+12. When Rupantor credentials are supplied and configured, run the payment contract tests before enabling checkout.
 
 The detailed instructions below explain each step. Stop at the first error; do not skip a migration or put a server secret in Flutter.
 
@@ -300,7 +300,7 @@ Do this in **Dashboard → Edge Functions → Secrets**. Add the values without 
 
 Both model names are server configuration. Use model IDs enabled for the Gemini key; do not put model fallbacks or keys in Flutter.
 
-### Required Rupantor secrets
+### Rupantor secrets — configure only when enabling payments
 
 | Secret | Value |
 |---|---|
@@ -313,6 +313,8 @@ Both model names are server configuration. Use model IDs enabled for the Gemini 
 | `RUPANTOR_APP_REDIRECT_URL` | The Flutter payment result deep link |
 
 The deployed functions receive `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` server-side from Supabase. Never copy that service-role value into the app or into Git.
+
+Do not add the Rupantor values yet if payment setup is postponed. The app and database can be deployed and tested without them.
 
 If you prefer the CLI, set secret values from protected environment variables rather than writing real values into shell history:
 
@@ -338,14 +340,14 @@ supabase secrets list
 
 ---
 
-## Step 9 — Deploy the three Edge Functions
+## Step 9 — Deploy the ready Edge Functions (Rupantor later)
 
 Run these commands after migrations and secrets are ready:
 
 ```sh
-supabase functions deploy mimi
-supabase functions deploy admin-content
-supabase functions deploy rupantor-pay --no-verify-jwt
+supabase functions deploy mimi --use-api
+supabase functions deploy admin-content --use-api
+# Do not deploy rupantor-pay until the provider secrets are configured.
 ```
 
 What each function does:
@@ -437,6 +439,10 @@ The test user should start with a Free entitlement.
 7. Call `mimi` while signed in. Confirm it uses the server Gemini key and enforces the server AI allowance.
 8. Confirm a missing/invalid Gemini secret gives a safe server error and never exposes a key.
 9. Confirm an ordinary app user cannot write plans, subscriptions, provider transactions, AI counters, or `question_admins` directly.
+10. Turn off connectivity before app startup and while inside the workspace. The blocking connectivity dialog must prevent workspace and paid-feature use; restoring connectivity must dismiss the block.
+11. Open OMR, Statistics, and AI Assistant through every visible entry point as a Free user. The upgrade dialog must appear before the paid screen is rendered.
+12. Sign in to the same account on a second device/session. The newest successful login must invalidate the old session, and the old app must return to authentication on its next auth/API check.
+13. Generate a paper with a Logo 2 watermark and `TUTOR'S DESK` text in preview and export. Generate an AI CQ draft key, confirm it is visibly labeled as a draft for teacher review, edit it, and confirm only the reviewed/available key is included in an answer-key PDF.
 
 ### Repository tests
 
@@ -466,9 +472,9 @@ supabase db reset
 
 ---
 
-## Step 12 — Test Rupantor Pay, then go live
+## Step 12 — Optional later: configure Rupantor Pay, then go live
 
-Use Rupantor sandbox credentials or a very low-value test first.
+This step is intentionally postponed until the project owner supplies/configures the provider credentials. Never invent, commit, or paste those credentials into Flutter. When they are available, use Rupantor sandbox credentials or a very low-value test first.
 
 1. Start checkout as an authenticated test teacher.
 2. Confirm one `pending` row is created before the provider page opens.

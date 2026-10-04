@@ -305,7 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: PhosphorIcons.cloudSlash,
                   title: 'Sign-in is not configured',
                   message:
-                      'Every offline feature keeps working — papers, PDFs and printing are all available.',
+                      'An internet connection is required to open papers, export PDFs and print.',
                 )
               else if (AuthService.isLoggedIn)
                 _accountCard()

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/auth_service.dart';
 import '../services/subscription_state.dart';
@@ -34,17 +35,36 @@ class RootGate extends StatefulWidget {
 
 class _RootGateState extends State<RootGate> {
   late Future<bool> _boot;
+  StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
     super.initState();
     _boot = _prepare();
+    if (AuthService.ready) {
+      _authSubscription = AuthService.authChanges.listen((_) {
+        if (!mounted || AuthService.isLoggedIn) return;
+        // A refresh-token revocation from a newer device is an ordinary sign
+        // out from the user's point of view. Clear every authenticated route.
+        RootGate.restart(context);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   /// Warms up the profile/Pro state before showing the workspace so the
   /// home screen never flickers between logged-out and logged-in states.
   Future<bool> _prepare() async {
     if (!AuthService.ready || !AuthService.isLoggedIn) {
+      SubscriptionState.instance.clear();
+      return false;
+    }
+    if (!await AuthService.verifyCurrentSession()) {
       SubscriptionState.instance.clear();
       return false;
     }
@@ -55,8 +75,8 @@ class _RootGateState extends State<RootGate> {
       await SubscriptionState.instance.initialize(refresh: false);
       unawaited(SubscriptionState.instance.refresh());
     } catch (_) {
-      // Offline / slow network — cached entitlement and banked questions still
-      // work, while the view model can refresh when connectivity returns.
+      // Profile hydration can be retried after the session check; the global
+      // connectivity gate still blocks workspace interaction when offline.
     }
     return true;
   }

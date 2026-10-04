@@ -46,7 +46,7 @@ class TeacherAiClient {
     final token = _tokenProvider();
     if (token == null)
       throw StateError(
-        'Sign in to use AI Tools. Your offline papers are still available.',
+        'Sign in and connect to the internet to use AI Tools.',
       );
     final req = http.Request(
       'POST',
@@ -64,6 +64,9 @@ class TeacherAiClient {
     final response =
         await _client.send(req).timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) {
+      if (response.statusCode == 401) {
+        await AuthService.signOut();
+      }
       final raw = await response.stream.bytesToString().timeout(
             const Duration(seconds: 30),
           );

@@ -380,6 +380,7 @@ class PaperController extends OperationController {
           questionKh: selected.questionKh,
           questionG: selected.questionG,
           questionGh: selected.questionGh,
+          answerKey: selected.answerKey,
           marks: selected.marks,
           source: selected.source,
           sourceLabel: selected.sourceLabel,

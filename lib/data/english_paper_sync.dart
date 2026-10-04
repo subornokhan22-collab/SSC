@@ -238,39 +238,17 @@ class EnglishPaperSync {
     }
   }
 
-  static Map<String, String> choices(String subjectId) {
-    final first = subjectId == 'english_1st';
-    return {
-      for (final p
-          in _papers.where((p) => p.paperType == (first ? 'first' : 'second')))
-        p.id: p.label,
-      if (first)
-        for (final p in englishFirstSets2024)
-          'builtin:first:${p.serial}': p.board,
-      if (!first)
-        for (final p in englishBoardSets2024)
-          'builtin:second:${p.serial}': p.board,
-    };
-  }
+  /// The selection UI intentionally exposes no board names. English models
+  /// are generated from the complete approved pool and randomized on every
+  /// composition; the source board remains metadata only.
+  static Map<String, String> choices(String subjectId) => const {};
 
   static List<EnglishSection> compose(
       String subjectId, String? id, Random random) {
-    if (id != null && id.isNotEmpty) {
-      if (id.startsWith('builtin:first:') && subjectId == 'english_1st')
-        return EnglishPaperAdapter.first(englishFirstSets2024
-            .firstWhere((p) => p.serial.toString() == id.split(':').last));
-      if (id.startsWith('builtin:second:') && subjectId == 'english_2nd')
-        return EnglishPaperAdapter.second(englishBoardSets2024
-            .firstWhere((p) => p.serial.toString() == id.split(':').last));
-      final selected = _papers.where((p) =>
-          p.id == id &&
-          p.paperType == (subjectId == 'english_1st' ? 'first' : 'second'));
-      if (selected.isEmpty)
-        throw StateError(
-            'This English paper is no longer available. Choose another board paper.');
-      return selected.first.sections;
-    }
-    // Whole remote sets are selectable; the mixed mode also includes them.
+    // A legacy draft may still contain a board id. Ignore it deliberately so
+    // an old selection cannot make generation deterministic or reveal board
+    // names again. The full pool is retained below and mixed per question
+    // group, preserving the question bank while randomizing the paper.
     if (subjectId == 'english_1st')
       return EnglishPaperAdapter.first(
           EnglishFirstMixer.mix(rng: random, pool: [

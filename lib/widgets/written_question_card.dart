@@ -10,13 +10,15 @@ class WrittenQuestionCard extends StatelessWidget {
   final ValueChanged<Object> onEdit;
   final VoidCallback onReplace;
   final VoidCallback? onDelete;
+  final Future<void> Function()? onDraftAnswerKey;
   const WrittenQuestionCard(
       {super.key,
       required this.question,
       required this.number,
       required this.onEdit,
       required this.onReplace,
-      this.onDelete});
+      this.onDelete,
+      this.onDraftAnswerKey});
   @override
   Widget build(BuildContext context) {
     final q = question;
@@ -46,10 +48,42 @@ class WrittenQuestionCard extends StatelessWidget {
                 ExpansionTile(
                     tilePadding: EdgeInsets.zero,
                     title: const Text('Answer'),
-                    children: [Text(lines.last)])
-              else
+                    children: [
+                      Text(lines.last),
+                      if ((q as ShortQuestion).answerKey.trim().isNotEmpty)
+                        ExpansionTile(
+                          tilePadding: EdgeInsets.zero,
+                          title: const Text('AI draft answer key'),
+                          children: [Text((q as ShortQuestion).answerKey)],
+                        ),
+                    ])
+              else ...[
                 Text(lines.skip(1).join('\n')),
+                if ((q as CreativeQuestion).answerKey.trim().isNotEmpty)
+                  ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title: const Text('AI draft answer key'),
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text((q as CreativeQuestion).answerKey),
+                      ),
+                    ],
+                  ),
+              ],
               Wrap(spacing: 8, children: [
+                if (onDraftAnswerKey != null)
+                  TextButton.icon(
+                    onPressed: onDraftAnswerKey,
+                    icon: const Icon(PhosphorIcons.sparkle, size: 17),
+                    label: Text((q is ShortQuestion
+                                ? q.answerKey
+                                : (q as CreativeQuestion).answerKey)
+                            .trim()
+                            .isEmpty
+                        ? 'Draft AI key'
+                        : 'Redraft AI key'),
+                  ),
                 TextButton.icon(
                     onPressed: () async {
                       final edited = await showDialog<Object>(
@@ -87,13 +121,14 @@ class _EditorState extends State<_Editor> {
     super.initState();
     final q = widget.question;
     final values = q is ShortQuestion
-        ? [q.questionText, q.answer]
+        ? [q.questionText, q.answer, q.answerKey]
         : [
             (q as CreativeQuestion).stem,
             q.questionK,
             q.questionKh,
             q.questionG,
-            if (q.marks.length == 4) q.questionGh
+            if (q.marks.length == 4) q.questionGh,
+            q.answerKey,
           ];
     fields = values.map((s) => TextEditingController(text: s)).toList();
   }
@@ -114,6 +149,7 @@ class _EditorState extends State<_Editor> {
             chapter: q.chapter,
             questionText: values[0],
             answer: values[1],
+            answerKey: values.length > 2 ? values[2] : '',
             explanation: q.explanation,
             source: q.source,
             sourceLabel: q.sourceLabel,
@@ -126,7 +162,10 @@ class _EditorState extends State<_Editor> {
             questionK: values[1],
             questionKh: values[2],
             questionG: values[3],
-            questionGh: values.length == 5 ? values[4] : '',
+            questionGh: (q as CreativeQuestion).marks.length == 4
+                ? values[4]
+                : '',
+            answerKey: values[(q as CreativeQuestion).marks.length == 4 ? 5 : 4],
             marks: q.marks,
             source: q.source,
             sourceLabel: q.sourceLabel,
@@ -157,10 +196,22 @@ class _EditorState extends State<_Editor> {
                         maxLines: 8,
                         decoration: InputDecoration(
                             labelText: short
-                                ? (i == 0 ? 'Question' : 'Answer')
+                                ? (i == 0
+                                    ? 'Question'
+                                    : i == 1
+                                        ? 'Answer'
+                                        : 'AI draft key (review)')
                                 : (i == 0
                                     ? 'উদ্দীপক'
-                                    : ['ক', 'খ', 'গ', 'ঘ'][i - 1])))),
+                                    : i ==
+                                            ((widget.question as CreativeQuestion)
+                                                        .marks
+                                                        .length ==
+                                                    4
+                                                ? 5
+                                                : 4)
+                                        ? 'AI draft key (review)'
+                                        : ['ক', 'খ', 'গ', 'ঘ'][i - 1])))),
               if (error != null)
                 Text(error!, style: const TextStyle(color: AppTheme.danger)),
             ]))),

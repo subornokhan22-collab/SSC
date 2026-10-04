@@ -179,8 +179,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           _poll?.cancel();
           Navigator.of(context).pop();
           await _problem(
-            'This Rupantor Pay payment failed',
-            'Rupantor Pay rejected this payment — no money left your account. '
+            'This payment failed',
+            'The payment provider rejected this payment — no money left your account. '
                 'You can try again straight away.',
           );
           return;
@@ -190,7 +190,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           Navigator.of(context).pop();
           await _problem(
             'Payment not detected yet',
-            'Rupantor Pay has not confirmed the money yet. It can take a little '
+            'The payment provider has not confirmed the money yet. It can take a little '
                 'while — tap "Check again" any time, or contact support if '
                 'it still does not activate.',
           );
@@ -205,7 +205,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       builder: (c) => PopScope(
         canPop: false,
         child: AlertDialog(
-          title: const Text('Waiting for Rupantor Pay…'),
+          title: const Text('Waiting for payment confirmation…'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,7 +220,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      'Complete the payment in Rupantor Pay, then come back here — the app activates Pro by itself.',
+                      'Complete the secure checkout, then come back here — the app activates your plan after verification.',
                     ),
                   ),
                 ],
@@ -256,13 +256,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         await _activate();
       } else if (status == 'failed') {
         await _problem(
-          'This Rupantor Pay payment failed',
-          'Rupantor Pay rejected this payment — no money left your account.',
+          'This payment failed',
+          'The payment provider rejected this payment — no money left your account.',
         );
       } else {
         await _problem(
           'Still waiting',
-          'Rupantor Pay has not confirmed the payment yet. Try again in a minute, '
+          'The payment provider has not confirmed the payment yet. Try again in a minute, '
               'or contact support with the payment reference.',
         );
       }
@@ -545,7 +545,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               Text(
                 selectedPlan == null
                     ? 'Select a plan to see exactly what is included.'
-                    : 'Pay with Rupantor Pay — ${selectedPlan.label} activates automatically after payment.',
+                    : 'Secure checkout — ${selectedPlan.label} activates automatically after payment.',
                 style: const TextStyle(
                   color: AppTheme.accent,
                   fontSize: 14.5,
@@ -693,10 +693,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                 const SizedBox(width: 10),
                 Text(
                   _buying
-                      ? 'Starting Rupantor Pay payment…'
+                      ? 'Starting secure checkout…'
                       : _plan == null
                           ? 'Plans unavailable'
-                          : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} with Rupantor Pay',
+                          : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} via secure checkout',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15.5,
@@ -712,7 +712,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           child: Text(
             selectedPlan == null
                 ? 'Select a plan before starting payment.'
-                : 'You will be redirected to Rupantor Pay. The app activates '
+                : 'You will be redirected to secure checkout. The app activates '
                     '${selectedPlan.label} automatically after server verification.',
             textAlign: TextAlign.center,
             style: const TextStyle(
@@ -733,7 +733,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               ),
               const Text(
                 'Payment problems, refunds or questions — contact support. '
-                'Never share your Rupantor Pay PIN or payment credentials inside '
+                'Never share your payment PIN or payment credentials inside '
                 'the app.',
                 style: TextStyle(
                   fontSize: 12.5,

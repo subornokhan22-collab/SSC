@@ -47,12 +47,18 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     super.initState();
     AppStyle.mood.value = WorkspaceMood.home;
     WidgetsBinding.instance.addObserver(this);
+    SubscriptionState.instance.addListener(_subscriptionChanged);
     load();
+  }
+
+  void _subscriptionChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    SubscriptionState.instance.removeListener(_subscriptionChanged);
     super.dispose();
   }
 
@@ -650,6 +656,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                                 icon: PhosphorIcons.magicWand,
                                 asset: 'New UI 4.0/Ai assistant.png',
                                 label: 'Assistant',
+                                locked: !SubscriptionState.instance
+                                    .canUse(PremiumFeature.aiAssistant),
                                 onTap: () => _openPremium(
                                   const AiToolsScreen(),
                                   PremiumFeature.aiAssistant,
@@ -689,6 +697,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                         child: ReferenceActionCard(
                           icon: PhosphorIcons.chartBar,
                           label: 'Statistics',
+                          locked: !SubscriptionState.instance
+                              .canUse(PremiumFeature.omrScanner),
                           onTap: () => _openPremium(
                             const OMrAnalyticsScreen(),
                             PremiumFeature.omrScanner,
@@ -705,6 +715,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     icon: PhosphorIcons.scan,
                     label: 'OMR Scanner',
                     multiline: true,
+                    locked: !SubscriptionState.instance
+                        .canUse(PremiumFeature.omrScanner),
                     onTap: () => _openPremium(
                       const OMrScannerScreen(),
                       PremiumFeature.omrScanner,
