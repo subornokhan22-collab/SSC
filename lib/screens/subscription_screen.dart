@@ -30,8 +30,8 @@ class _PlanFeature {
 }
 
 /// Subscription screen.
-///  • Free tutors: plan-specific features and the Rupantor Pay buy flow
-///    (tap a plan → pay in Rupantor Pay → that plan activates automatically).
+///  • Free tutors: plan-specific features and the secure checkout flow
+///    (tap a plan → complete checkout → that plan activates after verification).
 ///  • Paid tutors: a confirmation showing the capabilities of the active plan.
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -114,7 +114,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         detail: detail,
       );
 
-  // ── Rupantor Pay flow ───────────────────────────────────────────────────
+  // ── Secure checkout flow ────────────────────────────────────────────────
 
   Future<void> _buy() async {
     final plan = _plan;
@@ -137,7 +137,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       if (!mounted) return;
       if (!opened) {
         await _problem(
-          'Could not open Rupantor Pay',
+          'Could not open secure checkout',
           'The payment page could not be opened. Check your browser and try again.',
         );
         return;

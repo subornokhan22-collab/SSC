@@ -355,8 +355,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   }
 
   Future<void> _draftShortAnswerKey(int index, ShortQuestion q) async {
-    if (!await SubscriptionGuard.require(
-        context, PremiumFeature.aiAssistant)) {
+    if (!await SubscriptionGuard.require(context, PremiumFeature.aiAssistant)) {
       return;
     }
     if (!mounted) return;
@@ -374,8 +373,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
               'Draft a concise, mark-aware answer. It must be reviewed by the teacher before use.',
         },
         (message) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)));
+          if (mounted)
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(message)));
         },
       );
       final draft = response['answerKey'];
@@ -420,8 +420,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   }
 
   Future<void> _draftCreativeAnswerKey(int index, CreativeQuestion q) async {
-    if (!await SubscriptionGuard.require(
-        context, PremiumFeature.aiAssistant)) {
+    if (!await SubscriptionGuard.require(context, PremiumFeature.aiAssistant)) {
       return;
     }
     if (!mounted) return;
@@ -446,8 +445,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
               'Give a concise, mark-aware draft answer for each visible part. It must be reviewed by the teacher before use.',
         },
         (message) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)));
+          if (mounted)
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(message)));
         },
       );
       final draft = response['answerKey'];
@@ -865,7 +865,6 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       for (var i = 0; i < p.mcqs.length; i++)
         PaperQuestionCard(
             question: p.mcqs[i],
-            number: i + 1,
             onReplace: () => c.replaceQuestion(i),
             onImprove: () async {
               if (!await SubscriptionGuard.require(
@@ -898,9 +897,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       for (var i = 0; i < p.saqs.length; i++)
         WrittenQuestionCard(
             question: p.saqs[i],
-            number: i + 1,
-            onDraftAnswerKey: () =>
-                _draftShortAnswerKey(i, p.saqs[i]),
+            onDraftAnswerKey: () => _draftShortAnswerKey(i, p.saqs[i]),
             onEdit: (q) => c.editWritten(i, q),
             onReplace: () => c.replaceWritten(i, creative: false),
             onDelete: c.draft.format == PaperFormat.board
@@ -912,9 +909,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       for (var i = 0; i < p.cqs.length; i++)
         WrittenQuestionCard(
             question: p.cqs[i],
-            number: i + 1,
-            onDraftAnswerKey: () =>
-                _draftCreativeAnswerKey(i, p.cqs[i]),
+            onDraftAnswerKey: () => _draftCreativeAnswerKey(i, p.cqs[i]),
             onEdit: (q) => c.editWritten(i, q),
             onReplace: () => c.replaceWritten(i, creative: true),
             onDelete: c.draft.format == PaperFormat.board

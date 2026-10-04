@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
@@ -14,7 +16,7 @@ Future<bool> showOfflineDialog(BuildContext context) {
     context: context,
     barrierDismissible: false,
     barrierLabel: 'Offline',
-    barrierColor: const Color(0xB3070B16),
+    barrierColor: const Color(0xFF070B16),
     transitionDuration: MotionPolicy.duration(context, 200),
     transitionBuilder: (c, enter, _, child) {
       if (MotionPolicy.reduce(c)) return child;
@@ -29,7 +31,10 @@ Future<bool> showOfflineDialog(BuildContext context) {
         child: ScaleTransition(scale: scale, child: child),
       );
     },
-    pageBuilder: (c, _, __) => const _OfflineCard(),
+    pageBuilder: (c, _, __) => const Material(
+      color: Color(0xFF070B16),
+      child: SafeArea(child: _OfflineCard()),
+    ),
   ).then((v) => v ?? false);
 }
 
@@ -44,7 +49,29 @@ class _OfflineCardState extends State<_OfflineCard> {
   static const _pulse = AlwaysStoppedAnimation<double>(0);
 
   bool _checking = false;
+  bool _closing = false;
   String? _status;
+  StreamSubscription<bool>? _connection;
+
+  @override
+  void initState() {
+    super.initState();
+    _connection = ConnectivityService.instance.changes.listen((online) {
+      if (online) _close();
+    });
+  }
+
+  void _close() {
+    if (!mounted || _closing) return;
+    _closing = true;
+    Navigator.of(context).pop(true);
+  }
+
+  @override
+  void dispose() {
+    _connection?.cancel();
+    super.dispose();
+  }
 
   Future<void> _check() async {
     if (_checking) return;
@@ -52,7 +79,7 @@ class _OfflineCardState extends State<_OfflineCard> {
     final online = await ConnectivityService.instance.refresh();
     if (!mounted) return;
     if (online) {
-      Navigator.of(context).pop(true);
+      _close();
     } else {
       setState(() {
         _checking = false;

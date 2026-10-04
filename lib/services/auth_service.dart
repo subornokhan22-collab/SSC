@@ -114,7 +114,10 @@ class AuthService {
     final res = await _c.auth.signUp(email: e, password: password);
     // When email confirmation is disabled in the Supabase project the session
     // arrives immediately and no code needs to be entered.
-    if (res.session != null) _profileCache = null;
+    if (res.session != null) {
+      await _revokeOtherSessions();
+      _profileCache = null;
+    }
   }
 
   /// True when sign-up returned a usable session (no email confirmation step).
@@ -139,7 +142,27 @@ class AuthService {
     if (res.session == null) {
       throw const AuthException('The code did not match — please try again');
     }
+    await _revokeOtherSessions();
     _profileCache = null;
+  }
+
+  /// Makes the newest verified session the only session allowed to continue.
+  /// If the server cannot revoke other sessions, sign out the current session
+  /// too instead of leaving multiple active devices.
+  static Future<void> _revokeOtherSessions() async {
+    final accountId = userId;
+    try {
+      await _c.auth.signOut(scope: SignOutScope.others);
+    } catch (_) {
+      try {
+        await _c.auth.signOut();
+      } catch (_) {}
+      _profileCache = null;
+      SubscriptionState.clear(accountId: accountId);
+      throw const AuthException(
+        'Could not enforce the one-device sign-in policy. Please try again.',
+      );
+    }
   }
 
   // ── Sign in: email + password only, never a code ──────────────────
@@ -155,14 +178,8 @@ class AuthService {
       throw const AuthException('Could not sign in — please try again');
     }
     // Keep the newly authenticated session and revoke every other refresh
-    // token. Supabase will reject the previous devices when they next refresh;
-    // the app's auth listener then returns them to the sign-in gate.
-    try {
-      await _c.auth.signOut(scope: SignOutScope.others);
-    } catch (_) {
-      // A transient revoke failure must not discard the successful login.
-      // The next authenticated request can retry the device policy.
-    }
+    // token. Fail closed if Supabase cannot enforce the one-device policy.
+    await _revokeOtherSessions();
     _profileCache = null;
   }
 
@@ -319,7 +336,8 @@ class AuthService {
   static Future<bool> verifyCurrentSession() async {
     if (!ready || !isLoggedIn) return false;
     try {
-      final result = await _c.auth.getUser().timeout(const Duration(seconds: 8));
+      final result =
+          await _c.auth.getUser().timeout(const Duration(seconds: 8));
       return result.user != null;
     } catch (_) {
       await signOut();

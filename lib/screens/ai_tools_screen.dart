@@ -453,7 +453,6 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                     ),
                   PaperQuestionCard(
                     question: c.questions[i],
-                    number: i + 1,
                     onEdit: c.busy ? null : (q) => c.edit(i, q),
                     onDelete: c.busy ? null : () => c.remove(i),
                     onReplace: c.busy ? null : () => c.replace(i),

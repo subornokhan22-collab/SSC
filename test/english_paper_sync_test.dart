@@ -20,22 +20,27 @@ void main() {
       expect(p.board, 'Dhaka');
     }
   });
-  test('only active published papers are synced; removal reconciles choices',
+  test(
+      'published papers stay in the full randomized pool; UI choices hide provenance',
       () {
     final row = fixture('first');
     EnglishPaperSync.replaceRows([row]);
     expect(EnglishPaperSync.papers, isEmpty);
     row['review_status'] = 'published';
     EnglishPaperSync.replaceRows([row]);
-    expect(EnglishPaperSync.choices('english_1st'), contains(row['id']));
-    expect(EnglishPaperSync.choices('english_2nd'), isNot(contains(row['id'])));
+    expect(EnglishPaperSync.choices('english_1st'), isEmpty);
+    expect(EnglishPaperSync.choices('english_2nd'), isEmpty);
+    expect(
+        () => EnglishPaperSync.compose(
+            'english_1st', row['id'] as String, Random(1)),
+        returnsNormally);
     row['is_active'] = false;
     EnglishPaperSync.replaceRows([row]);
     expect(EnglishPaperSync.papers, isEmpty);
     expect(
         () => EnglishPaperSync.compose(
             'english_1st', row['id'] as String, Random(1)),
-        throwsStateError);
+        returnsNormally);
   });
   test('saved draft retains selected board identity', () {
     final row = fixture('second')..['review_status'] = 'published';

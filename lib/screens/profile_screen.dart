@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
+import '../models/subscription_entitlement.dart';
 import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/subscription_state.dart';
@@ -400,6 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
     final hasPaidSubscription = _hasPaidSubscription;
+    final currentPlan = SubscriptionState.instance.entitlement.plan.displayName;
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
     final initial =
         (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
@@ -467,6 +469,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppTheme.accent.withOpacity(.14),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: AppTheme.accent.withOpacity(.45)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        PhosphorIcons.crown,
+                        size: 14,
+                        color: AppTheme.accent,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        currentPlan,
+                        style: const TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

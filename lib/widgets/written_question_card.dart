@@ -6,7 +6,6 @@ import '../theme/app_theme.dart';
 
 class WrittenQuestionCard extends StatelessWidget {
   final Object question;
-  final int number;
   final ValueChanged<Object> onEdit;
   final VoidCallback onReplace;
   final VoidCallback? onDelete;
@@ -14,7 +13,6 @@ class WrittenQuestionCard extends StatelessWidget {
   const WrittenQuestionCard(
       {super.key,
       required this.question,
-      required this.number,
       required this.onEdit,
       required this.onReplace,
       this.onDelete,
@@ -38,7 +36,9 @@ class WrittenQuestionCard extends StatelessWidget {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
-                  '${short ? 'Short answer' : 'সৃজনশীল প্রশ্ন'} $number · ${short ? 2 : 10} marks',
+                  short
+                      ? 'Short answer · 2 marks'
+                      : 'সৃজনশীল প্রশ্ন · 10 marks',
                   style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
               const SizedBox(height: 8),
               Text(lines.first,
@@ -162,10 +162,10 @@ class _EditorState extends State<_Editor> {
             questionK: values[1],
             questionKh: values[2],
             questionG: values[3],
-            questionGh: (q as CreativeQuestion).marks.length == 4
-                ? values[4]
-                : '',
-            answerKey: values[(q as CreativeQuestion).marks.length == 4 ? 5 : 4],
+            questionGh:
+                (q as CreativeQuestion).marks.length == 4 ? values[4] : '',
+            answerKey:
+                values[(q as CreativeQuestion).marks.length == 4 ? 5 : 4],
             marks: q.marks,
             source: q.source,
             sourceLabel: q.sourceLabel,
@@ -204,7 +204,8 @@ class _EditorState extends State<_Editor> {
                                 : (i == 0
                                     ? 'উদ্দীপক'
                                     : i ==
-                                            ((widget.question as CreativeQuestion)
+                                            ((widget.question
+                                                            as CreativeQuestion)
                                                         .marks
                                                         .length ==
                                                     4

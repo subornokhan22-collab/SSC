@@ -177,10 +177,11 @@ class PaperExport {
       text: TextSpan(
         text: "TUTOR'S DESK",
         style: TextStyle(
-          color: Colors.black.withAlpha(56),
-          fontSize: (pageSize.width * .016).clamp(18.0, 32.0),
+          color: Colors.black.withAlpha(132),
+          fontFamily: AppTypography.uiFont,
+          fontSize: (pageSize.width * .019).clamp(24.0, 38.0),
           fontWeight: FontWeight.w800,
-          letterSpacing: 2.2,
+          letterSpacing: 2.4,
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -250,8 +251,10 @@ class PaperExport {
       final isDraft = q.answerKey.trim().isNotEmpty;
       final key = isDraft ? q.answerKey.trim() : q.answer;
       line('SQ ${i + 1}', bold: true);
-      if (isDraft) line('AI draft • review: $key');
-      else line(key);
+      if (isDraft)
+        line('AI draft • review: $key');
+      else
+        line(key);
       y += 10;
     }
     for (var i = 0; i < paper.cqs.length; i++) {
@@ -266,7 +269,8 @@ class PaperExport {
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     image.dispose();
     picture.dispose();
-    if (bytes == null) throw StateError('Could not render the written answer key.');
+    if (bytes == null)
+      throw StateError('Could not render the written answer key.');
     return bytes.buffer.asUint8List();
   }
 

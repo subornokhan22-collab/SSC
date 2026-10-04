@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/connectivity_service.dart';
-import '../theme/app_theme.dart';
 import 'motion_policy.dart';
 import 'offline_dialog.dart';
 
@@ -147,8 +146,8 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
                                   ),
                                   SizedBox(height: 1),
                                   Text(
-                                    'AI question generation unavailable — '
-                                    'everything else works',
+                                    'Workspace and paid features are blocked — '
+                                    'reconnect to continue',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(

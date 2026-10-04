@@ -9,7 +9,6 @@ import 'animations.dart';
 
 class PaperQuestionCard extends StatelessWidget {
   final Question question;
-  final int number;
   final VoidCallback? onReplace;
   final VoidCallback? onImprove;
   final VoidCallback? onDelete;
@@ -17,7 +16,6 @@ class PaperQuestionCard extends StatelessWidget {
   const PaperQuestionCard({
     super.key,
     required this.question,
-    required this.number,
     this.onReplace,
     this.onImprove,
     this.onDelete,
@@ -35,10 +33,6 @@ class PaperQuestionCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'MCQ $number  ·  1 mark',
-                style: const TextStyle(color: AppTheme.muted, fontSize: 12),
-              ),
               const SizedBox(height: 8),
               Text(
                 AiTextFormatter.format(question.questionText),

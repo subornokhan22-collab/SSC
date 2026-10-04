@@ -42,6 +42,7 @@ class ShortQuestion {
   final String chapter;
   final String questionText;
   final String answer;
+
   /// Optional AI-generated draft key, always shown as unverified.
   final String answerKey;
   final String explanation;
@@ -72,6 +73,7 @@ class CreativeQuestion {
   final String questionKh;
   final String questionG;
   final String questionGh;
+
   /// Optional teacher-reviewed or AI-draft answer key for all CQ parts.
   final String answerKey;
   final List<int> marks;
