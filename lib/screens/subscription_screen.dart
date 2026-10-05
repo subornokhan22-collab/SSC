@@ -86,7 +86,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   Future<void> _load() async {
     final state = SubscriptionState.instance;
     await state.initialize(refresh: false);
-    final feed = await PromotionService.load();
+    PromotionFeed feed = const PromotionFeed();
+    try {
+      feed = await PromotionService.load();
+    } catch (_) {
+      // Promotions are optional content; an offline or malformed feed must
+      // never leave the pricing screen stuck in its loading state.
+    }
     List<RupantorPlan> plans = const [];
     try {
       plans = await _payments.plans();

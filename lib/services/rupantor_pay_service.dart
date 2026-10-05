@@ -199,7 +199,9 @@ class RupantorPayService {
 
   static Future<bool> openCheckout(String checkoutUrl) async {
     final uri = Uri.tryParse(checkoutUrl);
-    if (uri == null) return false;
+    // Payment links must leave the app only over TLS. Do not let a malformed
+    // or provider-compromised response launch a custom scheme or plain HTTP.
+    if (uri == null || uri.scheme.toLowerCase() != 'https') return false;
     try {
       if (await canLaunchUrl(uri)) {
         return launchUrl(uri, mode: LaunchMode.externalApplication);

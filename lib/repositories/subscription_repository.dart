@@ -104,10 +104,23 @@ class SubscriptionRepository {
               .eq('is_active', true)
               .maybeSingle()
               .timeout(const Duration(seconds: 5));
-          if (result != null) planRow = Map<String, dynamic>.from(result);
+          if (result == null) {
+            // A successful lookup with no active server plan is not an offline
+            // condition. Falling back to built-in paid defaults here would
+            // grant stale capabilities after a plan is disabled or removed.
+            _current = SubscriptionEntitlement.free(
+              lastVerifiedAt: DateTime.now().toUtc(),
+            );
+            _lastRefresh = DateTime.now().toUtc();
+            await _save();
+            return current;
+          }
+          planRow = Map<String, dynamic>.from(result);
         } catch (_) {
-          // A migration may not have reached this project yet. Use the safe
-          // built-in matrix while retaining the legacy profile read.
+          // A migration may not have reached this project yet, or the network
+          // may be unavailable. Preserve the last verified cache, rather than
+          // replacing it with guessed paid capabilities.
+          return current;
         }
       }
 

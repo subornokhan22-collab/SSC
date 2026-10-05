@@ -207,8 +207,11 @@ class PaperController extends OperationController {
     return ok;
   }
 
+  bool _hasIndex<T>(List<T> items, int index) =>
+      index >= 0 && index < items.length;
+
   void replaceQuestion(int index) {
-    if (busy || paper == null) return;
+    if (busy || paper == null || !_hasIndex(paper!.mcqs, index)) return;
     final old = paper!.mcqs[index];
     final used =
         paper!.mcqs.map((q) => q.questionText.trim().toLowerCase()).toSet();
@@ -231,7 +234,7 @@ class PaperController extends OperationController {
   }
 
   void editQuestion(int index, Question q) {
-    if (busy || paper == null) return;
+    if (busy || paper == null || !_hasIndex(paper!.mcqs, index)) return;
     final v = QuestionSchemaValidator.validateMcq(q);
     if (!v.valid) {
       error = v.errors.join('\n');
@@ -256,7 +259,10 @@ class PaperController extends OperationController {
   }
 
   void removeQuestion(int index) {
-    if (busy || paper == null || draft.format == PaperFormat.board) return;
+    if (busy ||
+        paper == null ||
+        draft.format == PaperFormat.board ||
+        !_hasIndex(paper!.mcqs, index)) return;
     if (paper!.mcqs.length == 1 && paper!.saqs.isEmpty && paper!.cqs.isEmpty) {
       error = 'Keep at least one question in the paper.';
       changed();
@@ -312,6 +318,7 @@ class PaperController extends OperationController {
       return;
     }
     if (question is ShortQuestion) {
+      if (!_hasIndex(paper!.saqs, index)) return;
       if (paper!.saqs.asMap().entries.any((e) =>
           e.key != index &&
           DuplicateDetector.isDuplicate(
@@ -324,6 +331,7 @@ class PaperController extends OperationController {
       final next = List<ShortQuestion>.of(paper!.saqs)..[index] = question;
       _apply(PaperSnapshot(draft, paper!.withWritten(short: next)));
     } else if (question is CreativeQuestion) {
+      if (!_hasIndex(paper!.cqs, index)) return;
       if (paper!.cqs.asMap().entries.any((e) =>
           e.key != index &&
           DuplicateDetector.isDuplicate(question.stem, e.value.stem,
@@ -338,7 +346,11 @@ class PaperController extends OperationController {
   }
 
   void replaceWritten(int index, {required bool creative}) {
-    if (busy || paper == null) return;
+    if (busy ||
+        paper == null ||
+        (creative
+            ? !_hasIndex(paper!.cqs, index)
+            : !_hasIndex(paper!.saqs, index))) return;
     final candidates = <Object>[];
     String? section;
     if (creative) {
@@ -390,7 +402,12 @@ class PaperController extends OperationController {
   }
 
   void removeWritten(int index, {required bool creative}) {
-    if (busy || paper == null || draft.format == PaperFormat.board) return;
+    if (busy ||
+        paper == null ||
+        draft.format == PaperFormat.board ||
+        (creative
+            ? !_hasIndex(paper!.cqs, index)
+            : !_hasIndex(paper!.saqs, index))) return;
     if (paper!.mcqs.length + paper!.saqs.length + paper!.cqs.length <= 1) {
       error = 'Keep at least one question in the paper.';
       changed();

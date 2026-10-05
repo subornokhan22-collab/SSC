@@ -162,6 +162,20 @@ class PaperLibrary {
   PaperLibrary._();
 
   static const _indexName = 'index.json';
+  static final _storageIdPattern = RegExp(r'^[A-Za-z0-9_-]{1,128}$');
+  static final _backupFilePattern = RegExp(r'^p[1-9][0-9]*\.jpg$');
+
+  /// IDs are used as directory names. Keep imported/indexed values to the
+  /// same narrow form produced by the app so a crafted backup cannot escape
+  /// the paper-library root through `..` or path separators.
+  static bool isSafeStorageId(String value) =>
+      _storageIdPattern.hasMatch(value);
+
+  static bool _isSafeBackupFile(String value) =>
+      value == 'paper.json' ||
+      value == 'thumb.jpg' ||
+      value == 'doc.pdf' ||
+      _backupFilePattern.hasMatch(value);
 
   static Future<Directory> root() async {
     final appDoc = await getApplicationDocumentsDirectory();
@@ -188,13 +202,19 @@ class PaperLibrary {
     final f = await _indexFile();
     if (!f.existsSync()) return const [];
     try {
-      final list = json.decode(f.readAsStringSync()) as List;
-      final entries = list
-          .map(
-            (e) => PaperEntry.fromJson((e as Map).cast<String, dynamic>()),
-          )
-          .toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final raw = json.decode(f.readAsStringSync());
+      if (raw is! List) return const [];
+      final entries = <PaperEntry>[];
+      for (final item in raw) {
+        try {
+          if (item is! Map) continue;
+          final entry = PaperEntry.fromJson(item.cast<String, dynamic>());
+          if (isSafeStorageId(entry.id)) entries.add(entry);
+        } catch (_) {
+          // One damaged/imported row must not hide every valid saved paper.
+        }
+      }
+      entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return entries;
     } catch (_) {
       return const [];
@@ -207,6 +227,7 @@ class PaperLibrary {
   }
 
   static Future<Directory> _dirFor(String id) async {
+    if (!isSafeStorageId(id)) throw ArgumentError.value(id, 'id');
     final dir = Directory((await root()).path + Platform.pathSeparator + id);
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir;
@@ -222,7 +243,7 @@ class PaperLibrary {
     if (pages.isEmpty) {
       throw Exception('Add at least one page photo.');
     }
-    final id = 'p_${DateTime.now().millisecondsSinceEpoch}';
+    final id = 'p_${DateTime.now().microsecondsSinceEpoch}';
     final dir = await _dirFor(id);
     final norm = <Uint8List>[];
     for (final raw in pages) {
@@ -262,7 +283,7 @@ class PaperLibrary {
     int pages = 0,
   }) async {
     if (bytes.isEmpty) throw Exception('The PDF file is empty.');
-    final id = 'p_${DateTime.now().millisecondsSinceEpoch}';
+    final id = 'p_${DateTime.now().microsecondsSinceEpoch}';
     final dir = await _dirFor(id);
     await File('${dir.path}${Platform.pathSeparator}doc.pdf')
         .writeAsBytes(bytes);
@@ -407,19 +428,14 @@ class PaperLibrary {
     return f.readAsBytes();
   }
 
-  /// Prints (or shares, when the system print service is unavailable) the
-  /// paper. Image papers are assembled into an A4 PDF on the fly.
-  static Future<void> printEntry(PaperEntry entry) async {
-    if (entry.kind == 'pdf') {
-      final bytes = await pdfBytes(entry.id);
-      if (bytes == null) throw Exception('PDF not found.');
-      await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
-      return;
-    }
+  static Future<pw.Document> _imageDocument(PaperEntry entry) async {
+    if (entry.pages <= 0) throw StateError('This paper has no pages.');
     final doc = pw.Document();
     for (var i = 1; i <= entry.pages; i++) {
       final bytes = await pageBytes(entry.id, i);
-      if (bytes == null) continue;
+      if (bytes == null) {
+        throw StateError('Page $i of this paper is missing.');
+      }
       doc.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
@@ -433,6 +449,19 @@ class PaperLibrary {
         ),
       );
     }
+    return doc;
+  }
+
+  /// Prints (or shares, when the system print service is unavailable) the
+  /// paper. Image papers are assembled into an A4 PDF on the fly.
+  static Future<void> printEntry(PaperEntry entry) async {
+    if (entry.kind == 'pdf') {
+      final bytes = await pdfBytes(entry.id);
+      if (bytes == null) throw Exception('PDF not found.');
+      await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
+      return;
+    }
+    final doc = await _imageDocument(entry);
     final bytes = await doc.save();
     await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
   }
@@ -448,23 +477,7 @@ class PaperLibrary {
       );
       return;
     }
-    final doc = pw.Document();
-    for (var i = 1; i <= entry.pages; i++) {
-      final bytes = await pageBytes(entry.id, i);
-      if (bytes == null) continue;
-      doc.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.zero,
-          build: (_) => pw.Image(
-            pw.MemoryImage(bytes),
-            width: PdfPageFormat.a4.width,
-            height: PdfPageFormat.a4.height,
-            fit: pw.BoxFit.contain,
-          ),
-        ),
-      );
-    }
+    final doc = await _imageDocument(entry);
     final bytes = await doc.save();
     await Printing.sharePdf(
       bytes: bytes,
@@ -871,6 +884,18 @@ class PaperBackup {
         m['files'] is! Map) {
       throw Exception("That is not a Tutor's Desk backup file.");
     }
+    // Parse and validate the index before writing any file. A backup is an
+    // import boundary, so malformed rows are ignored rather than becoming
+    // directory names or aborting restoration of every valid paper.
+    final restored = <PaperEntry>[];
+    for (final raw in m['entries'] as List) {
+      try {
+        if (raw is! Map) continue;
+        final entry = PaperEntry.fromJson(raw.cast<String, dynamic>());
+        if (PaperLibrary.isSafeStorageId(entry.id)) restored.add(entry);
+      } catch (_) {}
+    }
+    final restoredIds = restored.map((entry) => entry.id).toSet();
     final rootDir = await PaperLibrary.root();
     final files = (m['files'] as Map).cast<String, dynamic>();
     files.forEach((key, value) {
@@ -878,18 +903,14 @@ class PaperBackup {
       if (parts.length != 2) return;
       final id = parts[0];
       final name = parts[1];
-      if (id.isEmpty ||
-          name.isEmpty ||
-          id.startsWith('.') ||
-          name.startsWith('.') ||
-          id.contains(Platform.pathSeparator) ||
-          name.contains(Platform.pathSeparator)) {
+      if (!restoredIds.contains(id) || !PaperLibrary._isSafeBackupFile(name)) {
         return;
       }
+      if (value is! String) return;
       final dir = Directory('${rootDir.path}${Platform.pathSeparator}$id');
       if (!dir.existsSync()) dir.createSync(recursive: true);
       File('${dir.path}${Platform.pathSeparator}$name')
-          .writeAsBytesSync(base64Decode(value as String));
+          .writeAsBytesSync(base64Decode(value));
     });
     // loadEntries() returns an unmodifiable list while there is no index yet
     // (exactly the fresh-install case this restore exists for), so copy it
@@ -897,8 +918,7 @@ class PaperBackup {
     final current = List<PaperEntry>.of(await PaperLibrary.loadEntries());
     final known = current.map((e) => e.id).toSet();
     var added = 0;
-    for (final raw in m['entries'] as List) {
-      final e = PaperEntry.fromJson((raw as Map).cast<String, dynamic>());
+    for (final e in restored) {
       if (known.contains(e.id)) continue;
       current.add(e);
       known.add(e.id);

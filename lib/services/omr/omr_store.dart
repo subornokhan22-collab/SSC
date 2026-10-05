@@ -76,12 +76,12 @@ class OmScanRecord {
         registration: m['registration'] as String? ?? '',
         subjectCode: m['subjectCode'] as String? ?? '',
         setCode: m['setCode'] as String? ?? '—',
-        total: m['total'] as int? ?? 0,
-        score: m['score'] as int? ?? 0,
-        correct: m['correct'] as int? ?? 0,
-        wrong: m['wrong'] as int? ?? 0,
-        blank: m['blank'] as int? ?? 0,
-        ambiguous: m['ambiguous'] as int? ?? 0,
+        total: (m['total'] as num?)?.toInt() ?? 0,
+        score: (m['score'] as num?)?.toInt() ?? 0,
+        correct: (m['correct'] as num?)?.toInt() ?? 0,
+        wrong: (m['wrong'] as num?)?.toInt() ?? 0,
+        blank: (m['blank'] as num?)?.toInt() ?? 0,
+        ambiguous: (m['ambiguous'] as num?)?.toInt() ?? 0,
         answers: (m['answers'] as List? ?? const [])
             .map((e) => (e as num).toInt())
             .toList(),
@@ -89,7 +89,10 @@ class OmScanRecord {
             .map((e) => (e as num).toInt())
             .toList(),
         durationMs: (m['durationMs'] as num? ?? 0).toInt(),
-        correctedIndices: List<int>.from(m['correctedIndices'] as List? ?? []),
+        correctedIndices: (m['correctedIndices'] as List? ?? const [])
+            .whereType<num>()
+            .map((e) => e.toInt())
+            .toList(),
       );
 }
 
@@ -137,10 +140,20 @@ class OmrStore {
     final raw = prefs.getString(_historyKey);
     if (raw == null || raw.isEmpty) return const [];
     try {
-      final list = (json.decode(raw) as List)
-          .map((e) => OmScanRecord.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
-      return list;
+      final decoded = json.decode(raw);
+      if (decoded is! List) return const [];
+      final records = <OmScanRecord>[];
+      for (final item in decoded) {
+        try {
+          if (item is! Map) continue;
+          records.add(
+            OmScanRecord.fromJson(item.cast<String, dynamic>()),
+          );
+        } catch (_) {
+          // A single damaged scan must not hide the rest of the local history.
+        }
+      }
+      return records;
     } catch (_) {
       return const [];
     }

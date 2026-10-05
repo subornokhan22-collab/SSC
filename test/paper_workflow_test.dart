@@ -198,6 +198,38 @@ void main() {
       restored.dispose();
     },
   );
+  test('out-of-range question edits are ignored safely', () async {
+    final c = PaperController(
+      composer: engine(),
+      initial: const PaperDraft(format: PaperFormat.mcq, mcqCount: 2),
+    );
+    await c.initialize();
+    expect(await c.generate(), isTrue);
+    final mcq = c.paper!.mcqs.first;
+    c.editQuestion(-1, mcq);
+    c.replaceQuestion(99);
+    c.removeQuestion(99);
+    expect(c.paper!.mcqs.length, 2);
+
+    final written = PaperController(
+      composer: engine(),
+      initial: const PaperDraft(
+        format: PaperFormat.custom,
+        mcqCount: 0,
+        saqCount: 2,
+        cqCount: 1,
+      ),
+    );
+    await written.initialize();
+    expect(await written.generate(), isTrue);
+    written.editWritten(-1, written.paper!.saqs.first);
+    written.replaceWritten(99, creative: false);
+    written.removeWritten(99, creative: true);
+    expect(written.paper!.saqs.length, 2);
+    expect(written.paper!.cqs.length, 1);
+    c.dispose();
+    written.dispose();
+  });
   test('edits reject duplicate stems and empty paper removal', () async {
     final c = PaperController(
       composer: engine(),

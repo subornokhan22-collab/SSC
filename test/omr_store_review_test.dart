@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutors_desk/services/omr/omr_store.dart';
@@ -36,5 +38,16 @@ void main() {
   test('legacy history without correction metadata remains readable', () {
     final raw = record().toJson()..remove('correctedIndices');
     expect(OmScanRecord.fromJson(raw).correctedIndices, isEmpty);
+  });
+
+  test('one damaged history row does not hide valid scans', () async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      'omr_scan_history',
+      '[${jsonEncode(record().toJson())},{"id":42,"answers":"bad"}]',
+    );
+    final history = await OmrStore.loadHistory();
+    expect(history.length, 1);
+    expect(history.single.id, 'review-1');
   });
 }

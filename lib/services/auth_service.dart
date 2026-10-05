@@ -338,11 +338,36 @@ class AuthService {
     try {
       final result =
           await _c.auth.getUser().timeout(const Duration(seconds: 8));
-      return result.user != null;
-    } catch (_) {
+      // A successful request with no user is an invalid local session. Unlike
+      // a transport failure, it is safe to clear the session here.
+      if (result.user != null) return true;
       await signOut();
       return false;
+    } on AuthException catch (error) {
+      // getUser() also throws for timeouts, DNS failures and other temporary
+      // transport problems. Signing out for those failures strands an
+      // otherwise valid offline session. Only known auth rejections revoke it;
+      // the server remains authoritative for every online operation.
+      if (_isRejectedSession(error)) {
+        await signOut();
+        return false;
+      }
+      return true;
+    } catch (_) {
+      // Preserve the locally restored session while the network is unavailable.
+      return true;
     }
+  }
+
+  static bool _isRejectedSession(AuthException error) {
+    final code = error.statusCode?.toString();
+    if (code == '401' || code == '403') return true;
+    final message = error.message.toLowerCase();
+    return message.contains('invalid jwt') ||
+        message.contains('jwt expired') ||
+        message.contains('invalid refresh token') ||
+        message.contains('refresh token not found') ||
+        message.contains('session has expired');
   }
 
   static Future<void> signOut() async {

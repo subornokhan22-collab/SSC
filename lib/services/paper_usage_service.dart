@@ -12,6 +12,9 @@ class PaperUsageClaim {
   final int? monthlyLimit;
   final bool offline;
   final String reason;
+  // Stable queue identity for an offline allowance. It lets a failed local
+  // composition refund the exact queued paper when several are pending.
+  final String? offlineRequestId;
 
   const PaperUsageClaim({
     required this.allowed,
@@ -20,6 +23,7 @@ class PaperUsageClaim {
     required this.monthlyLimit,
     required this.offline,
     required this.reason,
+    this.offlineRequestId,
   });
 
   String get message => switch (reason) {
@@ -47,6 +51,7 @@ class PaperUsageService {
   static const _cachePrefix = 'paper_allowance_v2_';
   static const _cacheMonthSuffix = '_month';
   static const _pendingPrefix = 'paper_allowance_pending_v1_';
+  static const _pendingIdsPrefix = 'paper_allowance_pending_ids_v1_';
   final _random = Random();
 
   SupabaseClient? get client {
@@ -64,6 +69,7 @@ class PaperUsageService {
   String get _cacheKey => '$_cachePrefix$_suffix';
   String get _cacheMonthKey => '$_cacheKey$_cacheMonthSuffix';
   String get _pendingKey => '$_pendingPrefix$_suffix';
+  String get _pendingIdsKey => '$_pendingIdsPrefix$_suffix';
 
   String get _currentMonth {
     final date = DateTime.now().toUtc().add(const Duration(hours: 6));
@@ -136,8 +142,20 @@ class PaperUsageService {
     }
     if (claim.offline) {
       final prefs = await SharedPreferences.getInstance();
-      final pending = max(0, prefs.getInt(_pendingKey) ?? 0);
-      await prefs.setInt(_pendingKey, max(0, pending - 1));
+      final pendingIds = await _loadPendingIds(prefs);
+      final queuedId = claim.offlineRequestId;
+      if (queuedId != null) {
+        pendingIds.remove(queuedId);
+      } else if (pendingIds.isNotEmpty) {
+        // Claims created by older app versions had no queue identity.
+        pendingIds.removeLast();
+      }
+      await prefs.setStringList(_pendingIdsKey, pendingIds);
+      if (pendingIds.isEmpty) {
+        await prefs.remove(_pendingKey);
+      } else {
+        await prefs.setInt(_pendingKey, pendingIds.length);
+      }
       await prefs.setInt(_cacheKey, (prefs.getInt(_cacheKey) ?? 0) + 1);
     }
   }
@@ -152,10 +170,13 @@ class PaperUsageService {
 
   Future<void> _reconcilePending(SupabaseClient c) async {
     final prefs = await SharedPreferences.getInstance();
-    var pending = max(0, prefs.getInt(_pendingKey) ?? 0);
-    while (pending > 0) {
-      final requestId =
-          'offline_${DateTime.now().microsecondsSinceEpoch}_$pending';
+    final pendingIds = await _loadPendingIds(prefs);
+    while (pendingIds.isNotEmpty) {
+      // Keep this id until both the idempotent server claim and completion have
+      // returned. If the app dies between either call and local cleanup, the
+      // same id resolves to the original reservation instead of consuming a
+      // second monthly allowance.
+      final requestId = pendingIds.first;
       final data = await c.rpc(
         'claim_paper_creation',
         params: {
@@ -177,9 +198,28 @@ class PaperUsageService {
           params: {'p_reservation_id': claim.reservationId},
         );
       }
-      pending--;
-      await prefs.setInt(_pendingKey, pending);
+      pendingIds.removeAt(0);
+      await prefs.setStringList(_pendingIdsKey, pendingIds);
+      await prefs.setInt(_pendingKey, pendingIds.length);
     }
+    await prefs.remove(_pendingKey);
+  }
+
+  Future<List<String>> _loadPendingIds(SharedPreferences prefs) async {
+    final existing = prefs.getStringList(_pendingIdsKey);
+    if (existing != null) {
+      return existing.where((id) => id.trim().isNotEmpty).toList();
+    }
+    // Migrate the old count-only queue. The generated ids are persisted before
+    // reconciliation starts, so even an interrupted migration is retryable.
+    final count = max(0, prefs.getInt(_pendingKey) ?? 0);
+    if (count == 0) return <String>[];
+    final ids = [
+      for (var i = 0; i < count; i++)
+        'offline_${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(1 << 20)}_$i',
+    ];
+    await prefs.setStringList(_pendingIdsKey, ids);
+    return ids;
   }
 
   Future<PaperUsageClaim> _claimFromCachedAllowance() async {
@@ -206,7 +246,12 @@ class PaperUsageService {
       );
     }
     await prefs.setInt(_cacheKey, remaining - 1);
-    await prefs.setInt(_pendingKey, (prefs.getInt(_pendingKey) ?? 0) + 1);
+    final pendingIds = await _loadPendingIds(prefs);
+    final requestId =
+        'offline_${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(1 << 20)}';
+    pendingIds.add(requestId);
+    await prefs.setStringList(_pendingIdsKey, pendingIds);
+    await prefs.setInt(_pendingKey, pendingIds.length);
     return PaperUsageClaim(
       allowed: true,
       reservationId: null,
@@ -214,6 +259,7 @@ class PaperUsageService {
       monthlyLimit: 2,
       offline: true,
       reason: 'offline_cache',
+      offlineRequestId: requestId,
     );
   }
 

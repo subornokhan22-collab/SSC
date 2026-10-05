@@ -44,10 +44,21 @@ void main() {
     expect(first.allowed, isTrue);
     expect(first.monthlyLimit, 2);
     expect(first.offline, isTrue);
+    final prefs = await SharedPreferences.getInstance();
+    expect(
+      prefs.getStringList('paper_allowance_pending_ids_v1_offline'),
+      hasLength(1),
+    );
     final second = await claim();
     expect(second.allowed, isFalse);
     expect(second.reason, 'server_required');
     await service.refund(first);
+    final afterRefund = await SharedPreferences.getInstance();
+    expect(
+      afterRefund.getStringList('paper_allowance_pending_ids_v1_offline'),
+      isEmpty,
+    );
+    expect(afterRefund.getInt('paper_allowance_pending_v1_offline'), isNull);
     final retried = await claim();
     expect(retried.allowed, isTrue);
   });

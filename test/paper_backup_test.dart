@@ -223,4 +223,26 @@ void main() {
     final entries = await PaperLibrary.loadEntries();
     expect(entries.where((e) => e.id == 'sp_1').length, 1);
   });
+
+  test('restore ignores unsafe imported ids and filenames', () async {
+    final backup = File('${sdcard.path}/unsafe.json');
+    backup.writeAsStringSync(jsonEncode({
+      'app': 'tutors_desk',
+      'entries': [
+        paper(id: 'sp_safe').toJson(),
+        paper(id: '../escape').toJson(),
+      ],
+      'files': {
+        'sp_safe/paper.json': base64Encode(utf8.encode('{}')),
+        '../escape/evil.txt': base64Encode(utf8.encode('secret')),
+      },
+    }));
+
+    expect(await PaperBackup.restore(backup), 1);
+    expect(
+      (await PaperLibrary.loadEntries()).map((e) => e.id).toList(),
+      ['sp_safe'],
+    );
+    expect(File('${external.path}/escape/evil.txt').existsSync(), isFalse);
+  });
 }

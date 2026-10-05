@@ -383,7 +383,14 @@ Deno.serve(async (req: Request) => {
       }
 
       const checkoutUrl = firstString(provider, ["payment_url"]);
-      if (!checkoutUrl) {
+      let secureCheckoutUrl: string | null = null;
+      if (checkoutUrl) {
+        try {
+          const parsed = new URL(checkoutUrl);
+          if (parsed.protocol === "https:") secureCheckoutUrl = checkoutUrl;
+        } catch (_) {}
+      }
+      if (!secureCheckoutUrl) {
         await supa.from("subscription_transactions").update({
           status: "failed",
           metadata: { order_id: orderId, plan_id: planId, provider_response: provider },
@@ -397,7 +404,7 @@ Deno.serve(async (req: Request) => {
       // The checkout response contains only payment_url. The client polls
       // with this internal order id until the webhook/redirect supplies the
       // provider transaction id and verification completes.
-      return json({ ok: true, orderId, checkoutUrl, status: "pending" });
+      return json({ ok: true, orderId, checkoutUrl: secureCheckoutUrl, status: "pending" });
     }
 
     const reference = String(payload.transactionId ?? payload.orderId ?? payload.transaction_id ?? "");
