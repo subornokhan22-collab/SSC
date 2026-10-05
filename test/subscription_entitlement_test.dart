@@ -3,6 +3,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tutors_desk/models/subscription_entitlement.dart';
 
 void main() {
+  test('renewal warning is limited to the final seven active days', () {
+    final now = DateTime.utc(2026, 10, 5, 12);
+    final dueSoon = SubscriptionEntitlement.defaults(
+      SubscriptionPlan.pro,
+      expiresAt: now.add(const Duration(days: 6, hours: 2)),
+    );
+    final notYetDue = SubscriptionEntitlement.defaults(
+      SubscriptionPlan.pro,
+      expiresAt: now.add(const Duration(days: 7, minutes: 1)),
+    );
+    final expired = SubscriptionEntitlement.defaults(
+      SubscriptionPlan.pro,
+      expiresAt: now.subtract(const Duration(minutes: 1)),
+    );
+
+    expect(dueSoon.renewalDueSoon(now: now), isTrue);
+    expect(dueSoon.renewalDaysRemaining(now: now), 7);
+    expect(notYetDue.renewalDueSoon(now: now), isFalse);
+    expect(expired.renewalDueSoon(now: now), isFalse);
+    expect(SubscriptionEntitlement.free().renewalDueSoon(now: now), isFalse);
+  });
+
   group('SubscriptionEntitlement matrix', () {
     test('Free is limited, watermarked, and has no premium access', () {
       final e = SubscriptionEntitlement.defaults(SubscriptionPlan.free);

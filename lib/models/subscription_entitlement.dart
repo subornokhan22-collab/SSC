@@ -228,6 +228,27 @@ class SubscriptionEntitlement {
 
   bool get isExpired => isPaid && !isActive;
 
+  /// True during the final [days] before an active paid subscription expires.
+  /// A lifetime plan (no expiry), Free plan, or already-expired plan never
+  /// produces a payment warning.
+  bool renewalDueSoon({int days = 7, DateTime? now}) {
+    if (!isPaid || status != SubscriptionStatus.active || expiresAt == null) {
+      return false;
+    }
+    final remaining = expiresAt!.toUtc().difference(
+          (now ?? DateTime.now()).toUtc(),
+        );
+    return remaining > Duration.zero && remaining <= Duration(days: days);
+  }
+
+  int? renewalDaysRemaining({DateTime? now}) {
+    if (!renewalDueSoon(now: now)) return null;
+    final remaining = expiresAt!.toUtc().difference(
+          (now ?? DateTime.now()).toUtc(),
+        );
+    return (remaining.inMinutes / Duration.minutesPerDay).ceil();
+  }
+
   /// Returns the safe effective entitlement. A paid entitlement is usable only
   /// while its status is active and its expiry has not passed. Pending,
   /// cancelled, failed, and expired payments are always Free.

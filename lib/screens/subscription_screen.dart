@@ -123,6 +123,29 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
   // ── Secure checkout flow ────────────────────────────────────────────────
 
+  void _openPlanPicker() {
+    final current = SubscriptionState.instance.entitlement.plan;
+    final alternatives = _plans.where((plan) => plan.plan != current).toList();
+    setState(() {
+      _showPlanPicker = true;
+      _plan = alternatives.isEmpty ? null : alternatives.first;
+    });
+  }
+
+  Future<void> _renewCurrentPlan() async {
+    final current = SubscriptionState.instance.entitlement.plan;
+    final matching = _plans.where((plan) => plan.plan == current);
+    if (matching.isEmpty) {
+      await _problem(
+        'Plan temporarily unavailable',
+        'Your current plan could not be loaded. Check your connection and try again.',
+      );
+      return;
+    }
+    setState(() => _plan = matching.first);
+    await _buy();
+  }
+
   Future<void> _buy() async {
     final plan = _plan;
     if (_buying || plan == null) return;
@@ -502,11 +525,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: _buying
-                        ? null
-                        : () => setState(() => _showPlanPicker = true),
-                    icon: const Icon(PhosphorIcons.wallet, size: 18),
-                    label: const Text('Buy / change plan'),
+                    onPressed: _buying ? null : _renewCurrentPlan,
+                    icon: const Icon(PhosphorIcons.receipt, size: 18),
+                    label: Text(_buying
+                        ? 'Starting secure checkout…'
+                        : 'Pay monthly subscription bill'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _buying ? null : _openPlanPicker,
+                    icon: const Icon(PhosphorIcons.arrowsLeftRight, size: 18),
+                    label: const Text('Change plan'),
                   ),
                 ),
               ],
@@ -519,6 +551,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
   // ══ Free tutors ═════════════════════════════════════════════════
   Widget _buyBody() {
+    final currentPlan = SubscriptionState.instance.entitlement.plan;
+    // An active plan is renewed through the dedicated monthly-payment action,
+    // so the change-plan picker only presents genuine alternatives. Once the
+    // subscription expires, effective entitlement becomes Free and the old
+    // plan is shown again for purchase.
+    final visiblePlans = _hasPaidPlan
+        ? _plans.where((plan) => plan.plan != currentPlan).toList()
+        : _plans;
     final selectedPlan = _plan;
     final features = selectedPlan == null
         ? const <_PlanFeature>[]
@@ -664,8 +704,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           title: 'Choose a plan',
           icon: PhosphorIcons.receipt,
         ),
-        for (final plan in _plans) _planCard(plan),
-        if (_plans.isEmpty)
+        for (final plan in visiblePlans) _planCard(plan),
+        if (visiblePlans.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 14),
             child: Text(

@@ -40,7 +40,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   List<PaperEntry> recent = [];
   PromotionFeed promotions = const PromotionFeed();
   bool loading = true;
-  bool hasPaidSubscription = false;
   String? error;
   @override
   void initState() {
@@ -73,7 +72,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     if (!subscription.initialized) {
       await subscription.initialize(refresh: false);
     }
-    final cachedSubscriptionActive = subscription.entitlement.isPaid;
     unawaited(subscription.refresh());
     String? storedTitle;
     try {
@@ -109,7 +107,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
         draftTitle = storedTitle;
         recent = entries.take(8).toList();
         promotions = feed;
-        hasPaidSubscription = cachedSubscriptionActive;
         loading = false;
         error = libraryFailed
             ? 'Your papers could not be loaded. Pull down to retry.'
@@ -195,6 +192,41 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     // the desk restores the accent for the tab the teacher is actually on.
     AppStyle.mood.value = WorkspaceMood.home;
     if (mounted) load();
+  }
+
+  Widget? _expiryWarning() {
+    final entitlement = SubscriptionState.instance.entitlement;
+    if (!entitlement.renewalDueSoon()) return null;
+    final days = entitlement.renewalDaysRemaining()!;
+    return ReferenceCard(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.plans),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          const ReferenceIcon(PhosphorIcons.warningCircle, size: 30),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Subscription payment due soon',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  days == 1
+                      ? 'Your plan expires within 1 day. Pay your monthly bill to keep access.'
+                      : 'Your plan expires within $days days. Pay your monthly bill to keep access.',
+                  style: const TextStyle(color: ReferencePalette.mutedInk),
+                ),
+              ],
+            ),
+          ),
+          const ReferenceIcon(PhosphorIcons.caretRight, size: 22),
+        ],
+      ),
+    );
   }
 
   Widget _notificationCard(AppNotificationItem item) => ReferenceCard(
@@ -341,27 +373,29 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
                 children: [
                   _referenceDashboard(),
-                  if (!hasPaidSubscription) ...[
+                  if (_expiryWarning() case final warning?) ...[
                     const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 360),
-                          child: SizedBox(
-                            height: 108,
-                            child: ReferenceActionCard(
-                              icon: PhosphorIcons.wallet,
-                              asset: 'New UI 4.0/Buy plan.png',
-                              label: 'BUY PLANS',
-                              onTap: () =>
-                                  _openScreen(const SubscriptionScreen()),
-                            ),
+                    warning,
+                  ],
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 360),
+                        child: SizedBox(
+                          height: 108,
+                          child: ReferenceActionCard(
+                            icon: PhosphorIcons.wallet,
+                            asset: 'New UI 4.0/Buy plan.png',
+                            label: 'BUY PLANS',
+                            onTap: () =>
+                                _openScreen(const SubscriptionScreen()),
                           ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                   if (promotions.notifications.isNotEmpty) ...[
                     const SizedBox(height: 18),
                     for (final item in promotions.notifications.take(3))
