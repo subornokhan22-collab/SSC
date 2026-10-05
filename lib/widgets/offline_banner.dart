@@ -58,7 +58,9 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
   }
 
   Future<void> _blockOffline() async {
-    if (!mounted || _dialogOpen) return;
+    if (!mounted || _dialogOpen || ConnectivityService.instance.isOnline) {
+      return;
+    }
     final overlayContext = rootNavigatorKey.currentState?.overlay?.context;
     if (overlayContext == null) {
       // The initial connectivity result can arrive before the Navigator's
