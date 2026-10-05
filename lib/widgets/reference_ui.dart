@@ -162,24 +162,15 @@ class ReferenceActionCard extends StatelessWidget {
     this.locked = false,
   });
 
-  Widget _icon() => Stack(
-        clipBehavior: Clip.none,
-        children: [
-          customIcon ??
-              (asset == null
-                  ? ReferenceIcon(icon, size: _iconSize)
-                  : ReferenceImageIcon(asset!, size: _iconSize)),
-          if (locked)
-            const Positioned(
-              right: -8,
-              top: -8,
-              child: Icon(
-                PhosphorIcons.lock,
-                size: 18,
-                color: ReferencePalette.mutedInk,
-              ),
-            ),
-        ],
+  Widget _icon() => customIcon ??
+      (asset == null
+          ? ReferenceIcon(icon, size: _iconSize)
+          : ReferenceImageIcon(asset!, size: _iconSize));
+
+  Widget _lockIcon() => const Icon(
+        PhosphorIcons.lock,
+        size: 18,
+        color: ReferencePalette.mutedInk,
       );
 
   @override
@@ -189,23 +180,29 @@ class ReferenceActionCard extends StatelessWidget {
             ? const EdgeInsets.fromLTRB(18, 18, 18, 22)
             : const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
         child: large
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ? Stack(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      label,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: ReferencePalette.ink,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: .45,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          label,
+                          textAlign: TextAlign.left,
+                          style: const TextStyle(
+                            color: ReferencePalette.ink,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: .45,
+                          ),
+                        ),
                       ),
-                    ),
+                      _icon(),
+                    ],
                   ),
-                  _icon(),
+                  if (locked)
+                    Positioned(right: 0, top: 0, child: _lockIcon()),
                 ],
               )
             : Row(
@@ -240,6 +237,10 @@ class ReferenceActionCard extends StatelessWidget {
                             ),
                           ),
                   ),
+                  if (locked) ...[
+                    const SizedBox(width: 12),
+                    _lockIcon(),
+                  ],
                 ],
               ),
       );

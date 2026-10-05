@@ -60,6 +60,13 @@ class SubscriptionGuard {
               onPressed: () => Navigator.pop(dialogContext),
               child: const Text('OK'),
             ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.of(context).pushNamed('/plans');
+              },
+              child: const Text('Upgrade Plan'),
+            ),
           ],
         ),
       );
