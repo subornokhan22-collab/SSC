@@ -7,6 +7,11 @@ import '../services/connectivity_service.dart';
 import 'motion_policy.dart';
 import 'offline_dialog.dart';
 
+/// The banner is built above the app Navigator by MaterialApp.builder. Use a
+/// key for the actual Navigator so the blocking dialog is pushed on its
+/// overlay rather than looking for a Navigator in the banner's context.
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 /// A global, animated "offline" bar pinned to the top of every screen
 /// (below the status bar).
 ///
@@ -49,12 +54,25 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
     ConnectivityService.instance.start();
     // The first real check lands asynchronously — sync up when it does.
     ConnectivityService.instance.refresh().then(_onConnectivity);
+    if (_offline) unawaited(_blockOffline());
   }
 
   Future<void> _blockOffline() async {
     if (!mounted || _dialogOpen) return;
+    final overlayContext = rootNavigatorKey.currentState?.overlay?.context;
+    if (overlayContext == null) {
+      // The initial connectivity result can arrive before the Navigator's
+      // overlay has mounted. Retry after the first frame rather than leaving
+      // only the non-blocking banner visible.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !ConnectivityService.instance.isOnline) {
+          unawaited(_blockOffline());
+        }
+      });
+      return;
+    }
     _dialogOpen = true;
-    await showOfflineDialog(context);
+    await showOfflineDialog(overlayContext);
     _dialogOpen = false;
     if (mounted && !ConnectivityService.instance.isOnline) {
       unawaited(_blockOffline());
