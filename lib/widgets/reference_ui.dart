@@ -162,7 +162,8 @@ class ReferenceActionCard extends StatelessWidget {
     this.locked = false,
   });
 
-  Widget _icon() => customIcon ??
+  Widget _icon() =>
+      customIcon ??
       (asset == null
           ? ReferenceIcon(icon, size: _iconSize)
           : ReferenceImageIcon(asset!, size: _iconSize));
@@ -201,8 +202,7 @@ class ReferenceActionCard extends StatelessWidget {
                       _icon(),
                     ],
                   ),
-                  if (locked)
-                    Positioned(right: 0, top: 0, child: _lockIcon()),
+                  if (locked) Positioned(right: 0, top: 0, child: _lockIcon()),
                 ],
               )
             : Row(
