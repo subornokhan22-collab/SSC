@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_logo.dart';
-import '../widgets/animations.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
 
@@ -19,7 +18,9 @@ class AuthChoiceScreen extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 440),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: Stagger.list([
+                  // Keep the account chooser static; animated offsets make
+                  // the action buttons appear to duplicate or shake.
+                  children: [
                     const AppLogo(size: 64),
                     const SizedBox(height: 28),
                     Text(
@@ -70,7 +71,7 @@ class AuthChoiceScreen extends StatelessWidget {
                         'Sign-in is not configured. Connect the Tutor\'s Desk account service to create an account.',
                         style: TextStyle(color: AppTheme.muted, fontSize: 12),
                       ),
-                  ]),
+                  ],
                 ),
               ),
             ),
