@@ -36,14 +36,25 @@ class RootGate extends StatefulWidget {
 class _RootGateState extends State<RootGate> {
   late Future<bool> _boot;
   StreamSubscription<AuthState>? _authSubscription;
+  // Supabase emits an initial auth event even when there is no session. Do
+  // not restart the root route for that normal anonymous startup event.
+  bool _hadAuthenticatedSession = false;
 
   @override
   void initState() {
     super.initState();
     _boot = _prepare();
+    _hadAuthenticatedSession = AuthService.isLoggedIn;
     if (AuthService.ready) {
       _authSubscription = AuthService.authChanges.listen((_) {
-        if (!mounted || AuthService.isLoggedIn) return;
+        if (!mounted) return;
+        final loggedIn = AuthService.isLoggedIn;
+        if (loggedIn) {
+          _hadAuthenticatedSession = true;
+          return;
+        }
+        if (!_hadAuthenticatedSession) return;
+        _hadAuthenticatedSession = false;
         // A refresh-token revocation from a newer device is an ordinary sign
         // out from the user's point of view. Clear every authenticated route.
         RootGate.restart(context);
