@@ -46,6 +46,7 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen>
     with WidgetsBindingObserver {
   bool _hasPaidPlan = false;
+  bool _showPlanPicker = false;
   bool _loading = true;
 
   final RupantorPayService _payments = RupantorPayService();
@@ -277,8 +278,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     if (!mounted) return;
     await SubscriptionState.instance.refreshAfterPayment();
     if (mounted) {
-      setState(
-          () => _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid);
+      setState(() {
+        _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid;
+        _showPlanPicker = false;
+      });
     }
     await _load();
     if (!mounted) return;
@@ -387,7 +390,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   key: ValueKey('loading'),
                   message: 'Checking your licence...',
                 )
-              : (_hasPaidPlan ? _proBody() : _buyBody()),
+              : (_hasPaidPlan && !_showPlanPicker ? _proBody() : _buyBody()),
         ),
       ),
     );
@@ -489,6 +492,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       ],
                     ),
                   ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _buying
+                        ? null
+                        : () => setState(() => _showPlanPicker = true),
+                    icon: const Icon(PhosphorIcons.wallet, size: 18),
+                    label: const Text('Buy / change plan'),
+                  ),
+                ),
               ],
             ),
           ),

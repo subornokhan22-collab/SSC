@@ -516,16 +516,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text('Edit details'),
                 ),
               ),
-              if (!hasPaidSubscription) ...[
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: _busy ? null : _openPlans,
-                    icon: const Icon(PhosphorIcons.crown, size: 18),
-                    label: const Text('View plans'),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _busy ? null : _openPlans,
+                  icon: const Icon(PhosphorIcons.wallet, size: 18),
+                  label: Text(
+                    hasPaidSubscription ? 'Buy / change plan' : 'View plans',
                   ),
                 ),
-              ],
+              ),
             ],
           ),
           if (!hasPaidSubscription)
