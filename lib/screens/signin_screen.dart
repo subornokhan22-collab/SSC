@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/auth_service.dart';
-import '../widgets/animations.dart';
 import '../widgets/aurora_ribbons.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
@@ -112,7 +111,9 @@ class _SignInScreenState extends State<SignInScreen> {
               body: SafeArea(
                 child: ListView(
                   padding: EdgeInsets.fromLTRB(inset, 12, inset, 28),
-                  children: Stagger.list([
+                  // Keep the sign-in surface static. Entrance transforms on a
+                  // live form make keyboard/focus changes look like shaking.
+                  children: [
                     const DeskWelcome(),
                     const SizedBox(height: 18),
                     GlassCard(
@@ -202,7 +203,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         label: const Text('No account yet? Create one'),
                       ),
                     ),
-                  ]),
+                  ],
                 ),
               ),
             )));
