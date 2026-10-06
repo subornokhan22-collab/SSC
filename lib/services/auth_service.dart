@@ -344,6 +344,12 @@ class AuthService {
       await signOut();
       return false;
     } on AuthException catch (error) {
+      // An access JWT expiring is normal after the app has been idle. Do not
+      // destroy the persisted refresh token: refresh once, then reject only
+      // when Supabase explicitly says that refresh token is invalid/revoked.
+      if (_isAccessTokenExpiry(error)) {
+        return _refreshExpiredSession();
+      }
       // getUser() also throws for timeouts, DNS failures and other temporary
       // transport problems. Signing out for those failures strands an
       // otherwise valid offline session. Only known auth rejections revoke it;
@@ -359,14 +365,49 @@ class AuthService {
     }
   }
 
+  static bool _isAccessTokenExpiry(AuthException error) {
+    final message = error.message.toLowerCase();
+    if (message.contains('refresh token')) return false;
+    return message.contains('jwt expired') ||
+        message.contains('token is expired') ||
+        message.contains('token has expired') ||
+        message.contains('access token') && message.contains('expired');
+  }
+
+  static Future<bool> _refreshExpiredSession() async {
+    try {
+      final response =
+          await _c.auth.refreshSession().timeout(const Duration(seconds: 8));
+      return response.session != null;
+    } on AuthException catch (error) {
+      if (_isInvalidRefreshToken(error)) {
+        await signOut();
+        return false;
+      }
+      // Network/server failures must not erase a restorable local session.
+      return true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  static bool _isInvalidRefreshToken(AuthException error) {
+    final message = error.message.toLowerCase();
+    return message.contains('invalid refresh token') ||
+        message.contains('refresh token not found') ||
+        message.contains('refresh token has been revoked') ||
+        message.contains('refresh_token_not_found');
+  }
+
   static bool _isRejectedSession(AuthException error) {
     final code = error.statusCode?.toString();
-    if (code == '401' || code == '403') return true;
     final message = error.message.toLowerCase();
-    return message.contains('invalid jwt') ||
-        message.contains('jwt expired') ||
-        message.contains('invalid refresh token') ||
-        message.contains('refresh token not found') ||
+    // A bare 401 can be an ordinary expired access JWT; only reject it when
+    // the response also confirms invalid credentials/session. A 403 is a
+    // server-authoritative denial (for example a disabled account).
+    return code == '403' ||
+        message.contains('invalid jwt') ||
+        _isInvalidRefreshToken(error) ||
         message.contains('session has expired');
   }
 
