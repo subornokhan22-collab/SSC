@@ -4,15 +4,21 @@
 // public.subscription_plans and activation happens only after an independent
 // Rupantor verification call. Provider credentials stay in Edge Function
 // secrets:
-//   RUPANTOR_CREATE_URL, RUPANTOR_VERIFY_URL
-//   RUPANTOR_API_KEY, RUPANTOR_CLIENT
+//   RUPANTOR_API_KEY
 //   RUPANTOR_SUCCESS_URL, RUPANTOR_CANCEL_URL, RUPANTOR_APP_REDIRECT_URL
+// Optional endpoint overrides:
+//   RUPANTOR_CREATE_URL, RUPANTOR_VERIFY_URL
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
 const supa = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
 );
+
+const officialCheckoutUrl =
+  "https://payment.rupantorpay.com/api/payment/checkout";
+const officialVerifyUrl =
+  "https://payment.rupantorpay.com/api/payment/verify-payment";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -101,11 +107,9 @@ function failedStatus(body: JsonObject) {
 
 function providerHeaders(): HeadersInit {
   const apiKey = Deno.env.get("RUPANTOR_API_KEY") ?? "";
-  const client = Deno.env.get("RUPANTOR_CLIENT") ?? "";
   return {
     "Content-Type": "application/json",
     "X-API-KEY": apiKey,
-    "X-CLIENT": client,
   };
 }
 
@@ -232,9 +236,10 @@ async function verifyAndActivate(
 async function verifyProvider(providerId: string) {
   // This is the documented Rupantor verification contract. Never activate
   // from a redirect or webhook status alone.
-  return providerRequest(Deno.env.get("RUPANTOR_VERIFY_URL") ?? "", {
-    transaction_id: providerId,
-  });
+  return providerRequest(
+    Deno.env.get("RUPANTOR_VERIFY_URL") ?? officialVerifyUrl,
+    { transaction_id: providerId },
+  );
 }
 
 async function finalizeProviderTransaction(providerId: string) {
@@ -270,6 +275,8 @@ async function handleProviderNotification(payload: JsonObject) {
   let tx = await transactionByProviderId(providerId);
   if (!tx) {
     const orderId = firstString(payload, ["order_id"]) ??
+      metadataOrderId(payload.metadata) ??
+      // Accept the former spelling only for already-created pending payments.
       metadataOrderId(payload.meta_data);
     if (orderId) {
       tx = await transactionByOrderId(orderId);
@@ -347,7 +354,7 @@ Deno.serve(async (req: Request) => {
       const planId = String(payload.plan ?? "");
       const plan = await planFor(planId);
       if (!plan) return error("Unknown or inactive plan.", 400, "UNKNOWN_PLAN");
-      if (!Deno.env.get("RUPANTOR_CREATE_URL")) {
+      if (!Deno.env.get("RUPANTOR_API_KEY")) {
         return error("Rupantor Pay is not configured on the server.", 503, "NOT_CONFIGURED");
       }
 
@@ -368,15 +375,18 @@ Deno.serve(async (req: Request) => {
 
       let provider: JsonObject;
       try {
-        provider = await providerRequest(Deno.env.get("RUPANTOR_CREATE_URL")!, {
-          fullname: user.user_metadata?.name ?? "Tutor",
-          email: user.email ?? "",
-          amount: Number(plan.price_bdt),
-          success_url: Deno.env.get("RUPANTOR_SUCCESS_URL") ?? "",
-          cancel_url: Deno.env.get("RUPANTOR_CANCEL_URL") ?? "",
-          webhook_url: `${Deno.env.get("SUPABASE_URL") ?? ""}/functions/v1/rupantor-pay`,
-          meta_data: { order_id: orderId, plan_id: planId },
-        });
+        provider = await providerRequest(
+          Deno.env.get("RUPANTOR_CREATE_URL") ?? officialCheckoutUrl,
+          {
+            fullname: user.user_metadata?.name ?? "Tutor",
+            email: user.email ?? "",
+            amount: Number(plan.price_bdt),
+            success_url: Deno.env.get("RUPANTOR_SUCCESS_URL") ?? "",
+            cancel_url: Deno.env.get("RUPANTOR_CANCEL_URL") ?? "",
+            webhook_url: `${Deno.env.get("SUPABASE_URL") ?? ""}/functions/v1/rupantor-pay`,
+            metadata: { order_id: orderId, plan_id: planId },
+          },
+        );
       } catch (_) {
         await supa.from("subscription_transactions").update({ status: "failed" }).eq("id", pending.id);
         return error("Rupantor Pay could not start the payment.", 502, "PROVIDER_ERROR");

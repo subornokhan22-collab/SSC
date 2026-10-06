@@ -19,9 +19,12 @@ test("Rupantor is the only deployable payment function", () => {
   assert.match(payment, /subscription_plans/);
   assert.match(payment, /activate_subscription_transaction/);
   assert.match(payment, /fullname:/);
-  assert.match(payment, /meta_data:/);
+  assert.match(payment, /metadata:/);
+  assert.match(payment, /payload\.metadata/);
   assert.match(payment, /X-API-KEY/);
-  assert.match(payment, /X-CLIENT/);
+  assert.doesNotMatch(payment, /X-CLIENT/);
+  assert.match(payment, /payment\.rupantorpay\.com\/api\/payment\/checkout/);
+  assert.match(payment, /payment\.rupantorpay\.com\/api\/payment\/verify-payment/);
   assert.match(payment, /payment_url/);
   assert.match(payment, /parsed\.protocol === "https:"/);
   assert.doesNotMatch(payment, /x-rupantor-signature/);
