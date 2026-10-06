@@ -747,7 +747,29 @@ class PaperBackup {
   /// Android 10+. The two are independent: a failure in one must never skip
   /// the other. Silent no-op when storage is unavailable, because auto-save
   /// must never disturb the user.
-  static Future<void> autoSave() async {
+  static Future<void>? _saveWorker;
+  static bool _saveRequested = false;
+
+  static Future<void> autoSave() {
+    // A burst of edits can request several full-library snapshots in one
+    // frame. Coalesce those requests into one worker and, if data changes
+    // while it runs, one final up-to-date pass. This keeps backup automatic
+    // without competing disk/base64 work causing UI jank.
+    _saveRequested = true;
+    return _saveWorker ??= _drainAutoSaves().whenComplete(() {
+      _saveWorker = null;
+      if (_saveRequested) unawaited(autoSave());
+    });
+  }
+
+  static Future<void> _drainAutoSaves() async {
+    while (_saveRequested) {
+      _saveRequested = false;
+      await _saveOnce();
+    }
+  }
+
+  static Future<void> _saveOnce() async {
     String document;
     try {
       final payload = await _payload();

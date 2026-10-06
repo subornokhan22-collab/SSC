@@ -39,6 +39,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    final subscription = SubscriptionState.instance;
+    // Paint cached entitlement controls in the first frame. Network refresh is
+    // reconciliation, not a prerequisite for rendering the plan action.
+    _hasPaidSubscription =
+        subscription.initialized && subscription.entitlement.isPaid;
     _refresh();
   }
 
@@ -57,12 +62,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final wasPaid = subscription.entitlement.isPaid;
     Map<String, dynamic>? p;
     if (AuthService.isLoggedIn) {
-      try {
-        p = await AuthService.fetchProfile();
-        await subscription.refresh();
-      } catch (_) {
-        // Offline — use the last verified entitlement.
-      }
+      // Profile and entitlement come from independent queries. Running them
+      // together makes pull-to-refresh and first entry react at the speed of
+      // the slower request rather than the sum of both requests.
+      await Future.wait<void>([
+        (() async {
+          try {
+            p = await AuthService.fetchProfile();
+          } catch (_) {
+            // Offline — keep account controls usable with session identity.
+          }
+        })(),
+        (() async {
+          try {
+            await subscription.refresh();
+          } catch (_) {
+            // Offline — use the last verified entitlement.
+          }
+        })(),
+      ]);
     }
     if (!mounted) return;
     final paidNow = subscription.entitlement.isPaid;
@@ -300,7 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               parent: BouncingScrollPhysics(),
             ),
             padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
-            children: Stagger.list([
+            children: [
               if (!AuthService.ready)
                 const EmptyState(
                   icon: PhosphorIcons.cloudSlash,
@@ -331,7 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(fontSize: 11.5, color: AppTheme.muted),
                 ),
               ),
-            ]),
+            ],
           ),
         ),
       ),

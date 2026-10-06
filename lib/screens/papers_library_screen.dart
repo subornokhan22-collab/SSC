@@ -46,7 +46,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _tabs = TabController(length: 2, vsync: this);
-    _reload();
+    _initializeLibrary();
     _maybeNudgeAutoSave();
   }
 
@@ -74,46 +74,34 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
     }
   }
 
+  Future<void> _initializeLibrary() async {
+    // Startup already performs this restore, but doing it at the library
+    // boundary as well makes direct/deep-linked entry self-healing.
+    await PaperBackup.tryAutoRestore();
+    await _reload();
+  }
+
   Future<void> _reload() async {
-    final all = await PaperLibrary.loadEntries();
-    final saved = await PaperLibrary.loadSavedPapers();
-    if (mounted) {
-      setState(() {
-        // The Added tab lists photo/PDF uploads only; saved papers live in
-        // their own tab (with answer keys) and feed the OMR scanner.
-        _entries = all.where((e) => e.kind != 'saved').toList();
-        _saved = saved;
-        _loading = false;
-      });
-    }
+    // These indexes are independent local files; reading them concurrently
+    // avoids serial disk waits on larger libraries.
+    final results = await Future.wait<Object>([
+      PaperLibrary.loadEntries(),
+      PaperLibrary.loadSavedPapers(),
+    ]);
+    final all = results[0] as List<PaperEntry>;
+    final saved = results[1] as List<SavedPaper>;
+    if (!mounted) return;
+    setState(() {
+      // The Added tab lists photo/PDF uploads only; saved papers live in
+      // their own tab (with answer keys) and feed the OMR scanner.
+      _entries = all.where((e) => e.kind != 'saved').toList();
+      _saved = saved;
+      _loading = false;
+    });
   }
 
   void _snack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  /// Explicit backup into the shared Download folder: the copy that a
-  /// reinstall can restore, useful before switching to a differently signed
-  /// build. Reports the real outcome instead of assuming success.
-  Future<void> _backUpToDownload() async {
-    if (_entries.isEmpty && _saved.isEmpty) {
-      _snack('Nothing to back up yet — create or save a paper first.');
-      return;
-    }
-    final path = await PaperBackup.exportToDownload();
-    if (!mounted) return;
-    if (path == null) {
-      await _problem(
-        'Backup not copied',
-        'Your papers are still saved inside the app, but a copy could not be '
-            'written to the shared Download folder on this device.',
-        detail: 'Android 10 or newer is required for the automatic copy. '
-            'On older devices, grant the one-time "All files access" '
-            'permission and try again.',
-      );
-      return;
-    }
-    _snack('Backup copied to $path — it survives uninstalling the app.');
   }
 
   /// The standard red, animated problem dialog — every error the user must
@@ -653,29 +641,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Question Papers'),
-        actions: [
-          IconButton(
-            tooltip: 'Copy backup to Download folder',
-            onPressed: _backUpToDownload,
-            icon: const AppDuotoneIcon(
-              PhosphorIcons.cloudArrowUpDuotone,
-              color: AppColors.primary,
-              secondaryColor: AppColors.secondary,
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _busyAdd ? null : _addDialog,
-        icon: const AppDuotoneIcon(
-          PhosphorIcons.imageSquareDuotone,
-          color: AppColors.onColor,
-          secondaryColor: AppColors.light,
-        ),
-        label: const Text('Add'),
-      ),
+      appBar: AppBar(title: const Text('Question Papers')),
       body: SafeArea(
         child: Column(
           children: [
