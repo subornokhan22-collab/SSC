@@ -192,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
-            children: Stagger.list([
+            children: [
               AuthHero(
                 icon: _otpSent
                     ? PhosphorIcons.envelopeOpen
@@ -212,7 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 14),
                 InfoBanner.error(_err!),
               ],
-            ]),
+            ],
           ),
         ),
       ),

@@ -149,6 +149,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     ad.imageUrl,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    cacheWidth: 1080,
                     errorBuilder: (_, __, ___) => const SizedBox(
                       height: 120,
                       child: Center(child: Icon(PhosphorIcons.imageBroken)),
@@ -274,6 +275,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   width: 44,
                   height: 44,
                   fit: BoxFit.cover,
+                  cacheWidth: 132,
+                  cacheHeight: 132,
                   errorBuilder: (_, __, ___) =>
                       const ReferenceIcon(PhosphorIcons.trophy, size: 32),
                 ),

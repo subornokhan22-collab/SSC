@@ -18,8 +18,8 @@ class FadeSlideIn extends StatelessWidget {
     super.key,
     required this.child,
     this.delay = Duration.zero,
-    this.duration = const Duration(milliseconds: 420),
-    this.offset = const Offset(0, 24),
+    this.duration = const Duration(milliseconds: 180),
+    this.offset = const Offset(0, 10),
     this.curve = Curves.easeOutCubic,
   });
 
@@ -477,7 +477,7 @@ class SoftSwitcher extends StatelessWidget {
   const SoftSwitcher({
     super.key,
     required this.child,
-    this.duration = const Duration(milliseconds: 320),
+    this.duration = const Duration(milliseconds: 180),
   });
 
   @override

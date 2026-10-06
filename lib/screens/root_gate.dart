@@ -101,7 +101,7 @@ class _RootGateState extends State<RootGate> {
           return const _BootSplash();
         }
         return SoftSwitcher(
-          duration: const Duration(milliseconds: 420),
+          duration: const Duration(milliseconds: 180),
           child: snap.data == true
               ? const TeacherHomeScreen(key: ValueKey('teacher'))
               : const AuthChoiceScreen(key: ValueKey('auth')),

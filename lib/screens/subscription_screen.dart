@@ -9,7 +9,6 @@ import '../services/app_style.dart';
 import '../services/auth_service.dart';
 import '../services/rupantor_pay_service.dart';
 import '../services/subscription_state.dart';
-import '../services/promotion_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
@@ -86,31 +85,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   Future<void> _load() async {
     final state = SubscriptionState.instance;
     await state.initialize(refresh: false);
-    PromotionFeed feed = const PromotionFeed();
-    try {
-      feed = await PromotionService.load();
-    } catch (_) {
-      // Promotions are optional content; an offline or malformed feed must
-      // never leave the pricing screen stuck in its loading state.
-    }
-    List<RupantorPlan> plans = const [];
-    try {
-      plans = await _payments.plans();
-    } catch (_) {}
-    if (mounted) {
-      setState(() {
-        _hasPaidPlan = state.entitlement.isPaid && !state.isExpired;
-        _plans = plans;
-        _plan = plans.isEmpty ? null : (_plan ?? plans.first);
-        _loading = false;
-      });
-      // Payment status is reconciled in the background; the cached state is
-      // enough to render the pricing screen immediately.
-      unawaited(state.refresh());
-      if (feed.offers.isNotEmpty) {
-        // Promotion content remains available to the existing pricing UI.
+    if (!mounted) return;
+
+    // Render from verified cache immediately. Pricing/network reconciliation
+    // must never delay the first useful plan-screen frame.
+    final initialPlans = _plans.isEmpty ? RupantorPlan.fallbackPlans : _plans;
+    setState(() {
+      _hasPaidPlan = state.entitlement.isPaid && !state.isExpired;
+      _plans = initialPlans;
+      _plan ??= initialPlans.first;
+      _loading = false;
+    });
+    unawaited(state.refresh());
+
+    // Reconcile authoritative plan rows after the screen is interactive. The
+    // promotion feed is intentionally not fetched here; it is unrelated to
+    // pricing and already has its own home-screen lifecycle.
+    final plans = await _payments.plans().catchError((_) => initialPlans);
+    if (!mounted) return;
+    setState(() {
+      _hasPaidPlan = state.entitlement.isPaid && !state.isExpired;
+      _plans = plans;
+      if (_plan == null || !plans.any((plan) => plan.id == _plan!.id)) {
+        _plan = plans.isEmpty ? null : plans.first;
       }
-    }
+    });
   }
 
   Future<void> _problem(String title, String message, {String? detail}) =>

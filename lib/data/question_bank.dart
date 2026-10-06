@@ -51,15 +51,21 @@ class QuestionBank {
     final manifest = json.decode(manifestRaw) as Map<String, dynamic>;
     final files = (manifest['files'] as List).cast<String>();
 
-    final sources = <String>[];
-    for (final name in files) {
-      try {
-        sources.add(await rootBundle.loadString('assets/questions/$name'));
-      } catch (e) {
-        // One unreadable file must not cost the tutor every other question.
-        debugPrint('QuestionBank: skipped $name ($e)');
-      }
-    }
+    // Asset reads are independent. Loading them concurrently removes a long
+    // serial I/O chain from startup while JSON decoding remains isolated from
+    // the UI thread below.
+    final loaded = await Future.wait<String?>([
+      for (final name in files)
+        rootBundle.loadString('assets/questions/$name').then<String?>(
+          (source) => source,
+          onError: (Object error, StackTrace _) {
+            // One unreadable file must not cost the tutor every other question.
+            debugPrint('QuestionBank: skipped $name ($error)');
+            return null;
+          },
+        ),
+    ]);
+    final sources = loaded.whereType<String>().toList(growable: false);
 
     final parsed = await compute(_decodeAll, sources);
 
