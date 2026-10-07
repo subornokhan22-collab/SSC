@@ -76,7 +76,14 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     String? storedTitle;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(PaperController.draftKey);
+      var raw = prefs.getString(PaperController.scopedDraftKey);
+      if (raw == null) {
+        raw = prefs.getString(PaperController.draftKey);
+        if (raw != null) {
+          await prefs.setString(PaperController.scopedDraftKey, raw);
+          await prefs.remove(PaperController.draftKey);
+        }
+      }
       if (raw != null) {
         final snapshot = jsonDecode(raw) as Map<String, dynamic>;
         if (snapshot['version'] == 1 && snapshot['draft'] is Map) {

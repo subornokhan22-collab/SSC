@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 
+import 'local_account_scope.dart';
 import 'local_diagnostics.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -179,11 +180,57 @@ class PaperLibrary {
 
   static Future<Directory> root() async {
     final appDoc = await getApplicationDocumentsDirectory();
-    final dir = Directory(
+    final legacy = Directory(
       '${appDoc.path}${Platform.pathSeparator}tutors_desk_papers',
     );
+    final dir = Directory(
+      '${legacy.path}${Platform.pathSeparator}accounts'
+      '${Platform.pathSeparator}${LocalAccountScope.id}',
+    );
     if (!dir.existsSync()) dir.createSync(recursive: true);
+    await _claimLegacyLibrary(legacy, dir);
     return dir;
+  }
+
+  /// Assign data written by pre-account-scoping builds to the account that is
+  /// signed in during the upgrade. It is moved once, so later accounts can
+  /// never see or claim the same papers.
+  static Future<void> _claimLegacyLibrary(
+    Directory legacy,
+    Directory scoped,
+  ) async {
+    final marker = File('${scoped.path}${Platform.pathSeparator}.legacy_claimed');
+    if (marker.existsSync()) return;
+    final oldIndex = File('${legacy.path}${Platform.pathSeparator}$_indexName');
+    final newIndex = File('${scoped.path}${Platform.pathSeparator}$_indexName');
+    if (oldIndex.existsSync() && !newIndex.existsSync()) {
+      try {
+        final raw = json.decode(await oldIndex.readAsString());
+        if (raw is List) {
+          await oldIndex.copy(newIndex.path);
+          for (final item in raw) {
+            if (item is! Map) continue;
+            final id = item['id']?.toString() ?? '';
+            if (!isSafeStorageId(id)) continue;
+            final oldDir = Directory(
+              '${legacy.path}${Platform.pathSeparator}$id',
+            );
+            final newDir = Directory(
+              '${scoped.path}${Platform.pathSeparator}$id',
+            );
+            if (oldDir.existsSync() && !newDir.existsSync()) {
+              await oldDir.rename(newDir.path);
+            }
+          }
+          await oldIndex.delete();
+        }
+      } catch (_) {
+        // Keep recovery data untouched if migration cannot complete.
+      }
+    }
+    try {
+      await marker.writeAsString(LocalAccountScope.id, flush: true);
+    } catch (_) {}
   }
 
   static Future<File> _indexFile() async {
@@ -643,7 +690,8 @@ class PaperBackup {
 
   static const _channel = MethodChannel('com.tutorsdesk.app/storage');
   static const _dirName = 'TutorsDesk';
-  static const _fileName = 'tutors_desk_backup.json';
+  static String get _fileName =>
+      'tutors_desk_backup_${LocalAccountScope.id}.json';
 
   /// Whether the app may write into the shared Download folder.
   static Future<bool> permissionGranted() async {
@@ -726,7 +774,8 @@ class PaperBackup {
     }
     return {
       'app': 'tutors_desk',
-      'version': 1,
+      'version': 2,
+      'ownerId': LocalAccountScope.id,
       'exportedAt': DateTime.now().toIso8601String(),
       'entries': [for (final e in entries) e.toJson()],
       'files': files,
@@ -905,6 +954,10 @@ class PaperBackup {
         m['entries'] is! List ||
         m['files'] is! Map) {
       throw Exception("That is not a Tutor's Desk backup file.");
+    }
+    final ownerId = m['ownerId']?.toString();
+    if (ownerId != null && ownerId != LocalAccountScope.id) {
+      throw StateError('This backup belongs to a different account.');
     }
     // Parse and validate the index before writing any file. A backup is an
     // import boundary, so malformed rows are ignored rather than becoming

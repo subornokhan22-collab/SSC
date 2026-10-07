@@ -2,11 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutors_desk/services/local_account_scope.dart';
 import 'package:tutors_desk/services/omr/omr_store.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    LocalAccountScope.debugId = 'account_a';
+  });
+  tearDown(() => LocalAccountScope.debugId = null);
   OmScanRecord record({int answer = 0}) => OmScanRecord(
         id: 'review-1',
         date: DateTime(2026, 9, 24),
@@ -35,6 +40,14 @@ void main() {
     expect(history.single.score, 0);
     expect(history.single.correctedIndices, [0]);
   });
+  test('scan history is isolated between signed-in accounts', () async {
+    await OmrStore.addRecord(record());
+    LocalAccountScope.debugId = 'account_b';
+    expect(await OmrStore.loadHistory(), isEmpty);
+    LocalAccountScope.debugId = 'account_a';
+    expect((await OmrStore.loadHistory()).single.id, 'review-1');
+  });
+
   test('legacy history without correction metadata remains readable', () {
     final raw = record().toJson()..remove('correctedIndices');
     expect(OmScanRecord.fromJson(raw).correctedIndices, isEmpty);

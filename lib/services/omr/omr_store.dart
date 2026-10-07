@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../local_account_scope.dart';
+
 /// One graded OMR scan, kept in the device history.
 class OmScanRecord {
   final String id;
@@ -131,13 +133,36 @@ class OmKeyDraft {
 class OmrStore {
   OmrStore._();
 
-  static const _historyKey = 'omr_scan_history';
-  static const _keyDraftKey = 'omr_key_draft';
+  static const _legacyHistoryKey = 'omr_scan_history';
+  static const _legacyKeyDraftKey = 'omr_key_draft';
+  static String get _historyKey =>
+      LocalAccountScope.key(_legacyHistoryKey);
+  static String get _keyDraftKey =>
+      LocalAccountScope.key(_legacyKeyDraftKey);
   static const _maxHistory = 60;
+
+  static Future<String?> _claimLegacy(
+    SharedPreferences prefs,
+    String scoped,
+    String legacy,
+  ) async {
+    var raw = prefs.getString(scoped);
+    if (raw != null) return raw;
+    raw = prefs.getString(legacy);
+    if (raw != null) {
+      await prefs.setString(scoped, raw);
+      await prefs.remove(legacy);
+    }
+    return raw;
+  }
 
   static Future<List<OmScanRecord>> loadHistory() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_historyKey);
+    final raw = await _claimLegacy(
+      prefs,
+      _historyKey,
+      _legacyHistoryKey,
+    );
     if (raw == null || raw.isEmpty) return const [];
     try {
       final decoded = json.decode(raw);
@@ -186,7 +211,11 @@ class OmrStore {
 
   static Future<OmKeyDraft?> loadKeyDraft() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_keyDraftKey);
+    final raw = await _claimLegacy(
+      prefs,
+      _keyDraftKey,
+      _legacyKeyDraftKey,
+    );
     if (raw == null || raw.isEmpty) return null;
     try {
       return OmKeyDraft.fromJson(

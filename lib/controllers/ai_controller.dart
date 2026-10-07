@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/questions_data.dart';
 import '../data/question_bank.dart';
 import '../services/auth_service.dart';
+import '../services/local_account_scope.dart';
 import '../services/subscription_state.dart';
 import '../models/subscription_entitlement.dart';
 import '../services/ai/teacher_ai_client.dart';
@@ -38,7 +39,8 @@ class AiController extends OperationController {
     TeacherAiClient? client,
   }) : client = client ?? TeacherAiClient();
   bool get canUse => !busy && questions.isNotEmpty && duplicates.isEmpty;
-  String get _historyKey =>
+  String get _historyKey => LocalAccountScope.key('teacher_ai_history');
+  String get _legacyHistoryKey =>
       'teacher_ai_history_${AuthService.email ?? 'offline'}';
 
   Future<bool> execute({
@@ -72,7 +74,14 @@ class AiController extends OperationController {
         if (count < 1 || count > 10)
           throw StateError('Choose between 1 and 10 questions.');
         final prefs = await SharedPreferences.getInstance();
-        final raw = prefs.getString(_historyKey);
+        var raw = prefs.getString(_historyKey);
+        if (raw == null) {
+          raw = prefs.getString(_legacyHistoryKey);
+          if (raw != null) {
+            await prefs.setString(_historyKey, raw);
+            await prefs.remove(_legacyHistoryKey);
+          }
+        }
         try {
           _previous = raw == null
               ? []

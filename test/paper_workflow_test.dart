@@ -260,7 +260,7 @@ void main() {
       c.dispose();
       expect(
         (await SharedPreferences.getInstance()).getString(
-          PaperController.draftKey,
+          PaperController.scopedDraftKey,
         ),
         'not json',
       );

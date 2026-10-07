@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutors_desk/services/local_account_scope.dart';
 import 'package:tutors_desk/services/local_diagnostics.dart';
 import 'package:tutors_desk/services/paper_library.dart';
 
@@ -28,6 +29,7 @@ void main() {
     external = Directory.systemTemp.createTempSync('td_ext_');
     sdcard = Directory.systemTemp.createTempSync('td_sd_');
     SharedPreferences.setMockInitialValues({});
+    LocalAccountScope.debugId = 'signed_out';
     await LocalDiagnostics.clear();
     calls = <Map<String, Object?>>[];
     sharedWritable = true;
@@ -76,6 +78,7 @@ void main() {
 
   tearDown(() {
     PaperBackup.debugBaseDir = null;
+    LocalAccountScope.debugId = null;
     for (final dir in [appDoc, external, sdcard]) {
       if (dir.existsSync()) dir.deleteSync(recursive: true);
     }
@@ -102,10 +105,10 @@ void main() {
       );
 
   File inAppCopy() =>
-      File('${external.path}/TutorsDesk/tutors_desk_backup.json');
+      File('${external.path}/TutorsDesk/tutors_desk_backup_signed_out.json');
 
   File sharedCopy() =>
-      File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup.json');
+      File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json');
 
   /// Included in failure messages so a CI failure explains itself instead of
   /// only reporting a bare false.
@@ -113,6 +116,28 @@ void main() {
       'calls=${calls.map((c) => c['method']).toList()} '
       'shared=${sharedCopy().existsSync()} inApp=${inAppCopy().existsSync()} '
       'diag=${await LocalDiagnostics.report()}';
+
+  test('paper library and backups are isolated between accounts', () async {
+    LocalAccountScope.debugId = 'account_a';
+    await PaperLibrary.addSavedPaper(paper(id: 'only_a'));
+    await PaperBackup.autoSave();
+
+    LocalAccountScope.debugId = 'account_b';
+    expect(await PaperLibrary.loadEntries(), isEmpty);
+    expect(await PaperLibrary.savedPaper('only_a'), isNull);
+    expect(
+      File('${external.path}/TutorsDesk/'
+              'tutors_desk_backup_account_a.json')
+          .existsSync(),
+      isTrue,
+    );
+    expect(
+      File('${external.path}/TutorsDesk/'
+              'tutors_desk_backup_account_b.json')
+          .existsSync(),
+      isFalse,
+    );
+  });
 
   test('saving a paper writes the uninstall-surviving Download copy', () async {
     await PaperLibrary.addSavedPaper(paper());
@@ -127,7 +152,7 @@ void main() {
     expect(request['relativePath'], 'Download/TutorsDesk',
         reason:
             'must not reuse the TutorsDeskDebug folder the restore ignores');
-    expect(request['name'], 'tutors_desk_backup.json');
+    expect(request['name'], 'tutors_desk_backup_signed_out.json');
     expect(request['mime'], 'application/json');
 
     final backup = jsonDecode(sharedCopy().readAsStringSync()) as Map;
@@ -175,7 +200,7 @@ void main() {
     PaperBackup.debugBaseDir = () async => throw StateError('storage gone');
 
     expect(await PaperBackup.exportToDownload(),
-        'Download/TutorsDesk/tutors_desk_backup.json',
+        'Download/TutorsDesk/tutors_desk_backup_signed_out.json',
         reason:
             'the uninstall-safe copy must not depend on app storage; ${await why()}');
     expect(sharedCopy().existsSync(), isTrue);
@@ -188,7 +213,7 @@ void main() {
 
     // Wiped library: a fresh install before restore has run, or a transient
     // read failure. The next automatic save must not empty the backup.
-    File('${appDoc.path}/tutors_desk_papers/index.json')
+    File('${appDoc.path}/tutors_desk_papers/accounts/signed_out/index.json')
         .writeAsStringSync('[]');
     expect(await PaperLibrary.loadEntries(), isEmpty);
 

@@ -7,6 +7,7 @@ import '../data/questions_data.dart';
 import '../models/paper_draft.dart';
 import '../models/subject_info.dart';
 import '../services/chapter_catalog.dart';
+import '../services/local_account_scope.dart';
 import '../services/paper_composer.dart';
 import '../services/paper_limits.dart';
 import '../services/paper_snapshot.dart';
@@ -18,6 +19,7 @@ import 'operation_controller.dart';
 
 class PaperController extends OperationController {
   static const draftKey = 'paper_composer_draft_v1';
+  static String get scopedDraftKey => LocalAccountScope.key(draftKey);
   final PaperComposer composer;
   final PaperUsageService? paperUsage;
   PaperSnapshot _current;
@@ -54,7 +56,16 @@ class PaperController extends OperationController {
   Future<void> initialize({bool restore = true}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = restore ? prefs.getString(draftKey) : null;
+      var raw = restore ? prefs.getString(scopedDraftKey) : null;
+      // Claim the pre-account-scoping draft once for the account active during
+      // upgrade, then remove the global copy so no later account can see it.
+      if (restore && raw == null) {
+        raw = prefs.getString(draftKey);
+        if (raw != null) {
+          await prefs.setString(scopedDraftKey, raw);
+          await prefs.remove(draftKey);
+        }
+      }
       if (raw != null && !disposed) {
         final snapshot = PaperSnapshot.fromJson(
           jsonDecode(raw) as Map<String, dynamic>,
@@ -468,7 +479,7 @@ class PaperController extends OperationController {
     _writes = _writes.then((_) async {
       try {
         final prefs = await SharedPreferences.getInstance();
-        if (!await prefs.setString(draftKey, raw))
+        if (!await prefs.setString(scopedDraftKey, raw))
           throw StateError('Storage rejected draft');
         if (identical(snapshot, _current)) {
           savedAt = DateTime.now();
