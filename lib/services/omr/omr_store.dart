@@ -135,10 +135,8 @@ class OmrStore {
 
   static const _legacyHistoryKey = 'omr_scan_history';
   static const _legacyKeyDraftKey = 'omr_key_draft';
-  static String get _historyKey =>
-      LocalAccountScope.key(_legacyHistoryKey);
-  static String get _keyDraftKey =>
-      LocalAccountScope.key(_legacyKeyDraftKey);
+  static String get _historyKey => LocalAccountScope.key(_legacyHistoryKey);
+  static String get _keyDraftKey => LocalAccountScope.key(_legacyKeyDraftKey);
   static const _maxHistory = 60;
 
   static Future<String?> _claimLegacy(

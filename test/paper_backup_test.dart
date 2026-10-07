@@ -107,8 +107,8 @@ void main() {
   File inAppCopy() =>
       File('${external.path}/TutorsDesk/tutors_desk_backup_signed_out.json');
 
-  File sharedCopy() =>
-      File('${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json');
+  File sharedCopy() => File(
+      '${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json');
 
   /// Included in failure messages so a CI failure explains itself instead of
   /// only reporting a bare false.

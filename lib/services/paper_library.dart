@@ -199,7 +199,8 @@ class PaperLibrary {
     Directory legacy,
     Directory scoped,
   ) async {
-    final marker = File('${scoped.path}${Platform.pathSeparator}.legacy_claimed');
+    final marker =
+        File('${scoped.path}${Platform.pathSeparator}.legacy_claimed');
     if (marker.existsSync()) return;
     final oldIndex = File('${legacy.path}${Platform.pathSeparator}$_indexName');
     final newIndex = File('${scoped.path}${Platform.pathSeparator}$_indexName');
