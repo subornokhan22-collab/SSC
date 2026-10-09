@@ -16,6 +16,9 @@ void main() {
     expect(pubspec, contains('- New UI 4.0/Logo 2.png'));
     expect(paperExport, contains("New UI 4.0/Logo 2.png"));
     expect(paperExport, contains('Future.wait(images.map(_watermarkPage))'));
+    expect(paperExport, contains('pageSize.width * .58'));
+    expect(paperExport, contains('pageSize.height * .28'));
+    expect(paperExport, contains('pageSize.width * .034'));
     expect(paperExport, isNot(contains('DEMO • TUTOR’S DESK')));
     expect(pubspec, isNot(contains('adaptive_icon_foreground')));
     expect(pubspec, isNot(contains('adaptive_icon_background')));

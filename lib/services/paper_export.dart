@@ -144,8 +144,10 @@ class PaperExport {
     // Keep the original supplied artwork and proportions. A translucent layer
     // makes it a watermark without drawing a rectangle behind transparent
     // pixels in the PNG.
-    final maxWidth = pageSize.width * .34;
-    final maxHeight = pageSize.height * .16;
+    // Keep the ownership mark unmistakable on both phone previews and A4
+    // printouts. The former 34%/16% bounds made the supplied logo too small.
+    final maxWidth = pageSize.width * .58;
+    final maxHeight = pageSize.height * .28;
     final aspect = logo.width / logo.height;
     var width = maxWidth;
     var height = width / aspect;
@@ -179,13 +181,13 @@ class PaperExport {
         style: TextStyle(
           color: Colors.black.withAlpha(132),
           fontFamily: AppTypography.uiFont,
-          fontSize: (pageSize.width * .019).clamp(24.0, 38.0),
-          fontWeight: FontWeight.w800,
-          letterSpacing: 2.4,
+          fontSize: (pageSize.width * .034).clamp(38.0, 68.0),
+          fontWeight: FontWeight.w900,
+          letterSpacing: 3.2,
         ),
       ),
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: pageSize.width * .5);
+    )..layout(maxWidth: pageSize.width * .82);
     brand.paint(
       canvas,
       Offset(
