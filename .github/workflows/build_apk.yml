@@ -238,7 +238,10 @@ jobs:
           set -o pipefail
           printf '\n# Requested test build: release mode with the runner debug key.\nallowTestSigning=true\n' >> android/gradle.properties
           dart run flutter_launcher_icons
-          flutter build apk --release --split-per-abi --dart-define=BUILD_NUMBER=${{ github.run_number }} 2>&1 | tee flutter-build.log
+          flutter build apk --release --split-per-abi \
+            --dart-define=BUILD_NUMBER=${{ github.run_number }} \
+            --dart-define=ENABLE_PLAN_DIAGNOSTICS=true \
+            2>&1 | tee flutter-build.log
 
       - name: Assert the test APK is debug-signed and list it
         if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}

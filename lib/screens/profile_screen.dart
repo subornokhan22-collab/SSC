@@ -8,6 +8,7 @@ import '../services/auth_service.dart';
 import '../services/subscription_state.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
+import '../view_models/subscription_view_model.dart';
 import '../widgets/animations.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
@@ -282,6 +283,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refreshSubscription() async {
+    final subscription = SubscriptionState.instance;
+    if (subscription.cycleDiagnosticPlan(accountEmail: AuthService.email)) {
+      if (!mounted) return;
+      setState(() {
+        _hasPaidSubscription = subscription.entitlement.isPaid;
+        _msg = 'Diagnostic plan: '
+            '${subscription.entitlement.plan.displayName}. '
+            'Tap refresh again for the next plan.';
+        _err = null;
+      });
+      return;
+    }
     setState(() {
       _busy = true;
       _err = null;
@@ -303,6 +316,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _refreshByUser() async {
+    final subscription = SubscriptionState.instance;
+    if (subscription.cycleDiagnosticPlan(accountEmail: AuthService.email)) {
+      if (!mounted) return;
+      setState(() {
+        _hasPaidSubscription = subscription.entitlement.isPaid;
+        _msg = 'Diagnostic plan: '
+            '${subscription.entitlement.plan.displayName}.';
+        _err = null;
+      });
+      return;
+    }
+    await _refresh();
+  }
+
   // ── UI ───────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -310,7 +338,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(title: const Text('Profile & Settings')),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _refresh,
+          onRefresh: _refreshByUser,
           color: AppTheme.primary,
           backgroundColor: AppTheme.card,
           child: ListView(
@@ -419,6 +447,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
     final hasPaidSubscription = _hasPaidSubscription;
+    final diagnosticAccount = SubscriptionViewModel.planDiagnosticsEnabled &&
+        AuthService.email?.trim().toLowerCase() ==
+            SubscriptionViewModel.diagnosticAccount;
     final currentPlan = SubscriptionState.instance.entitlement.plan.displayName;
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
     final initial =
@@ -546,7 +577,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          if (!hasPaidSubscription)
+          if (!hasPaidSubscription || diagnosticAccount)
             Center(
               child: TextButton.icon(
                 onPressed: _busy ? null : _refreshSubscription,
@@ -557,7 +588,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(PhosphorIcons.arrowsClockwise, size: 17),
-                label: const Text('Already paid? Refresh subscription'),
+                label: Text(
+                  diagnosticAccount
+                      ? 'Diagnostic: switch to next plan'
+                      : 'Already paid? Refresh subscription',
+                ),
               ),
             ),
           const SizedBox(height: 4),

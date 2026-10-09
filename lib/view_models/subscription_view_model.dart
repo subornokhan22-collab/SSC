@@ -12,13 +12,19 @@ class SubscriptionViewModel extends ChangeNotifier {
 
   final SubscriptionRepository repository;
   SubscriptionEntitlement _entitlement = SubscriptionEntitlement.free();
+  SubscriptionEntitlement? _diagnosticEntitlement;
   bool loading = false;
   Object? error;
   DateTime? expiresAt;
   int aiUsedToday = 0;
   bool initialized = false;
 
-  SubscriptionEntitlement get entitlement => _entitlement.effective;
+  static const bool planDiagnosticsEnabled =
+      bool.fromEnvironment('ENABLE_PLAN_DIAGNOSTICS', defaultValue: false);
+  static const String diagnosticAccount = 'subornokhan22@gmail.com';
+
+  SubscriptionEntitlement get entitlement =>
+      (_diagnosticEntitlement ?? _entitlement).effective;
   SubscriptionPlan get plan => entitlement.plan;
   bool get isExpired => _entitlement.isExpired;
   int get aiRemainingToday =>
@@ -73,9 +79,36 @@ class SubscriptionViewModel extends ChangeNotifier {
             aiRemainingToday <= 0,
       );
 
+  /// Cycles the designated diagnostic account through every plan. This code
+  /// is inert unless the APK was compiled with ENABLE_PLAN_DIAGNOSTICS=true;
+  /// production builds therefore remain entirely server-authoritative.
+  bool cycleDiagnosticPlan({required String? accountEmail}) {
+    if (!planDiagnosticsEnabled ||
+        accountEmail?.trim().toLowerCase() != diagnosticAccount) {
+      return false;
+    }
+    final plans = SubscriptionPlan.values;
+    final current = (_diagnosticEntitlement ?? _entitlement).effective.plan;
+    final next = plans[(plans.indexOf(current) + 1) % plans.length];
+    _diagnosticEntitlement = SubscriptionEntitlement.defaults(
+      next,
+      expiresAt: next == SubscriptionPlan.free
+          ? null
+          : DateTime.now().toUtc().add(const Duration(days: 30)),
+      provider: 'test-build-diagnostics',
+      transactionId: 'local-diagnostic',
+      lastVerifiedAt: DateTime.now().toUtc(),
+    );
+    expiresAt = _diagnosticEntitlement!.expiresAt;
+    aiUsedToday = 0;
+    notifyListeners();
+    return true;
+  }
+
   void clear({String? accountId}) {
     unawaited(repository.clear(accountId: accountId));
     _entitlement = SubscriptionEntitlement.free();
+    _diagnosticEntitlement = null;
     expiresAt = null;
     aiUsedToday = 0;
     error = null;

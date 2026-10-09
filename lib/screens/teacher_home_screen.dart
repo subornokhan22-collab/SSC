@@ -66,6 +66,13 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     if (state == AppLifecycleState.resumed) load();
   }
 
+  Future<void> _refreshByUser() async {
+    SubscriptionState.instance.cycleDiagnosticPlan(
+      accountEmail: AuthService.email,
+    );
+    await load();
+  }
+
   Future<void> load() async {
     final generation = ++loadGeneration;
     final subscription = SubscriptionState.instance;
@@ -377,7 +384,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             child: RefreshIndicator(
               color: ReferencePalette.ink,
               backgroundColor: ReferencePalette.surface,
-              onRefresh: load,
+              onRefresh: _refreshByUser,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
