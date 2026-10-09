@@ -179,7 +179,8 @@ class PaperExport {
       text: TextSpan(
         text: "TUTOR'S DESK",
         style: TextStyle(
-          color: Colors.black.withAlpha(132),
+          // Large but deliberately pale so questions remain easy to read.
+          color: Colors.black.withAlpha(72),
           fontFamily: AppTypography.uiFont,
           fontSize: (pageSize.width * .034).clamp(38.0, 68.0),
           fontWeight: FontWeight.w900,
