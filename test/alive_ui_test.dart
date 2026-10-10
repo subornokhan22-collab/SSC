@@ -13,6 +13,7 @@ import 'package:tutors_desk/theme/app_theme.dart';
 import 'package:tutors_desk/widgets/alive_background.dart';
 import 'package:tutors_desk/widgets/alive_tab_stack.dart';
 import 'package:tutors_desk/widgets/animations.dart';
+import 'package:tutors_desk/widgets/app_icon.dart';
 import 'package:tutors_desk/widgets/boot_sequence.dart';
 import 'package:tutors_desk/widgets/motion_policy.dart';
 import 'package:tutors_desk/widgets/reference_ui.dart';
@@ -52,7 +53,13 @@ void main() {
     expect(find.text('42'), findsOneWidget);
     expect(find.byType(TweenAnimationBuilder<double>), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.byIcon(PhosphorIcons.hourglass), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppIcon && widget.icon == PhosphorIcons.hourglass,
+      ),
+      findsOneWidget,
+    );
     await tester.pumpAndSettle();
     AppSettings.reduceMotion.value = true;
     await tester.pumpWidget(host(const ActivityIndicator()));
@@ -230,7 +237,13 @@ void main() {
     bank.complete();
     await tester.pump();
     expect(calls, ['bank', 'cache']);
-    expect(find.byIcon(PhosphorIcons.checkCircle), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppIcon && widget.icon == PhosphorIcons.checkCircle,
+      ),
+      findsOneWidget,
+    );
     cache.complete();
     await tester.pumpAndSettle();
     expect(find.text('Workspace ready'), findsOneWidget);
