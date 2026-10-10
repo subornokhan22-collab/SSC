@@ -537,7 +537,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _buying ? null : _openPlanPicker,
-                    icon: const AppIcon(PhosphorIcons.arrowsLeftRight, size: 18),
+                    icon:
+                        const AppIcon(PhosphorIcons.arrowsLeftRight, size: 18),
                     label: const Text('Change plan'),
                   ),
                 ),

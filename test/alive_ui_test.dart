@@ -55,8 +55,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(
       find.byWidgetPredicate(
-        (widget) =>
-            widget is AppIcon && widget.icon == PhosphorIcons.hourglass,
+        (widget) => widget is AppIcon && widget.icon == PhosphorIcons.hourglass,
       ),
       findsOneWidget,
     );

@@ -29,29 +29,35 @@ class AppIcon extends StatelessWidget {
     String asset(String name) => _asset(name);
     final path = switch (value) {
       PhosphorIcons.filePlus => '$_root/document-new-svgrepo-com.svg',
-      PhosphorIcons.filePdf || PhosphorIcons.filePdfDuotone =>
+      PhosphorIcons.filePdf ||
+      PhosphorIcons.filePdfDuotone =>
         '$_root/pdf-svgrepo-com.svg',
       PhosphorIcons.arrowLeftDuotone => asset('Next'),
       PhosphorIcons.arrowRight || PhosphorIcons.caretRight => asset('Next'),
       PhosphorIcons.arrowClockwise ||
-      PhosphorIcons.arrowsClockwise => asset('Cloud-Refresh'),
+      PhosphorIcons.arrowsClockwise =>
+        asset('Cloud-Refresh'),
       PhosphorIcons.arrowCounterClockwise => asset('Undo'),
       PhosphorIcons.arrowsLeftRight => asset('One-Finger-Drag-Horizontal'),
       PhosphorIcons.article ||
       PhosphorIcons.fileText ||
-      PhosphorIcons.fileTextDuotone => asset('App Manual-Book'),
+      PhosphorIcons.fileTextDuotone =>
+        asset('App Manual-Book'),
       PhosphorIcons.at => asset('User-Identifier-Card'),
       PhosphorIcons.bellRinging => asset('Ringing-Bell-Notification'),
       PhosphorIcons.bookOpen => asset('Open-Book'),
       PhosphorIcons.bookmarkSimple ||
       PhosphorIcons.bookmarkSimpleDuotone ||
-      PhosphorIcons.bookmarksSimpleDuotone => asset('Bookmark'),
+      PhosphorIcons.bookmarksSimpleDuotone =>
+        asset('Bookmark'),
       PhosphorIcons.camera || PhosphorIcons.cameraDuotone => asset('Camera-1'),
       PhosphorIcons.cameraSlash => asset('Camera-1'),
-      PhosphorIcons.chartBar || PhosphorIcons.chartBarDuotone =>
+      PhosphorIcons.chartBar ||
+      PhosphorIcons.chartBarDuotone =>
         asset('Graph-Bar-Increase'),
       PhosphorIcons.checkCircle || PhosphorIcons.circle => asset('Check'),
-      PhosphorIcons.clock || PhosphorIcons.clockCounterClockwiseDuotone =>
+      PhosphorIcons.clock ||
+      PhosphorIcons.clockCounterClockwiseDuotone =>
         asset('Circle-Clock'),
       PhosphorIcons.cloudSlash => asset('Wifi-Disabled'),
       PhosphorIcons.copy => asset('Copy-'),
@@ -68,29 +74,39 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.headset => asset('Customer-Support-1'),
       PhosphorIcons.hourglass => asset('Circle-Clock'),
       PhosphorIcons.house => asset('Home-3'),
-      PhosphorIcons.identificationBadge || PhosphorIcons.personSimple =>
+      PhosphorIcons.identificationBadge ||
+      PhosphorIcons.personSimple =>
         asset('User-Identifier-Card'),
-      PhosphorIcons.imageBroken || PhosphorIcons.imagesDuotone =>
+      PhosphorIcons.imageBroken ||
+      PhosphorIcons.imagesDuotone =>
         asset('Multiple-image-2'),
-      PhosphorIcons.info || PhosphorIcons.question =>
+      PhosphorIcons.info ||
+      PhosphorIcons.question =>
         asset('Chat-Bubble-Square-Question'),
       PhosphorIcons.keyDuotone || PhosphorIcons.password => asset('Key'),
-      PhosphorIcons.lock || PhosphorIcons.lockKeyOpen =>
+      PhosphorIcons.lock ||
+      PhosphorIcons.lockKeyOpen =>
         asset('Padlock-Square-1'),
       PhosphorIcons.magicWand ||
       PhosphorIcons.magicWandDuotone ||
       PhosphorIcons.rocketLaunch ||
-      PhosphorIcons.sparkle => asset('Artificial-Intelligence-Spark'),
-      PhosphorIcons.minusCircle || PhosphorIcons.minusCircleDuotone =>
+      PhosphorIcons.sparkle =>
+        asset('Artificial-Intelligence-Spark'),
+      PhosphorIcons.minusCircle ||
+      PhosphorIcons.minusCircleDuotone =>
         asset('Minus-Circle'),
       PhosphorIcons.notePencil ||
       PhosphorIcons.pencilSimple ||
-      PhosphorIcons.pencilSimpleDuotone => asset('Edit-Image-Photo'),
-      PhosphorIcons.plusCircle || PhosphorIcons.plusCircleDuotone =>
+      PhosphorIcons.pencilSimpleDuotone =>
+        asset('Edit-Image-Photo'),
+      PhosphorIcons.plusCircle ||
+      PhosphorIcons.plusCircleDuotone =>
         asset('Plus-Circle'),
       PhosphorIcons.printerDuotone => asset('Printer'),
       PhosphorIcons.qrCode || PhosphorIcons.qrCodeDuotone => asset('Qr-Code'),
-      PhosphorIcons.receipt || PhosphorIcons.sealCheck => asset('Receipt-Check'),
+      PhosphorIcons.receipt ||
+      PhosphorIcons.sealCheck =>
+        asset('Receipt-Check'),
       PhosphorIcons.scan || PhosphorIcons.scanDuotone => asset('OMR'),
       PhosphorIcons.shareDuotone => asset('Share-Link'),
       PhosphorIcons.shield || PhosphorIcons.shieldCheck => asset('Shield-2'),
@@ -98,12 +114,14 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.signOut => asset('Logout-1'),
       PhosphorIcons.table || PhosphorIcons.textT => asset('App Manual-Book'),
       PhosphorIcons.trash || PhosphorIcons.trashDuotone => asset('Delete-2'),
-      PhosphorIcons.user || PhosphorIcons.userDuotone =>
+      PhosphorIcons.user ||
+      PhosphorIcons.userDuotone =>
         asset('User-Circle-Single'),
       PhosphorIcons.userPlus => asset('Add-Square'),
       PhosphorIcons.usersThreeDuotone => asset('User-Multiple-Group'),
       PhosphorIcons.wallet => asset('Shopping-Cart-1'),
-      PhosphorIcons.warning || PhosphorIcons.warningCircle =>
+      PhosphorIcons.warning ||
+      PhosphorIcons.warningCircle =>
         asset('Warning-Triangle'),
       PhosphorIcons.wifiHigh => asset('Wifi'),
       PhosphorIcons.wrench => asset('Wrench'),
@@ -111,7 +129,10 @@ class AppIcon extends StatelessWidget {
       _ => null,
     };
     if (path == null) return null;
-    return (path: path, quarterTurns: value == PhosphorIcons.arrowLeftDuotone ? 2 : 0);
+    return (
+      path: path,
+      quarterTurns: value == PhosphorIcons.arrowLeftDuotone ? 2 : 0
+    );
   }
 
   @override

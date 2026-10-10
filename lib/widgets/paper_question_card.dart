@@ -116,7 +116,8 @@ class PaperQuestionCard extends StatelessWidget {
                   if (onReplace != null)
                     TextButton.icon(
                       onPressed: onReplace,
-                      icon: const AppIcon(PhosphorIcons.arrowsLeftRight, size: 17),
+                      icon: const AppIcon(PhosphorIcons.arrowsLeftRight,
+                          size: 17),
                       label: const Text('Replace'),
                     ),
                   if (onImprove != null)
