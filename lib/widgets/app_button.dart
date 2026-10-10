@@ -49,9 +49,6 @@ class _AppButtonState extends State<AppButton> {
             widget.icon!,
             size: 20,
             color: foreground,
-            duotoneSecondaryColor:
-                widget.outlined ? AppColors.secondary : AppColors.light,
-            duotoneSecondaryOpacity: .9,
           ),
         if (widget.loading || widget.icon != null)
           const SizedBox(width: AppSpacing.sm),

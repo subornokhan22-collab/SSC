@@ -108,7 +108,7 @@ class SectionTitle extends StatelessWidget {
                 Row(
                   children: [
                     if (icon != null) ...[
-                      AppIcon(icon, size: 17, color: AppTheme.primary),
+                      AppIcon(icon!, size: 17, color: AppTheme.primary),
                       const SizedBox(width: 7),
                     ],
                     Flexible(
@@ -171,7 +171,7 @@ class StatusPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            AppIcon(icon, size: 13, color: color),
+            AppIcon(icon!, size: 13, color: color),
             const SizedBox(width: 5),
           ],
           Text(
