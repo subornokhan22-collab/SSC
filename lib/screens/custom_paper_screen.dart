@@ -9,6 +9,6 @@ class CustomPaperScreen extends StatelessWidget {
   const CustomPaperScreen({super.key, this.mcqOnly = false});
   @override
   Widget build(BuildContext context) => CreatePaperScreen(
-    initialFormat: mcqOnly ? PaperFormat.mcq : PaperFormat.custom,
-  );
+        initialFormat: mcqOnly ? PaperFormat.mcq : PaperFormat.custom,
+      );
 }

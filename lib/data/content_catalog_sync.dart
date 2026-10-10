@@ -50,7 +50,7 @@ class ContentCatalogSync {
     if (!SupabaseConfig.isConfigured) return;
     try {
       final rows = <dynamic>[];
-      for (var offset = 0; ; offset += 500) {
+      for (var offset = 0;; offset += 500) {
         final page = await Supabase.instance.client
             .from('content_subjects')
             .select()

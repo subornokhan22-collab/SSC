@@ -31,9 +31,8 @@ class PaperExport {
     // Never let a stale or modified UI request remove the Free watermark.
     final effectiveWatermark =
         watermark || SubscriptionState.instance.shouldShowWatermark;
-    final title = draft.title.trim().isEmpty
-        ? 'মডেল পরীক্ষা — ২০২৭'
-        : draft.title.trim();
+    final title =
+        draft.title.trim().isEmpty ? 'মডেল পরীক্ষা — ২০২৭' : draft.title.trim();
     final pages = paper.english.isNotEmpty
         ? await PaperPdf.renderEnglishPages(
             paperTitle: title,
@@ -80,8 +79,7 @@ class PaperExport {
             mcqTime: '${paper.mcqs.length} মিনিট',
             writtenMarks: '${paper.marks - paper.mcqs.length}',
             writtenTime: '${paper.minutes - paper.mcqs.length} মিনিট',
-            mathCqThreePart:
-                draft.subjectId == 'general_math' ||
+            mathCqThreePart: draft.subjectId == 'general_math' ||
                 draft.subjectId == 'higher_math',
           );
     final images = List<Uint8List>.of(pages);

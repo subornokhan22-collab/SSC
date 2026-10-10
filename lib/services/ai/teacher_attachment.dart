@@ -17,9 +17,9 @@ class TeacherAttachment {
   }) : bytes = Uint8List.fromList(bytes).asUnmodifiableView();
   bool get isPdf => mimeType == 'application/pdf';
   Map<String, String> toJson() => {
-    'mimeType': mimeType,
-    'data': base64Encode(bytes),
-  };
+        'mimeType': mimeType,
+        'data': base64Encode(bytes),
+      };
 
   static void validate(List<TeacherAttachment> files) {
     if (files.length > maxCount)

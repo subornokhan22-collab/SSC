@@ -71,8 +71,8 @@ void main() {
         final expired = SubscriptionEntitlement.defaults(
           SubscriptionPlan.professional,
           expiresAt: DateTime.now().toUtc().subtract(
-            const Duration(minutes: 1),
-          ),
+                const Duration(minutes: 1),
+              ),
         );
         expect(expired.isExpired, isTrue);
         expect(expired.effective.plan, SubscriptionPlan.free);

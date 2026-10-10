@@ -205,8 +205,7 @@ class AuthService {
       await setPassword(password);
     } on AuthException catch (e) {
       final m = e.message.toLowerCase();
-      final alreadySet =
-          m.contains('should be different') ||
+      final alreadySet = m.contains('should be different') ||
           m.contains('different from the old password') ||
           m.contains('same as the old password') ||
           m.contains('same_password');
@@ -263,16 +262,13 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c
-            .from('profiles')
-            .insert({
-              'id': u.id,
-              'email': u.email ?? '',
-              'role': teacherRole,
-              'name': name,
-              'phone': phone,
-            })
-            .timeout(const Duration(seconds: 6));
+        await _c.from('profiles').insert({
+          'id': u.id,
+          'email': u.email ?? '',
+          'role': teacherRole,
+          'name': name,
+          'phone': phone,
+        }).timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -295,8 +291,7 @@ class AuthService {
     } catch (_) {
       // Offline / RLS issue — fall through to whatever we can read back.
     }
-    final p =
-        await fetchProfile() ??
+    final p = await fetchProfile() ??
         <String, dynamic>{
           'email': u.email ?? '',
           'role': teacherRole,
@@ -342,8 +337,8 @@ class AuthService {
     if (!ready || !isLoggedIn) return false;
     try {
       final result = await _c.auth.getUser().timeout(
-        const Duration(seconds: 8),
-      );
+            const Duration(seconds: 8),
+          );
       // A successful request with no user is an invalid local session. Unlike
       // a transport failure, it is safe to clear the session here.
       if (result.user != null) return true;
@@ -383,8 +378,8 @@ class AuthService {
   static Future<bool> _refreshExpiredSession() async {
     try {
       final response = await _c.auth.refreshSession().timeout(
-        const Duration(seconds: 8),
-      );
+            const Duration(seconds: 8),
+          );
       return response.session != null;
     } on AuthException catch (error) {
       if (_isInvalidRefreshToken(error)) {

@@ -27,10 +27,8 @@ void main() {
   test('every Phosphor icon used by the app has an SVG mapping', () {
     final adapter = File('lib/widgets/app_icon.dart').readAsStringSync();
     final usePattern = RegExp(r'PhosphorIcons\.([A-Za-z0-9_]+)');
-    final mapped = usePattern
-        .allMatches(adapter)
-        .map((match) => match.group(1))
-        .toSet();
+    final mapped =
+        usePattern.allMatches(adapter).map((match) => match.group(1)).toSet();
     final used = <String>{};
 
     for (final entity in Directory('lib').listSync(recursive: true)) {

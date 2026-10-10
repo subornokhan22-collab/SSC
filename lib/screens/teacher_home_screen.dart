@@ -245,86 +245,86 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   Widget _notificationCard(AppNotificationItem item) => ReferenceCard(
-    onTap: item.actionUrl == '/plans'
-        ? () => Navigator.pushNamed(context, AppRoutes.plans)
-        : null,
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    child: Row(
-      children: [
-        const ReferenceIcon(PhosphorIcons.bellRinging, size: 28),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.title,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+        onTap: item.actionUrl == '/plans'
+            ? () => Navigator.pushNamed(context, AppRoutes.plans)
+            : null,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const ReferenceIcon(PhosphorIcons.bellRinging, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    item.message,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: ReferencePalette.mutedInk),
+                  ),
+                ],
               ),
-              const SizedBox(height: 3),
-              Text(
-                item.message,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: ReferencePalette.mutedInk),
-              ),
-            ],
-          ),
+            ),
+            if (item.actionUrl == '/plans')
+              const ReferenceIcon(PhosphorIcons.caretRight, size: 22),
+          ],
         ),
-        if (item.actionUrl == '/plans')
-          const ReferenceIcon(PhosphorIcons.caretRight, size: 22),
-      ],
-    ),
-  );
+      );
 
   Widget _prizeCard(PromotionPrize prize) => ReferenceCard(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    child: Row(
-      children: [
-        if (prize.imageUrl.startsWith('https://'))
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              prize.imageUrl,
-              width: 44,
-              height: 44,
-              fit: BoxFit.cover,
-              cacheWidth: 132,
-              cacheHeight: 132,
-              errorBuilder: (_, __, ___) =>
-                  const ReferenceIcon(PhosphorIcons.trophy, size: 32),
-            ),
-          )
-        else
-          const ReferenceIcon(PhosphorIcons.trophy, size: 32),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                prize.title,
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-              if ([
-                prize.valueText,
-                prize.description,
-              ].any((text) => text.trim().isNotEmpty))
-                Text(
-                  [
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            if (prize.imageUrl.startsWith('https://'))
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  prize.imageUrl,
+                  width: 44,
+                  height: 44,
+                  fit: BoxFit.cover,
+                  cacheWidth: 132,
+                  cacheHeight: 132,
+                  errorBuilder: (_, __, ___) =>
+                      const ReferenceIcon(PhosphorIcons.trophy, size: 32),
+                ),
+              )
+            else
+              const ReferenceIcon(PhosphorIcons.trophy, size: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    prize.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  if ([
                     prize.valueText,
                     prize.description,
-                  ].where((text) => text.trim().isNotEmpty).join(' · '),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: ReferencePalette.mutedInk),
-                ),
-            ],
-          ),
+                  ].any((text) => text.trim().isNotEmpty))
+                    Text(
+                      [
+                        prize.valueText,
+                        prize.description,
+                      ].where((text) => text.trim().isNotEmpty).join(' · '),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: ReferencePalette.mutedInk),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 
   Future<void> _openScreen(Widget screen) async {
     await Navigator.push<void>(
@@ -348,101 +348,103 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: ReferencePalette.background,
-    body: SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) => SizedBox(
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          child: home(),
-        ),
-      ),
-    ),
-    bottomNavigationBar: ReferenceBottomBar(onSettings: _openSettings),
-  );
-
-  Widget home() => Column(
-    children: [
-      SizedBox(
-        width: double.infinity,
-        child: Container(
-          height: 138,
-          color: ReferencePalette.surface,
-          padding: const EdgeInsets.fromLTRB(18, 18, 20, 22),
-          child: Stack(
-            children: [
-              Align(alignment: Alignment.topLeft, child: _referenceBrand()),
-              Align(alignment: Alignment.topRight, child: _referenceHeader()),
-            ],
+        backgroundColor: ReferencePalette.background,
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SizedBox(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: home(),
+            ),
           ),
         ),
-      ),
-      Expanded(
-        child: RefreshIndicator(
-          color: ReferencePalette.ink,
-          backgroundColor: ReferencePalette.surface,
-          onRefresh: _refreshByUser,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
-            children: [
-              _referenceDashboard(),
-              if (_expiryWarning() case final warning?) ...[
-                const SizedBox(height: 12),
-                warning,
-              ],
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 360),
-                    child: SizedBox(
-                      height: 108,
-                      child: ReferenceActionCard(
-                        icon: PhosphorIcons.wallet,
-                        label: 'BUY PLANS',
-                        onTap: () => _openScreen(const SubscriptionScreen()),
+        bottomNavigationBar: ReferenceBottomBar(onSettings: _openSettings),
+      );
+
+  Widget home() => Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              height: 138,
+              color: ReferencePalette.surface,
+              padding: const EdgeInsets.fromLTRB(18, 18, 20, 22),
+              child: Stack(
+                children: [
+                  Align(alignment: Alignment.topLeft, child: _referenceBrand()),
+                  Align(
+                      alignment: Alignment.topRight, child: _referenceHeader()),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              color: ReferencePalette.ink,
+              backgroundColor: ReferencePalette.surface,
+              onRefresh: _refreshByUser,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+                children: [
+                  _referenceDashboard(),
+                  if (_expiryWarning() case final warning?) ...[
+                    const SizedBox(height: 12),
+                    warning,
+                  ],
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 360),
+                        child: SizedBox(
+                          height: 108,
+                          child: ReferenceActionCard(
+                            icon: PhosphorIcons.wallet,
+                            label: 'BUY PLANS',
+                            onTap: () =>
+                                _openScreen(const SubscriptionScreen()),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  if (promotions.notifications.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    for (final item in promotions.notifications.take(3))
+                      _notificationCard(item),
+                  ],
+                  if (promotions.prizes.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    _prizeCard(promotions.prizes.first),
+                  ],
+                  if (error != null) ...[
+                    const SizedBox(height: 12),
+                    ReferenceCard(
+                      onTap: load,
+                      child: Row(
+                        children: [
+                          const ReferenceIcon(
+                            PhosphorIcons.warningCircle,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(error!)),
+                          const ReferenceIcon(
+                            PhosphorIcons.arrowClockwise,
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              if (promotions.notifications.isNotEmpty) ...[
-                const SizedBox(height: 18),
-                for (final item in promotions.notifications.take(3))
-                  _notificationCard(item),
-              ],
-              if (promotions.prizes.isNotEmpty) ...[
-                const SizedBox(height: 10),
-                _prizeCard(promotions.prizes.first),
-              ],
-              if (error != null) ...[
-                const SizedBox(height: 12),
-                ReferenceCard(
-                  onTap: load,
-                  child: Row(
-                    children: [
-                      const ReferenceIcon(
-                        PhosphorIcons.warningCircle,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(error!)),
-                      const ReferenceIcon(
-                        PhosphorIcons.arrowClockwise,
-                        size: 22,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
+            ),
           ),
-        ),
-      ),
-    ],
-  );
+        ],
+      );
 
   Future<void> _showRecents() async {
     final saved = recent.take(8).toList(growable: false);
@@ -623,153 +625,153 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   Widget _referenceBrand() => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const AppLogo(size: 42),
-      const SizedBox(width: 10),
-      const Text(
-        "Tutor's Desk",
-        style: TextStyle(
-          color: ReferencePalette.ink,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          letterSpacing: .1,
-        ),
-      ),
-    ],
-  );
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AppLogo(size: 42),
+          const SizedBox(width: 10),
+          const Text(
+            "Tutor's Desk",
+            style: TextStyle(
+              color: ReferencePalette.ink,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: .1,
+            ),
+          ),
+        ],
+      );
 
   Widget _referenceHeader() => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      IconButton(
-        tooltip: 'Notifications',
-        onPressed: _showNotifications,
-        icon: const ReferenceIcon(PhosphorIcons.bellRinging, size: 27),
-      ),
-      const SizedBox(width: 4),
-      InkWell(
-        onTap: () => _openScreen(const ProfileScreen()),
-        borderRadius: BorderRadius.circular(32),
-        child: const CircleAvatar(
-          radius: 23,
-          backgroundColor: Color(0xFFD7D6DB),
-          child: ClipOval(
-            child: SizedBox(
-              width: 42,
-              height: 42,
-              child: AppIcon(
-                PhosphorIcons.user,
-                size: 34,
-                color: ReferencePalette.ink,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: _showNotifications,
+            icon: const ReferenceIcon(PhosphorIcons.bellRinging, size: 27),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => _openScreen(const ProfileScreen()),
+            borderRadius: BorderRadius.circular(32),
+            child: const CircleAvatar(
+              radius: 23,
+              backgroundColor: Color(0xFFD7D6DB),
+              child: ClipOval(
+                child: SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: AppIcon(
+                    PhosphorIcons.user,
+                    size: 34,
+                    color: ReferencePalette.ink,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
-    ],
-  );
+        ],
+      );
 
   Widget _referenceDashboard() => SizedBox(
-    width: double.infinity,
-    child: Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 360),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 180,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: ReferenceActionCard(
-                      large: true,
-                      icon: PhosphorIcons.filePlus,
-                      label: 'CREATE PAPER',
-                      onTap: () => create(),
-                    ),
+        width: double.infinity,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 180,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          large: true,
+                          icon: PhosphorIcons.filePlus,
+                          label: 'CREATE PAPER',
+                          onTap: () => create(),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ReferenceActionCard(
+                                icon: PhosphorIcons.magicWand,
+                                label: 'Assistant',
+                                locked: !SubscriptionState.instance.canUse(
+                                  PremiumFeature.aiAssistant,
+                                ),
+                                onTap: () => _openPremium(
+                                  const AiToolsScreen(),
+                                  PremiumFeature.aiAssistant,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: ReferenceActionCard(
+                                icon: PhosphorIcons.bookmarkSimple,
+                                label: 'My Papers',
+                                onTap: () =>
+                                    _openScreen(const PapersLibraryScreen()),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ReferenceActionCard(
-                            icon: PhosphorIcons.magicWand,
-                            label: 'Assistant',
-                            locked: !SubscriptionState.instance.canUse(
-                              PremiumFeature.aiAssistant,
-                            ),
-                            onTap: () => _openPremium(
-                              const AiToolsScreen(),
-                              PremiumFeature.aiAssistant,
-                            ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 108,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.clock,
+                          label: 'Recents',
+                          onTap: _showRecents,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ReferenceActionCard(
+                          icon: PhosphorIcons.chartBar,
+                          label: 'Statistics',
+                          locked: !SubscriptionState.instance.canUse(
+                            PremiumFeature.omrScanner,
+                          ),
+                          onTap: () => _openPremium(
+                            const OMrAnalyticsScreen(),
+                            PremiumFeature.omrScanner,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Expanded(
-                          child: ReferenceActionCard(
-                            icon: PhosphorIcons.bookmarkSimple,
-                            label: 'My Papers',
-                            onTap: () =>
-                                _openScreen(const PapersLibraryScreen()),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 108,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ReferenceActionCard(
-                      icon: PhosphorIcons.clock,
-                      label: 'Recents',
-                      onTap: _showRecents,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ReferenceActionCard(
-                      icon: PhosphorIcons.chartBar,
-                      label: 'Statistics',
-                      locked: !SubscriptionState.instance.canUse(
-                        PremiumFeature.omrScanner,
                       ),
-                      onTap: () => _openPremium(
-                        const OMrAnalyticsScreen(),
-                        PremiumFeature.omrScanner,
-                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 108,
+                  child: ReferenceActionCard(
+                    icon: PhosphorIcons.scan,
+                    label: 'OMR Scanner',
+                    multiline: true,
+                    locked: !SubscriptionState.instance.canUse(
+                      PremiumFeature.omrScanner,
+                    ),
+                    onTap: () => _openPremium(
+                      const OMrScannerScreen(),
+                      PremiumFeature.omrScanner,
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 108,
-              child: ReferenceActionCard(
-                icon: PhosphorIcons.scan,
-                label: 'OMR Scanner',
-                multiline: true,
-                locked: !SubscriptionState.instance.canUse(
-                  PremiumFeature.omrScanner,
                 ),
-                onTap: () => _openPremium(
-                  const OMrScannerScreen(),
-                  PremiumFeature.omrScanner,
-                ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

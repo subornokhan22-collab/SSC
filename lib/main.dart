@@ -53,32 +53,32 @@ void main() {
 }
 
 List<BootStep> _bootSteps() => [
-  BootStep('Restoring your preferences', () async {
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    await AppStyle.load();
-    await AppSettings.load();
-  }),
-  BootStep('Loading the question bank', QuestionBank.load),
-  BootStep('Restoring saved content', () async {
-    // Cached overlays MUST follow the bundled bank, never race it.
-    await QuestionSync.loadCache();
-    await EnglishPaperSync.loadCache();
-    await ContentCatalogSync.loadCache();
-  }),
-  BootStep('Restoring sign-in', AuthService.init),
-  BootStep('Preparing your paper library', () async {
-    // Wait for restoration before home/library can read the files.
-    await PaperBackup.tryAutoRestore();
-    _pendingCrashReport = await _readCrashLog();
-    // These services handle offline errors; network sync never blocks boot.
-    unawaited(QuestionSync.refresh());
-    unawaited(EnglishPaperSync.refresh());
-    unawaited(ContentCatalogSync.refresh());
-  }),
-];
+      BootStep('Restoring your preferences', () async {
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+        await AppStyle.load();
+        await AppSettings.load();
+      }),
+      BootStep('Loading the question bank', QuestionBank.load),
+      BootStep('Restoring saved content', () async {
+        // Cached overlays MUST follow the bundled bank, never race it.
+        await QuestionSync.loadCache();
+        await EnglishPaperSync.loadCache();
+        await ContentCatalogSync.loadCache();
+      }),
+      BootStep('Restoring sign-in', AuthService.init),
+      BootStep('Preparing your paper library', () async {
+        // Wait for restoration before home/library can read the files.
+        await PaperBackup.tryAutoRestore();
+        _pendingCrashReport = await _readCrashLog();
+        // These services handle offline errors; network sync never blocks boot.
+        unawaited(QuestionSync.refresh());
+        unawaited(EnglishPaperSync.refresh());
+        unawaited(ContentCatalogSync.refresh());
+      }),
+    ];
 
 /// Consume only the presence of a native crash, never its private message.
 /// Clean up both the corrected location and the old misplaced log.

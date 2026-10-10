@@ -34,8 +34,8 @@ class SubjectEntitlementService {
   SubjectEntitlementService({
     SubscriptionRepository? subscriptions,
     SupabaseClient? client,
-  }) : subscriptions = subscriptions ?? SubscriptionState.instance.repository,
-       _client = client;
+  })  : subscriptions = subscriptions ?? SubscriptionState.instance.repository,
+        _client = client;
 
   final SubscriptionRepository subscriptions;
   SupabaseClient? _client;
@@ -90,8 +90,7 @@ class SubjectEntitlementService {
     await load();
     final entitlement = subscriptions.current;
     final already = _selected.contains(subjectId);
-    final allowed =
-        already ||
+    final allowed = already ||
         entitlement.subjectLimit == null ||
         _selected.length < entitlement.subjectLimit!;
     return SubjectLimitResult(

@@ -94,8 +94,7 @@ class EnglishPaperDocument {
                 q.stem.trim().isEmpty ||
                 q.options.length != 4 ||
                 q.options.any((s) => s.trim().isEmpty),
-          ))
-        throw const FormatException('Reading MCQ structure');
+          )) throw const FormatException('Reading MCQ structure');
       final q2 = lines('q2'), q7 = lines('q7');
       if (q2.length != 5 || q7.length != 8)
         throw const FormatException('First paper item counts');
@@ -159,8 +158,7 @@ class EnglishPaperDocument {
         tags.length != 5 ||
         transformations.any(
           (q) => q.sentence.trim().isEmpty || q.direction.trim().isEmpty,
-        ))
-      throw const FormatException('Grammar item counts');
+        )) throw const FormatException('Grammar item counts');
     return EnglishPaperDocument(
       id: id,
       paperType: type,
@@ -226,7 +224,7 @@ class EnglishPaperSync {
     _busy = true;
     try {
       final rows = <dynamic>[];
-      for (var start = 0; ; start += 500) {
+      for (var start = 0;; start += 500) {
         final page = await Supabase.instance.client
             .from('english_papers')
             .select()

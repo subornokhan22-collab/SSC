@@ -23,13 +23,13 @@ class BanglaSecondBoardPatternGenerator {
 
   static const Map<Bangla2WrittenType, int> availability =
       <Bangla2WrittenType, int>{
-        Bangla2WrittenType.paragraph: 2,
-        Bangla2WrittenType.letterOrReport: 2,
-        Bangla2WrittenType.summaryOrGist: 2,
-        Bangla2WrittenType.thoughtExpansion: 2,
-        Bangla2WrittenType.translation: 2,
-        Bangla2WrittenType.composition: 3,
-      };
+    Bangla2WrittenType.paragraph: 2,
+    Bangla2WrittenType.letterOrReport: 2,
+    Bangla2WrittenType.summaryOrGist: 2,
+    Bangla2WrittenType.thoughtExpansion: 2,
+    Bangla2WrittenType.translation: 2,
+    Bangla2WrittenType.composition: 3,
+  };
 
   static List<T> _take<T>(List<T> values, int count, Random random) {
     final pool = List<T>.from(values)..shuffle(random);

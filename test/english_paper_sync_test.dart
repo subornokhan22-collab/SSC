@@ -6,13 +6,11 @@ import 'package:tutors_desk/data/english_paper_sync.dart';
 import 'package:tutors_desk/models/paper_draft.dart';
 import 'package:tutors_desk/services/paper_composer.dart';
 
-Map<String, dynamic> fixture(String type) =>
-    jsonDecode(
-          File(
-            'web-admin/tests/fixtures/english-$type.json',
-          ).readAsStringSync(),
-        )
-        as Map<String, dynamic>;
+Map<String, dynamic> fixture(String type) => jsonDecode(
+      File(
+        'web-admin/tests/fixtures/english-$type.json',
+      ).readAsStringSync(),
+    ) as Map<String, dynamic>;
 void main() {
   tearDown(() => EnglishPaperSync.replaceRows([]));
   test('source first/second paper models feed the actual PDF adapter', () {

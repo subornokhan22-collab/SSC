@@ -19,16 +19,15 @@ class _AliveTabStackState extends State<AliveTabStack>
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 240),
-          value: 1,
-        )..addStatusListener((status) {
-          if (status == AnimationStatus.completed && mounted) {
-            setState(() => previous = null);
-          }
-        });
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 240),
+      value: 1,
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed && mounted) {
+          setState(() => previous = null);
+        }
+      });
   }
 
   @override
@@ -59,41 +58,43 @@ class _AliveTabStackState extends State<AliveTabStack>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: controller,
-    builder: (context, _) {
-      final t = Curves.easeOutCubic.transform(controller.value);
-      final direction = widget.index >= (previous ?? widget.index) ? 1 : -1;
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          for (var i = 0; i < widget.children.length; i++)
-            Offstage(
-              offstage: i != widget.index && i != previous,
-              child: TickerMode(
-                enabled: i == widget.index,
-                child: ExcludeFocus(
-                  excluding: i != widget.index,
-                  child: ExcludeSemantics(
-                    excluding: i != widget.index,
-                    child: IgnorePointer(
-                      ignoring: i != widget.index,
-                      child: Opacity(
-                        opacity: i == widget.index ? t : 1 - t,
-                        child: Transform.translate(
-                          offset: Offset(
-                            (i == widget.index ? 1 - t : -t) * 8 * direction,
-                            0,
+        animation: controller,
+        builder: (context, _) {
+          final t = Curves.easeOutCubic.transform(controller.value);
+          final direction = widget.index >= (previous ?? widget.index) ? 1 : -1;
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              for (var i = 0; i < widget.children.length; i++)
+                Offstage(
+                  offstage: i != widget.index && i != previous,
+                  child: TickerMode(
+                    enabled: i == widget.index,
+                    child: ExcludeFocus(
+                      excluding: i != widget.index,
+                      child: ExcludeSemantics(
+                        excluding: i != widget.index,
+                        child: IgnorePointer(
+                          ignoring: i != widget.index,
+                          child: Opacity(
+                            opacity: i == widget.index ? t : 1 - t,
+                            child: Transform.translate(
+                              offset: Offset(
+                                (i == widget.index ? 1 - t : -t) *
+                                    8 *
+                                    direction,
+                                0,
+                              ),
+                              child: RepaintBoundary(child: widget.children[i]),
+                            ),
                           ),
-                          child: RepaintBoundary(child: widget.children[i]),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          );
+        },
       );
-    },
-  );
 }

@@ -40,18 +40,18 @@ class ComposedPaper {
   });
 
   ComposedPaper withMcqs(List<Question> next) => ComposedPaper(
-    mcqs: List.unmodifiable(next),
-    saqs: saqs,
-    cqs: cqs,
-    literature: literature,
-    written: written,
-    english: english,
-    cqAnswers: cqAnswers,
-    saqAnswers: saqAnswers,
-    marks: marks - mcqs.length + next.length,
-    minutes: minutes,
-    note: note,
-  );
+        mcqs: List.unmodifiable(next),
+        saqs: saqs,
+        cqs: cqs,
+        literature: literature,
+        written: written,
+        english: english,
+        cqAnswers: cqAnswers,
+        saqAnswers: saqAnswers,
+        marks: marks - mcqs.length + next.length,
+        minutes: minutes,
+        note: note,
+      );
   ComposedPaper withWritten({
     List<ShortQuestion>? short,
     List<CreativeQuestion>? creative,
@@ -126,8 +126,8 @@ class PaperComposer {
   static (int, int, int) defaults(String id) => id == 'ict'
       ? (25, 0, 0)
       : science.contains(id)
-      ? (25, 7, 7)
-      : (30, 15, 8);
+          ? (25, 7, 7)
+          : (30, 15, 8);
 
   List<T> _take<T>(Iterable<T> source, int count, String label) {
     final pool = source.toList()..shuffle(random);
@@ -267,12 +267,10 @@ class PaperComposer {
     final selectedMcqs = _take(mcqs, counts.$1, 'MCQ');
     final selectedSaqs = _take(saqs, counts.$2, 'Short answer');
     final selectedCqs = _take(cqs, counts.$3, 'Creative question');
-    final cqAnswers = board
-        ? (science.contains(sid) ? 4 : 5)
-        : selectedCqs.length;
-    final saqAnswers = board
-        ? (science.contains(sid) ? 5 : 10)
-        : selectedSaqs.length;
+    final cqAnswers =
+        board ? (science.contains(sid) ? 4 : 5) : selectedCqs.length;
+    final saqAnswers =
+        board ? (science.contains(sid) ? 5 : 10) : selectedSaqs.length;
     final marks = selectedMcqs.length + cqAnswers * 10 + saqAnswers * 2;
     return ComposedPaper(
       mcqs: selectedMcqs,

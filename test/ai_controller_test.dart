@@ -27,31 +27,31 @@ class FakeTeacherClient extends TeacherAiClient {
 }
 
 Map<String, dynamic> result({bool checked = true}) => {
-  'kind': 'questions',
-  'checked': checked,
-  'questions': [
-    {
-      'chapter': 'Motion',
-      'questionText': 'Which unit measures speed?',
-      'options': ['m/s', 'm', 's', 'kg'],
-      'correctIndex': 0,
-      'explanation': 'Speed is distance per unit time.',
-      'difficulty': 'easy',
-    },
-  ],
-};
+      'kind': 'questions',
+      'checked': checked,
+      'questions': [
+        {
+          'chapter': 'Motion',
+          'questionText': 'Which unit measures speed?',
+          'options': ['m/s', 'm', 's', 'kg'],
+          'correctIndex': 0,
+          'explanation': 'Speed is distance per unit time.',
+          'difficulty': 'easy',
+        },
+      ],
+    };
 SubscriptionEntitlement testEntitlement() =>
     SubscriptionEntitlement.defaults(SubscriptionPlan.pro);
 
 Future<bool> execute(AiController c) => c.execute(
-  command: TeacherCommand.create,
-  subjectId: 'physics',
-  chapters: ['Motion'],
-  count: 1,
-  level: 'mixed',
-  text: '',
-  instruction: '',
-);
+      command: TeacherCommand.create,
+      subjectId: 'physics',
+      chapters: ['Motion'],
+      count: 1,
+      level: 'mixed',
+      text: '',
+      instruction: '',
+    );
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));

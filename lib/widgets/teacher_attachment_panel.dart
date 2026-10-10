@@ -49,8 +49,7 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
         if (file == null) return;
         if (file.size > TeacherAttachment.maxBytes)
           throw const FormatException('Choose a PDF smaller than 3 MB.');
-        final stream =
-            file.readStream ??
+        final stream = file.readStream ??
             (file.path == null ? null : File(file.path!).openRead());
         if (stream == null)
           throw const FormatException(
@@ -98,104 +97,103 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
 
   @override
   Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const Text(
-        'Reference photos / PDFs (optional)',
-        style: TextStyle(fontWeight: FontWeight.w600),
-      ),
-      const Text(
-        'Up to 3 files · 3 MB combined after photo resizing. Files are used only when you run a tool. Use clear, short PDFs without passwords.',
-      ),
-      Wrap(
-        spacing: 8,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final source in ['camera', 'gallery', 'pdf'])
-            OutlinedButton.icon(
-              onPressed:
-                  !widget.enabled ||
-                      picking ||
-                      widget.files.length >= TeacherAttachment.maxCount
-                  ? null
-                  : () => pick(source),
-              icon: AppDuotoneIcon(
-                source == 'camera'
-                    ? PhosphorIcons.cameraDuotone
-                    : source == 'pdf'
-                    ? PhosphorIcons.filePdfDuotone
-                    : PhosphorIcons.imagesDuotone,
-                color: AppTheme.primary,
-                secondaryColor: AppColors.secondary,
+          const Text(
+            'Reference photos / PDFs (optional)',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const Text(
+            'Up to 3 files · 3 MB combined after photo resizing. Files are used only when you run a tool. Use clear, short PDFs without passwords.',
+          ),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final source in ['camera', 'gallery', 'pdf'])
+                OutlinedButton.icon(
+                  onPressed: !widget.enabled ||
+                          picking ||
+                          widget.files.length >= TeacherAttachment.maxCount
+                      ? null
+                      : () => pick(source),
+                  icon: AppDuotoneIcon(
+                    source == 'camera'
+                        ? PhosphorIcons.cameraDuotone
+                        : source == 'pdf'
+                            ? PhosphorIcons.filePdfDuotone
+                            : PhosphorIcons.imagesDuotone,
+                    color: AppTheme.primary,
+                    secondaryColor: AppColors.secondary,
+                  ),
+                  label: Text(
+                    source == 'camera'
+                        ? 'Camera'
+                        : source == 'pdf'
+                            ? 'PDF'
+                            : 'Photos',
+                  ),
+                ),
+            ],
+          ),
+          if (picking) const ActivityBar(label: 'Preparing attachments…'),
+          if (error != null)
+            Text(
+              error!,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          for (var i = 0; i < widget.files.length; i++)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: widget.files[i].isPdf
+                  ? const AppDuotoneIcon(
+                      PhosphorIcons.filePdfDuotone,
+                      color: AppTheme.primary,
+                      secondaryColor: AppColors.secondary,
+                    )
+                  : Image.memory(
+                      widget.files[i].bytes,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      cacheWidth: 160,
+                    ),
+              title: Text(
+                widget.files[i].name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              label: Text(
-                source == 'camera'
-                    ? 'Camera'
-                    : source == 'pdf'
-                    ? 'PDF'
-                    : 'Photos',
+              subtitle: Text(
+                '${(widget.files[i].bytes.length / 1024).ceil()} KB · ${widget.files[i].isPdf ? 'PDF reference (no page preview)' : 'Tap to preview photo'}',
+              ),
+              onTap: widget.files[i].isPdf
+                  ? null
+                  : () => showDialog<void>(
+                        context: context,
+                        builder: (c) => Dialog(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: InteractiveViewer(
+                                  child: Image.memory(widget.files[i].bytes),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(c),
+                                child: const Text('Close preview'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              trailing: IconButton(
+                tooltip: 'Remove attachment ${i + 1}',
+                onPressed: !widget.enabled || picking
+                    ? null
+                    : () => widget.onChanged([...widget.files]..removeAt(i)),
+                icon: const AppIcon(PhosphorIcons.x),
               ),
             ),
         ],
-      ),
-      if (picking) const ActivityBar(label: 'Preparing attachments…'),
-      if (error != null)
-        Text(
-          error!,
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
-        ),
-      for (var i = 0; i < widget.files.length; i++)
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: widget.files[i].isPdf
-              ? const AppDuotoneIcon(
-                  PhosphorIcons.filePdfDuotone,
-                  color: AppTheme.primary,
-                  secondaryColor: AppColors.secondary,
-                )
-              : Image.memory(
-                  widget.files[i].bytes,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                  cacheWidth: 160,
-                ),
-          title: Text(
-            widget.files[i].name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            '${(widget.files[i].bytes.length / 1024).ceil()} KB · ${widget.files[i].isPdf ? 'PDF reference (no page preview)' : 'Tap to preview photo'}',
-          ),
-          onTap: widget.files[i].isPdf
-              ? null
-              : () => showDialog<void>(
-                  context: context,
-                  builder: (c) => Dialog(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: InteractiveViewer(
-                            child: Image.memory(widget.files[i].bytes),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(c),
-                          child: const Text('Close preview'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-          trailing: IconButton(
-            tooltip: 'Remove attachment ${i + 1}',
-            onPressed: !widget.enabled || picking
-                ? null
-                : () => widget.onChanged([...widget.files]..removeAt(i)),
-            icon: const AppIcon(PhosphorIcons.x),
-          ),
-        ),
-    ],
-  );
+      );
 }

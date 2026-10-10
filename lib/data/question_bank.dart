@@ -56,16 +56,14 @@ class QuestionBank {
     // the UI thread below.
     final loaded = await Future.wait<String?>([
       for (final name in files)
-        rootBundle
-            .loadString('assets/questions/$name')
-            .then<String?>(
-              (source) => source,
-              onError: (Object error, StackTrace _) {
-                // One unreadable file must not cost the tutor every other question.
-                debugPrint('QuestionBank: skipped $name ($error)');
-                return null;
-              },
-            ),
+        rootBundle.loadString('assets/questions/$name').then<String?>(
+          (source) => source,
+          onError: (Object error, StackTrace _) {
+            // One unreadable file must not cost the tutor every other question.
+            debugPrint('QuestionBank: skipped $name ($error)');
+            return null;
+          },
+        ),
     ]);
     final sources = loaded.whereType<String>().toList(growable: false);
 
@@ -213,11 +211,11 @@ _Decoded _decodeAll(List<String> sources) {
 }
 
 QuestionSource _sourceFrom(Object? v) => switch (v) {
-  'board' => QuestionSource.board,
-  'original' => QuestionSource.original,
-  'internet' => QuestionSource.internet,
-  _ => QuestionSource.ai,
-};
+      'board' => QuestionSource.board,
+      'original' => QuestionSource.original,
+      'internet' => QuestionSource.internet,
+      _ => QuestionSource.ai,
+    };
 
 QuestionFigure? _figureFrom(Object? v) {
   if (v == null) return null;

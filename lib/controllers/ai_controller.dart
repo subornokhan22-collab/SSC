@@ -52,164 +52,166 @@ class AiController extends OperationController {
     required String text,
     required String instruction,
     List<TeacherAttachment> attachments = const [],
-  }) => run('Reading selected chapter metadata…', () async {
-    final subscription = SubscriptionState.instance;
-    if (entitlementOverride == null && !subscription.initialized) {
-      await subscription.initialize(refresh: false);
-    }
-    final current = entitlementOverride ?? subscription.entitlement;
-    final canUse = entitlementOverride != null
-        ? current.canUse(PremiumFeature.aiAssistant)
-        : subscription.canUse(PremiumFeature.aiAssistant);
-    if (!canUse) {
-      final reason = current.aiAssistant
-          ? 'Daily AI limit reached. Resets at midnight.'
-          : 'AI Assistant requires an active Pro or Professional plan.';
-      throw StateError(reason);
-    }
-    TeacherAttachment.validate(attachments);
-    if (chapters.isEmpty)
-      throw StateError('Choose a chapter from the local question bank.');
-    if (count < 1 || count > 10)
-      throw StateError('Choose between 1 and 10 questions.');
-    final prefs = await SharedPreferences.getInstance();
-    var raw = prefs.getString(_historyKey);
-    if (raw == null) {
-      raw = prefs.getString(_legacyHistoryKey);
-      if (raw != null) {
-        await prefs.setString(_historyKey, raw);
-        await prefs.remove(_legacyHistoryKey);
-      }
-    }
-    try {
-      _previous = raw == null
-          ? []
-          : (jsonDecode(raw) as List)
-                .map(
-                  (q) => questionFromJson(Map<String, dynamic>.from(q as Map)),
-                )
-                .toList();
-    } catch (_) {
-      throw StateError(
-        'AI history could not be read. Restore device storage before generating, so duplicate checking is not bypassed.',
-      );
-    }
-    late final Map<String, dynamic> response;
-    try {
-      try {
-        response = await client.request({
-          'action': command == TeacherCommand.create
-              ? 'generate'
-              : command.name,
-          'subjectId': subjectId,
-          'chapters': chapters,
-          'count': count,
-          'difficulty': level,
-          'text': text,
-          'instruction': instruction,
-          if (attachments.isNotEmpty)
-            'attachments': attachments.map((a) => a.toJson()).toList(),
-          // Running the tool submits the selected files; picking never uploads.
-          // Keep this wire flag for compatibility with the existing gateway.
-          if (attachments.isNotEmpty) 'attachmentConsent': true,
-        }, progress);
-      } on TeacherAiError catch (e) {
-        throw StateError(e.userMessage);
-      }
-      if (disposed) return;
-      if (response['kind'] == 'review') {
-        summary = AiTextFormatter.format(response['summary'] as String);
-        findings = [
-          for (final f in response['findings'] as List)
-            Map<String, String>.from(
-              f as Map,
-            ).map((k, v) => MapEntry(k, AiTextFormatter.format(v))),
-        ];
-        questions = [];
-        checkedIds.clear();
-        duplicates = [];
-        return;
-      }
-      if (response['kind'] != 'questions' || response['checked'] != true)
-        throw StateError(
-          'The independent answer check did not complete. No questions were accepted.',
-        );
-      progress(
-        'Checking schema and duplicates against your bank and AI history…',
-      );
-      final stamp = DateTime.now().microsecondsSinceEpoch;
-      final rows = response['questions'] as List;
-      if (rows.length != count)
-        throw StateError(
-          'The server returned the wrong question count. Try again.',
-        );
-      final next = <Question>[];
-      final levels = <String, String>{};
-      for (var i = 0; i < rows.length; i++) {
-        final r = rows[i] as Map;
-        final id = 'ai_${stamp}_$i';
-        if (!chapters.contains(r['chapter']))
-          throw StateError('A question was outside the selected chapters.');
-        next.add(
-          Question(
-            id: id,
-            subjectId: subjectId,
-            chapter: r['chapter'] as String,
-            questionText: AiTextFormatter.format(r['questionText'] as String),
-            options: List<String>.from(
-              r['options'] as List,
-            ).map(AiTextFormatter.format).toList(),
-            correctIndex: r['correctIndex'] as int,
-            explanation: AiTextFormatter.format(r['explanation'] as String),
-            source: QuestionSource.ai,
-            sourceLabel: 'AI practice • teacher review required',
-          ),
-        );
-        levels[id] = r['difficulty'] as String;
-      }
-      final validations = QuestionSchemaValidator.validateBatch(
-        next,
-        expectedCount: count,
-      );
-      if (validations.any((v) => !v.valid))
-        throw StateError(
-          'Generated questions failed local validation. Try again.',
-        );
-      _comparison = [
-        ...bank.where((q) => q.subjectId == subjectId),
-        ..._previous,
-        ...currentPaper,
-      ];
-      questions = next;
-      summary = null;
-      findings = [];
-      checkedIds
-        ..clear()
-        ..addAll(next.map((q) => q.id));
-      difficulty
-        ..clear()
-        ..addAll(levels);
-      _checkDuplicates();
-      // Persist even a rejected/similar batch, so retries cannot repeat it silently.
-      final history = [..._previous, ...next];
-      if (!await prefs.setString(
-        _historyKey,
-        jsonEncode(
-          history
-              .skip(history.length > 300 ? history.length - 300 : 0)
-              .map(mcqJson)
-              .toList(),
-        ),
-      )) {
-        historyWarning =
-            'AI history could not be saved. Duplicate checks across restarts may be incomplete.';
-      } else {
-        historyWarning = null;
-      }
-    } finally {
-      await SubscriptionState.instance.refreshAiUsage();
-    }
-  });
+  }) =>
+      run('Reading selected chapter metadata…', () async {
+        final subscription = SubscriptionState.instance;
+        if (entitlementOverride == null && !subscription.initialized) {
+          await subscription.initialize(refresh: false);
+        }
+        final current = entitlementOverride ?? subscription.entitlement;
+        final canUse = entitlementOverride != null
+            ? current.canUse(PremiumFeature.aiAssistant)
+            : subscription.canUse(PremiumFeature.aiAssistant);
+        if (!canUse) {
+          final reason = current.aiAssistant
+              ? 'Daily AI limit reached. Resets at midnight.'
+              : 'AI Assistant requires an active Pro or Professional plan.';
+          throw StateError(reason);
+        }
+        TeacherAttachment.validate(attachments);
+        if (chapters.isEmpty)
+          throw StateError('Choose a chapter from the local question bank.');
+        if (count < 1 || count > 10)
+          throw StateError('Choose between 1 and 10 questions.');
+        final prefs = await SharedPreferences.getInstance();
+        var raw = prefs.getString(_historyKey);
+        if (raw == null) {
+          raw = prefs.getString(_legacyHistoryKey);
+          if (raw != null) {
+            await prefs.setString(_historyKey, raw);
+            await prefs.remove(_legacyHistoryKey);
+          }
+        }
+        try {
+          _previous = raw == null
+              ? []
+              : (jsonDecode(raw) as List)
+                  .map(
+                    (q) =>
+                        questionFromJson(Map<String, dynamic>.from(q as Map)),
+                  )
+                  .toList();
+        } catch (_) {
+          throw StateError(
+            'AI history could not be read. Restore device storage before generating, so duplicate checking is not bypassed.',
+          );
+        }
+        late final Map<String, dynamic> response;
+        try {
+          try {
+            response = await client.request({
+              'action':
+                  command == TeacherCommand.create ? 'generate' : command.name,
+              'subjectId': subjectId,
+              'chapters': chapters,
+              'count': count,
+              'difficulty': level,
+              'text': text,
+              'instruction': instruction,
+              if (attachments.isNotEmpty)
+                'attachments': attachments.map((a) => a.toJson()).toList(),
+              // Running the tool submits the selected files; picking never uploads.
+              // Keep this wire flag for compatibility with the existing gateway.
+              if (attachments.isNotEmpty) 'attachmentConsent': true,
+            }, progress);
+          } on TeacherAiError catch (e) {
+            throw StateError(e.userMessage);
+          }
+          if (disposed) return;
+          if (response['kind'] == 'review') {
+            summary = AiTextFormatter.format(response['summary'] as String);
+            findings = [
+              for (final f in response['findings'] as List)
+                Map<String, String>.from(
+                  f as Map,
+                ).map((k, v) => MapEntry(k, AiTextFormatter.format(v))),
+            ];
+            questions = [];
+            checkedIds.clear();
+            duplicates = [];
+            return;
+          }
+          if (response['kind'] != 'questions' || response['checked'] != true)
+            throw StateError(
+              'The independent answer check did not complete. No questions were accepted.',
+            );
+          progress(
+            'Checking schema and duplicates against your bank and AI history…',
+          );
+          final stamp = DateTime.now().microsecondsSinceEpoch;
+          final rows = response['questions'] as List;
+          if (rows.length != count)
+            throw StateError(
+              'The server returned the wrong question count. Try again.',
+            );
+          final next = <Question>[];
+          final levels = <String, String>{};
+          for (var i = 0; i < rows.length; i++) {
+            final r = rows[i] as Map;
+            final id = 'ai_${stamp}_$i';
+            if (!chapters.contains(r['chapter']))
+              throw StateError('A question was outside the selected chapters.');
+            next.add(
+              Question(
+                id: id,
+                subjectId: subjectId,
+                chapter: r['chapter'] as String,
+                questionText:
+                    AiTextFormatter.format(r['questionText'] as String),
+                options: List<String>.from(
+                  r['options'] as List,
+                ).map(AiTextFormatter.format).toList(),
+                correctIndex: r['correctIndex'] as int,
+                explanation: AiTextFormatter.format(r['explanation'] as String),
+                source: QuestionSource.ai,
+                sourceLabel: 'AI practice • teacher review required',
+              ),
+            );
+            levels[id] = r['difficulty'] as String;
+          }
+          final validations = QuestionSchemaValidator.validateBatch(
+            next,
+            expectedCount: count,
+          );
+          if (validations.any((v) => !v.valid))
+            throw StateError(
+              'Generated questions failed local validation. Try again.',
+            );
+          _comparison = [
+            ...bank.where((q) => q.subjectId == subjectId),
+            ..._previous,
+            ...currentPaper,
+          ];
+          questions = next;
+          summary = null;
+          findings = [];
+          checkedIds
+            ..clear()
+            ..addAll(next.map((q) => q.id));
+          difficulty
+            ..clear()
+            ..addAll(levels);
+          _checkDuplicates();
+          // Persist even a rejected/similar batch, so retries cannot repeat it silently.
+          final history = [..._previous, ...next];
+          if (!await prefs.setString(
+            _historyKey,
+            jsonEncode(
+              history
+                  .skip(history.length > 300 ? history.length - 300 : 0)
+                  .map(mcqJson)
+                  .toList(),
+            ),
+          )) {
+            historyWarning =
+                'AI history could not be saved. Duplicate checks across restarts may be incomplete.';
+          } else {
+            historyWarning = null;
+          }
+        } finally {
+          await SubscriptionState.instance.refreshAiUsage();
+        }
+      });
   Future<void> replace(int index) async {
     if (busy) return;
     final originals = List<Question>.of(questions);
@@ -233,9 +235,8 @@ class AiController extends OperationController {
     difficulty.addAll(originalDifficulty);
     // The retained questions must not be compared to themselves in history.
     final retainedIds = questions.map((q) => q.id).toSet();
-    _comparison = _comparison
-        .where((q) => !retainedIds.contains(q.id))
-        .toList();
+    _comparison =
+        _comparison.where((q) => !retainedIds.contains(q.id)).toList();
     _checkDuplicates();
     changed();
   }

@@ -33,8 +33,8 @@ void main() {
     await LocalDiagnostics.clear();
     calls = <Map<String, Object?>>[];
     sharedWritable = true;
-    PaperBackup.debugBaseDir = () async =>
-        Directory('${external.path}/TutorsDesk');
+    PaperBackup.debugBaseDir =
+        () async => Directory('${external.path}/TutorsDesk');
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(paths, (call) async {
@@ -86,31 +86,31 @@ void main() {
   });
 
   SavedPaper paper({String id = 'sp_1'}) => SavedPaper(
-    id: id,
-    title: 'Physics Model Test',
-    subject: 'Physics',
-    subjectId: 'physics',
-    subjectCode: '109',
-    setCode: 'ক',
-    total: 1,
-    key: const [2],
-    questions: const [
-      SavedQuestion(
-        text: 'ত্বরণের একক কী?',
-        options: ['m/s', 'm', 'm/s²', 'kg'],
-        answer: 2,
-      ),
-    ],
-    createdAt: DateTime(2026, 9, 26),
-    pages: 1,
-  );
+        id: id,
+        title: 'Physics Model Test',
+        subject: 'Physics',
+        subjectId: 'physics',
+        subjectCode: '109',
+        setCode: 'ক',
+        total: 1,
+        key: const [2],
+        questions: const [
+          SavedQuestion(
+            text: 'ত্বরণের একক কী?',
+            options: ['m/s', 'm', 'm/s²', 'kg'],
+            answer: 2,
+          ),
+        ],
+        createdAt: DateTime(2026, 9, 26),
+        pages: 1,
+      );
 
   File inAppCopy() =>
       File('${external.path}/TutorsDesk/tutors_desk_backup_signed_out.json');
 
   File sharedCopy() => File(
-    '${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json',
-  );
+        '${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json',
+      );
 
   /// Included in failure messages so a CI failure explains itself instead of
   /// only reporting a bare false.

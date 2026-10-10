@@ -48,24 +48,24 @@ class QuestionFigure {
     String? rightAngleAt,
     String? caption,
   }) : this._(
-         FigureKind.triangle,
-         headers: vertices,
-         sides: sides,
-         angles: angles,
-         rightAngleAt: rightAngleAt,
-         caption: caption,
-       );
+          FigureKind.triangle,
+          headers: vertices,
+          sides: sides,
+          angles: angles,
+          rightAngleAt: rightAngleAt,
+          caption: caption,
+        );
 
   const QuestionFigure.barChart({
     required List<String> labels,
     required List<int> values,
     String? caption,
   }) : this._(
-         FigureKind.barChart,
-         headers: labels,
-         values: values,
-         caption: caption,
-       );
+          FigureKind.barChart,
+          headers: labels,
+          values: values,
+          caption: caption,
+        );
 
   /// A whole question captured as one picture (figure, equations and all).
   const QuestionFigure.image({
@@ -73,9 +73,9 @@ class QuestionFigure {
     double aspect = 1.4,
     String? caption,
   }) : this._(
-         FigureKind.image,
-         imagePath: imagePath,
-         aspect: aspect,
-         caption: caption,
-       );
+          FigureKind.image,
+          imagePath: imagePath,
+          aspect: aspect,
+          caption: caption,
+        );
 }

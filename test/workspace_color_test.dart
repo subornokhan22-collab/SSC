@@ -9,13 +9,14 @@ import 'package:tutors_desk/widgets/aurora_ribbons.dart';
 import 'package:tutors_desk/widgets/motion_policy.dart';
 
 Widget host(Widget child, {bool systemReduce = false}) => MaterialApp(
-  home: Builder(
-    builder: (context) => MediaQuery(
-      data: MediaQuery.of(context).copyWith(disableAnimations: systemReduce),
-      child: MotionPolicy(child: Scaffold(body: child)),
-    ),
-  ),
-);
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data:
+              MediaQuery.of(context).copyWith(disableAnimations: systemReduce),
+          child: MotionPolicy(child: Scaffold(body: child)),
+        ),
+      ),
+    );
 
 void main() {
   setUp(() {

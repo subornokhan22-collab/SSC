@@ -758,8 +758,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   _buying
                       ? 'Starting secure checkout…'
                       : _plan == null
-                      ? 'Plans unavailable'
-                      : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} via secure checkout',
+                          ? 'Plans unavailable'
+                          : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} via secure checkout',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15.5,
@@ -776,7 +776,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             selectedPlan == null
                 ? 'Select a plan before starting payment.'
                 : 'You will be redirected to secure checkout. The app activates '
-                      '${selectedPlan.label} automatically after server verification.',
+                    '${selectedPlan.label} automatically after server verification.',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 11,
