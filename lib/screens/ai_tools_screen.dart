@@ -88,10 +88,10 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
   }
 
   List<String> get chapters => ChapterCatalog.ordered({
-        ...allMCQs.where((q) => q.subjectId == subject).map((q) => q.chapter),
-        ...allCQs.where((q) => q.subjectId == subject).map((q) => q.chapter),
-        ...allSAQs.where((q) => q.subjectId == subject).map((q) => q.chapter),
-      }, subjectId: subject);
+    ...allMCQs.where((q) => q.subjectId == subject).map((q) => q.chapter),
+    ...allCQs.where((q) => q.subjectId == subject).map((q) => q.chapter),
+    ...allSAQs.where((q) => q.subjectId == subject).map((q) => q.chapter),
+  }, subjectId: subject);
   void refresh() {
     if (mounted) setState(() {});
   }
@@ -106,63 +106,57 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
   }
 
   Future<void> run() => c.execute(
-        command: command,
-        subjectId: subject,
-        chapters: chapter == null ? [] : [chapter!],
-        count: count,
-        level: level,
-        text: input.text.trim(),
-        instruction: instruction.text.trim(),
-        attachments: attachments,
-      );
+    command: command,
+    subjectId: subject,
+    chapters: chapter == null ? [] : [chapter!],
+    count: count,
+    level: level,
+    text: input.text.trim(),
+    instruction: instruction.text.trim(),
+    attachments: attachments,
+  );
   String label(TeacherCommand cmd) => switch (cmd) {
-        TeacherCommand.create => 'Create',
-        TeacherCommand.improve => 'Improve',
-        TeacherCommand.check => 'Check',
-        TeacherCommand.explain => 'Explain',
-      };
+    TeacherCommand.create => 'Create',
+    TeacherCommand.improve => 'Improve',
+    TeacherCommand.check => 'Check',
+    TeacherCommand.explain => 'Explain',
+  };
   Widget _lockedBody() => Scaffold(
-        appBar: AppBar(title: const Text('AI Tools')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const AppIcon(PhosphorIcons.lock, size: 42),
-                const SizedBox(height: 14),
-                const Text(
-                  'AI Assistant requires an active Pro or Professional plan.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const SubscriptionScreen(),
-                    ),
-                  ),
-                  child: const Text('View plans'),
-                ),
-              ],
+    appBar: AppBar(title: const Text('AI Tools')),
+    body: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AppIcon(PhosphorIcons.lock, size: 42),
+            const SizedBox(height: 14),
+            const Text(
+              'AI Assistant requires an active Pro or Professional plan.',
+              textAlign: TextAlign.center,
             ),
-          ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+              ),
+              child: const Text('View plans'),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     if (!_accessChecked) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (!_accessAllowed) return _lockedBody();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AI Tools'),
-      ),
+      appBar: AppBar(title: const Text('AI Tools')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -226,8 +220,9 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                         ? AppColors.ai.withOpacity(.45)
                         : AppColors.border,
                   ),
-                  onSelected:
-                      c.busy ? null : (_) => setState(() => command = cmd),
+                  onSelected: c.busy
+                      ? null
+                      : (_) => setState(() => command = cmd),
                 ),
             ],
           ),
@@ -246,9 +241,9 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                   onChanged: widget.forSelection
                       ? null
                       : (s) => setState(() {
-                            subject = s!;
-                            chapter = chapters.isEmpty ? null : chapters.first;
-                          }),
+                          subject = s!;
+                          chapter = chapters.isEmpty ? null : chapters.first;
+                        }),
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
@@ -261,8 +256,10 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
                     for (final ch in chapters)
                       DropdownMenuItem(
                         value: ch,
-                        child: Text(AiTextFormatter.format(ch),
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          AiTextFormatter.format(ch),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                   ],
                   onChanged: widget.replaceSelection
@@ -373,8 +370,9 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
           ),
           const SizedBox(height: 12),
           FilledButton.icon(
-            onPressed:
-                c.busy || pickingAttachment || chapter == null ? null : run,
+            onPressed: c.busy || pickingAttachment || chapter == null
+                ? null
+                : run,
             icon: c.busy
                 ? const SizedBox(
                     width: 16,
@@ -390,7 +388,10 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
             label: Text(c.busy ? 'Working…' : '${label(command)} with AI'),
           ),
           OperationNotice(
-              accent: AppColors.ai, error: c.error, activity: c.activity),
+            accent: AppColors.ai,
+            error: c.error,
+            activity: c.activity,
+          ),
           if (c.historyWarning != null)
             Text(
               c.historyWarning!,
@@ -398,20 +399,23 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
             ),
           if (c.summary != null) ...[
             const Divider(height: 30),
-            Text(c.summary!,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontFamilyFallback: const ['DejaVu Sans'])),
+            Text(
+              c.summary!,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontFamilyFallback: const ['DejaVu Sans'],
+              ),
+            ),
             for (final f in c.findings)
               Card(
                 child: ListTile(
-                  title: Text(f['title']!,
-                      style:
-                          const TextStyle(fontFamilyFallback: ['DejaVu Sans'])),
-                  subtitle: Text(f['detail']!,
-                      style:
-                          const TextStyle(fontFamilyFallback: ['DejaVu Sans'])),
+                  title: Text(
+                    f['title']!,
+                    style: const TextStyle(fontFamilyFallback: ['DejaVu Sans']),
+                  ),
+                  subtitle: Text(
+                    f['detail']!,
+                    style: const TextStyle(fontFamilyFallback: ['DejaVu Sans']),
+                  ),
                 ),
               ),
           ],

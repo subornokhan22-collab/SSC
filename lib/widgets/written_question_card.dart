@@ -11,13 +11,14 @@ class WrittenQuestionCard extends StatelessWidget {
   final VoidCallback onReplace;
   final VoidCallback? onDelete;
   final Future<void> Function()? onDraftAnswerKey;
-  const WrittenQuestionCard(
-      {super.key,
-      required this.question,
-      required this.onEdit,
-      required this.onReplace,
-      this.onDelete,
-      this.onDraftAnswerKey});
+  const WrittenQuestionCard({
+    super.key,
+    required this.question,
+    required this.onEdit,
+    required this.onReplace,
+    this.onDelete,
+    this.onDraftAnswerKey,
+  });
   @override
   Widget build(BuildContext context) {
     final q = question;
@@ -29,82 +30,97 @@ class WrittenQuestionCard extends StatelessWidget {
             'ক. ${q.questionK}',
             'খ. ${q.questionKh}',
             'গ. ${q.questionG}',
-            if (q.questionGh.isNotEmpty) 'ঘ. ${q.questionGh}'
+            if (q.questionGh.isNotEmpty) 'ঘ. ${q.questionGh}',
           ];
     return Card(
-        child: Padding(
-            padding: const EdgeInsets.all(16),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                  short
-                      ? 'Short answer · 2 marks'
-                      : 'সৃজনশীল প্রশ্ন · 10 marks',
-                  style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
-              const SizedBox(height: 8),
-              Text(lines.first,
-                  style: const TextStyle(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              if (short)
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              short ? 'Short answer · 2 marks' : 'সৃজনশীল প্রশ্ন · 10 marks',
+              style: const TextStyle(color: AppTheme.muted, fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              lines.first,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            if (short)
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: const Text('Answer'),
+                children: [
+                  Text(lines.last),
+                  if ((q as ShortQuestion).answerKey.trim().isNotEmpty)
+                    ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: const Text('AI draft answer key'),
+                      children: [Text((q as ShortQuestion).answerKey)],
+                    ),
+                ],
+              )
+            else ...[
+              Text(lines.skip(1).join('\n')),
+              if ((q as CreativeQuestion).answerKey.trim().isNotEmpty)
                 ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    title: const Text('Answer'),
-                    children: [
-                      Text(lines.last),
-                      if ((q as ShortQuestion).answerKey.trim().isNotEmpty)
-                        ExpansionTile(
-                          tilePadding: EdgeInsets.zero,
-                          title: const Text('AI draft answer key'),
-                          children: [Text((q as ShortQuestion).answerKey)],
-                        ),
-                    ])
-              else ...[
-                Text(lines.skip(1).join('\n')),
-                if ((q as CreativeQuestion).answerKey.trim().isNotEmpty)
-                  ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    title: const Text('AI draft answer key'),
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text((q as CreativeQuestion).answerKey),
-                      ),
-                    ],
-                  ),
-              ],
-              Wrap(spacing: 8, children: [
+                  tilePadding: EdgeInsets.zero,
+                  title: const Text('AI draft answer key'),
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text((q as CreativeQuestion).answerKey),
+                    ),
+                  ],
+                ),
+            ],
+            Wrap(
+              spacing: 8,
+              children: [
                 if (onDraftAnswerKey != null)
                   TextButton.icon(
                     onPressed: onDraftAnswerKey,
                     icon: const AppIcon(PhosphorIcons.sparkle, size: 17),
-                    label: Text((q is ShortQuestion
-                                ? q.answerKey
-                                : (q as CreativeQuestion).answerKey)
-                            .trim()
-                            .isEmpty
-                        ? 'Draft AI key'
-                        : 'Redraft AI key'),
+                    label: Text(
+                      (q is ShortQuestion
+                                  ? q.answerKey
+                                  : (q as CreativeQuestion).answerKey)
+                              .trim()
+                              .isEmpty
+                          ? 'Draft AI key'
+                          : 'Redraft AI key',
+                    ),
                   ),
                 TextButton.icon(
-                    onPressed: () async {
-                      final edited = await showDialog<Object>(
-                          context: context, builder: (_) => _Editor(q));
-                      if (edited != null) onEdit(edited);
-                    },
-                    icon: const AppIcon(PhosphorIcons.pencilSimple, size: 17),
-                    label: const Text('Edit')),
+                  onPressed: () async {
+                    final edited = await showDialog<Object>(
+                      context: context,
+                      builder: (_) => _Editor(q),
+                    );
+                    if (edited != null) onEdit(edited);
+                  },
+                  icon: const AppIcon(PhosphorIcons.pencilSimple, size: 17),
+                  label: const Text('Edit'),
+                ),
                 TextButton.icon(
-                    onPressed: onReplace,
-                    icon:
-                        const AppIcon(PhosphorIcons.arrowsLeftRight, size: 17),
-                    label: const Text('Replace')),
+                  onPressed: onReplace,
+                  icon: const AppIcon(PhosphorIcons.arrowsLeftRight, size: 17),
+                  label: const Text('Replace'),
+                ),
                 if (onDelete != null)
                   IconButton(
-                      tooltip: 'Remove question',
-                      onPressed: onDelete,
-                      icon: const AppIcon(PhosphorIcons.trash, size: 18)),
-              ]),
-            ])));
+                    tooltip: 'Remove question',
+                    onPressed: onDelete,
+                    icon: const AppIcon(PhosphorIcons.trash, size: 18),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -155,7 +171,8 @@ class _EditorState extends State<_Editor> {
             explanation: q.explanation,
             source: q.source,
             sourceLabel: q.sourceLabel,
-            figure: q.figure)
+            figure: q.figure,
+          )
         : CreativeQuestion(
             id: (q as CreativeQuestion).id,
             subjectId: q.subjectId,
@@ -164,14 +181,16 @@ class _EditorState extends State<_Editor> {
             questionK: values[1],
             questionKh: values[2],
             questionG: values[3],
-            questionGh:
-                (q as CreativeQuestion).marks.length == 4 ? values[4] : '',
+            questionGh: (q as CreativeQuestion).marks.length == 4
+                ? values[4]
+                : '',
             answerKey:
                 values[(q as CreativeQuestion).marks.length == 4 ? 5 : 4],
             marks: q.marks,
             source: q.source,
             sourceLabel: q.sourceLabel,
-            figure: q.figure);
+            figure: q.figure,
+          );
     final v = QuestionValidationService.validate(next);
     if (!v.valid) {
       setState(() => error = v.errors.join('\n'));
@@ -184,45 +203,54 @@ class _EditorState extends State<_Editor> {
   Widget build(BuildContext context) {
     final short = widget.question is ShortQuestion;
     return AlertDialog(
-        title: Text(short ? 'Edit short answer' : 'Edit creative question'),
-        content: SizedBox(
-            width: 500,
-            child: SingleChildScrollView(
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
+      title: Text(short ? 'Edit short answer' : 'Edit creative question'),
+      content: SizedBox(
+        width: 500,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               for (var i = 0; i < fields.length; i++)
                 Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: TextField(
-                        controller: fields[i],
-                        minLines: 2,
-                        maxLines: 8,
-                        decoration: InputDecoration(
-                            labelText: short
-                                ? (i == 0
-                                    ? 'Question'
-                                    : i == 1
-                                        ? 'Answer'
-                                        : 'AI draft key (review)')
-                                : (i == 0
-                                    ? 'উদ্দীপক'
-                                    : i ==
-                                            ((widget.question
-                                                            as CreativeQuestion)
-                                                        .marks
-                                                        .length ==
-                                                    4
-                                                ? 5
-                                                : 4)
-                                        ? 'AI draft key (review)'
-                                        : ['ক', 'খ', 'গ', 'ঘ'][i - 1])))),
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: TextField(
+                    controller: fields[i],
+                    minLines: 2,
+                    maxLines: 8,
+                    decoration: InputDecoration(
+                      labelText: short
+                          ? (i == 0
+                                ? 'Question'
+                                : i == 1
+                                ? 'Answer'
+                                : 'AI draft key (review)')
+                          : (i == 0
+                                ? 'উদ্দীপক'
+                                : i ==
+                                      ((widget.question as CreativeQuestion)
+                                                  .marks
+                                                  .length ==
+                                              4
+                                          ? 5
+                                          : 4)
+                                ? 'AI draft key (review)'
+                                : ['ক', 'খ', 'গ', 'ঘ'][i - 1]),
+                    ),
+                  ),
+                ),
               if (error != null)
                 Text(error!, style: const TextStyle(color: AppTheme.danger)),
-            ]))),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
-          FilledButton(onPressed: save, child: const Text('Save changes'))
-        ]);
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(onPressed: save, child: const Text('Save changes')),
+      ],
+    );
   }
 }

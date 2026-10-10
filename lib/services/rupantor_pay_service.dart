@@ -121,7 +121,7 @@ class RupantorPayService {
           .order('sort_order');
       final plans = [
         for (final row in rows)
-          RupantorPlan.fromJson(Map<String, dynamic>.from(row))
+          RupantorPlan.fromJson(Map<String, dynamic>.from(row)),
       ]..removeWhere((plan) => plan.plan == SubscriptionPlan.free);
       return plans.isEmpty ? RupantorPlan.fallbackPlans : plans;
     } catch (_) {
@@ -139,7 +139,8 @@ class RupantorPayService {
     final checkoutUrl = j['checkoutUrl']?.toString();
     if (orderId == null || checkoutUrl == null || checkoutUrl.isEmpty) {
       throw const RupantorPayError(
-          'Rupantor Pay returned an incomplete payment link.');
+        'Rupantor Pay returned an incomplete payment link.',
+      );
     }
     return RupantorPayment(
       orderId: orderId,
@@ -149,10 +150,7 @@ class RupantorPayService {
   }
 
   Future<String> verify(String orderId) async {
-    final j = await _invoke({
-      'action': 'verify',
-      'orderId': orderId,
-    });
+    final j = await _invoke({'action': 'verify', 'orderId': orderId});
     return j['status']?.toString() ?? 'pending';
   }
 

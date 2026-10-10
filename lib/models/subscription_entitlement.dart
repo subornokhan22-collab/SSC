@@ -25,11 +25,11 @@ extension SubscriptionPlanX on SubscriptionPlan {
   String get id => name;
 
   String get displayName => switch (this) {
-        SubscriptionPlan.free => 'Free',
-        SubscriptionPlan.basic => 'Basic',
-        SubscriptionPlan.pro => 'Pro',
-        SubscriptionPlan.professional => 'Professional',
-      };
+    SubscriptionPlan.free => 'Free',
+    SubscriptionPlan.basic => 'Basic',
+    SubscriptionPlan.pro => 'Pro',
+    SubscriptionPlan.professional => 'Professional',
+  };
 }
 
 enum SubscriptionStatus { active, pending, cancelled, failed, expired }
@@ -97,9 +97,7 @@ class SubscriptionEntitlement {
     this.lastVerifiedAt,
   });
 
-  factory SubscriptionEntitlement.free({
-    DateTime? lastVerifiedAt,
-  }) =>
+  factory SubscriptionEntitlement.free({DateTime? lastVerifiedAt}) =>
       SubscriptionEntitlement(
         plan: SubscriptionPlan.free,
         subjectLimit: freeSubjectLimit,
@@ -236,16 +234,16 @@ class SubscriptionEntitlement {
       return false;
     }
     final remaining = expiresAt!.toUtc().difference(
-          (now ?? DateTime.now()).toUtc(),
-        );
+      (now ?? DateTime.now()).toUtc(),
+    );
     return remaining > Duration.zero && remaining <= Duration(days: days);
   }
 
   int? renewalDaysRemaining({DateTime? now}) {
     if (!renewalDueSoon(now: now)) return null;
     final remaining = expiresAt!.toUtc().difference(
-          (now ?? DateTime.now()).toUtc(),
-        );
+      (now ?? DateTime.now()).toUtc(),
+    );
     return (remaining.inMinutes / Duration.minutesPerDay).ceil();
   }
 
@@ -266,8 +264,10 @@ class SubscriptionEntitlement {
     };
   }
 
-  UpgradeReason? reasonFor(PremiumFeature feature,
-      {bool dailyLimitReached = false}) {
+  UpgradeReason? reasonFor(
+    PremiumFeature feature, {
+    bool dailyLimitReached = false,
+  }) {
     final current = effective;
     if (feature == PremiumFeature.aiAssistant && dailyLimitReached) {
       return UpgradeReason.aiDailyLimit;
@@ -294,38 +294,37 @@ class SubscriptionEntitlement {
     String? provider,
     String? transactionId,
     DateTime? lastVerifiedAt,
-  }) =>
-      SubscriptionEntitlement(
-        plan: plan ?? this.plan,
-        subjectLimit: subjectLimit ?? this.subjectLimit,
-        monthlyPaperLimit: monthlyPaperLimit ?? this.monthlyPaperLimit,
-        noWatermark: noWatermark ?? this.noWatermark,
-        aiAssistant: aiAssistant ?? this.aiAssistant,
-        aiDailyLimit: aiDailyLimit ?? this.aiDailyLimit,
-        omrScanner: omrScanner ?? this.omrScanner,
-        status: status ?? this.status,
-        startedAt: startedAt ?? this.startedAt,
-        expiresAt: expiresAt ?? this.expiresAt,
-        provider: provider ?? this.provider,
-        transactionId: transactionId ?? this.transactionId,
-        lastVerifiedAt: lastVerifiedAt ?? this.lastVerifiedAt,
-      );
+  }) => SubscriptionEntitlement(
+    plan: plan ?? this.plan,
+    subjectLimit: subjectLimit ?? this.subjectLimit,
+    monthlyPaperLimit: monthlyPaperLimit ?? this.monthlyPaperLimit,
+    noWatermark: noWatermark ?? this.noWatermark,
+    aiAssistant: aiAssistant ?? this.aiAssistant,
+    aiDailyLimit: aiDailyLimit ?? this.aiDailyLimit,
+    omrScanner: omrScanner ?? this.omrScanner,
+    status: status ?? this.status,
+    startedAt: startedAt ?? this.startedAt,
+    expiresAt: expiresAt ?? this.expiresAt,
+    provider: provider ?? this.provider,
+    transactionId: transactionId ?? this.transactionId,
+    lastVerifiedAt: lastVerifiedAt ?? this.lastVerifiedAt,
+  );
 
   Map<String, dynamic> toJson() => {
-        'plan': plan.id,
-        'subjectLimit': subjectLimit,
-        'monthlyPaperLimit': monthlyPaperLimit,
-        'noWatermark': noWatermark,
-        'aiAssistant': aiAssistant,
-        'aiDailyLimit': aiDailyLimit,
-        'omrScanner': omrScanner,
-        'status': status.name,
-        'startedAt': startedAt?.toUtc().toIso8601String(),
-        'expiresAt': expiresAt?.toUtc().toIso8601String(),
-        'provider': provider,
-        'transactionId': transactionId,
-        'lastVerifiedAt': lastVerifiedAt?.toUtc().toIso8601String(),
-      };
+    'plan': plan.id,
+    'subjectLimit': subjectLimit,
+    'monthlyPaperLimit': monthlyPaperLimit,
+    'noWatermark': noWatermark,
+    'aiAssistant': aiAssistant,
+    'aiDailyLimit': aiDailyLimit,
+    'omrScanner': omrScanner,
+    'status': status.name,
+    'startedAt': startedAt?.toUtc().toIso8601String(),
+    'expiresAt': expiresAt?.toUtc().toIso8601String(),
+    'provider': provider,
+    'transactionId': transactionId,
+    'lastVerifiedAt': lastVerifiedAt?.toUtc().toIso8601String(),
+  };
 
   factory SubscriptionEntitlement.fromJson(Map<String, dynamic> json) {
     final plan = subscriptionPlanFromString(json['plan']?.toString());

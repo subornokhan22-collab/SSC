@@ -32,25 +32,27 @@ void main() {
     expect(blocked.limit, 1);
   });
 
-  test('Basic allows three selected subjects and preserves existing ones',
-      () async {
-    final service = SubjectEntitlementService(
-      subscriptions: FakeSubscriptionRepository(
-        SubscriptionEntitlement.defaults(SubscriptionPlan.basic),
-      ),
-    );
+  test(
+    'Basic allows three selected subjects and preserves existing ones',
+    () async {
+      final service = SubjectEntitlementService(
+        subscriptions: FakeSubscriptionRepository(
+          SubscriptionEntitlement.defaults(SubscriptionPlan.basic),
+        ),
+      );
 
-    expect((await service.select('math')).allowed, isTrue);
-    expect((await service.select('physics')).allowed, isTrue);
-    expect((await service.select('english')).allowed, isTrue);
-    final blocked = await service.check('biology');
+      expect((await service.select('math')).allowed, isTrue);
+      expect((await service.select('physics')).allowed, isTrue);
+      expect((await service.select('english')).allowed, isTrue);
+      final blocked = await service.check('biology');
 
-    expect(blocked.allowed, isFalse);
-    expect(blocked.alreadySelected, isFalse);
-    expect(blocked.selectedCount, 3);
-    expect(blocked.reason, UpgradeReason.subjectLimit);
-    expect(service.selectedSubjects, {'math', 'physics', 'english'});
-  });
+      expect(blocked.allowed, isFalse);
+      expect(blocked.alreadySelected, isFalse);
+      expect(blocked.selectedCount, 3);
+      expect(blocked.reason, UpgradeReason.subjectLimit);
+      expect(service.selectedSubjects, {'math', 'physics', 'english'});
+    },
+  );
 
   test('Pro allows five subjects and blocks the sixth', () async {
     final service = SubjectEntitlementService(
@@ -74,25 +76,27 @@ void main() {
     expect(blocked.limit, 5);
   });
 
-  test('Professional allows a new subject after more than five existing ones',
-      () async {
-    final service = SubjectEntitlementService(
-      subscriptions: FakeSubscriptionRepository(
-        SubscriptionEntitlement.defaults(SubscriptionPlan.professional),
-      ),
-    );
-    for (final subject in [
-      'math',
-      'physics',
-      'english',
-      'biology',
-      'chemistry'
-    ]) {
-      expect((await service.select(subject)).allowed, isTrue);
-    }
+  test(
+    'Professional allows a new subject after more than five existing ones',
+    () async {
+      final service = SubjectEntitlementService(
+        subscriptions: FakeSubscriptionRepository(
+          SubscriptionEntitlement.defaults(SubscriptionPlan.professional),
+        ),
+      );
+      for (final subject in [
+        'math',
+        'physics',
+        'english',
+        'biology',
+        'chemistry',
+      ]) {
+        expect((await service.select(subject)).allowed, isTrue);
+      }
 
-    final result = await service.select('ict');
-    expect(result.allowed, isTrue);
-    expect(service.selectedSubjects, contains('ict'));
-  });
+      final result = await service.select('ict');
+      expect(result.allowed, isTrue);
+      expect(service.selectedSubjects, contains('ict'));
+    },
+  );
 }

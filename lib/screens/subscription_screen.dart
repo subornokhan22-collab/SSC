@@ -69,8 +69,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     if (state == AppLifecycleState.resumed && mounted) {
       SubscriptionState.instance.refresh().then((_) {
         if (mounted) {
-          setState(() =>
-              _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid);
+          setState(
+            () => _hasPaidPlan = SubscriptionState.instance.entitlement.isPaid,
+          );
         }
       });
     }
@@ -527,9 +528,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   child: FilledButton.icon(
                     onPressed: _buying ? null : _renewCurrentPlan,
                     icon: const AppIcon(PhosphorIcons.receipt, size: 18),
-                    label: Text(_buying
-                        ? 'Starting secure checkout…'
-                        : 'Pay monthly subscription bill'),
+                    label: Text(
+                      _buying
+                          ? 'Starting secure checkout…'
+                          : 'Pay monthly subscription bill',
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -537,8 +540,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _buying ? null : _openPlanPicker,
-                    icon:
-                        const AppIcon(PhosphorIcons.arrowsLeftRight, size: 18),
+                    icon: const AppIcon(
+                      PhosphorIcons.arrowsLeftRight,
+                      size: 18,
+                    ),
                     label: const Text('Change plan'),
                   ),
                 ),
@@ -701,10 +706,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           ),
         ),
         const SizedBox(height: 12),
-        const SectionTitle(
-          title: 'Choose a plan',
-          icon: PhosphorIcons.receipt,
-        ),
+        const SectionTitle(title: 'Choose a plan', icon: PhosphorIcons.receipt),
         for (final plan in visiblePlans) _planCard(plan),
         if (visiblePlans.isEmpty)
           const Padding(
@@ -756,8 +758,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   _buying
                       ? 'Starting secure checkout…'
                       : _plan == null
-                          ? 'Plans unavailable'
-                          : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} via secure checkout',
+                      ? 'Plans unavailable'
+                      : 'Pay ${_plan!.amount.toString().replaceAll(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), r'$1,')} via secure checkout',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15.5,
@@ -774,7 +776,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             selectedPlan == null
                 ? 'Select a plan before starting payment.'
                 : 'You will be redirected to secure checkout. The app activates '
-                    '${selectedPlan.label} automatically after server verification.',
+                      '${selectedPlan.label} automatically after server verification.',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 11,
@@ -788,10 +790,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionTitle(
-                title: 'Support',
-                icon: PhosphorIcons.headset,
-              ),
+              const SectionTitle(title: 'Support', icon: PhosphorIcons.headset),
               const Text(
                 'Payment problems, refunds or questions — contact support. '
                 'Never share your payment PIN or payment credentials inside '

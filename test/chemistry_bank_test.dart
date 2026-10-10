@@ -126,8 +126,9 @@ void main() {
     test('MCQ stems are unique', () {
       final seen = <String>{};
       for (final q in chemistryMcqs) {
-        final normalized =
-            q.questionText.replaceAll(RegExp(r'\s+'), ' ').trim();
+        final normalized = q.questionText
+            .replaceAll(RegExp(r'\s+'), ' ')
+            .trim();
         expect(seen.add(normalized), isTrue, reason: q.id);
       }
     });

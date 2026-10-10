@@ -65,8 +65,9 @@ class ConnectivityService {
   /// Real reachability check: a quick DNS lookup with a short timeout.
   Future<bool> _canReachInternet() async {
     try {
-      final addresses = await InternetAddress.lookup('clients3.google.com')
-          .timeout(const Duration(seconds: 4));
+      final addresses = await InternetAddress.lookup(
+        'clients3.google.com',
+      ).timeout(const Duration(seconds: 4));
       return addresses.isNotEmpty;
     } catch (_) {
       return false;

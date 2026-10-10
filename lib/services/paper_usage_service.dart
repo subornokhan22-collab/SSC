@@ -27,16 +27,16 @@ class PaperUsageClaim {
   });
 
   String get message => switch (reason) {
-        'monthly_limit' =>
-          'You have used this month\'s 2 Free papers. Upgrade for unlimited paper creation.',
-        'format_locked' =>
-          'Free plan paper generation is limited to Model Test. Upgrade to unlock other formats.',
-        'server_required' =>
-          'Connect to verify your Free paper allowance before creating a new paper.',
-        'safety_limit' =>
-          'This paper exceeds the system question limits. Reduce the MCQ, SAQ, CQ, or total count.',
-        _ => 'Paper creation is not available on the current account.',
-      };
+    'monthly_limit' =>
+      'You have used this month\'s 2 Free papers. Upgrade for unlimited paper creation.',
+    'format_locked' =>
+      'Free plan paper generation is limited to Model Test. Upgrade to unlock other formats.',
+    'server_required' =>
+      'Connect to verify your Free paper allowance before creating a new paper.',
+    'safety_limit' =>
+      'This paper exceeds the system question limits. Reduce the MCQ, SAQ, CQ, or total count.',
+    _ => 'Paper creation is not available on the current account.',
+  };
 }
 
 /// Coordinates the server monthly Free-paper reservation and its safe local
@@ -117,10 +117,7 @@ class PaperUsageService {
       return;
     }
     try {
-      await c.rpc(
-        'complete_paper_creation',
-        params: {'p_reservation_id': id},
-      );
+      await c.rpc('complete_paper_creation', params: {'p_reservation_id': id});
     } catch (_) {
       // The reservation lease prevents a permanent count if the completion
       // acknowledgement is lost. The paper was already successfully created.
@@ -132,10 +129,7 @@ class PaperUsageService {
     final c = client;
     if (id != null && !claim.offline && AuthService.isLoggedIn && c != null) {
       try {
-        await c.rpc(
-          'refund_paper_creation',
-          params: {'p_reservation_id': id},
-        );
+        await c.rpc('refund_paper_creation', params: {'p_reservation_id': id});
         await _increaseCachedAllowance();
         return;
       } catch (_) {}

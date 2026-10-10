@@ -27,8 +27,10 @@ void main() {
   test('every Phosphor icon used by the app has an SVG mapping', () {
     final adapter = File('lib/widgets/app_icon.dart').readAsStringSync();
     final usePattern = RegExp(r'PhosphorIcons\.([A-Za-z0-9_]+)');
-    final mapped =
-        usePattern.allMatches(adapter).map((match) => match.group(1)).toSet();
+    final mapped = usePattern
+        .allMatches(adapter)
+        .map((match) => match.group(1))
+        .toSet();
     final used = <String>{};
 
     for (final entity in Directory('lib').listSync(recursive: true)) {
@@ -37,14 +39,18 @@ void main() {
           entity.path.endsWith('app_icon.dart')) {
         continue;
       }
-      used.addAll(usePattern
-          .allMatches(entity.readAsStringSync())
-          .map((match) => match.group(1)!));
+      used.addAll(
+        usePattern
+            .allMatches(entity.readAsStringSync())
+            .map((match) => match.group(1)!),
+      );
     }
 
     expect(used.difference(mapped), isEmpty);
     expect(
-        adapter, contains("value == PhosphorIcons.arrowLeftDuotone ? 2 : 0"));
+      adapter,
+      contains("value == PhosphorIcons.arrowLeftDuotone ? 2 : 0"),
+    );
     expect(adapter, contains("asset('Next')"));
   });
 
@@ -53,8 +59,11 @@ void main() {
       if (entity is! File || !entity.path.endsWith('.dart')) continue;
       final source = entity.readAsStringSync();
       if (entity.path.endsWith('app_icon.dart')) continue;
-      expect(RegExp(r'\bIcon\(').hasMatch(source), isFalse,
-          reason: entity.path);
+      expect(
+        RegExp(r'\bIcon\(').hasMatch(source),
+        isFalse,
+        reason: entity.path,
+      );
       expect(source.contains('PhosphorIcon('), isFalse, reason: entity.path);
     }
   });

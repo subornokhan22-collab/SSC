@@ -10,12 +10,18 @@ class AiTextFormatter {
 
   static String format(String text, {bool trim = true}) {
     var s = text.replaceAllMapped(
-        RegExp('[০-৯]'), (m) => '${_digits.indexOf(m[0]!)}');
-    s = s.replaceAllMapped(RegExp(r'\\frac\{([^{}]+)\}\{([^{}]+)\}'),
-        (m) => '(${m[1]})/(${m[2]})');
+      RegExp('[০-৯]'),
+      (m) => '${_digits.indexOf(m[0]!)}',
+    );
+    s = s.replaceAllMapped(
+      RegExp(r'\\frac\{([^{}]+)\}\{([^{}]+)\}'),
+      (m) => '(${m[1]})/(${m[2]})',
+    );
     s = s.replaceAllMapped(RegExp(r'\\sqrt\{([^{}]+)\}'), (m) => '√(${m[1]})');
     s = s.replaceAllMapped(
-        RegExp(r'\\(?:mathrm|text)\{([^{}]*)\}'), (m) => m[1]!);
+      RegExp(r'\\(?:mathrm|text)\{([^{}]*)\}'),
+      (m) => m[1]!,
+    );
     const symbols = {
       'times': '×',
       'cdot': '·',
@@ -31,27 +37,37 @@ class AiTextFormatter {
       'beta': 'β',
       'Delta': 'Δ',
       'Omega': 'Ω',
-      'mu': 'μ'
+      'mu': 'μ',
     };
     s = s.replaceAllMapped(
-        RegExp(r'\\([A-Za-z]+)\b'), (m) => symbols[m[1]] ?? m[0]!);
-    s = s.replaceAllMapped(RegExp(r'\$\$([^$]+)\$\$|\$([^$\n]+)\$(?![0-9])'),
-        (m) => m[1] ?? m[2]!);
-    s = s.replaceAllMapped(RegExp(r'\\\((.*?)\\\)|\\\[(.*?)\\\]', dotAll: true),
-        (m) => m[1] ?? m[2]!);
+      RegExp(r'\\([A-Za-z]+)\b'),
+      (m) => symbols[m[1]] ?? m[0]!,
+    );
     s = s.replaceAllMapped(
-        RegExp(r'^\*\*([^*\n]+)\*\*', multiLine: true), (m) => m[1]!);
+      RegExp(r'\$\$([^$]+)\$\$|\$([^$\n]+)\$(?![0-9])'),
+      (m) => m[1] ?? m[2]!,
+    );
+    s = s.replaceAllMapped(
+      RegExp(r'\\\((.*?)\\\)|\\\[(.*?)\\\]', dotAll: true),
+      (m) => m[1] ?? m[2]!,
+    );
+    s = s.replaceAllMapped(
+      RegExp(r'^\*\*([^*\n]+)\*\*', multiLine: true),
+      (m) => m[1]!,
+    );
     // Match an entire grouped/simple script. Unsupported runs remain intact.
     s = s.replaceAllMapped(
-        RegExp(
-            r'([\^_])(?:\{([^{}]+)\}|\(([^()]+)\)|([+−-]?[A-Za-z0-9]+(?:\.[0-9]+)?))'),
-        (m) {
-      final run = (m[2] ?? m[3] ?? m[4]!).replaceAll('−', '-');
-      final plain = m[1] == '^' ? _plain : _subPlain;
-      final mapped = m[1] == '^' ? _sup : _sub;
-      if (run.split('').any((c) => !plain.contains(c))) return m[0]!;
-      return run.split('').map((c) => mapped[plain.indexOf(c)]).join();
-    });
+      RegExp(
+        r'([\^_])(?:\{([^{}]+)\}|\(([^()]+)\)|([+−-]?[A-Za-z0-9]+(?:\.[0-9]+)?))',
+      ),
+      (m) {
+        final run = (m[2] ?? m[3] ?? m[4]!).replaceAll('−', '-');
+        final plain = m[1] == '^' ? _plain : _subPlain;
+        final mapped = m[1] == '^' ? _sup : _sub;
+        if (run.split('').any((c) => !plain.contains(c))) return m[0]!;
+        return run.split('').map((c) => mapped[plain.indexOf(c)]).join();
+      },
+    );
     return trim ? s.trim() : s;
   }
 }

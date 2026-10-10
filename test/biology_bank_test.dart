@@ -133,8 +133,9 @@ void main() {
     test('MCQ stems do not repeat', () {
       final seen = <String>{};
       for (final q in biologyMcqs) {
-        final normalized =
-            q.questionText.replaceAll(RegExp(r'\s+'), ' ').trim();
+        final normalized = q.questionText
+            .replaceAll(RegExp(r'\s+'), ' ')
+            .trim();
         expect(seen.add(normalized), isTrue, reason: q.id);
       }
     });

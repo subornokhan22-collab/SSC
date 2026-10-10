@@ -102,62 +102,87 @@ class DeskWelcome extends StatelessWidget {
   const DeskWelcome({super.key});
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Row(
         children: [
-          const Row(children: [
-            AppLogo(size: 52),
-            SizedBox(width: 14),
-            Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  Text('Tutor’s Desk',
-                      style:
-                          TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
-                  Text('YOUR TEACHING WORKSPACE',
-                      style: TextStyle(
-                          fontSize: 10,
-                          letterSpacing: 1.2,
-                          color: AppTheme.muted)),
-                ])),
-          ]),
-          const SizedBox(height: 28),
-          Text('Welcome back.',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.w800)),
-          const SizedBox(height: 8),
-          const Text(
-              'Less preparation. More teaching.\nSign in to open your desk.',
-              style: TextStyle(color: AppTheme.muted, height: 1.6)),
-          const SizedBox(height: 18),
-          Wrap(spacing: 8, runSpacing: 8, children: [
-            feature(PhosphorIcons.fileTextDuotone, 'Paper builder',
-                AppTheme.primary),
-            feature(PhosphorIcons.scanDuotone, 'OMR review', AppColors.omr),
-            feature(PhosphorIcons.magicWandDuotone, 'AI Tools', AppColors.ai),
-          ]),
+          AppLogo(size: 52),
+          SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tutor’s Desk',
+                  style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800),
+                ),
+                Text(
+                  'YOUR TEACHING WORKSPACE',
+                  style: TextStyle(
+                    fontSize: 10,
+                    letterSpacing: 1.2,
+                    color: AppTheme.muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
-      );
+      ),
+      const SizedBox(height: 28),
+      Text(
+        'Welcome back.',
+        style: Theme.of(
+          context,
+        ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Less preparation. More teaching.\nSign in to open your desk.',
+        style: TextStyle(color: AppTheme.muted, height: 1.6),
+      ),
+      const SizedBox(height: 18),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          feature(
+            PhosphorIcons.fileTextDuotone,
+            'Paper builder',
+            AppTheme.primary,
+          ),
+          feature(PhosphorIcons.scanDuotone, 'OMR review', AppColors.omr),
+          feature(PhosphorIcons.magicWandDuotone, 'AI Tools', AppColors.ai),
+        ],
+      ),
+    ],
+  );
   Widget feature(PhosphorDuotoneIconData icon, String label, Color color) =>
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(20)),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          AppDuotoneIcon(
-            icon,
-            size: 15,
-            color: AppColors.onColor,
-            secondaryColor: AppColors.light,
-          ),
-          const SizedBox(width: 6),
-          Text(label,
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppDuotoneIcon(
+              icon,
+              size: 15,
+              color: AppColors.onColor,
+              secondaryColor: AppColors.light,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
               style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.onColor,
-                  fontWeight: FontWeight.w600))
-        ]),
+                fontSize: 11,
+                color: AppColors.onColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       );
 }

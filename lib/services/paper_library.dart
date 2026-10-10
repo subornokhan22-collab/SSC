@@ -42,25 +42,25 @@ class PaperEntry {
       kind == 'pdf' ? 'PDF' : (kind == 'saved' ? 'Saved' : 'ছবি');
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'subject': subject,
-        'year': year,
-        'kind': kind,
-        'pages': pages,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'title': title,
+    'subject': subject,
+    'year': year,
+    'kind': kind,
+    'pages': pages,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   static PaperEntry fromJson(Map<String, dynamic> m) => PaperEntry(
-        id: m['id'] as String,
-        title: m['title'] as String? ?? '',
-        subject: m['subject'] as String? ?? '',
-        year: m['year'] as String? ?? '',
-        kind: m['kind'] as String? ?? 'images',
-        pages: m['pages'] as int? ?? 1,
-        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-            DateTime.now(),
-      );
+    id: m['id'] as String,
+    title: m['title'] as String? ?? '',
+    subject: m['subject'] as String? ?? '',
+    year: m['year'] as String? ?? '',
+    kind: m['kind'] as String? ?? 'images',
+    pages: m['pages'] as int? ?? 1,
+    createdAt:
+        DateTime.tryParse(m['createdAt'] as String? ?? '') ?? DateTime.now(),
+  );
 }
 
 /// One MCQ of a saved paper (kept so the key can be verified on screen).
@@ -76,18 +76,18 @@ class SavedQuestion {
   });
 
   Map<String, dynamic> toJson() => {
-        'text': text,
-        'options': options,
-        'answer': answer,
-      };
+    'text': text,
+    'options': options,
+    'answer': answer,
+  };
 
   static SavedQuestion fromJson(Map<String, dynamic> m) => SavedQuestion(
-        text: m['text'] as String? ?? '',
-        options: (m['options'] as List? ?? const [])
-            .map((e) => e.toString())
-            .toList(),
-        answer: (m['answer'] as num? ?? 0).toInt(),
-      );
+    text: m['text'] as String? ?? '',
+    options: (m['options'] as List? ?? const [])
+        .map((e) => e.toString())
+        .toList(),
+    answer: (m['answer'] as num? ?? 0).toInt(),
+  );
 }
 
 /// A question paper saved from the in-app builder (Question Paper / Custom
@@ -125,38 +125,37 @@ class SavedPaper {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'subject': subject,
-        'subjectId': subjectId,
-        'subjectCode': subjectCode,
-        'setCode': setCode,
-        'total': total,
-        'key': key,
-        'questions': [for (final q in questions) q.toJson()],
-        'createdAt': createdAt.toIso8601String(),
-        'pages': pages,
-      };
+    'id': id,
+    'title': title,
+    'subject': subject,
+    'subjectId': subjectId,
+    'subjectCode': subjectCode,
+    'setCode': setCode,
+    'total': total,
+    'key': key,
+    'questions': [for (final q in questions) q.toJson()],
+    'createdAt': createdAt.toIso8601String(),
+    'pages': pages,
+  };
 
   static SavedPaper fromJson(Map<String, dynamic> m) => SavedPaper(
-        id: m['id'] as String? ?? '',
-        title: m['title'] as String? ?? '',
-        subject: m['subject'] as String? ?? '',
-        subjectId: m['subjectId'] as String? ?? '',
-        subjectCode: m['subjectCode'] as String? ?? '',
-        setCode: m['setCode'] as String? ?? '—',
-        total: m['total'] as int? ?? 0,
-        key: (m['key'] as List? ?? const [])
-            .map((e) => (e as num).toInt())
-            .toList(),
-        questions: (m['questions'] as List? ?? const [])
-            .map((e) =>
-                SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
-            .toList(),
-        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-            DateTime.now(),
-        pages: m['pages'] as int? ?? 0,
-      );
+    id: m['id'] as String? ?? '',
+    title: m['title'] as String? ?? '',
+    subject: m['subject'] as String? ?? '',
+    subjectId: m['subjectId'] as String? ?? '',
+    subjectCode: m['subjectCode'] as String? ?? '',
+    setCode: m['setCode'] as String? ?? '—',
+    total: m['total'] as int? ?? 0,
+    key: (m['key'] as List? ?? const [])
+        .map((e) => (e as num).toInt())
+        .toList(),
+    questions: (m['questions'] as List? ?? const [])
+        .map((e) => SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
+        .toList(),
+    createdAt:
+        DateTime.tryParse(m['createdAt'] as String? ?? '') ?? DateTime.now(),
+    pages: m['pages'] as int? ?? 0,
+  );
 }
 
 class PaperLibrary {
@@ -199,8 +198,9 @@ class PaperLibrary {
     Directory legacy,
     Directory scoped,
   ) async {
-    final marker =
-        File('${scoped.path}${Platform.pathSeparator}.legacy_claimed');
+    final marker = File(
+      '${scoped.path}${Platform.pathSeparator}.legacy_claimed',
+    );
     if (marker.existsSync()) return;
     final oldIndex = File('${legacy.path}${Platform.pathSeparator}$_indexName');
     final newIndex = File('${scoped.path}${Platform.pathSeparator}$_indexName');
@@ -298,14 +298,16 @@ class PaperLibrary {
       norm.add(await _normalizeJpeg(raw));
     }
     for (var i = 0; i < norm.length; i++) {
-      await File('${dir.path}${Platform.pathSeparator}p${i + 1}.jpg')
-          .writeAsBytes(norm[i]);
+      await File(
+        '${dir.path}${Platform.pathSeparator}p${i + 1}.jpg',
+      ).writeAsBytes(norm[i]);
     }
     // Thumbnail from the *normalized* first page so it matches what is
     // stored and printed.
     final thumb = await _thumbFrom(norm.first);
-    await File('${dir.path}${Platform.pathSeparator}thumb.jpg')
-        .writeAsBytes(thumb);
+    await File(
+      '${dir.path}${Platform.pathSeparator}thumb.jpg',
+    ).writeAsBytes(thumb);
 
     final entry = PaperEntry(
       id: id,
@@ -333,8 +335,9 @@ class PaperLibrary {
     if (bytes.isEmpty) throw Exception('The PDF file is empty.');
     final id = 'p_${DateTime.now().microsecondsSinceEpoch}';
     final dir = await _dirFor(id);
-    await File('${dir.path}${Platform.pathSeparator}doc.pdf')
-        .writeAsBytes(bytes);
+    await File(
+      '${dir.path}${Platform.pathSeparator}doc.pdf',
+    ).writeAsBytes(bytes);
     // No raster thumbnail for PDFs — the list shows a document icon.
 
     final entry = PaperEntry(
@@ -378,17 +381,20 @@ class PaperLibrary {
           norm.add(await _normalizeJpeg(raw));
         } catch (_) {
           throw StateError(
-              'A page could not be saved. No incomplete paper was added to your library.');
+            'A page could not be saved. No incomplete paper was added to your library.',
+          );
         }
       }
       if (norm.isNotEmpty) {
         for (var i = 0; i < norm.length; i++) {
-          await File('${dir.path}${Platform.pathSeparator}p${i + 1}.jpg')
-              .writeAsBytes(norm[i]);
+          await File(
+            '${dir.path}${Platform.pathSeparator}p${i + 1}.jpg',
+          ).writeAsBytes(norm[i]);
         }
         final thumb = await _thumbFrom(norm.first);
-        await File('${dir.path}${Platform.pathSeparator}thumb.jpg')
-            .writeAsBytes(thumb);
+        await File(
+          '${dir.path}${Platform.pathSeparator}thumb.jpg',
+        ).writeAsBytes(thumb);
         pages = norm.length;
       }
     }
@@ -405,8 +411,9 @@ class PaperLibrary {
       createdAt: paper.createdAt,
       pages: pages,
     );
-    await File('${dir.path}${Platform.pathSeparator}paper.json')
-        .writeAsString(json.encode(saved.toJson()));
+    await File(
+      '${dir.path}${Platform.pathSeparator}paper.json',
+    ).writeAsString(json.encode(saved.toJson()));
     final entry = PaperEntry(
       id: paper.id,
       title: paper.title,
@@ -441,8 +448,9 @@ class PaperLibrary {
   /// list for the OMR scanner's answer-key picker. Photo/PDF uploads are
   /// intentionally excluded.
   static Future<List<SavedPaper>> loadSavedPapers() async {
-    final entries =
-        (await loadEntries()).where((e) => e.kind == 'saved').toList();
+    final entries = (await loadEntries())
+        .where((e) => e.kind == 'saved')
+        .toList();
     final out = <SavedPaper>[];
     for (final e in entries) {
       final p = await savedPaper(e.id);
@@ -949,8 +957,8 @@ class PaperBackup {
   /// are added; stored files are (re)written from the backup. Returns the
   /// number of papers added.
   static Future<int> restore(File f) async {
-    final m =
-        (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>();
+    final m = (json.decode(f.readAsStringSync()) as Map)
+        .cast<String, dynamic>();
     if (m['app'] != 'tutors_desk' ||
         m['entries'] is! List ||
         m['files'] is! Map) {
@@ -985,8 +993,9 @@ class PaperBackup {
       if (value is! String) return;
       final dir = Directory('${rootDir.path}${Platform.pathSeparator}$id');
       if (!dir.existsSync()) dir.createSync(recursive: true);
-      File('${dir.path}${Platform.pathSeparator}$name')
-          .writeAsBytesSync(base64Decode(value));
+      File(
+        '${dir.path}${Platform.pathSeparator}$name',
+      ).writeAsBytesSync(base64Decode(value));
     });
     // loadEntries() returns an unmodifiable list while there is no index yet
     // (exactly the fresh-install case this restore exists for), so copy it

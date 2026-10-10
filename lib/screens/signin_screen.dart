@@ -100,113 +100,115 @@ class _SignInScreenState extends State<SignInScreen> {
     // gets the ribbons. The scaffold is transparent, so this sits behind the
     // form rather than replacing the workspace paper.
     return AutofillGroup(
-        child: AuroraRibbons(
-            enabled: true,
-            opacity: .5,
-            child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                scrolledUnderElevation: 0,
-              ),
-              body: SafeArea(
-                child: ListView(
-                  padding: EdgeInsets.fromLTRB(inset, 12, inset, 28),
-                  // Keep the sign-in surface static. Entrance transforms on a
-                  // live form make keyboard/focus changes look like shaking.
-                  children: [
-                    const DeskWelcome(),
-                    const SizedBox(height: 18),
-                    GlassCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SectionTitle(
-                            title: 'Your details',
-                            icon: PhosphorIcons.at,
-                          ),
-                          TextField(
-                            controller: _emailCtrl,
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                            autofillHints: const [AutofillHints.username],
-                            onSubmitted: (_) => _passFocus.requestFocus(),
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              hintText: 'you@example.com',
-                              prefixIcon: AppIcon(PhosphorIcons.at),
+      child: AuroraRibbons(
+        enabled: true,
+        opacity: .5,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+          ),
+          body: SafeArea(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(inset, 12, inset, 28),
+              // Keep the sign-in surface static. Entrance transforms on a
+              // live form make keyboard/focus changes look like shaking.
+              children: [
+                const DeskWelcome(),
+                const SizedBox(height: 18),
+                GlassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SectionTitle(
+                        title: 'Your details',
+                        icon: PhosphorIcons.at,
+                      ),
+                      TextField(
+                        controller: _emailCtrl,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        autofillHints: const [AutofillHints.username],
+                        onSubmitted: (_) => _passFocus.requestFocus(),
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          hintText: 'you@example.com',
+                          prefixIcon: AppIcon(PhosphorIcons.at),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: _passCtrl,
+                        focusNode: _passFocus,
+                        obscureText: _obscure,
+                        textInputAction: TextInputAction.done,
+                        autofillHints: const [AutofillHints.password],
+                        onSubmitted: (_) => _busy ? null : _signIn(),
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: const AppIcon(PhosphorIcons.lock),
+                          suffixIcon: IconButton(
+                            tooltip: _obscure
+                                ? 'Show password'
+                                : 'Hide password',
+                            onPressed: () =>
+                                setState(() => _obscure = !_obscure),
+                            icon: AppIcon(
+                              _obscure
+                                  ? PhosphorIcons.eye
+                                  : PhosphorIcons.eyeSlash,
                             ),
                           ),
-                          const SizedBox(height: 14),
-                          TextField(
-                            controller: _passCtrl,
-                            focusNode: _passFocus,
-                            obscureText: _obscure,
-                            textInputAction: TextInputAction.done,
-                            autofillHints: const [AutofillHints.password],
-                            onSubmitted: (_) => _busy ? null : _signIn(),
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: const AppIcon(PhosphorIcons.lock),
-                              suffixIcon: IconButton(
-                                tooltip: _obscure
-                                    ? 'Show password'
-                                    : 'Hide password',
-                                onPressed: () =>
-                                    setState(() => _obscure = !_obscure),
-                                icon: AppIcon(
-                                  _obscure
-                                      ? PhosphorIcons.eye
-                                      : PhosphorIcons.eyeSlash,
-                                ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _busy ? null : _forgotPassword,
+                          child: const Text('Forgot password?'),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      SubmitButton(
+                        busy: _busy,
+                        icon: PhosphorIcons.signIn,
+                        label: 'Sign In',
+                        onPressed: _busy ? null : _signIn,
+                      ),
+                    ],
+                  ),
+                ),
+                if (_msg != null) ...[
+                  const SizedBox(height: 14),
+                  InfoBanner.success(_msg!),
+                ],
+                if (_err != null) ...[
+                  const SizedBox(height: 14),
+                  InfoBanner.error(_err!),
+                ],
+                const SizedBox(height: 20),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: _busy
+                        ? null
+                        : () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SignUpScreen(
+                                prefillEmail: _emailCtrl.text.trim(),
                               ),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: _busy ? null : _forgotPassword,
-                              child: const Text('Forgot password?'),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          SubmitButton(
-                            busy: _busy,
-                            icon: PhosphorIcons.signIn,
-                            label: 'Sign In',
-                            onPressed: _busy ? null : _signIn,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (_msg != null) ...[
-                      const SizedBox(height: 14),
-                      InfoBanner.success(_msg!),
-                    ],
-                    if (_err != null) ...[
-                      const SizedBox(height: 14),
-                      InfoBanner.error(_err!),
-                    ],
-                    const SizedBox(height: 20),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: _busy
-                            ? null
-                            : () => Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => SignUpScreen(
-                                      prefillEmail: _emailCtrl.text.trim(),
-                                    ),
-                                  ),
-                                ),
-                        icon: const AppIcon(PhosphorIcons.userPlus, size: 18),
-                        label: const Text('No account yet? Create one'),
-                      ),
-                    ),
-                  ],
+                    icon: const AppIcon(PhosphorIcons.userPlus, size: 18),
+                    label: const Text('No account yet? Create one'),
+                  ),
                 ),
-              ),
-            )));
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

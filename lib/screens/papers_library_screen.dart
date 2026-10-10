@@ -209,9 +209,11 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                 if (p.questions.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const Divider(height: 16),
-                  for (var i = 0;
-                      i < p.questions.length && i < p.key.length;
-                      i++)
+                  for (
+                    var i = 0;
+                    i < p.questions.length && i < p.key.length;
+                    i++
+                  )
                     Padding(
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Text(
@@ -323,7 +325,10 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                 () => _scanWith(p),
               ),
               _iconBtn(
-                  PhosphorIcons.keyDuotone, 'View answers', () => _showKey(p)),
+                PhosphorIcons.keyDuotone,
+                'View answers',
+                () => _showKey(p),
+              ),
               if (p.pages > 0)
                 _iconBtn(
                   PhosphorIcons.fileTextDuotone,
@@ -347,17 +352,21 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   /// viewer the Added tab uses (tap to zoom, swipe to turn pages).
   Future<void> _viewSaved(SavedPaper p) async {
     await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => SavedPaperScreen(
-                entry: PaperEntry(
-                    id: p.id,
-                    title: p.title,
-                    subject: p.subject,
-                    year: '',
-                    kind: 'saved',
-                    pages: p.pages,
-                    createdAt: p.createdAt))));
+      context,
+      MaterialPageRoute(
+        builder: (_) => SavedPaperScreen(
+          entry: PaperEntry(
+            id: p.id,
+            title: p.title,
+            subject: p.subject,
+            year: '',
+            kind: 'saved',
+            pages: p.pages,
+            createdAt: p.createdAt,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _savedTab() {
@@ -488,8 +497,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                   title: titleCtrl.text.trim(),
                   subject: subject == other
                       ? (otherSubjectCtrl.text.trim().isEmpty
-                          ? 'অন্যান্য'
-                          : otherSubjectCtrl.text.trim())
+                            ? 'অন্যান্য'
+                            : otherSubjectCtrl.text.trim())
                       : subject,
                   year: yearCtrl.text.trim(),
                 );
@@ -510,8 +519,8 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                   title: titleCtrl.text.trim(),
                   subject: subject == other
                       ? (otherSubjectCtrl.text.trim().isEmpty
-                          ? 'অন্যান্য'
-                          : otherSubjectCtrl.text.trim())
+                            ? 'অন্যান্য'
+                            : otherSubjectCtrl.text.trim())
                       : subject,
                   year: yearCtrl.text.trim(),
                 );
@@ -594,7 +603,9 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
 
   Future<void> _view(PaperEntry e) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (_) => SavedPaperScreen(entry: e)));
+      context,
+      MaterialPageRoute(builder: (_) => SavedPaperScreen(entry: e)),
+    );
   }
 
   Future<void> _print(PaperEntry e) async {
@@ -668,16 +679,15 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
                             ),
                           )
                         : _entries.isEmpty
-                            ? _empty()
-                            : ListView.builder(
-                                physics: const AlwaysScrollableScrollPhysics(
-                                  parent: BouncingScrollPhysics(),
-                                ),
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 10, 16, 90),
-                                itemCount: _entries.length,
-                                itemBuilder: (context, i) => _card(_entries[i]),
-                              ),
+                        ? _empty()
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
+                            itemCount: _entries.length,
+                            itemBuilder: (context, i) => _card(_entries[i]),
+                          ),
                   ),
                 ],
               ),
@@ -810,44 +820,43 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   }
 
   Widget _pill(String text) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-        decoration: BoxDecoration(
-          color: AppColors.science.withOpacity(.08),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.science.withOpacity(.25)),
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: AppColors.science,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+    decoration: BoxDecoration(
+      color: AppColors.science.withOpacity(.08),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: AppColors.science.withOpacity(.25)),
+    ),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+        color: AppColors.science,
+      ),
+    ),
+  );
 
   Widget _iconBtn(
     PhosphorDuotoneIconData icon,
     String label,
     VoidCallback onTap, {
     Color? color,
-  }) =>
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Tooltip(
-          message: label,
-          child: IconButton(
-            visualDensity: VisualDensity.compact,
-            icon: AppDuotoneIcon(
-              icon,
-              size: 19,
-              color: color ?? AppColors.science,
-              secondaryColor: AppColors.secondary,
-            ),
-            onPressed: onTap,
-          ),
+  }) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Tooltip(
+      message: label,
+      child: IconButton(
+        visualDensity: VisualDensity.compact,
+        icon: AppDuotoneIcon(
+          icon,
+          size: 19,
+          color: color ?? AppColors.science,
+          secondaryColor: AppColors.secondary,
         ),
-      );
+        onPressed: onTap,
+      ),
+    ),
+  );
 
   String _date(DateTime d) =>
       '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';

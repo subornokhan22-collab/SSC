@@ -11,25 +11,31 @@ class LocalDiagnostics {
   static const maxEntries = 10;
   static Future<void> _writes = Future.value();
 
-  static Future<void> record(Object error, StackTrace stack,
-      {String scope = 'app'}) {
+  static Future<void> record(
+    Object error,
+    StackTrace stack, {
+    String scope = 'app',
+  }) {
     final frames = RegExp(
       r'package:tutors_desk/[a-zA-Z0-9_./-]+\.dart:\d+(?::\d+)?',
     ).allMatches(stack.toString()).take(12).map((m) => m.group(0)!).toList();
     return _append({
       'time': DateTime.now().toUtc().toIso8601String(),
-      'build':
-          const String.fromEnvironment('BUILD_NUMBER', defaultValue: 'dev'),
+      'build': const String.fromEnvironment(
+        'BUILD_NUMBER',
+        defaultValue: 'dev',
+      ),
       'platform': defaultTargetPlatform.name,
-      'scope': const {
-        'app',
-        'startup',
-        'flutter',
-        'async',
-        'native',
-        'workflow',
-        'camera'
-      }.contains(scope)
+      'scope':
+          const {
+            'app',
+            'startup',
+            'flutter',
+            'async',
+            'native',
+            'workflow',
+            'camera',
+          }.contains(scope)
           ? scope
           : 'app',
       // Runtime type only; toString() often contains private payloads.
@@ -45,10 +51,11 @@ class LocalDiagnostics {
         final items = prefs.getStringList(storageKey) ?? [];
         items.add(jsonEncode(entry));
         await prefs.setStringList(
-            storageKey,
-            items
-                .skip((items.length - maxEntries).clamp(0, items.length))
-                .toList());
+          storageKey,
+          items
+              .skip((items.length - maxEntries).clamp(0, items.length))
+              .toList(),
+        );
       } catch (_) {
         // Logging must never recurse into another framework error.
       }

@@ -12,8 +12,12 @@ class CreatePaperArgs {
   final String? subjectId;
   final PaperFormat? format;
   final List<Question>? questions;
-  const CreatePaperArgs(
-      {this.subjectId, this.format, this.questions, this.quickStart = false});
+  const CreatePaperArgs({
+    this.subjectId,
+    this.format,
+    this.questions,
+    this.quickStart = false,
+  });
 }
 
 class AppRoutes {

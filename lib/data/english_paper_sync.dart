@@ -18,14 +18,15 @@ class EnglishPaperDocument {
   final EnglishFirstSet? first;
   final EnglishBoardSet? second;
   final Map<String, String?> answers;
-  const EnglishPaperDocument(
-      {required this.id,
-      required this.paperType,
-      required this.board,
-      required this.year,
-      this.first,
-      this.second,
-      required this.answers});
+  const EnglishPaperDocument({
+    required this.id,
+    required this.paperType,
+    required this.board,
+    required this.year,
+    this.first,
+    this.second,
+    required this.answers,
+  });
   String get label =>
       '$board $year • English ${paperType == 'first' ? '1st' : '2nd'}';
   List<EnglishSection> get sections => first != null
@@ -83,13 +84,17 @@ class EnglishPaperDocument {
       final q1 = [
         for (final q in objects('q1'))
           EF1McqItem(
-              q['stem'] as String, List<String>.from(q['options'] as List))
+            q['stem'] as String,
+            List<String>.from(q['options'] as List),
+          ),
       ];
       if (q1.length != 7 ||
-          q1.any((q) =>
-              q.stem.trim().isEmpty ||
-              q.options.length != 4 ||
-              q.options.any((s) => s.trim().isEmpty)))
+          q1.any(
+            (q) =>
+                q.stem.trim().isEmpty ||
+                q.options.length != 4 ||
+                q.options.any((s) => s.trim().isEmpty),
+          ))
         throw const FormatException('Reading MCQ structure');
       final q2 = lines('q2'), q7 = lines('q7');
       if (q2.length != 5 || q7.length != 8)
@@ -106,77 +111,82 @@ class EnglishPaperDocument {
       if (bold.any((i) => i < 0 || i >= table.length))
         throw const FormatException('Invalid table row');
       return EnglishPaperDocument(
-          id: id,
-          paperType: type,
-          board: board,
-          year: year,
-          answers: Map.unmodifiable(answers),
-          first: EnglishFirstSet(
-              serial: 0,
-              board: heading,
-              passage1Intro: text('passage1Intro'),
-              passage1Unit: text('passage1Unit', optional: true),
-              passage1: text('passage1'),
-              q1Instr: text('q1Instr'),
-              q1: q1,
-              q2: q2,
-              q3Instr: text('q3Instr'),
-              q3Source: text('q3Source', optional: true),
-              q3Unit: text('q3Unit', optional: true),
-              q3Cloze: text('q3Cloze'),
-              passage2Intro: text('passage2Intro'),
-              passage2: text('passage2'),
-              q4Instr: text('q4Instr'),
-              q4Table: table,
-              q4BoldRows: bold,
-              q6A: lines('q6A'),
-              q6B: lines('q6B'),
-              q6C: lines('q6C'),
-              q7: q7,
-              q8: lines('q8'),
-              q9: lines('q9'),
-              q10Instr: text('q10Instr'),
-              q10Starter: text('q10Starter'),
-              q11: text('q11')));
-    }
-    final matching = [
-      for (final r in objects('q2'))
-        EBMatchRow(r['a'] as String, r['b'] as String, r['c'] as String)
-    ];
-    final transformations = [
-      for (final r in objects('q4'))
-        EBTransformItem(r['sentence'] as String, r['direction'] as String)
-    ];
-    final tags = lines('q5');
-    if (transformations.length != 10 ||
-        tags.length != 5 ||
-        transformations.any(
-            (q) => q.sentence.trim().isEmpty || q.direction.trim().isEmpty))
-      throw const FormatException('Grammar item counts');
-    return EnglishPaperDocument(
         id: id,
         paperType: type,
         board: board,
         year: year,
         answers: Map.unmodifiable(answers),
-        second: EnglishBoardSet(
-            serial: 0,
-            board: heading,
-            headerExtra: lines('headerExtra', optional: true),
-            q1Box: lines('q1Box'),
-            q1Passage: text('q1Passage'),
-            q2: matching,
-            q3Box: lines('q3Box'),
-            q3Passage: text('q3Passage'),
-            q4: transformations,
-            q5: tags,
-            q6Passage: text('q6Passage'),
-            q7Passage: text('q7Passage'),
-            q8Passage: text('q8Passage'),
-            q9Text: text('q9Text'),
-            q10: text('q10'),
-            q11: text('q11'),
-            q12: text('q12')));
+        first: EnglishFirstSet(
+          serial: 0,
+          board: heading,
+          passage1Intro: text('passage1Intro'),
+          passage1Unit: text('passage1Unit', optional: true),
+          passage1: text('passage1'),
+          q1Instr: text('q1Instr'),
+          q1: q1,
+          q2: q2,
+          q3Instr: text('q3Instr'),
+          q3Source: text('q3Source', optional: true),
+          q3Unit: text('q3Unit', optional: true),
+          q3Cloze: text('q3Cloze'),
+          passage2Intro: text('passage2Intro'),
+          passage2: text('passage2'),
+          q4Instr: text('q4Instr'),
+          q4Table: table,
+          q4BoldRows: bold,
+          q6A: lines('q6A'),
+          q6B: lines('q6B'),
+          q6C: lines('q6C'),
+          q7: q7,
+          q8: lines('q8'),
+          q9: lines('q9'),
+          q10Instr: text('q10Instr'),
+          q10Starter: text('q10Starter'),
+          q11: text('q11'),
+        ),
+      );
+    }
+    final matching = [
+      for (final r in objects('q2'))
+        EBMatchRow(r['a'] as String, r['b'] as String, r['c'] as String),
+    ];
+    final transformations = [
+      for (final r in objects('q4'))
+        EBTransformItem(r['sentence'] as String, r['direction'] as String),
+    ];
+    final tags = lines('q5');
+    if (transformations.length != 10 ||
+        tags.length != 5 ||
+        transformations.any(
+          (q) => q.sentence.trim().isEmpty || q.direction.trim().isEmpty,
+        ))
+      throw const FormatException('Grammar item counts');
+    return EnglishPaperDocument(
+      id: id,
+      paperType: type,
+      board: board,
+      year: year,
+      answers: Map.unmodifiable(answers),
+      second: EnglishBoardSet(
+        serial: 0,
+        board: heading,
+        headerExtra: lines('headerExtra', optional: true),
+        q1Box: lines('q1Box'),
+        q1Passage: text('q1Passage'),
+        q2: matching,
+        q3Box: lines('q3Box'),
+        q3Passage: text('q3Passage'),
+        q4: transformations,
+        q5: tags,
+        q6Passage: text('q6Passage'),
+        q7Passage: text('q7Passage'),
+        q8Passage: text('q8Passage'),
+        q9Text: text('q9Text'),
+        q10: text('q10'),
+        q11: text('q11'),
+        q12: text('q12'),
+      ),
+    );
   }
 }
 
@@ -192,7 +202,8 @@ class EnglishPaperSync {
         if (r['is_active'] == false || r['review_status'] != 'published')
           continue;
         next.add(
-            EnglishPaperDocument.fromJson(Map<String, dynamic>.from(r as Map)));
+          EnglishPaperDocument.fromJson(Map<String, dynamic>.from(r as Map)),
+        );
       } catch (e) {
         debugPrint('English sync skipped invalid paper: $e');
       }
@@ -215,7 +226,7 @@ class EnglishPaperSync {
     _busy = true;
     try {
       final rows = <dynamic>[];
-      for (var start = 0;; start += 500) {
+      for (var start = 0; ; start += 500) {
         final page = await Supabase.instance.client
             .from('english_papers')
             .select()
@@ -244,20 +255,32 @@ class EnglishPaperSync {
   static Map<String, String> choices(String subjectId) => const {};
 
   static List<EnglishSection> compose(
-      String subjectId, String? id, Random random) {
+    String subjectId,
+    String? id,
+    Random random,
+  ) {
     // A legacy draft may still contain a board id. Ignore it deliberately so
     // an old selection cannot make generation deterministic or reveal board
     // names again. The full pool is retained below and mixed per question
     // group, preserving the question bank while randomizing the paper.
     if (subjectId == 'english_1st')
       return EnglishPaperAdapter.first(
-          EnglishFirstMixer.mix(rng: random, pool: [
-        ...englishFirstSets2024,
-        ..._papers.where((p) => p.first != null).map((p) => p.first!)
-      ]).set);
-    return EnglishPaperAdapter.second(EnglishBoardMixer.mix(rng: random, pool: [
-      ...englishBoardSets2024,
-      ..._papers.where((p) => p.second != null).map((p) => p.second!)
-    ]).set);
+        EnglishFirstMixer.mix(
+          rng: random,
+          pool: [
+            ...englishFirstSets2024,
+            ..._papers.where((p) => p.first != null).map((p) => p.first!),
+          ],
+        ).set,
+      );
+    return EnglishPaperAdapter.second(
+      EnglishBoardMixer.mix(
+        rng: random,
+        pool: [
+          ...englishBoardSets2024,
+          ..._papers.where((p) => p.second != null).map((p) => p.second!),
+        ],
+      ).set,
+    );
   }
 }

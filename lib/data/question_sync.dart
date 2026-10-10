@@ -42,8 +42,10 @@ class QuestionSync {
       if (cached is List) {
         _merge(cached);
       } else {
-        _merge(cached['rows'] as List,
-            suppressedIds: Set<String>.from(cached['suppressedIds'] as List));
+        _merge(
+          cached['rows'] as List,
+          suppressedIds: Set<String>.from(cached['suppressedIds'] as List),
+        );
       }
     } catch (e) {
       debugPrint('QuestionSync: cache unreadable ($e)');
@@ -62,7 +64,7 @@ class QuestionSync {
       // A full paginated official snapshot removes archived/deleted records.
       // The old updated_at > cursor missed removals and equal-timestamp pages.
       final rows = <dynamic>[];
-      for (var start = 0;; start += 500) {
+      for (var start = 0; ; start += 500) {
         final page = await _c
             .from('questions')
             .select()
@@ -77,7 +79,7 @@ class QuestionSync {
           throw StateError('Question sync safety limit');
       }
       final suppressed = <String>{};
-      for (var start = 0;; start += 500) {
+      for (var start = 0; ; start += 500) {
         final page = await _c
             .from('question_tombstones')
             .select('id')
@@ -88,8 +90,10 @@ class QuestionSync {
         if (suppressed.length >= 100000)
           throw StateError('Retirement sync safety limit');
       }
-      if (!await prefs.setString(_cacheKey,
-          json.encode({'rows': rows, 'suppressedIds': suppressed.toList()})))
+      if (!await prefs.setString(
+        _cacheKey,
+        json.encode({'rows': rows, 'suppressedIds': suppressed.toList()}),
+      ))
         throw StateError('Question cache write failed');
       await prefs.remove(_legacyCacheKey);
       _merge(rows, suppressedIds: suppressed);
@@ -158,6 +162,10 @@ class QuestionSync {
 
     _added = mcqs.length + saqs.length + cqs.length;
     QuestionBank.replaceRemote(
-        mcqs: mcqs, saqs: saqs, cqs: cqs, suppressedIds: suppressedIds);
+      mcqs: mcqs,
+      saqs: saqs,
+      cqs: cqs,
+      suppressedIds: suppressedIds,
+    );
   }
 }

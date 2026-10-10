@@ -133,8 +133,9 @@ class PaperPdf {
       }
     }
 
-    final res =
-        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 20));
+    final res = await http
+        .get(Uri.parse(url))
+        .timeout(const Duration(seconds: 20));
     if (res.statusCode != 200) {
       throw Exception('HTTP ${res.statusCode}');
     }
@@ -639,14 +640,13 @@ class PaperPdf {
     }
 
     TextStyle st(double size, bool isBold, double lineHeight) => TextStyle(
-          fontFamily: isBold ? (_bold ?? _regular) : _regular,
-          fontFamilyFallback: _fb(isBold),
-          fontWeight:
-              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
-          fontSize: size * _k,
-          height: lineHeight,
-          color: const Color(0xFF000000),
-        );
+      fontFamily: isBold ? (_bold ?? _regular) : _regular,
+      fontFamilyFallback: _fb(isBold),
+      fontWeight: (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+      fontSize: size * _k,
+      height: lineHeight,
+      color: const Color(0xFF000000),
+    );
 
     TextPainter makePainter(
       String text,
@@ -1281,12 +1281,12 @@ class PaperPdf {
       y += 5 * _k;
       final lineY = y + h - 1.5 * _k;
       void ul(double x1, double x2) => canvas.drawLine(
-            Offset(x1, lineY),
-            Offset(x2, lineY),
-            Paint()
-              ..color = const Color(0xFF000000)
-              ..strokeWidth = 0.8 * _k,
-          );
+        Offset(x1, lineY),
+        Offset(x2, lineY),
+        Paint()
+          ..color = const Color(0xFF000000)
+          ..strokeWidth = 0.8 * _k,
+      );
       ln.paint(canvas, Offset(_margin, y));
       final nameEnd = _margin + contentW * 0.52;
       ul(_margin + ln.width + 2 * _k, nameEnd);
@@ -1355,11 +1355,13 @@ class PaperPdf {
       }
     }
 
-    final subject =
-        subjectName?.trim().isNotEmpty == true ? subjectName!.trim() : title;
+    final subject = subjectName?.trim().isNotEmpty == true
+        ? subjectName!.trim()
+        : title;
     final subj =
         'বিষয়ঃ $subject${modeLine.isNotEmpty ? '  —  $modeLine' : ''}';
-    final hasWritten = cqs.isNotEmpty ||
+    final hasWritten =
+        cqs.isNotEmpty ||
         saqs.isNotEmpty ||
         literatureQuestions.isNotEmpty ||
         bangla2WrittenQuestions.isNotEmpty;
@@ -1578,7 +1580,8 @@ class PaperPdf {
           );
         }
         final half = (colW - 7 * _k) / 2;
-        final bool grid = q.options.length == 4 &&
+        final bool grid =
+            q.options.length == 4 &&
             opts.every((o) => o.tp.width <= half - 2 * _k);
         double optH;
         double rowA = 0, rowB = 0;
@@ -1686,14 +1689,13 @@ class PaperPdf {
     late double y;
 
     TextStyle st(double size, bool isBold, double lh) => TextStyle(
-          fontFamily: isBold ? (_bold ?? _regular) : _regular,
-          fontFamilyFallback: _fb(isBold),
-          fontWeight:
-              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
-          fontSize: size * _k,
-          height: lh,
-          color: const Color(0xFF000000),
-        );
+      fontFamily: isBold ? (_bold ?? _regular) : _regular,
+      fontFamilyFallback: _fb(isBold),
+      fontWeight: (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+      fontSize: size * _k,
+      height: lh,
+      color: const Color(0xFF000000),
+    );
 
     void begin() {
       rec = ui.PictureRecorder();
@@ -1744,12 +1746,12 @@ class PaperPdf {
     }
 
     void hline(double t) => canvas.drawLine(
-          Offset(_margin, y),
-          Offset(_margin + contentW, y),
-          Paint()
-            ..color = const Color(0xFF000000)
-            ..strokeWidth = t,
-        );
+      Offset(_margin, y),
+      Offset(_margin + contentW, y),
+      Paint()
+        ..color = const Color(0xFF000000)
+        ..strokeWidth = t,
+    );
 
     Future<void> doubleRule() async {
       y += 3 * _k;
@@ -1834,8 +1836,9 @@ class PaperPdf {
           final tp = TextPainter(
             text: TextSpan(text: _safe(txt), style: st(9.6, ri == 0, 1.35)),
             textDirection: TextDirection.ltr,
-            textAlign:
-                (centered || cols == 1) ? TextAlign.center : TextAlign.left,
+            textAlign: (centered || cols == 1)
+                ? TextAlign.center
+                : TextAlign.left,
           )..layout(maxWidth: colW - 2 * cellPad);
           cps.add(tp);
           if (tp.height > rowH) rowH = tp.height;
@@ -2015,8 +2018,9 @@ class PaperPdf {
         TextStyle(
           fontFamily: isBold ? (_bold ?? _regular) : _regular,
           fontFamilyFallback: _fb(isBold),
-          fontWeight:
-              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+          fontWeight: (isBold && _bold == null)
+              ? FontWeight.w700
+              : FontWeight.w400,
           fontSize: size * _k,
           height: lineHeight,
           color: color ?? omrTemplateInk,
@@ -2028,15 +2032,14 @@ class PaperPdf {
       bool isBold = false,
       TextAlign align = TextAlign.left,
       Color? color,
-    }) =>
-        TextPainter(
-          text: TextSpan(
-            text: text,
-            style: st(size, isBold, 1.4, color: color),
-          ),
-          textDirection: TextDirection.ltr,
-          textAlign: align,
-        );
+    }) => TextPainter(
+      text: TextSpan(
+        text: text,
+        style: st(size, isBold, 1.4, color: color),
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: align,
+    );
 
     final ink = omrTemplateInk;
     final accent = omrTemplateInk;
@@ -2325,8 +2328,7 @@ class PaperPdf {
       total: total,
       subjectCode: subjectCode,
       setCode: setCode,
-    ))
-        .first;
+    )).first;
     final doc = pw.Document();
     final n = copies.clamp(1, 200).toInt();
     for (var i = 0; i < n; i++) {
@@ -2410,26 +2412,24 @@ class PaperPdf {
     }
 
     TextStyle st(double size, bool isBold, double lineHeight) => TextStyle(
-          fontFamily: isBold ? (_bold ?? _regular) : _regular,
-          fontFamilyFallback: _fb(isBold),
-          fontWeight:
-              (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
-          fontSize: size * _k,
-          height: lineHeight,
-          color: const Color(0xFF16203A),
-        );
+      fontFamily: isBold ? (_bold ?? _regular) : _regular,
+      fontFamilyFallback: _fb(isBold),
+      fontWeight: (isBold && _bold == null) ? FontWeight.w700 : FontWeight.w400,
+      fontSize: size * _k,
+      height: lineHeight,
+      color: const Color(0xFF16203A),
+    );
 
     TextPainter makePainter(
       String text,
       double size, {
       bool isBold = false,
       TextAlign align = TextAlign.left,
-    }) =>
-        TextPainter(
-          text: TextSpan(text: text, style: st(size, isBold, 1.4)),
-          textDirection: TextDirection.ltr,
-          textAlign: align,
-        );
+    }) => TextPainter(
+      text: TextSpan(text: text, style: st(size, isBold, 1.4)),
+      textDirection: TextDirection.ltr,
+      textAlign: align,
+    );
 
     Future<void> para(
       String text,

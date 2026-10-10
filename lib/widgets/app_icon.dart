@@ -30,35 +30,29 @@ class AppIcon extends StatelessWidget {
     final path = switch (value) {
       PhosphorIcons.filePlus => '$_root/document-new-svgrepo-com.svg',
       PhosphorIcons.filePdf ||
-      PhosphorIcons.filePdfDuotone =>
-        '$_root/pdf-svgrepo-com.svg',
+      PhosphorIcons.filePdfDuotone => '$_root/pdf-svgrepo-com.svg',
       PhosphorIcons.arrowLeftDuotone => asset('Next'),
       PhosphorIcons.arrowRight || PhosphorIcons.caretRight => asset('Next'),
       PhosphorIcons.arrowClockwise ||
-      PhosphorIcons.arrowsClockwise =>
-        asset('Cloud-Refresh'),
+      PhosphorIcons.arrowsClockwise => asset('Cloud-Refresh'),
       PhosphorIcons.arrowCounterClockwise => asset('Undo'),
       PhosphorIcons.arrowsLeftRight => asset('One-Finger-Drag-Horizontal'),
       PhosphorIcons.article ||
       PhosphorIcons.fileText ||
-      PhosphorIcons.fileTextDuotone =>
-        asset('App Manual-Book'),
+      PhosphorIcons.fileTextDuotone => asset('App Manual-Book'),
       PhosphorIcons.at => asset('User-Identifier-Card'),
       PhosphorIcons.bellRinging => asset('Ringing-Bell-Notification'),
       PhosphorIcons.bookOpen => asset('Open-Book'),
       PhosphorIcons.bookmarkSimple ||
       PhosphorIcons.bookmarkSimpleDuotone ||
-      PhosphorIcons.bookmarksSimpleDuotone =>
-        asset('Bookmark'),
+      PhosphorIcons.bookmarksSimpleDuotone => asset('Bookmark'),
       PhosphorIcons.camera || PhosphorIcons.cameraDuotone => asset('Camera-1'),
       PhosphorIcons.cameraSlash => asset('Camera-1'),
       PhosphorIcons.chartBar ||
-      PhosphorIcons.chartBarDuotone =>
-        asset('Graph-Bar-Increase'),
+      PhosphorIcons.chartBarDuotone => asset('Graph-Bar-Increase'),
       PhosphorIcons.checkCircle || PhosphorIcons.circle => asset('Check'),
       PhosphorIcons.clock ||
-      PhosphorIcons.clockCounterClockwiseDuotone =>
-        asset('Circle-Clock'),
+      PhosphorIcons.clockCounterClockwiseDuotone => asset('Circle-Clock'),
       PhosphorIcons.cloudSlash => asset('Wifi-Disabled'),
       PhosphorIcons.copy => asset('Copy-'),
       PhosphorIcons.crop => asset('Crop-Selection'),
@@ -75,38 +69,29 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.hourglass => asset('Circle-Clock'),
       PhosphorIcons.house => asset('Home-3'),
       PhosphorIcons.identificationBadge ||
-      PhosphorIcons.personSimple =>
-        asset('User-Identifier-Card'),
+      PhosphorIcons.personSimple => asset('User-Identifier-Card'),
       PhosphorIcons.imageBroken ||
-      PhosphorIcons.imagesDuotone =>
-        asset('Multiple-image-2'),
+      PhosphorIcons.imagesDuotone => asset('Multiple-image-2'),
       PhosphorIcons.info ||
-      PhosphorIcons.question =>
-        asset('Chat-Bubble-Square-Question'),
+      PhosphorIcons.question => asset('Chat-Bubble-Square-Question'),
       PhosphorIcons.keyDuotone || PhosphorIcons.password => asset('Key'),
       PhosphorIcons.lock ||
-      PhosphorIcons.lockKeyOpen =>
-        asset('Padlock-Square-1'),
+      PhosphorIcons.lockKeyOpen => asset('Padlock-Square-1'),
       PhosphorIcons.magicWand ||
       PhosphorIcons.magicWandDuotone ||
       PhosphorIcons.rocketLaunch ||
-      PhosphorIcons.sparkle =>
-        asset('Artificial-Intelligence-Spark'),
+      PhosphorIcons.sparkle => asset('Artificial-Intelligence-Spark'),
       PhosphorIcons.minusCircle ||
-      PhosphorIcons.minusCircleDuotone =>
-        asset('Minus-Circle'),
+      PhosphorIcons.minusCircleDuotone => asset('Minus-Circle'),
       PhosphorIcons.notePencil ||
       PhosphorIcons.pencilSimple ||
-      PhosphorIcons.pencilSimpleDuotone =>
-        asset('Edit-Image-Photo'),
+      PhosphorIcons.pencilSimpleDuotone => asset('Edit-Image-Photo'),
       PhosphorIcons.plusCircle ||
-      PhosphorIcons.plusCircleDuotone =>
-        asset('Plus-Circle'),
+      PhosphorIcons.plusCircleDuotone => asset('Plus-Circle'),
       PhosphorIcons.printerDuotone => asset('Printer'),
       PhosphorIcons.qrCode || PhosphorIcons.qrCodeDuotone => asset('Qr-Code'),
       PhosphorIcons.receipt ||
-      PhosphorIcons.sealCheck =>
-        asset('Receipt-Check'),
+      PhosphorIcons.sealCheck => asset('Receipt-Check'),
       PhosphorIcons.scan || PhosphorIcons.scanDuotone => asset('OMR'),
       PhosphorIcons.shareDuotone => asset('Share-Link'),
       PhosphorIcons.shield || PhosphorIcons.shieldCheck => asset('Shield-2'),
@@ -115,14 +100,12 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.table || PhosphorIcons.textT => asset('App Manual-Book'),
       PhosphorIcons.trash || PhosphorIcons.trashDuotone => asset('Delete-2'),
       PhosphorIcons.user ||
-      PhosphorIcons.userDuotone =>
-        asset('User-Circle-Single'),
+      PhosphorIcons.userDuotone => asset('User-Circle-Single'),
       PhosphorIcons.userPlus => asset('Add-Square'),
       PhosphorIcons.usersThreeDuotone => asset('User-Multiple-Group'),
       PhosphorIcons.wallet => asset('Shopping-Cart-1'),
       PhosphorIcons.warning ||
-      PhosphorIcons.warningCircle =>
-        asset('Warning-Triangle'),
+      PhosphorIcons.warningCircle => asset('Warning-Triangle'),
       PhosphorIcons.wifiHigh => asset('Wifi'),
       PhosphorIcons.wrench => asset('Wrench'),
       PhosphorIcons.x || PhosphorIcons.xDuotone => asset('Close-1'),
@@ -131,7 +114,7 @@ class AppIcon extends StatelessWidget {
     if (path == null) return null;
     return (
       path: path,
-      quarterTurns: value == PhosphorIcons.arrowLeftDuotone ? 2 : 0
+      quarterTurns: value == PhosphorIcons.arrowLeftDuotone ? 2 : 0,
     );
   }
 
@@ -141,11 +124,7 @@ class AppIcon extends StatelessWidget {
     final effectiveSize = size ?? IconTheme.of(context).size ?? 24;
     final effectiveColor = color ?? IconTheme.of(context).color;
     if (resolved == null) {
-      return PhosphorIcon(
-        icon,
-        size: effectiveSize,
-        color: effectiveColor,
-      );
+      return PhosphorIcon(icon, size: effectiveSize, color: effectiveColor);
     }
     final svg = SvgPicture.asset(
       resolved.path,
@@ -184,10 +163,6 @@ class AppDuotoneIcon extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => AppIcon(
-        icon,
-        size: size,
-        color: color,
-        semanticLabel: semanticLabel,
-      );
+  Widget build(BuildContext context) =>
+      AppIcon(icon, size: size, color: color, semanticLabel: semanticLabel);
 }

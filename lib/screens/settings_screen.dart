@@ -49,32 +49,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final report = await LocalDiagnostics.report();
     if (!mounted) return;
     await showDialog<void>(
-        context: context,
-        builder: (dialog) => AlertDialog(
-              title: const Text('Local diagnostics'),
-              content: SingleChildScrollView(
-                  child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                      'Only error types, app code locations, build and platform are stored. No messages, account details or attachments. Nothing is sent automatically.'),
-                  const SizedBox(height: 16),
-                  SelectableText(report, style: const TextStyle(fontSize: 11)),
-                ],
-              )),
-              actions: [
-                TextButton(
-                    onPressed: () async {
-                      await LocalDiagnostics.clear();
-                      if (dialog.mounted) Navigator.pop(dialog);
-                    },
-                    child: const Text('Clear records')),
-                FilledButton(
-                    onPressed: () => Navigator.pop(dialog),
-                    child: const Text('Close')),
-              ],
-            ));
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: const Text('Local diagnostics'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Only error types, app code locations, build and platform are stored. No messages, account details or attachments. Nothing is sent automatically.',
+              ),
+              const SizedBox(height: 16),
+              SelectableText(report, style: const TextStyle(fontSize: 11)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await LocalDiagnostics.clear();
+              if (dialog.mounted) Navigator.pop(dialog);
+            },
+            child: const Text('Clear records'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialog),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -112,7 +117,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       builder: (context, value, _) => SwitchListTile(
                         title: const Text('Reduce motion'),
                         subtitle: const Text(
-                            'Use still transitions and loading indicators. Your device’s reduce-motion preference is always respected.'),
+                          'Use still transitions and loading indicators. Your device’s reduce-motion preference is always respected.',
+                        ),
                         value: value,
                         onChanged: AppSettings.setReduceMotion,
                       ),
@@ -127,7 +133,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: ListTile(
                       title: const Text('Local diagnostics'),
                       subtitle: const Text(
-                          'On this device only · Remote reporting off'),
+                        'On this device only · Remote reporting off',
+                      ),
                       trailing: const AppIcon(PhosphorIcons.caretRight),
                       onTap: _diagnostics,
                     ),

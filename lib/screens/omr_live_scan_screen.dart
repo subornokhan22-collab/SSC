@@ -109,8 +109,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
-      final controller =
-          CameraController(back, ResolutionPreset.high, enableAudio: false);
+      final controller = CameraController(
+        back,
+        ResolutionPreset.high,
+        enableAudio: false,
+      );
       opening = controller;
       await controller.initialize();
       if (!_current(generation)) {
@@ -181,11 +184,11 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     _quality = q;
     _confidence = q.ready
         ? (_confidence + 1 > _confidenceTarget
-            ? _confidenceTarget
-            : _confidence + 1)
+              ? _confidenceTarget
+              : _confidence + 1)
         : (_confidence - _confidenceLoss < 0
-            ? 0
-            : _confidence - _confidenceLoss);
+              ? 0
+              : _confidence - _confidenceLoss);
     if (_autoCapture && _confidence >= _confidenceTarget && !_capturing) {
       _confidence = 0;
       _capture();
@@ -193,7 +196,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     }
     // Rebuild only when the guidance visibly changes, or at most every
     // ~0.4 s while the metrics keep moving.
-    final changed = prev == null ||
+    final changed =
+        prev == null ||
         prev.ready != q.ready ||
         prev.marks != q.marks ||
         (prev.quad == null) != (q.quad == null) ||
@@ -210,7 +214,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     if (!_foreground ||
         _capturing ||
         controller == null ||
-        !controller.value.isInitialized) return;
+        !controller.value.isInitialized)
+      return;
     final generation = _cameraGeneration;
     setState(() => _capturing = true);
     try {
@@ -417,8 +422,9 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                           color: _autoCapture ? AppColors.omr : Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color:
-                                _autoCapture ? AppColors.omr : Colors.white54,
+                            color: _autoCapture
+                                ? AppColors.omr
+                                : Colors.white54,
                           ),
                         ),
                         child: Text(
@@ -447,17 +453,17 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   }
 
   Widget _round(IconData icon, VoidCallback onTap) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(
-            color: Colors.black54,
-            shape: BoxShape.circle,
-          ),
-          child: AppIcon(icon, color: Colors.white, size: 22),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 40,
+      height: 40,
+      decoration: const BoxDecoration(
+        color: Colors.black54,
+        shape: BoxShape.circle,
+      ),
+      child: AppIcon(icon, color: Colors.white, size: 22),
+    ),
+  );
 }
 
 /// Draws the dimmed area outside the centred A4 guide, the guide frame with
@@ -503,8 +509,9 @@ class _GuidePainter extends CustomPainter {
       // Teal = a real OMR sheet is detected and readable, amber = it is still
       // being aligned. Red stays reserved for a genuine fault, so the colour
       // alone tells the teacher whether to hold still or stop.
-      final color =
-          q!.ready ? const Color(0xFF087F8C) : const Color(0xFFE8B23A);
+      final color = q!.ready
+          ? const Color(0xFF087F8C)
+          : const Color(0xFFE8B23A);
       final edge = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
@@ -552,8 +559,9 @@ class _GuidePainter extends CustomPainter {
     final border = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color =
-          streamDead ? const Color(0xD9FF5252) : AppColors.omr.withOpacity(.85);
+      ..color = streamDead
+          ? const Color(0xD9FF5252)
+          : AppColors.omr.withOpacity(.85);
     canvas.drawRRect(
       RRect.fromRectAndRadius(guide, Radius.circular(r)),
       border,

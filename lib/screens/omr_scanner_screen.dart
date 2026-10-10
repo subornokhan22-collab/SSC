@@ -119,8 +119,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     _subjectCtrl = TextEditingController(text: widget.initialSubject);
     _loadHistory();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final allowed =
-          await SubscriptionGuard.require(context, PremiumFeature.omrScanner);
+      final allowed = await SubscriptionGuard.require(
+        context,
+        PremiumFeature.omrScanner,
+      );
       if (!mounted) return;
       if (!allowed) {
         Navigator.of(context).maybePop();
@@ -181,8 +183,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// act on uses this (never a plain snackbar).
   Future<void> _problem(String title, String message, {String? detail}) {
     if (!mounted) return Future<void>.value();
-    return showProblemDialog(context,
-        title: title, message: message, detail: detail);
+    return showProblemDialog(
+      context,
+      title: title,
+      message: message,
+      detail: detail,
+    );
   }
 
   /// Primary capture path: Google's ML Kit document scanner — live corner
@@ -609,8 +615,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     bool cropped = false;
     if (res.rectifiedJpeg != null) {
       try {
-        final frame = await (await ui.instantiateImageCodec(res.rectifiedJpeg!))
-            .getNextFrame();
+        final frame = await (await ui.instantiateImageCodec(
+          res.rectifiedJpeg!,
+        )).getNextFrame();
         img = frame.image;
         cropped = true;
       } catch (_) {
@@ -620,8 +627,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     if (img == null) {
       if (photoBytes != null) {
         try {
-          final frame =
-              await (await ui.instantiateImageCodec(photoBytes)).getNextFrame();
+          final frame = await (await ui.instantiateImageCodec(
+            photoBytes,
+          )).getNextFrame();
           img = frame.image;
         } catch (_) {
           img = null;
@@ -638,8 +646,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       final h = (img.height * s).round();
       // Cropped image is A4-proportioned (page space); the original
       // photo is the work grid — the two need different display factors.
-      final k =
-          cropped ? (w / OMrGeometry.pageW) : (w / res.workWidth.toDouble());
+      final k = cropped
+          ? (w / OMrGeometry.pageW)
+          : (w / res.workWidth.toDouble());
       final geo = OMrGeometry(_total);
       // Marker placement: cropped mode maps page points straight to the
       // display; photo mode runs them through the scan's homography.
@@ -761,8 +770,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       await PaperPdf.printOmScorecard(
         title: _titleCtrl.text.trim().isEmpty
             ? (AppSettings.defaultName.isNotEmpty
-                ? AppSettings.defaultName
-                : 'OMR Test')
+                  ? AppSettings.defaultName
+                  : 'OMR Test')
             : _titleCtrl.text.trim(),
         subject: _subjectCtrl.text.trim(),
         roll: res.roll,
@@ -851,9 +860,7 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_accessChecked) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final result = _result;
     final graded = _graded;
@@ -865,7 +872,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             tooltip: 'Analytics & leaderboard',
             onPressed: () async {
               if (!await SubscriptionGuard.require(
-                  context, PremiumFeature.omrScanner)) return;
+                context,
+                PremiumFeature.omrScanner,
+              ))
+                return;
               if (!mounted) return;
               await Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const OMrAnalyticsScreen()),
@@ -877,7 +887,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
             tooltip: 'Key draft restore',
             onPressed: _busy || _step != 0 ? null : _restoreKeyDraft,
             icon: const AppDuotoneIcon(
-                PhosphorIcons.clockCounterClockwiseDuotone),
+              PhosphorIcons.clockCounterClockwiseDuotone,
+            ),
           ),
         ],
       ),
@@ -900,8 +911,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: _busy ? null : () => setState(() => _step--),
-                  icon: const AppDuotoneIcon(PhosphorIcons.arrowLeftDuotone,
-                      size: 16),
+                  icon: const AppDuotoneIcon(
+                    PhosphorIcons.arrowLeftDuotone,
+                    size: 16,
+                  ),
                   label: const Text('Back'),
                 ),
               ),
@@ -970,8 +983,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         ),
                         onPressed: _busy ? null : _pickSavedPaper,
                         icon: const AppDuotoneIcon(
-                            PhosphorIcons.bookmarksSimpleDuotone,
-                            size: 18),
+                          PhosphorIcons.bookmarksSimpleDuotone,
+                          size: 18,
+                        ),
                         label: const Text(
                           'Use saved paper (key auto-loads)',
                           style: TextStyle(
@@ -993,10 +1007,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         ),
                         const SizedBox(width: 12),
                         IconButton(
-                          onPressed:
-                              _total > 5 ? () => _setTotal(_total - 5) : null,
+                          onPressed: _total > 5
+                              ? () => _setTotal(_total - 5)
+                              : null,
                           icon: const AppDuotoneIcon(
-                              PhosphorIcons.minusCircleDuotone),
+                            PhosphorIcons.minusCircleDuotone,
+                          ),
                         ),
                         SizedBox(
                           width: 44,
@@ -1011,10 +1027,12 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           ),
                         ),
                         IconButton(
-                          onPressed:
-                              _total < 100 ? () => _setTotal(_total + 5) : null,
+                          onPressed: _total < 100
+                              ? () => _setTotal(_total + 5)
+                              : null,
                           icon: const AppDuotoneIcon(
-                              PhosphorIcons.plusCircleDuotone),
+                            PhosphorIcons.plusCircleDuotone,
+                          ),
                         ),
                         const Spacer(),
                         TextButton(
@@ -1086,8 +1104,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       const SizedBox(height: 8),
                       TextButton.icon(
                         onPressed: () => _scanNext(),
-                        icon: const AppDuotoneIcon(PhosphorIcons.xDuotone,
-                            size: 16),
+                        icon: const AppDuotoneIcon(
+                          PhosphorIcons.xDuotone,
+                          size: 16,
+                        ),
                         label: const Text('Change / remove photo'),
                       ),
                     ],
@@ -1097,8 +1117,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       child: OutlinedButton.icon(
                         onPressed: _busy ? null : _batchDialog,
                         icon: const AppDuotoneIcon(
-                            PhosphorIcons.usersThreeDuotone,
-                            size: 18),
+                          PhosphorIcons.usersThreeDuotone,
+                          size: 18,
+                        ),
                         label: const Text('Batch scan'),
                       ),
                     ),
@@ -1202,7 +1223,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     const ActivityIndicator(color: AppColors.omr),
                     const SizedBox(width: 14),
                     Expanded(
-                        child: Text(_batchProgress ?? 'শিট পড়া হচ্ছে...')),
+                      child: Text(_batchProgress ?? 'শিট পড়া হচ্ছে...'),
+                    ),
                   ],
                 ),
               ),
@@ -1299,7 +1321,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     TextButton.icon(
                       onPressed: _busy ? null : () => setState(() => _step = 2),
                       icon: const AppDuotoneIcon(
-                          PhosphorIcons.pencilSimpleDuotone),
+                        PhosphorIcons.pencilSimpleDuotone,
+                      ),
                       label: const Text('Review / correct readings'),
                     ),
                     const SizedBox(height: 14),
@@ -1328,8 +1351,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _scanNext,
-                        icon: const AppDuotoneIcon(PhosphorIcons.userDuotone,
-                            size: 18),
+                        icon: const AppDuotoneIcon(
+                          PhosphorIcons.userDuotone,
+                          size: 18,
+                        ),
                         label: const Text("Scan next student's OMR sheet"),
                       ),
                     ),
@@ -1420,8 +1445,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         radius: 16,
                         backgroundColor:
                             r.score * 100 ~/ math.max(1, r.total) >= 50
-                                ? AppTheme.success
-                                : AppTheme.warning,
+                            ? AppTheme.success
+                            : AppTheme.warning,
                         child: Text(
                           '${r.score}/${r.total}',
                           style: const TextStyle(
@@ -1490,18 +1515,17 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')} ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 
   Widget _chip(String label, Color color) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-        decoration: BoxDecoration(
-          color: color.withOpacity(.12),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(.5)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w700, color: color),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+    decoration: BoxDecoration(
+      color: color.withOpacity(.12),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: color.withOpacity(.5)),
+    ),
+    child: Text(
+      label,
+      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+    ),
+  );
 
   // ── batch results helpers ──
 
@@ -1699,8 +1723,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                 : AppTheme.surfaceAlt,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color:
-                  chosen >= 0 ? AppColors.omr.withOpacity(.5) : AppTheme.border,
+              color: chosen >= 0
+                  ? AppColors.omr.withOpacity(.5)
+                  : AppTheme.border,
             ),
           ),
           child: Row(
@@ -1723,11 +1748,11 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                     onTap: _busy
                         ? null
                         : () => setState(() {
-                              _key[i] = o;
-                              _result = null;
-                              _graded = null;
-                              _activeRecordId = null;
-                            }),
+                            _key[i] = o;
+                            _result = null;
+                            _graded = null;
+                            _activeRecordId = null;
+                          }),
                     child: Center(
                       child: Container(
                         width: 26,
@@ -1736,8 +1761,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                           shape: BoxShape.circle,
                           color: chosen == o ? AppColors.omr : Colors.white,
                           border: Border.all(
-                            color:
-                                chosen == o ? AppColors.omr : AppTheme.border,
+                            color: chosen == o
+                                ? AppColors.omr
+                                : AppTheme.border,
                           ),
                         ),
                         child: Center(
@@ -1964,7 +1990,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
       await showProblemDialog(
         context,
         title: 'No sheet could be read',
-        message: 'None of the selected photos could be aligned to the OMR '
+        message:
+            'None of the selected photos could be aligned to the OMR '
             'grid.',
         detail:
             'Check that each sheet is flat, fills the frame with a small margin, and the bubbles are clearly filled — then try again.',
@@ -2034,8 +2061,8 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
 
   String _choiceLetter(int i, OmGraded g) =>
       i < g.answers.length && g.answers[i] >= 0
-          ? _letters[g.answers[i]]
-          : (i < g.answers.length && g.answers[i] == -2 ? '?' : '—');
+      ? _letters[g.answers[i]]
+      : (i < g.answers.length && g.answers[i] == -2 ? '?' : '—');
 
   String _glyph(int status) =>
       status == 0 ? '✓' : (status == 1 ? '✗' : (status == 2 ? '·' : '?'));

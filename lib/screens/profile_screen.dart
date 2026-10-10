@@ -238,8 +238,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setD(() => err = 'Enter your full name (min 3 characters).');
                   return;
                 }
-                if (!RegExp(r'^1\d{9}$')
-                    .hasMatch(_localPhone(phoneCtrl.text))) {
+                if (!RegExp(
+                  r'^1\d{9}$',
+                ).hasMatch(_localPhone(phoneCtrl.text))) {
                   setD(() => err = 'Enter a valid number, e.g. 1XXXXXXXXX.');
                   return;
                 }
@@ -289,7 +290,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (!mounted) return;
       setState(() {
         _hasPaidSubscription = subscription.entitlement.isPaid;
-        _msg = 'Diagnostic plan: '
+        _msg =
+            'Diagnostic plan: '
             '${subscription.entitlement.plan.displayName}. '
             'Tap refresh again for the next plan.';
         _err = null;
@@ -323,7 +325,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (!mounted) return;
       setState(() {
         _hasPaidSubscription = subscription.entitlement.isPaid;
-        _msg = 'Diagnostic plan: '
+        _msg =
+            'Diagnostic plan: '
             '${subscription.entitlement.plan.displayName}.';
         _err = null;
       });
@@ -448,13 +451,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final name = _profile?['name']?.toString() ?? '';
     final phone = _profile?['phone']?.toString() ?? '';
     final hasPaidSubscription = _hasPaidSubscription;
-    final diagnosticAccount = SubscriptionViewModel.planDiagnosticsEnabled &&
+    final diagnosticAccount =
+        SubscriptionViewModel.planDiagnosticsEnabled &&
         AuthService.email?.trim().toLowerCase() ==
             SubscriptionViewModel.diagnosticAccount;
     final currentPlan = SubscriptionState.instance.entitlement.plan.displayName;
     final source = name.isNotEmpty ? name : (AuthService.email ?? 'T');
-    final initial =
-        (source.isEmpty ? 'T' : source.substring(0, 1)).toUpperCase();
+    final initial = (source.isEmpty ? 'T' : source.substring(0, 1))
+        .toUpperCase();
 
     return GlassCard(
       child: Column(
@@ -667,11 +671,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: Row(
         children: [
-          const AppIcon(
-            PhosphorIcons.crown,
-            color: AppTheme.accent,
-            size: 30,
-          ),
+          const AppIcon(PhosphorIcons.crown, color: AppTheme.accent, size: 30),
           const SizedBox(width: 14),
           const Expanded(
             child: Column(

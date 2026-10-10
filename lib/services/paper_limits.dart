@@ -17,11 +17,7 @@ class PaperLimits {
     return mcq + saq + cq <= maxTotalQuestions;
   }
 
-  static String message({
-    required int mcq,
-    required int saq,
-    required int cq,
-  }) {
+  static String message({required int mcq, required int saq, required int cq}) {
     if (mcq > maxMcq) return 'A paper supports at most $maxMcq MCQs.';
     if (saq > maxSaq)
       return 'A paper supports at most $maxSaq short questions.';

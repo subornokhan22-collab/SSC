@@ -18,13 +18,16 @@ class ContentCatalogSync {
         if (id.isEmpty || name.isEmpty) continue;
         final existing = bundledSubjects.where((s) => s.id == id);
         final old = existing.isEmpty ? null : existing.first;
-        subjects.add(SubjectInfo(
+        subjects.add(
+          SubjectInfo(
             id: id,
             name: name,
             bengaliName: name,
             icon: old?.icon ?? '📘',
             colorHex: old?.colorHex ?? AppColors.primary.value,
-            group: old?.group ?? SubjectGroup.general));
+            group: old?.group ?? SubjectGroup.general,
+          ),
+        );
         chapters[id] = list;
       } catch (e) {
         debugPrint('Invalid catalog row: $e');
@@ -47,7 +50,7 @@ class ContentCatalogSync {
     if (!SupabaseConfig.isConfigured) return;
     try {
       final rows = <dynamic>[];
-      for (var offset = 0;; offset += 500) {
+      for (var offset = 0; ; offset += 500) {
         final page = await Supabase.instance.client
             .from('content_subjects')
             .select()

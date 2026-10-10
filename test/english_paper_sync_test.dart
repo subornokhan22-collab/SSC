@@ -6,65 +6,88 @@ import 'package:tutors_desk/data/english_paper_sync.dart';
 import 'package:tutors_desk/models/paper_draft.dart';
 import 'package:tutors_desk/services/paper_composer.dart';
 
-Map<String, dynamic> fixture(String type) => jsonDecode(
-        File('web-admin/tests/fixtures/english-$type.json').readAsStringSync())
-    as Map<String, dynamic>;
+Map<String, dynamic> fixture(String type) =>
+    jsonDecode(
+          File(
+            'web-admin/tests/fixtures/english-$type.json',
+          ).readAsStringSync(),
+        )
+        as Map<String, dynamic>;
 void main() {
   tearDown(() => EnglishPaperSync.replaceRows([]));
   test('source first/second paper models feed the actual PDF adapter', () {
     for (final type in ['first', 'second']) {
       final p = EnglishPaperDocument.fromJson(fixture(type));
-      expect(p.sections.where((s) => RegExp(r'^\d+\.').hasMatch(s.head)).length,
-          type == 'first' ? 11 : 12);
+      expect(
+        p.sections.where((s) => RegExp(r'^\d+\.').hasMatch(s.head)).length,
+        type == 'first' ? 11 : 12,
+      );
       expect(p.answers.values, everyElement(isNull));
       expect(p.board, 'Dhaka');
     }
   });
   test(
-      'published papers stay in the full randomized pool; UI choices hide provenance',
-      () {
-    final row = fixture('first');
-    EnglishPaperSync.replaceRows([row]);
-    expect(EnglishPaperSync.papers, isEmpty);
-    row['review_status'] = 'published';
-    EnglishPaperSync.replaceRows([row]);
-    expect(EnglishPaperSync.choices('english_1st'), isEmpty);
-    expect(EnglishPaperSync.choices('english_2nd'), isEmpty);
-    expect(
+    'published papers stay in the full randomized pool; UI choices hide provenance',
+    () {
+      final row = fixture('first');
+      EnglishPaperSync.replaceRows([row]);
+      expect(EnglishPaperSync.papers, isEmpty);
+      row['review_status'] = 'published';
+      EnglishPaperSync.replaceRows([row]);
+      expect(EnglishPaperSync.choices('english_1st'), isEmpty);
+      expect(EnglishPaperSync.choices('english_2nd'), isEmpty);
+      expect(
         () => EnglishPaperSync.compose(
-            'english_1st', row['id'] as String, Random(1)),
-        returnsNormally);
-    row['is_active'] = false;
-    EnglishPaperSync.replaceRows([row]);
-    expect(EnglishPaperSync.papers, isEmpty);
-    expect(
+          'english_1st',
+          row['id'] as String,
+          Random(1),
+        ),
+        returnsNormally,
+      );
+      row['is_active'] = false;
+      EnglishPaperSync.replaceRows([row]);
+      expect(EnglishPaperSync.papers, isEmpty);
+      expect(
         () => EnglishPaperSync.compose(
-            'english_1st', row['id'] as String, Random(1)),
-        returnsNormally);
-  });
+          'english_1st',
+          row['id'] as String,
+          Random(1),
+        ),
+        returnsNormally,
+      );
+    },
+  );
   test('saved draft retains selected board identity', () {
     final row = fixture('second')..['review_status'] = 'published';
     EnglishPaperSync.replaceRows([row]);
     final draft = PaperDraft(
-        subjectId: 'english_2nd', englishPaperId: row['id'] as String);
+      subjectId: 'english_2nd',
+      englishPaperId: row['id'] as String,
+    );
     final saved = PaperDraft.fromJson(draft.toJson());
     expect(saved.englishPaperId, row['id']);
-    final paper =
-        PaperComposer(mcqBank: [], saqBank: [], cqBank: [], random: Random(2))
-            .compose(saved);
+    final paper = PaperComposer(
+      mcqBank: [],
+      saqBank: [],
+      cqBank: [],
+      random: Random(2),
+    ).compose(saved);
     expect(
-        paper.english.where((s) => RegExp(r'^\d+\.').hasMatch(s.head)).length,
-        12);
+      paper.english.where((s) => RegExp(r'^\d+\.').hasMatch(s.head)).length,
+      12,
+    );
     expect(paper.marks, 100);
     expect(saved.copyWith(clearEnglishPaper: true).englishPaperId, isNull);
   });
-  test('malformed remote tables are rejected without replacing bundled sets',
-      () {
-    final row = fixture('first');
-    (row['data'] as Map)['q4Table'] = [
-      ['one'],
-      ['two', 'three']
-    ];
-    expect(() => EnglishPaperDocument.fromJson(row), throwsFormatException);
-  });
+  test(
+    'malformed remote tables are rejected without replacing bundled sets',
+    () {
+      final row = fixture('first');
+      (row['data'] as Map)['q4Table'] = [
+        ['one'],
+        ['two', 'three'],
+      ];
+      expect(() => EnglishPaperDocument.fromJson(row), throwsFormatException);
+    },
+  );
 }

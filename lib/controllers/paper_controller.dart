@@ -42,16 +42,16 @@ class PaperController extends OperationController {
   bool get canRedo => _redo.isNotEmpty && !busy;
   SubjectInfo? get subject => subjectById(draft.subjectId);
   List<String> get chapters => ChapterCatalog.ordered({
-        ...composer.mcqBank
-            .where((q) => q.subjectId == draft.subjectId)
-            .map((q) => q.chapter),
-        ...composer.saqBank
-            .where((q) => q.subjectId == draft.subjectId)
-            .map((q) => q.chapter),
-        ...composer.cqBank
-            .where((q) => q.subjectId == draft.subjectId)
-            .map((q) => q.chapter),
-      }, subjectId: draft.subjectId);
+    ...composer.mcqBank
+        .where((q) => q.subjectId == draft.subjectId)
+        .map((q) => q.chapter),
+    ...composer.saqBank
+        .where((q) => q.subjectId == draft.subjectId)
+        .map((q) => q.chapter),
+    ...composer.cqBank
+        .where((q) => q.subjectId == draft.subjectId)
+        .map((q) => q.chapter),
+  }, subjectId: draft.subjectId);
 
   Future<void> initialize({bool restore = true}) async {
     try {
@@ -86,8 +86,9 @@ class PaperController extends OperationController {
               restored.mcqs.any(
                 (q) => q.subjectId != snapshot.draft.subjectId,
               ) ||
-              QuestionSchemaValidator.validateBatch(restored.mcqs)
-                  .any((v) => !v.valid)) {
+              QuestionSchemaValidator.validateBatch(
+                restored.mcqs,
+              ).any((v) => !v.valid)) {
             throw const FormatException('Invalid paper draft');
           }
         }
@@ -130,8 +131,8 @@ class PaperController extends OperationController {
         format: PaperComposer.isEnglish(id)
             ? PaperFormat.board
             : !PaperComposer.codes.containsKey(id)
-                ? PaperFormat.custom
-                : draft.format,
+            ? PaperFormat.custom
+            : draft.format,
       ),
     );
   }
@@ -197,7 +198,7 @@ class PaperController extends OperationController {
         for (final q in <Object>[
           ...result.mcqs,
           ...result.saqs,
-          ...result.cqs
+          ...result.cqs,
         ]) {
           final v = QuestionValidationService.validate(q);
           if (!v.valid)
@@ -224,18 +225,20 @@ class PaperController extends OperationController {
   void replaceQuestion(int index) {
     if (busy || paper == null || !_hasIndex(paper!.mcqs, index)) return;
     final old = paper!.mcqs[index];
-    final used =
-        paper!.mcqs.map((q) => q.questionText.trim().toLowerCase()).toSet();
-    final pool = composer.mcqBank
-        .where(
-          (q) =>
-              q.subjectId == old.subjectId &&
-              q.chapter == old.chapter &&
-              !used.contains(q.questionText.trim().toLowerCase()) &&
-              QuestionSchemaValidator.validateMcq(q).valid,
-        )
-        .toList()
-      ..shuffle(composer.random);
+    final used = paper!.mcqs
+        .map((q) => q.questionText.trim().toLowerCase())
+        .toSet();
+    final pool =
+        composer.mcqBank
+            .where(
+              (q) =>
+                  q.subjectId == old.subjectId &&
+                  q.chapter == old.chapter &&
+                  !used.contains(q.questionText.trim().toLowerCase()) &&
+                  QuestionSchemaValidator.validateMcq(q).valid,
+            )
+            .toList()
+          ..shuffle(composer.random);
     if (pool.isEmpty) {
       error = 'No unused question is available in this chapter.';
       changed();
@@ -253,14 +256,14 @@ class PaperController extends OperationController {
       return;
     }
     if (paper!.mcqs.asMap().entries.any(
-          (e) =>
-              e.key != index &&
-              DuplicateDetector.isDuplicate(
-                q.questionText,
-                e.value.questionText,
-                threshold: 1,
-              ),
-        )) {
+      (e) =>
+          e.key != index &&
+          DuplicateDetector.isDuplicate(
+            q.questionText,
+            e.value.questionText,
+            threshold: 1,
+          ),
+    )) {
       error = 'This question already exists in the paper.';
       changed();
       return;
@@ -273,7 +276,8 @@ class PaperController extends OperationController {
     if (busy ||
         paper == null ||
         draft.format == PaperFormat.board ||
-        !_hasIndex(paper!.mcqs, index)) return;
+        !_hasIndex(paper!.mcqs, index))
+      return;
     if (paper!.mcqs.length == 1 && paper!.saqs.isEmpty && paper!.cqs.isEmpty) {
       error = 'Keep at least one question in the paper.';
       changed();
@@ -330,11 +334,15 @@ class PaperController extends OperationController {
     }
     if (question is ShortQuestion) {
       if (!_hasIndex(paper!.saqs, index)) return;
-      if (paper!.saqs.asMap().entries.any((e) =>
-          e.key != index &&
-          DuplicateDetector.isDuplicate(
-              question.questionText, e.value.questionText,
-              threshold: 1))) {
+      if (paper!.saqs.asMap().entries.any(
+        (e) =>
+            e.key != index &&
+            DuplicateDetector.isDuplicate(
+              question.questionText,
+              e.value.questionText,
+              threshold: 1,
+            ),
+      )) {
         error = 'This question already exists in the paper.';
         changed();
         return;
@@ -343,10 +351,15 @@ class PaperController extends OperationController {
       _apply(PaperSnapshot(draft, paper!.withWritten(short: next)));
     } else if (question is CreativeQuestion) {
       if (!_hasIndex(paper!.cqs, index)) return;
-      if (paper!.cqs.asMap().entries.any((e) =>
-          e.key != index &&
-          DuplicateDetector.isDuplicate(question.stem, e.value.stem,
-              threshold: 1))) {
+      if (paper!.cqs.asMap().entries.any(
+        (e) =>
+            e.key != index &&
+            DuplicateDetector.isDuplicate(
+              question.stem,
+              e.value.stem,
+              threshold: 1,
+            ),
+      )) {
         error = 'This stimulus already exists in the paper.';
         changed();
         return;
@@ -361,7 +374,8 @@ class PaperController extends OperationController {
         paper == null ||
         (creative
             ? !_hasIndex(paper!.cqs, index)
-            : !_hasIndex(paper!.saqs, index))) return;
+            : !_hasIndex(paper!.saqs, index)))
+      return;
     final candidates = <Object>[];
     String? section;
     if (creative) {
@@ -369,21 +383,29 @@ class PaperController extends OperationController {
       final used = paper!.cqs.map((q) => q.stem.trim()).toSet();
       final ids = paper!.cqs.map((q) => q.id).toSet();
       section = RegExp(r'^\[[^\]]+\]\s*').firstMatch(old.stem)?.group(0);
-      candidates.addAll(composer.cqBank.where((q) =>
-          q.subjectId == old.subjectId &&
-          q.chapter == old.chapter &&
-          q.marks.length == old.marks.length &&
-          !ids.contains(q.id) &&
-          !used.contains(q.stem.trim())));
+      candidates.addAll(
+        composer.cqBank.where(
+          (q) =>
+              q.subjectId == old.subjectId &&
+              q.chapter == old.chapter &&
+              q.marks.length == old.marks.length &&
+              !ids.contains(q.id) &&
+              !used.contains(q.stem.trim()),
+        ),
+      );
     } else {
       final old = paper!.saqs[index];
       final used = paper!.saqs.map((q) => q.questionText.trim()).toSet();
       final ids = paper!.saqs.map((q) => q.id).toSet();
-      candidates.addAll(composer.saqBank.where((q) =>
-          q.subjectId == old.subjectId &&
-          q.chapter == old.chapter &&
-          !ids.contains(q.id) &&
-          !used.contains(q.questionText.trim())));
+      candidates.addAll(
+        composer.saqBank.where(
+          (q) =>
+              q.subjectId == old.subjectId &&
+              q.chapter == old.chapter &&
+              !ids.contains(q.id) &&
+              !used.contains(q.questionText.trim()),
+        ),
+      );
     }
     candidates.removeWhere((q) => !QuestionValidationService.validate(q).valid);
     candidates.shuffle(composer.random);
@@ -395,19 +417,20 @@ class PaperController extends OperationController {
     var selected = candidates.first;
     if (selected is CreativeQuestion && section != null) {
       selected = CreativeQuestion(
-          id: selected.id,
-          subjectId: selected.subjectId,
-          chapter: selected.chapter,
-          stem: '$section${selected.stem}',
-          questionK: selected.questionK,
-          questionKh: selected.questionKh,
-          questionG: selected.questionG,
-          questionGh: selected.questionGh,
-          answerKey: selected.answerKey,
-          marks: selected.marks,
-          source: selected.source,
-          sourceLabel: selected.sourceLabel,
-          figure: selected.figure);
+        id: selected.id,
+        subjectId: selected.subjectId,
+        chapter: selected.chapter,
+        stem: '$section${selected.stem}',
+        questionK: selected.questionK,
+        questionKh: selected.questionKh,
+        questionG: selected.questionG,
+        questionGh: selected.questionGh,
+        answerKey: selected.answerKey,
+        marks: selected.marks,
+        source: selected.source,
+        sourceLabel: selected.sourceLabel,
+        figure: selected.figure,
+      );
     }
     editWritten(index, selected);
   }
@@ -418,7 +441,8 @@ class PaperController extends OperationController {
         draft.format == PaperFormat.board ||
         (creative
             ? !_hasIndex(paper!.cqs, index)
-            : !_hasIndex(paper!.saqs, index))) return;
+            : !_hasIndex(paper!.saqs, index)))
+      return;
     if (paper!.mcqs.length + paper!.saqs.length + paper!.cqs.length <= 1) {
       error = 'Keep at least one question in the paper.';
       changed();
@@ -426,12 +450,20 @@ class PaperController extends OperationController {
     }
     if (creative) {
       final next = List<CreativeQuestion>.of(paper!.cqs)..removeAt(index);
-      _apply(PaperSnapshot(draft.copyWith(cqCount: next.length),
-          paper!.withWritten(creative: next)));
+      _apply(
+        PaperSnapshot(
+          draft.copyWith(cqCount: next.length),
+          paper!.withWritten(creative: next),
+        ),
+      );
     } else {
       final next = List<ShortQuestion>.of(paper!.saqs)..removeAt(index);
-      _apply(PaperSnapshot(draft.copyWith(saqCount: next.length),
-          paper!.withWritten(short: next)));
+      _apply(
+        PaperSnapshot(
+          draft.copyWith(saqCount: next.length),
+          paper!.withWritten(short: next),
+        ),
+      );
     }
   }
 

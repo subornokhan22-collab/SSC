@@ -31,8 +31,9 @@ class PaperExport {
     // Never let a stale or modified UI request remove the Free watermark.
     final effectiveWatermark =
         watermark || SubscriptionState.instance.shouldShowWatermark;
-    final title =
-        draft.title.trim().isEmpty ? 'মডেল পরীক্ষা — ২০২৭' : draft.title.trim();
+    final title = draft.title.trim().isEmpty
+        ? 'মডেল পরীক্ষা — ২০২৭'
+        : draft.title.trim();
     final pages = paper.english.isNotEmpty
         ? await PaperPdf.renderEnglishPages(
             paperTitle: title,
@@ -79,7 +80,8 @@ class PaperExport {
             mcqTime: '${paper.mcqs.length} মিনিট',
             writtenMarks: '${paper.marks - paper.mcqs.length}',
             writtenTime: '${paper.minutes - paper.mcqs.length} মিনিট',
-            mathCqThreePart: draft.subjectId == 'general_math' ||
+            mathCqThreePart:
+                draft.subjectId == 'general_math' ||
                 draft.subjectId == 'higher_math',
           );
     final images = List<Uint8List>.of(pages);
@@ -106,10 +108,7 @@ class PaperExport {
         pw.Page(
           pageFormat: PdfPageFormat.a4,
           margin: pw.EdgeInsets.zero,
-          build: (_) => pw.Image(
-            pw.MemoryImage(png),
-            fit: pw.BoxFit.fill,
-          ),
+          build: (_) => pw.Image(pw.MemoryImage(png), fit: pw.BoxFit.fill),
         ),
       );
     }
@@ -137,8 +136,10 @@ class PaperExport {
     final logo = await _watermarkLogo();
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final pageSize =
-        Size(pageImage.width.toDouble(), pageImage.height.toDouble());
+    final pageSize = Size(
+      pageImage.width.toDouble(),
+      pageImage.height.toDouble(),
+    );
     canvas.drawImage(pageImage, Offset.zero, Paint());
 
     // Keep the original supplied artwork and proportions. A translucent layer
@@ -160,10 +161,7 @@ class PaperExport {
       width: width,
       height: height,
     );
-    canvas.saveLayer(
-      destination,
-      Paint()..color = Colors.white.withAlpha(48),
-    );
+    canvas.saveLayer(destination, Paint()..color = Colors.white.withAlpha(48));
     canvas.drawImageRect(
       logo,
       Rect.fromLTWH(0, 0, logo.width.toDouble(), logo.height.toDouble()),
@@ -217,8 +215,13 @@ class PaperExport {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     canvas.drawColor(Colors.white, BlendMode.src);
-    void text(String value, double x, double y, double size,
-        {bool bold = false}) {
+    void text(
+      String value,
+      double x,
+      double y,
+      double size, {
+      bool bold = false,
+    }) {
       final painter = TextPainter(
         text: TextSpan(
           text: value,
@@ -236,8 +239,13 @@ class PaperExport {
     }
 
     text(title, 110, 90, 42, bold: true);
-    text('Written answer key • উত্তরমালা • সেট ${draft.setCode}', 110, 160, 30,
-        bold: true);
+    text(
+      'Written answer key • উত্তরমালা • সেট ${draft.setCode}',
+      110,
+      160,
+      30,
+      bold: true,
+    );
     var y = 250.0;
     var column = 0;
     void line(String value, {bool bold = false}) {

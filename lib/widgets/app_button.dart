@@ -45,11 +45,7 @@ class _AppButtonState extends State<AppButton> {
         if (widget.loading)
           ActivityIndicator(color: foreground)
         else if (widget.icon != null)
-          AppIcon(
-            widget.icon!,
-            size: 20,
-            color: foreground,
-          ),
+          AppIcon(widget.icon!, size: 20, color: foreground),
         if (widget.loading || widget.icon != null)
           const SizedBox(width: AppSpacing.sm),
         Flexible(
@@ -77,8 +73,8 @@ class _AppButtonState extends State<AppButton> {
           border: _focused && !disabled
               ? Border.all(color: AppTheme.textDark, width: 2)
               : widget.outlined
-                  ? Border.all(color: Colors.black.withOpacity(.45), width: 1.3)
-                  : null,
+              ? Border.all(color: Colors.black.withOpacity(.45), width: 1.3)
+              : null,
           boxShadow: filled
               ? [
                   BoxShadow(

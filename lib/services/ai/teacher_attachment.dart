@@ -10,12 +10,16 @@ class TeacherAttachment {
   final String name;
   final String mimeType;
   final Uint8List bytes;
-  TeacherAttachment(
-      {required this.name, required this.mimeType, required Uint8List bytes})
-      : bytes = Uint8List.fromList(bytes).asUnmodifiableView();
+  TeacherAttachment({
+    required this.name,
+    required this.mimeType,
+    required Uint8List bytes,
+  }) : bytes = Uint8List.fromList(bytes).asUnmodifiableView();
   bool get isPdf => mimeType == 'application/pdf';
-  Map<String, String> toJson() =>
-      {'mimeType': mimeType, 'data': base64Encode(bytes)};
+  Map<String, String> toJson() => {
+    'mimeType': mimeType,
+    'data': base64Encode(bytes),
+  };
 
   static void validate(List<TeacherAttachment> files) {
     if (files.length > maxCount)
@@ -25,7 +29,8 @@ class TeacherAttachment {
       total += f.bytes.length;
       if (f.bytes.isEmpty || total > maxBytes)
         throw const FormatException(
-            'Attachments must fit within 3 MB combined.');
+          'Attachments must fit within 3 MB combined.',
+        );
       if (!matchesType(f.bytes, f.mimeType))
         throw const FormatException('Use a valid JPEG, PNG, WebP or PDF file.');
     }
@@ -52,8 +57,11 @@ class TeacherAttachment {
 }
 
 Uint8List _preparePhoto(Uint8List bytes) {
-  if (!['image/jpeg', 'image/png', 'image/webp']
-      .any((m) => TeacherAttachment.matchesType(bytes, m))) {
+  if (![
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  ].any((m) => TeacherAttachment.matchesType(bytes, m))) {
     throw const FormatException('Use a JPEG, PNG or WebP photo.');
   }
   final decoder = img.findDecoderForData(bytes);
@@ -63,7 +71,8 @@ Uint8List _preparePhoto(Uint8List bytes) {
       info.height <= 0 ||
       info.width * info.height > 40000000) {
     throw const FormatException(
-        'Photo is unreadable or exceeds 40 megapixels.');
+      'Photo is unreadable or exceeds 40 megapixels.',
+    );
   }
   final decoded = img.decodeImage(bytes, frame: 0);
   if (decoded == null)
@@ -83,7 +92,8 @@ Future<Uint8List> readTeacherFile(Stream<List<int>> stream, int limit) async {
   await for (final chunk in stream) {
     if (result.length + chunk.length > limit)
       throw const FormatException(
-          'File is too large. Photos: 15 MB before resizing; PDFs: 3 MB.');
+        'File is too large. Photos: 15 MB before resizing; PDFs: 3 MB.',
+      );
     result.add(chunk);
   }
   return result.takeBytes();

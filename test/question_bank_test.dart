@@ -24,9 +24,9 @@ void main() {
     });
 
     test('the manifest agrees with the files on disk', () {
-      final manifest = json.decode(
-        File('assets/questions/manifest.json').readAsStringSync(),
-      ) as Map<String, dynamic>;
+      final manifest =
+          json.decode(File('assets/questions/manifest.json').readAsStringSync())
+              as Map<String, dynamic>;
 
       var counted = 0;
       for (final name in (manifest['files'] as List).cast<String>()) {
@@ -159,8 +159,9 @@ void main() {
     });
 
     test('questions_data.dart is now small', () {
-      final lines =
-          File('lib/data/questions_data.dart').readAsLinesSync().length;
+      final lines = File(
+        'lib/data/questions_data.dart',
+      ).readAsLinesSync().length;
       expect(
         lines,
         lessThan(200),

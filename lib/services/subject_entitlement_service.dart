@@ -34,8 +34,8 @@ class SubjectEntitlementService {
   SubjectEntitlementService({
     SubscriptionRepository? subscriptions,
     SupabaseClient? client,
-  })  : subscriptions = subscriptions ?? SubscriptionState.instance.repository,
-        _client = client;
+  }) : subscriptions = subscriptions ?? SubscriptionState.instance.repository,
+       _client = client;
 
   final SubscriptionRepository subscriptions;
   SupabaseClient? _client;
@@ -90,7 +90,8 @@ class SubjectEntitlementService {
     await load();
     final entitlement = subscriptions.current;
     final already = _selected.contains(subjectId);
-    final allowed = already ||
+    final allowed =
+        already ||
         entitlement.subjectLimit == null ||
         _selected.length < entitlement.subjectLimit!;
     return SubjectLimitResult(
@@ -118,8 +119,9 @@ class SubjectEntitlementService {
           params: {'p_subject_id': subjectId},
         );
         final row = _rpcRow(data);
-        final serverPlan =
-            subscriptionPlanFromString(row['plan_id']?.toString());
+        final serverPlan = subscriptionPlanFromString(
+          row['plan_id']?.toString(),
+        );
         final allowed = row['allowed'] == true;
         if (!allowed) {
           return SubjectLimitResult(
@@ -163,10 +165,7 @@ class SubjectEntitlementService {
     final c = client;
     if (id != null && c != null) {
       try {
-        await c.rpc(
-          'remove_user_subject',
-          params: {'p_subject_id': subjectId},
-        );
+        await c.rpc('remove_user_subject', params: {'p_subject_id': subjectId});
       } catch (_) {
         // Keep the local selection usable if the account is temporarily offline.
       }

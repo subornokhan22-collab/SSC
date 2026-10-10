@@ -38,12 +38,13 @@ class CreatePaperScreen extends StatefulWidget {
   final String? initialSubjectId;
   final PaperFormat? initialFormat;
   final List<Question>? initialQuestions;
-  const CreatePaperScreen(
-      {super.key,
-      this.quickStart = false,
-      this.initialSubjectId,
-      this.initialFormat,
-      this.initialQuestions});
+  const CreatePaperScreen({
+    super.key,
+    this.quickStart = false,
+    this.initialSubjectId,
+    this.initialFormat,
+    this.initialQuestions,
+  });
   @override
   State<CreatePaperScreen> createState() => _CreatePaperScreenState();
 }
@@ -62,7 +63,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     'Chapters & format',
     'Question counts',
     'Review questions',
-    'Paper preview'
+    'Paper preview',
   ];
   @override
   void initState() {
@@ -70,16 +71,22 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     final sid = widget.initialSubjectId ?? 'physics';
     final counts = PaperComposer.defaults(sid);
     c = PaperController(
-        composer:
-            PaperComposer(mcqBank: allMCQs, saqBank: allSAQs, cqBank: allCQs),
-        initial: PaperDraft(
-            subjectId: sid,
-            format: widget.initialFormat ?? PaperFormat.board,
-            mcqCount: counts.$1,
-            saqCount: counts.$2,
-            cqCount: counts.$3),
-        paperUsage: PaperUsageService());
-    _subjectChosen = widget.initialSubjectId != null ||
+      composer: PaperComposer(
+        mcqBank: allMCQs,
+        saqBank: allSAQs,
+        cqBank: allCQs,
+      ),
+      initial: PaperDraft(
+        subjectId: sid,
+        format: widget.initialFormat ?? PaperFormat.board,
+        mcqCount: counts.$1,
+        saqCount: counts.$2,
+        cqCount: counts.$3,
+      ),
+      paperUsage: PaperUsageService(),
+    );
+    _subjectChosen =
+        widget.initialSubjectId != null ||
         widget.initialQuestions?.isNotEmpty == true;
     c.addListener(sync);
     unawaited(initialize());
@@ -95,9 +102,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       await subscription.refresh();
     }
     await c.initialize(
-        restore: widget.initialSubjectId == null &&
-            widget.initialFormat == null &&
-            widget.initialQuestions == null);
+      restore:
+          widget.initialSubjectId == null &&
+          widget.initialFormat == null &&
+          widget.initialQuestions == null,
+    );
     if (_isFreePlan && c.draft.format != PaperFormat.board) {
       // A stale deep link or restored draft must not bypass the Free format
       // policy. Model Test is the only Free generation format.
@@ -140,15 +149,18 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           format != PaperFormat.board);
 
   Future<void> _explainLockedFormat(PaperFormat format) async {
-    final englishLocked = PaperComposer.isEnglish(c.draft.subjectId) &&
+    final englishLocked =
+        PaperComposer.isEnglish(c.draft.subjectId) &&
         format != PaperFormat.board;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Format locked'),
-        content: Text(englishLocked
-            ? 'English papers use the randomized full question pool. This format is not available for English.'
-            : 'Free includes exactly two Model Test generations per Asia/Dhaka month. Upgrade to unlock Chapter Test, Custom Paper, and MCQ + OMR.'),
+        content: Text(
+          englishLocked
+              ? 'English papers use the randomized full question pool. This format is not available for English.'
+              : 'Free includes exactly two Model Test generations per Asia/Dhaka month. Upgrade to unlock Chapter Test, Custom Paper, and MCQ + OMR.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -160,9 +172,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 Navigator.pop(dialogContext);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const SubscriptionScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
                 );
               },
               child: const Text('Upgrade Plan'),
@@ -233,9 +243,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 Navigator.pop(dialogContext);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const SubscriptionScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
                 );
               },
               child: const Text('Upgrade Plan'),
@@ -256,8 +264,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     if (!mounted) return;
     if (title.text != c.draft.title)
       title.value = TextEditingValue(
-          text: c.draft.title,
-          selection: TextSelection.collapsed(offset: c.draft.title.length));
+        text: c.draft.title,
+        selection: TextSelection.collapsed(offset: c.draft.title.length),
+      );
     setState(() {});
   }
 
@@ -311,47 +320,58 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   Future<void> export(String action) async {
     if (c.busy || preview == null || c.paper == null) return;
     if (!await allowExport(action)) return;
-    await c.run(action == 'save' ? 'Saving your paper…' : 'Preparing export…',
-        () async {
-      final d = c.draft;
-      final p = c.paper!;
-      if (action == 'save') {
-        await PaperLibrary.addSavedPaper(
+    await c.run(
+      action == 'save' ? 'Saving your paper…' : 'Preparing export…',
+      () async {
+        final d = c.draft;
+        final p = c.paper!;
+        if (action == 'save') {
+          await PaperLibrary.addSavedPaper(
             SavedPaper(
-                id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
-                title: d.title,
-                subject: c.subject!.bengaliName,
-                subjectId: d.subjectId,
-                subjectCode: PaperComposer.codes[d.subjectId] ?? '',
-                setCode: d.setCode,
-                total: p.mcqs.length,
-                key: p.mcqs.map((q) => q.correctIndex).toList(),
-                questions: [
-                  for (final q in p.mcqs)
-                    SavedQuestion(
-                        text: q.questionText,
-                        options: q.options,
-                        answer: q.correctIndex)
-                ],
-                createdAt: DateTime.now(),
-                pages: preview!.pages.length),
-            pageImages: preview!.pages);
-        if (mounted)
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Saved in My Papers with its answer key.')));
-      } else if (action == 'omr') {
-        await PaperPdf.printOmrSheet(
+              id: 'sp_${DateTime.now().microsecondsSinceEpoch}',
+              title: d.title,
+              subject: c.subject!.bengaliName,
+              subjectId: d.subjectId,
+              subjectCode: PaperComposer.codes[d.subjectId] ?? '',
+              setCode: d.setCode,
+              total: p.mcqs.length,
+              key: p.mcqs.map((q) => q.correctIndex).toList(),
+              questions: [
+                for (final q in p.mcqs)
+                  SavedQuestion(
+                    text: q.questionText,
+                    options: q.options,
+                    answer: q.correctIndex,
+                  ),
+              ],
+              createdAt: DateTime.now(),
+              pages: preview!.pages.length,
+            ),
+            pageImages: preview!.pages,
+          );
+          if (mounted)
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Saved in My Papers with its answer key.'),
+              ),
+            );
+        } else if (action == 'omr') {
+          await PaperPdf.printOmrSheet(
             total: p.mcqs.length,
             title: d.title,
             subjectCode: PaperComposer.codes[d.subjectId],
-            setCode: d.setCode);
-      } else if (action == 'print') {
-        await Printing.layoutPdf(onLayout: (_) async => preview!.pdf);
-      } else {
-        await Printing.sharePdf(
-            bytes: preview!.pdf, filename: 'question-paper.pdf');
-      }
-    });
+            setCode: d.setCode,
+          );
+        } else if (action == 'print') {
+          await Printing.layoutPdf(onLayout: (_) async => preview!.pdf);
+        } else {
+          await Printing.sharePdf(
+            bytes: preview!.pdf,
+            filename: 'question-paper.pdf',
+          );
+        }
+      },
+    );
   }
 
   Future<void> _draftShortAnswerKey(int index, ShortQuestion q) async {
@@ -374,8 +394,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         },
         (message) {
           if (mounted)
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(message)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
         },
       );
       final draft = response['answerKey'];
@@ -401,18 +422,23 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             figure: q.figure,
           ),
         );
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('AI draft key added. Review it before publishing.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('AI draft key added. Review it before publishing.'),
+          ),
+        );
       }
     } on TeacherAiError catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error.userMessage)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.userMessage)));
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not draft the answer key: $error')));
+          SnackBar(content: Text('Could not draft the answer key: $error')),
+        );
       }
     } finally {
       client.close();
@@ -446,8 +472,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         },
         (message) {
           if (mounted)
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(message)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
         },
       );
       final draft = response['answerKey'];
@@ -474,18 +501,23 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       );
       if (mounted) {
         c.editWritten(index, updated);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('AI draft key added. Review it before publishing.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('AI draft key added. Review it before publishing.'),
+          ),
+        );
       }
     } on TeacherAiError catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error.userMessage)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.userMessage)));
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not draft the answer key: $error')));
+          SnackBar(content: Text('Could not draft the answer key: $error')),
+        );
       }
     } finally {
       client.close();
@@ -494,38 +526,45 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
 
   @override
   Widget build(BuildContext context) => PopScope(
-      canPop: step == 0 && !c.busy,
-      onPopInvoked: (didPop) {
-        if (!didPop && !c.busy && step > 0) setState(() => step--);
-      },
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Create Paper'), actions: [
+    canPop: step == 0 && !c.busy,
+    onPopInvoked: (didPop) {
+      if (!didPop && !c.busy && step > 0) setState(() => step--);
+    },
+    child: Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Paper'),
+        actions: [
           IconButton(
-              tooltip: 'Undo',
-              onPressed: c.canUndo
-                  ? () {
-                      c.undo();
-                      if (step == 4) setState(() => step = 3);
-                    }
-                  : null,
-              icon: const AppIcon(PhosphorIcons.arrowCounterClockwise)),
+            tooltip: 'Undo',
+            onPressed: c.canUndo
+                ? () {
+                    c.undo();
+                    if (step == 4) setState(() => step = 3);
+                  }
+                : null,
+            icon: const AppIcon(PhosphorIcons.arrowCounterClockwise),
+          ),
           IconButton(
-              tooltip: 'Redo',
-              onPressed: c.canRedo
-                  ? () {
-                      c.redo();
-                      if (step == 4) setState(() => step = 3);
-                    }
-                  : null,
-              icon: const AppIcon(PhosphorIcons.arrowClockwise)),
-        ]),
-        body: !c.initialized
-            ? const Center(child: ActivityIndicator(size: 24))
-            : Column(children: [
+            tooltip: 'Redo',
+            onPressed: c.canRedo
+                ? () {
+                    c.redo();
+                    if (step == 4) setState(() => step = 3);
+                  }
+                : null,
+            icon: const AppIcon(PhosphorIcons.arrowClockwise),
+          ),
+        ],
+      ),
+      body: !c.initialized
+          ? const Center(child: ActivityIndicator(size: 24))
+          : Column(
+              children: [
                 WorkflowProgress(steps: steps, current: step),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(children: [
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
                       const AppDuotoneIcon(
                         PhosphorIcons.floppyDiskDuotone,
                         size: 14,
@@ -534,431 +573,566 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                       ),
                       const SizedBox(width: 6),
                       Expanded(
-                          child: Text(
-                              c.saveError ??
-                                  (c.savedAt == null
-                                      ? 'Draft saves automatically on this device'
-                                      : 'Auto-saved ${TimeOfDay.fromDateTime(c.savedAt!).format(context)}'),
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: c.saveError == null
-                                      ? AppTheme.muted
-                                      : AppTheme.danger))),
-                    ])),
+                        child: Text(
+                          c.saveError ??
+                              (c.savedAt == null
+                                  ? 'Draft saves automatically on this device'
+                                  : 'Auto-saved ${TimeOfDay.fromDateTime(c.savedAt!).format(context)}'),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: c.saveError == null
+                                ? AppTheme.muted
+                                : AppTheme.danger,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Expanded(
-                    child: AbsorbPointer(
-                        absorbing: c.busy,
-                        child: step == 4
-                            ? previewBody()
-                            : ListView(
-                                padding: const EdgeInsets.all(20),
-                                children: [
-                                    OperationNotice(
-                                        error: c.error, activity: c.activity),
-                                    if (step == 0) subjectStep(),
-                                    if (step == 1) chapterStep(),
-                                    if (step == 2) countsStep(),
-                                    if (step == 3) reviewStep(),
-                                  ]))),
+                  child: AbsorbPointer(
+                    absorbing: c.busy,
+                    child: step == 4
+                        ? previewBody()
+                        : ListView(
+                            padding: const EdgeInsets.all(20),
+                            children: [
+                              OperationNotice(
+                                error: c.error,
+                                activity: c.activity,
+                              ),
+                              if (step == 0) subjectStep(),
+                              if (step == 1) chapterStep(),
+                              if (step == 2) countsStep(),
+                              if (step == 3) reviewStep(),
+                            ],
+                          ),
+                  ),
+                ),
                 if (step == 4)
                   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: OperationNotice(
-                          error: c.error, activity: c.activity)),
-              ]),
-        bottomNavigationBar: SafeArea(
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
-                child: step < 4
-                    ? Row(children: [
-                        if (step > 0)
-                          TextButton(
-                              onPressed:
-                                  c.busy ? null : () => setState(() => step--),
-                              child: const Text('Back')),
-                        const Spacer(),
-                        FilledButton.icon(
-                            onPressed: c.busy || !c.initialized ? null : next,
-                            icon: c.busy
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: ActivityIndicator(strokeWidth: 2))
-                                : AppIcon(
-                                    step == 3
-                                        ? PhosphorIcons.eye
-                                        : PhosphorIcons.arrowRight,
-                                    size: 18),
-                            label: Text(c.busy
-                                ? 'Working…'
-                                : step == 2
-                                    ? 'Select questions'
-                                    : step == 3
-                                        ? 'Preview paper'
-                                        : 'Continue')),
-                      ])
-                    : Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        children: [
-                            FilledButton.icon(
-                                onPressed: c.busy ? null : () => export('pdf'),
-                                icon: const AppDuotoneIcon(
-                                  PhosphorIcons.filePdfDuotone,
-                                  color: AppColors.onColor,
-                                  secondaryColor: AppColors.light,
-                                  size: 18,
-                                ),
-                                label: const Text('Export PDF')),
-                            OutlinedButton.icon(
-                                onPressed: c.busy ? null : () => export('save'),
-                                icon: const AppDuotoneIcon(
-                                  PhosphorIcons.bookmarkSimpleDuotone,
-                                  color: AppTheme.primary,
-                                  secondaryColor: AppColors.secondary,
-                                  size: 18,
-                                ),
-                                label: const Text('Save')),
-                            IconButton(
-                                tooltip: 'Print',
-                                onPressed:
-                                    c.busy ? null : () => export('print'),
-                                icon: const AppDuotoneIcon(
-                                  PhosphorIcons.printerDuotone,
-                                  color: AppTheme.primary,
-                                  secondaryColor: AppColors.secondary,
-                                )),
-                            if (c.paper?.mcqs.isNotEmpty == true)
-                              PopupMenuButton<String>(
-                                  enabled: !c.busy,
-                                  onSelected: (value) async {
-                                    if (!await SubscriptionGuard.require(
-                                        context, PremiumFeature.omrScanner)) {
-                                      return;
-                                    }
-                                    if (value == 'scan')
-                                      await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => OMrScannerScreen(
-                                                  initialKey: c.paper!.mcqs
-                                                      .map(
-                                                          (q) => q.correctIndex)
-                                                      .toList(),
-                                                  paperTitle: c.draft.title,
-                                                  initialSubject:
-                                                      c.subject!.bengaliName)));
-                                    else
-                                      await export('omr');
-                                  },
-                                  itemBuilder: (_) => const [
-                                        PopupMenuItem(
-                                            value: 'omr',
-                                            child: Text('Print OMR sheet')),
-                                        PopupMenuItem(
-                                            value: 'scan',
-                                            child: Text('Scan answers'))
-                                      ]),
-                          ]))),
-      ));
-
-  Widget subjectStep() =>
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-            _subjectChosen
-                ? 'What are you teaching?'
-                : 'Choose a subject first',
-            style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 8),
-        const Text(
-            'Choose a subject. Questions come from the saved SSC bank. Your plan controls how many subjects you can keep selected.'),
-        const SizedBox(height: 20),
-        for (final s in allSubjects) _subjectTile(s),
-      ]);
-  Widget chapterStep() =>
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Choose the paper format',
-            style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 12),
-        if (PaperComposer.isEnglish(c.draft.subjectId)) ...[
-          DropdownButtonFormField<String>(
-              value: EnglishPaperSync.choices(c.draft.subjectId)
-                      .containsKey(c.draft.englishPaperId)
-                  ? c.draft.englishPaperId
-                  : '',
-              isExpanded: true,
-              decoration: const InputDecoration(
-                  labelText: 'Randomized English model pool'),
-              items: const [
-                DropdownMenuItem(
-                    value: '', child: Text('Randomized practice set')),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: OperationNotice(
+                      error: c.error,
+                      activity: c.activity,
+                    ),
+                  ),
               ],
-              onChanged: (id) => c.update(c.draft
-                  .copyWith(englishPaperId: id, clearEnglishPaper: id == ''))),
-          const SizedBox(height: 16),
-        ],
-        for (final f in PaperFormat.values)
-          Card(
-              child: RadioListTile<PaperFormat>(
-                  secondary: _formatIsLocked(f)
-                      ? const AppIcon(PhosphorIcons.lock)
-                      : null,
-                  title: Text(switch (f) {
-                    PaperFormat.board =>
-                      _isFreePlan ? 'Model Test' : 'Board Pattern',
-                    PaperFormat.chapter => 'Chapter Test',
-                    PaperFormat.custom => 'Custom Paper',
-                    PaperFormat.mcq => 'MCQ + OMR'
-                  }),
-                  subtitle: Text(switch (f) {
-                    PaperFormat.board => _isFreePlan
-                        ? 'Two server-verified generations per Asia/Dhaka month'
-                        : 'Complete subject pattern from the saved bank',
-                    PaperFormat.chapter => _formatIsLocked(f)
-                        ? 'Upgrade to unlock this format'
-                        : 'Practice selected chapters',
-                    PaperFormat.custom => _formatIsLocked(f)
-                        ? 'Upgrade to unlock this format'
-                        : 'Choose your MCQ, short-answer and CQ counts',
-                    PaperFormat.mcq => _formatIsLocked(f)
-                        ? 'Upgrade to unlock this format'
-                        : 'Up to 100 MCQs with an answer key'
-                  }),
-                  value: f,
-                  groupValue: c.draft.format,
-                  onChanged: (next) {
-                    if (next != null) _selectFormat(next);
-                  })),
-        if (c.draft.format != PaperFormat.board) ...[
-          const SizedBox(height: 20),
-          Text('Chapters', style: Theme.of(context).textTheme.titleLarge),
-          Text(c.draft.format == PaperFormat.chapter
-              ? 'Select at least one chapter.'
-              : 'Leave all unchecked to use the whole bank.'),
-          if (c.chapters.isEmpty)
-            const OperationNotice(
-                error: 'No questions are available for this subject yet.'),
-          for (final ch in c.chapters)
-            CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(ch),
-                value: c.draft.chapters.contains(ch),
-                onChanged: (selected) {
-                  final next = [...c.draft.chapters];
-                  if (selected == true)
-                    next.add(ch);
-                  else
-                    next.remove(ch);
-                  c.update(c.draft.copyWith(chapters: next));
-                }),
-        ],
-      ]);
-  Widget countsStep() =>
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Set up your paper',
-            style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 18),
-        TextField(
-            controller: title,
-            decoration: const InputDecoration(labelText: 'Paper title'),
-            onChanged: (v) =>
-                c.update(c.draft.copyWith(title: v), preserveQuestions: true)),
-        const SizedBox(height: 16),
+            ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
+          child: step < 4
+              ? Row(
+                  children: [
+                    if (step > 0)
+                      TextButton(
+                        onPressed: c.busy ? null : () => setState(() => step--),
+                        child: const Text('Back'),
+                      ),
+                    const Spacer(),
+                    FilledButton.icon(
+                      onPressed: c.busy || !c.initialized ? null : next,
+                      icon: c.busy
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: ActivityIndicator(strokeWidth: 2),
+                            )
+                          : AppIcon(
+                              step == 3
+                                  ? PhosphorIcons.eye
+                                  : PhosphorIcons.arrowRight,
+                              size: 18,
+                            ),
+                      label: Text(
+                        c.busy
+                            ? 'Working…'
+                            : step == 2
+                            ? 'Select questions'
+                            : step == 3
+                            ? 'Preview paper'
+                            : 'Continue',
+                      ),
+                    ),
+                  ],
+                )
+              : Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: c.busy ? null : () => export('pdf'),
+                      icon: const AppDuotoneIcon(
+                        PhosphorIcons.filePdfDuotone,
+                        color: AppColors.onColor,
+                        secondaryColor: AppColors.light,
+                        size: 18,
+                      ),
+                      label: const Text('Export PDF'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: c.busy ? null : () => export('save'),
+                      icon: const AppDuotoneIcon(
+                        PhosphorIcons.bookmarkSimpleDuotone,
+                        color: AppTheme.primary,
+                        secondaryColor: AppColors.secondary,
+                        size: 18,
+                      ),
+                      label: const Text('Save'),
+                    ),
+                    IconButton(
+                      tooltip: 'Print',
+                      onPressed: c.busy ? null : () => export('print'),
+                      icon: const AppDuotoneIcon(
+                        PhosphorIcons.printerDuotone,
+                        color: AppTheme.primary,
+                        secondaryColor: AppColors.secondary,
+                      ),
+                    ),
+                    if (c.paper?.mcqs.isNotEmpty == true)
+                      PopupMenuButton<String>(
+                        enabled: !c.busy,
+                        onSelected: (value) async {
+                          if (!await SubscriptionGuard.require(
+                            context,
+                            PremiumFeature.omrScanner,
+                          )) {
+                            return;
+                          }
+                          if (value == 'scan')
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => OMrScannerScreen(
+                                  initialKey: c.paper!.mcqs
+                                      .map((q) => q.correctIndex)
+                                      .toList(),
+                                  paperTitle: c.draft.title,
+                                  initialSubject: c.subject!.bengaliName,
+                                ),
+                              ),
+                            );
+                          else
+                            await export('omr');
+                        },
+                        itemBuilder: (_) => const [
+                          PopupMenuItem(
+                            value: 'omr',
+                            child: Text('Print OMR sheet'),
+                          ),
+                          PopupMenuItem(
+                            value: 'scan',
+                            child: Text('Scan answers'),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+        ),
+      ),
+    ),
+  );
+
+  Widget subjectStep() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        _subjectChosen ? 'What are you teaching?' : 'Choose a subject first',
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Choose a subject. Questions come from the saved SSC bank. Your plan controls how many subjects you can keep selected.',
+      ),
+      const SizedBox(height: 20),
+      for (final s in allSubjects) _subjectTile(s),
+    ],
+  );
+  Widget chapterStep() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Choose the paper format',
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: 12),
+      if (PaperComposer.isEnglish(c.draft.subjectId)) ...[
         DropdownButtonFormField<String>(
-            value: c.draft.setCode,
-            decoration: const InputDecoration(labelText: 'Set code'),
-            items: [
-              for (final s in const ['ক', 'খ', 'গ', 'ঘ'])
-                DropdownMenuItem(value: s, child: Text(s))
-            ],
-            onChanged: (s) => c.update(c.draft.copyWith(setCode: s),
-                preserveQuestions: true)),
-        const SizedBox(height: 16),
-        if (c.draft.format == PaperFormat.board)
-          Card(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(PaperComposer.isEnglish(c.draft.subjectId)
-                      ? 'Reading / Grammar and Writing • 100 marks. Complete English sections are preserved.'
-                      : '${_isFreePlan ? 'Model Test' : 'Board Pattern'} uses the subject’s fixed distribution and answer counts. Practical marks are not part of the printed theory paper.')))
-        else ...[
-          count('MCQ', c.draft.mcqCount, 100,
-              (v) => c.update(c.draft.copyWith(mcqCount: v))),
-          if (c.draft.format != PaperFormat.mcq) ...[
-            count('Short answer · 2 marks', c.draft.saqCount, 30,
-                (v) => c.update(c.draft.copyWith(saqCount: v))),
-            count('Creative question · 10 marks', c.draft.cqCount, 15,
-                (v) => c.update(c.draft.copyWith(cqCount: v))),
+          value:
+              EnglishPaperSync.choices(
+                c.draft.subjectId,
+              ).containsKey(c.draft.englishPaperId)
+              ? c.draft.englishPaperId
+              : '',
+          isExpanded: true,
+          decoration: const InputDecoration(
+            labelText: 'Randomized English model pool',
+          ),
+          items: const [
+            DropdownMenuItem(value: '', child: Text('Randomized practice set')),
           ],
-        ],
-        SwitchListTile(
+          onChanged: (id) => c.update(
+            c.draft.copyWith(englishPaperId: id, clearEnglishPaper: id == ''),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+      for (final f in PaperFormat.values)
+        Card(
+          child: RadioListTile<PaperFormat>(
+            secondary: _formatIsLocked(f)
+                ? const AppIcon(PhosphorIcons.lock)
+                : null,
+            title: Text(switch (f) {
+              PaperFormat.board => _isFreePlan ? 'Model Test' : 'Board Pattern',
+              PaperFormat.chapter => 'Chapter Test',
+              PaperFormat.custom => 'Custom Paper',
+              PaperFormat.mcq => 'MCQ + OMR',
+            }),
+            subtitle: Text(switch (f) {
+              PaperFormat.board =>
+                _isFreePlan
+                    ? 'Two server-verified generations per Asia/Dhaka month'
+                    : 'Complete subject pattern from the saved bank',
+              PaperFormat.chapter =>
+                _formatIsLocked(f)
+                    ? 'Upgrade to unlock this format'
+                    : 'Practice selected chapters',
+              PaperFormat.custom =>
+                _formatIsLocked(f)
+                    ? 'Upgrade to unlock this format'
+                    : 'Choose your MCQ, short-answer and CQ counts',
+              PaperFormat.mcq =>
+                _formatIsLocked(f)
+                    ? 'Upgrade to unlock this format'
+                    : 'Up to 100 MCQs with an answer key',
+            }),
+            value: f,
+            groupValue: c.draft.format,
+            onChanged: (next) {
+              if (next != null) _selectFormat(next);
+            },
+          ),
+        ),
+      if (c.draft.format != PaperFormat.board) ...[
+        const SizedBox(height: 20),
+        Text('Chapters', style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          c.draft.format == PaperFormat.chapter
+              ? 'Select at least one chapter.'
+              : 'Leave all unchecked to use the whole bank.',
+        ),
+        if (c.chapters.isEmpty)
+          const OperationNotice(
+            error: 'No questions are available for this subject yet.',
+          ),
+        for (final ch in c.chapters)
+          CheckboxListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Include answer key in PDF'),
-            subtitle: const Text(
-                'Includes available MCQ, SQ and reviewed/AI-draft CQ keys.'),
-            value: c.draft.answerKey,
-            onChanged: (v) => c.update(c.draft.copyWith(answerKey: v),
-                preserveQuestions: true)),
-      ]);
+            title: Text(ch),
+            value: c.draft.chapters.contains(ch),
+            onChanged: (selected) {
+              final next = [...c.draft.chapters];
+              if (selected == true)
+                next.add(ch);
+              else
+                next.remove(ch);
+              c.update(c.draft.copyWith(chapters: next));
+            },
+          ),
+      ],
+    ],
+  );
+  Widget countsStep() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Set up your paper',
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: 18),
+      TextField(
+        controller: title,
+        decoration: const InputDecoration(labelText: 'Paper title'),
+        onChanged: (v) =>
+            c.update(c.draft.copyWith(title: v), preserveQuestions: true),
+      ),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        value: c.draft.setCode,
+        decoration: const InputDecoration(labelText: 'Set code'),
+        items: [
+          for (final s in const ['ক', 'খ', 'গ', 'ঘ'])
+            DropdownMenuItem(value: s, child: Text(s)),
+        ],
+        onChanged: (s) =>
+            c.update(c.draft.copyWith(setCode: s), preserveQuestions: true),
+      ),
+      const SizedBox(height: 16),
+      if (c.draft.format == PaperFormat.board)
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              PaperComposer.isEnglish(c.draft.subjectId)
+                  ? 'Reading / Grammar and Writing • 100 marks. Complete English sections are preserved.'
+                  : '${_isFreePlan ? 'Model Test' : 'Board Pattern'} uses the subject’s fixed distribution and answer counts. Practical marks are not part of the printed theory paper.',
+            ),
+          ),
+        )
+      else ...[
+        count(
+          'MCQ',
+          c.draft.mcqCount,
+          100,
+          (v) => c.update(c.draft.copyWith(mcqCount: v)),
+        ),
+        if (c.draft.format != PaperFormat.mcq) ...[
+          count(
+            'Short answer · 2 marks',
+            c.draft.saqCount,
+            30,
+            (v) => c.update(c.draft.copyWith(saqCount: v)),
+          ),
+          count(
+            'Creative question · 10 marks',
+            c.draft.cqCount,
+            15,
+            (v) => c.update(c.draft.copyWith(cqCount: v)),
+          ),
+        ],
+      ],
+      SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: const Text('Include answer key in PDF'),
+        subtitle: const Text(
+          'Includes available MCQ, SQ and reviewed/AI-draft CQ keys.',
+        ),
+        value: c.draft.answerKey,
+        onChanged: (v) =>
+            c.update(c.draft.copyWith(answerKey: v), preserveQuestions: true),
+      ),
+    ],
+  );
   Widget count(String label, int value, int max, ValueChanged<int> change) =>
       Card(
-          child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(children: [
-                Expanded(child: Text(label)),
-                IconButton(
-                    tooltip: 'Fewer $label',
-                    onPressed: value > 0 ? () => change(value - 1) : null,
-                    icon: const AppIcon(PhosphorIcons.minusCircle)),
-                SizedBox(
-                    width: 32,
-                    child: Text('$value', textAlign: TextAlign.center)),
-                IconButton(
-                    tooltip: 'More $label',
-                    onPressed: value < max ? () => change(value + 1) : null,
-                    icon: const AppIcon(PhosphorIcons.plusCircle)),
-              ])));
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              Expanded(child: Text(label)),
+              IconButton(
+                tooltip: 'Fewer $label',
+                onPressed: value > 0 ? () => change(value - 1) : null,
+                icon: const AppIcon(PhosphorIcons.minusCircle),
+              ),
+              SizedBox(
+                width: 32,
+                child: Text('$value', textAlign: TextAlign.center),
+              ),
+              IconButton(
+                tooltip: 'More $label',
+                onPressed: value < max ? () => change(value + 1) : null,
+                icon: const AppIcon(PhosphorIcons.plusCircle),
+              ),
+            ],
+          ),
+        ),
+      );
   Widget reviewStep() {
     final p = c.paper;
     if (p == null)
-      return Column(children: [
-        const Text('Choose counts and select questions to continue.'),
-        TextButton(
+      return Column(
+        children: [
+          const Text('Choose counts and select questions to continue.'),
+          TextButton(
             onPressed: () => setState(() => step = 2),
-            child: const Text('Back to counts'))
-      ]);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Review before printing',
-          style: Theme.of(context).textTheme.headlineSmall),
-      Text(
-          '${p.marks} marks · ${p.minutes} minutes · ${p.mcqs.length} MCQ · ${p.saqs.length} short · ${p.cqs.length} CQ'),
-      const SizedBox(height: 8),
-      const Text(
+            child: const Text('Back to counts'),
+          ),
+        ],
+      );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Review before printing',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        Text(
+          '${p.marks} marks · ${p.minutes} minutes · ${p.mcqs.length} MCQ · ${p.saqs.length} short · ${p.cqs.length} CQ',
+        ),
+        const SizedBox(height: 8),
+        const Text(
           'Verify the question wording and answer key. Undo is available for every change.',
-          style: TextStyle(color: AppTheme.muted)),
-      if (!PaperComposer.isEnglish(c.draft.subjectId))
-        Padding(
+          style: TextStyle(color: AppTheme.muted),
+        ),
+        if (!PaperComposer.isEnglish(c.draft.subjectId))
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: OutlinedButton.icon(
-                onPressed: () async {
-                  if (!await SubscriptionGuard.require(
-                      context, PremiumFeature.aiAssistant)) return;
-                  final questions = await Navigator.push<List<Question>>(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => AiToolsScreen(
-                              subjectId: c.draft.subjectId,
-                              chapter: c.draft.chapters.isEmpty
-                                  ? null
-                                  : c.draft.chapters.first,
-                              currentPaper: p.mcqs,
-                              forSelection: true)));
-                  if (mounted && questions != null) c.addAiQuestions(questions);
-                },
-                icon: const AppDuotoneIcon(
-                  PhosphorIcons.magicWandDuotone,
-                  color: AppTheme.primary,
-                  secondaryColor: AppColors.secondary,
-                  size: 18,
-                ),
-                label: const Text('Add reviewed AI questions'))),
-      for (var i = 0; i < p.mcqs.length; i++)
-        PaperQuestionCard(
+              onPressed: () async {
+                if (!await SubscriptionGuard.require(
+                  context,
+                  PremiumFeature.aiAssistant,
+                ))
+                  return;
+                final questions = await Navigator.push<List<Question>>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AiToolsScreen(
+                      subjectId: c.draft.subjectId,
+                      chapter: c.draft.chapters.isEmpty
+                          ? null
+                          : c.draft.chapters.first,
+                      currentPaper: p.mcqs,
+                      forSelection: true,
+                    ),
+                  ),
+                );
+                if (mounted && questions != null) c.addAiQuestions(questions);
+              },
+              icon: const AppDuotoneIcon(
+                PhosphorIcons.magicWandDuotone,
+                color: AppTheme.primary,
+                secondaryColor: AppColors.secondary,
+                size: 18,
+              ),
+              label: const Text('Add reviewed AI questions'),
+            ),
+          ),
+        for (var i = 0; i < p.mcqs.length; i++)
+          PaperQuestionCard(
             question: p.mcqs[i],
             onReplace: () => c.replaceQuestion(i),
             onImprove: () async {
               if (!await SubscriptionGuard.require(
-                  context, PremiumFeature.aiAssistant)) return;
+                context,
+                PremiumFeature.aiAssistant,
+              ))
+                return;
               final q = p.mcqs[i];
               final edited = await Navigator.push<List<Question>>(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => AiToolsScreen(
-                          subjectId: q.subjectId,
-                          chapter: q.chapter,
-                          currentPaper: p.mcqs,
-                          forSelection: true,
-                          replaceSelection: true,
-                          initialCommand: TeacherCommand.improve,
-                          initialText: jsonEncode({
-                            'question': q.questionText,
-                            'options': q.options
-                          }))));
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AiToolsScreen(
+                    subjectId: q.subjectId,
+                    chapter: q.chapter,
+                    currentPaper: p.mcqs,
+                    forSelection: true,
+                    replaceSelection: true,
+                    initialCommand: TeacherCommand.improve,
+                    initialText: jsonEncode({
+                      'question': q.questionText,
+                      'options': q.options,
+                    }),
+                  ),
+                ),
+              );
               if (mounted && edited?.length == 1)
                 c.editQuestion(i, edited!.single);
             },
             onEdit: (q) => c.editQuestion(i, q),
             onDelete: c.draft.format == PaperFormat.board
                 ? null
-                : () => c.removeQuestion(i)),
-      if (p.saqs.isNotEmpty)
-        Text('Short answers · answer ${p.saqAnswers}',
-            style: Theme.of(context).textTheme.titleLarge),
-      for (var i = 0; i < p.saqs.length; i++)
-        WrittenQuestionCard(
+                : () => c.removeQuestion(i),
+          ),
+        if (p.saqs.isNotEmpty)
+          Text(
+            'Short answers · answer ${p.saqAnswers}',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        for (var i = 0; i < p.saqs.length; i++)
+          WrittenQuestionCard(
             question: p.saqs[i],
             onDraftAnswerKey: () => _draftShortAnswerKey(i, p.saqs[i]),
             onEdit: (q) => c.editWritten(i, q),
             onReplace: () => c.replaceWritten(i, creative: false),
             onDelete: c.draft.format == PaperFormat.board
                 ? null
-                : () => c.removeWritten(i, creative: false)),
-      if (p.cqs.isNotEmpty)
-        Text('সৃজনশীল প্রশ্ন · answer ${p.cqAnswers}',
-            style: Theme.of(context).textTheme.titleLarge),
-      for (var i = 0; i < p.cqs.length; i++)
-        WrittenQuestionCard(
+                : () => c.removeWritten(i, creative: false),
+          ),
+        if (p.cqs.isNotEmpty)
+          Text(
+            'সৃজনশীল প্রশ্ন · answer ${p.cqAnswers}',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        for (var i = 0; i < p.cqs.length; i++)
+          WrittenQuestionCard(
             question: p.cqs[i],
             onDraftAnswerKey: () => _draftCreativeAnswerKey(i, p.cqs[i]),
             onEdit: (q) => c.editWritten(i, q),
             onReplace: () => c.replaceWritten(i, creative: true),
             onDelete: c.draft.format == PaperFormat.board
                 ? null
-                : () => c.removeWritten(i, creative: true)),
-      if (p.english.isNotEmpty ||
-          p.literature.isNotEmpty ||
-          p.written.isNotEmpty)
-        const Card(
+                : () => c.removeWritten(i, creative: true),
+          ),
+        if (p.english.isNotEmpty ||
+            p.literature.isNotEmpty ||
+            p.written.isNotEmpty)
+          const Card(
             child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                    'Language-paper sections are preserved in full. Review their complete layout in the next step.'))),
-    ]);
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Language-paper sections are preserved in full. Review their complete layout in the next step.',
+              ),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget previewBody() {
     if (preview == null)
       return const Center(child: Text('Return to review to render the paper.'));
-    return Column(children: [
-      Semantics(
+    return Column(
+      children: [
+        Semantics(
           liveRegion: true,
           child: Padding(
             padding: const EdgeInsets.only(top: 12),
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const AppIcon(PhosphorIcons.checkCircle,
-                  color: AppTheme.success, size: 18),
-              const SizedBox(width: 8),
-              Text('PDF ready · ${preview!.pages.length} pages',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AppIcon(
+                  PhosphorIcons.checkCircle,
+                  color: AppTheme.success,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'PDF ready · ${preview!.pages.length} pages',
                   style: const TextStyle(
-                      color: AppTheme.success, fontWeight: FontWeight.w600)),
-            ]),
-          )),
-      Padding(
+                    color: AppTheme.success,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
           padding: const EdgeInsets.all(12),
           child: Text(
-              'Page ${page + 1} of ${preview!.pages.length} · Pinch to zoom · Swipe for next page',
-              style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
-      Expanded(
+            'Page ${page + 1} of ${preview!.pages.length} · Pinch to zoom · Swipe for next page',
+            style: const TextStyle(color: AppTheme.muted, fontSize: 12),
+          ),
+        ),
+        Expanded(
           child: PageView.builder(
-              itemCount: preview!.pages.length,
-              onPageChanged: (i) => setState(() => page = i),
-              itemBuilder: (_, i) => Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-                  child: InteractiveViewer(
-                      minScale: 1,
-                      maxScale: 4,
-                      child: Image.memory(preview!.pages[i],
-                          fit: BoxFit.contain)))))
-    ]);
+            itemCount: preview!.pages.length,
+            onPageChanged: (i) => setState(() => page = i),
+            itemBuilder: (_, i) => Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+              child: InteractiveViewer(
+                minScale: 1,
+                maxScale: 4,
+                child: Image.memory(preview!.pages[i], fit: BoxFit.contain),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

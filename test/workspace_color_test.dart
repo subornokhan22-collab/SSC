@@ -9,13 +9,13 @@ import 'package:tutors_desk/widgets/aurora_ribbons.dart';
 import 'package:tutors_desk/widgets/motion_policy.dart';
 
 Widget host(Widget child, {bool systemReduce = false}) => MaterialApp(
-      home: Builder(
-          builder: (context) => MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(disableAnimations: systemReduce),
-                child: MotionPolicy(child: Scaffold(body: child)),
-              )),
-    );
+  home: Builder(
+    builder: (context) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(disableAnimations: systemReduce),
+      child: MotionPolicy(child: Scaffold(body: child)),
+    ),
+  ),
+);
 
 void main() {
   setUp(() {
@@ -73,8 +73,9 @@ void main() {
       expect(AppStyle.gradient.colors, [Colors.white, Colors.white]);
     });
 
-    testWidgets('rapid area switching survives without throwing',
-        (tester) async {
+    testWidgets('rapid area switching survives without throwing', (
+      tester,
+    ) async {
       await tester.pumpWidget(host(const AliveBackground(child: Text('desk'))));
       await tester.pump();
 
@@ -95,16 +96,17 @@ void main() {
 
   group('auth background remains solid white', () {
     testWidgets('does not schedule frames while disabled', (tester) async {
-      await tester
-          .pumpWidget(host(const AuroraRibbons(child: Text('sign in'))));
+      await tester.pumpWidget(
+        host(const AuroraRibbons(child: Text('sign in'))),
+      );
       await tester.pump();
       expect(tester.binding.hasScheduledFrame, isFalse);
     });
 
     testWidgets('enabled ribbons remain static and white', (tester) async {
-      await tester.pumpWidget(host(
-        const AuroraRibbons(enabled: true, child: Text('sign in')),
-      ));
+      await tester.pumpWidget(
+        host(const AuroraRibbons(enabled: true, child: Text('sign in'))),
+      );
       await tester.pump();
       expect(find.text('sign in'), findsOneWidget);
       expect(AppStyle.gradient.colors, [Colors.white, Colors.white]);

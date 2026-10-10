@@ -31,11 +31,7 @@ class ReferenceIcon extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => AppIcon(
-        icon,
-        size: size,
-        color: color,
-      );
+  Widget build(BuildContext context) => AppIcon(icon, size: size, color: color);
 }
 
 class ReferenceImageIcon extends StatelessWidget {
@@ -46,12 +42,12 @@ class ReferenceImageIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Image.asset(
-        asset,
-        width: size,
-        height: size,
-        fit: BoxFit.contain,
-        filterQuality: FilterQuality.high,
-      );
+    asset,
+    width: size,
+    height: size,
+    fit: BoxFit.contain,
+    filterQuality: FilterQuality.high,
+  );
 }
 
 class ReferenceAiMark extends StatelessWidget {
@@ -59,10 +55,10 @@ class ReferenceAiMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const SizedBox(
-        width: 64,
-        height: 52,
-        child: CustomPaint(painter: _ReferenceAiPainter()),
-      );
+    width: 64,
+    height: 52,
+    child: CustomPaint(painter: _ReferenceAiPainter()),
+  );
 }
 
 class _ReferenceAiPainter extends CustomPainter {
@@ -168,81 +164,78 @@ class ReferenceActionCard extends StatelessWidget {
           : ReferenceImageIcon(asset!, size: _iconSize));
 
   Widget _lockIcon() => const AppIcon(
-        PhosphorIcons.lock,
-        size: 18,
-        color: ReferencePalette.mutedInk,
-      );
+    PhosphorIcons.lock,
+    size: 18,
+    color: ReferencePalette.mutedInk,
+  );
 
   @override
   Widget build(BuildContext context) => ReferenceCard(
-        onTap: onTap,
-        padding: large
-            ? const EdgeInsets.fromLTRB(18, 18, 18, 22)
-            : const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-        child: large
-            ? Stack(
+    onTap: onTap,
+    padding: large
+        ? const EdgeInsets.fromLTRB(18, 18, 18, 22)
+        : const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+    child: large
+        ? Stack(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Align(
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        color: ReferencePalette.ink,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: .45,
+                      ),
+                    ),
+                  ),
+                  _icon(),
+                ],
+              ),
+              if (locked) Positioned(right: 0, top: 0, child: _lockIcon()),
+            ],
+          )
+        : Row(
+            children: [
+              _icon(),
+              const SizedBox(width: 12),
+              Expanded(
+                child: multiline
+                    ? Text(
+                        label,
+                        maxLines: 2,
+                        overflow: TextOverflow.visible,
+                        style: const TextStyle(
+                          color: ReferencePalette.ink,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: .05,
+                        ),
+                      )
+                    : FittedBox(
+                        fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           label,
-                          textAlign: TextAlign.left,
+                          maxLines: 1,
                           style: const TextStyle(
                             color: ReferencePalette.ink,
                             fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: .45,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: .05,
                           ),
                         ),
                       ),
-                      _icon(),
-                    ],
-                  ),
-                  if (locked) Positioned(right: 0, top: 0, child: _lockIcon()),
-                ],
-              )
-            : Row(
-                children: [
-                  _icon(),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: multiline
-                        ? Text(
-                            label,
-                            maxLines: 2,
-                            overflow: TextOverflow.visible,
-                            style: const TextStyle(
-                              color: ReferencePalette.ink,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: .05,
-                            ),
-                          )
-                        : FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              label,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                color: ReferencePalette.ink,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: .05,
-                              ),
-                            ),
-                          ),
-                  ),
-                  if (locked) ...[
-                    const SizedBox(width: 12),
-                    _lockIcon(),
-                  ],
-                ],
               ),
-      );
+              if (locked) ...[const SizedBox(width: 12), _lockIcon()],
+            ],
+          ),
+  );
 }
 
 class ReferenceBottomBar extends StatelessWidget {
@@ -255,76 +248,73 @@ class ReferenceBottomBar extends StatelessWidget {
     required String label,
     required VoidCallback onTap,
     String? asset,
-  }) =>
-      Expanded(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                asset == null
-                    ? ReferenceIcon(icon, size: 30)
-                    : ReferenceImageIcon(asset, size: 30),
-                const SizedBox(height: 2),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: ReferencePalette.ink,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
+  }) => Expanded(
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 12, bottom: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            asset == null
+                ? ReferenceIcon(icon, size: 30)
+                : ReferenceImageIcon(asset, size: 30),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(
+                color: ReferencePalette.ink,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
             ),
-          ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: double.infinity,
-        height: 106,
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: ConstrainedBox(
-            // Match the upper tab: 200 logical pixels narrower than the
-            // former 360-pixel reference width.
-            constraints: const BoxConstraints(maxWidth: 160),
-            child: Material(
-              color: ReferencePalette.surface,
-              elevation: 8,
-              shadowColor: Colors.black26,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
-              child: SafeArea(
-                top: false,
-                child: SizedBox(
-                  height: 106,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Row(
-                      children: [
-                        _item(
-                          icon: PhosphorIcons.house,
-                          label: 'Home',
-                          onTap: () {},
-                        ),
-                        _item(
-                          icon: PhosphorIcons.gear,
-                          label: 'Settings',
-                          onTap: onSettings,
-                        ),
-                      ],
+    width: double.infinity,
+    height: 106,
+    child: Align(
+      alignment: Alignment.bottomCenter,
+      child: ConstrainedBox(
+        // Match the upper tab: 200 logical pixels narrower than the
+        // former 360-pixel reference width.
+        constraints: const BoxConstraints(maxWidth: 160),
+        child: Material(
+          color: ReferencePalette.surface,
+          elevation: 8,
+          shadowColor: Colors.black26,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 106,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  children: [
+                    _item(
+                      icon: PhosphorIcons.house,
+                      label: 'Home',
+                      onTap: () {},
                     ),
-                  ),
+                    _item(
+                      icon: PhosphorIcons.gear,
+                      label: 'Settings',
+                      onTap: onSettings,
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

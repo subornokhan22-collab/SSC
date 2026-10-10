@@ -88,7 +88,9 @@ class _PressableScaleState extends State<PressableScale> {
           borderRadius: BorderRadius.circular(16),
           border: _focused && enabled
               ? Border.all(
-                  color: Theme.of(context).colorScheme.primary, width: 2)
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                )
               : null,
         ),
         child: Material(
@@ -347,8 +349,9 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
         // Fade it out over the first 55% so the two never read as one
         // jumbled screen.
         opacity: Tween<double>(begin: 1, end: 0).animate(
-          CurveTween(curve: const Interval(0, 0.55))
-              .animate(secondaryAnimation),
+          CurveTween(
+            curve: const Interval(0, 0.55),
+          ).animate(secondaryAnimation),
         ),
         child: SlideTransition(
           position: Tween<Offset>(

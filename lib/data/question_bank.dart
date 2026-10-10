@@ -56,14 +56,16 @@ class QuestionBank {
     // the UI thread below.
     final loaded = await Future.wait<String?>([
       for (final name in files)
-        rootBundle.loadString('assets/questions/$name').then<String?>(
-          (source) => source,
-          onError: (Object error, StackTrace _) {
-            // One unreadable file must not cost the tutor every other question.
-            debugPrint('QuestionBank: skipped $name ($error)');
-            return null;
-          },
-        ),
+        rootBundle
+            .loadString('assets/questions/$name')
+            .then<String?>(
+              (source) => source,
+              onError: (Object error, StackTrace _) {
+                // One unreadable file must not cost the tutor every other question.
+                debugPrint('QuestionBank: skipped $name ($error)');
+                return null;
+              },
+            ),
     ]);
     final sources = loaded.whereType<String>().toList(growable: false);
 
@@ -124,11 +126,12 @@ class QuestionBank {
   }
 
   /// Reconcile a complete remote snapshot, including removals and archives.
-  static void replaceRemote(
-      {Set<String> suppressedIds = const {},
-      List<Question> mcqs = const [],
-      List<ShortQuestion> saqs = const [],
-      List<CreativeQuestion> cqs = const []}) {
+  static void replaceRemote({
+    Set<String> suppressedIds = const {},
+    List<Question> mcqs = const [],
+    List<ShortQuestion> saqs = const [],
+    List<CreativeQuestion> cqs = const [],
+  }) {
     _mcqs = _bundledMcqs
         .where((q) => !suppressedIds.contains(q.id))
         .toList(growable: false);
@@ -139,9 +142,10 @@ class QuestionBank {
         .where((q) => !suppressedIds.contains(q.id))
         .toList(growable: false);
     addRemote(
-        mcqs: mcqs.where((q) => !suppressedIds.contains(q.id)).toList(),
-        saqs: saqs.where((q) => !suppressedIds.contains(q.id)).toList(),
-        cqs: cqs.where((q) => !suppressedIds.contains(q.id)).toList());
+      mcqs: mcqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+      saqs: saqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+      cqs: cqs.where((q) => !suppressedIds.contains(q.id)).toList(),
+    );
   }
 
   /// Test seam — lets widget tests install a small bank without touching
@@ -209,11 +213,11 @@ _Decoded _decodeAll(List<String> sources) {
 }
 
 QuestionSource _sourceFrom(Object? v) => switch (v) {
-      'board' => QuestionSource.board,
-      'original' => QuestionSource.original,
-      'internet' => QuestionSource.internet,
-      _ => QuestionSource.ai,
-    };
+  'board' => QuestionSource.board,
+  'original' => QuestionSource.original,
+  'internet' => QuestionSource.internet,
+  _ => QuestionSource.ai,
+};
 
 QuestionFigure? _figureFrom(Object? v) {
   if (v == null) return null;

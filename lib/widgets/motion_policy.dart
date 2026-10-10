@@ -43,18 +43,17 @@ class _MotionPolicyState extends State<MotionPolicy>
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<bool>(
-        valueListenable: AppSettings.reduceMotion,
-        builder: (context, reduce, _) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            disableAnimations:
-                reduce || MediaQuery.disableAnimationsOf(context),
-          ),
-          child: TickerMode(
-            enabled: foreground && TickerMode.of(context),
-            child: widget.child,
-          ),
-        ),
-      );
+    valueListenable: AppSettings.reduceMotion,
+    builder: (context, reduce, _) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        disableAnimations: reduce || MediaQuery.disableAnimationsOf(context),
+      ),
+      child: TickerMode(
+        enabled: foreground && TickerMode.of(context),
+        child: widget.child,
+      ),
+    ),
+  );
 }
 
 /// Repeating effects stop their controllers, not just their paint, when
@@ -129,15 +128,19 @@ class ActivityIndicator extends StatelessWidget {
   final double size;
   final Color? color;
   final double strokeWidth;
-  const ActivityIndicator(
-      {super.key, this.size = 18, this.color, this.strokeWidth = 2});
+  const ActivityIndicator({
+    super.key,
+    this.size = 18,
+    this.color,
+    this.strokeWidth = 2,
+  });
   @override
   Widget build(BuildContext context) => SizedBox.square(
-        dimension: size,
-        child: MotionPolicy.reduce(context)
-            ? AppIcon(PhosphorIcons.hourglass, size: size, color: color)
-            : CircularProgressIndicator(strokeWidth: strokeWidth, color: color),
-      );
+    dimension: size,
+    child: MotionPolicy.reduce(context)
+        ? AppIcon(PhosphorIcons.hourglass, size: size, color: color)
+        : CircularProgressIndicator(strokeWidth: strokeWidth, color: color),
+  );
 }
 
 /// An indeterminate line for actual work, or a still status under reduced motion.
@@ -146,20 +149,21 @@ class ActivityBar extends StatelessWidget {
   const ActivityBar({super.key, this.label = 'Working…'});
   @override
   Widget build(BuildContext context) => Semantics(
-        liveRegion: true,
-        label: label,
-        excludeSemantics: true,
-        child: MotionPolicy.reduce(context)
-            ? Padding(
-                padding: const EdgeInsets.all(6),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const ActivityIndicator(size: 14),
-                    const SizedBox(width: 8),
-                    Flexible(child: Text(label))
-                  ],
-                ))
-            : const LinearProgressIndicator(),
-      );
+    liveRegion: true,
+    label: label,
+    excludeSemantics: true,
+    child: MotionPolicy.reduce(context)
+        ? Padding(
+            padding: const EdgeInsets.all(6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const ActivityIndicator(size: 14),
+                const SizedBox(width: 8),
+                Flexible(child: Text(label)),
+              ],
+            ),
+          )
+        : const LinearProgressIndicator(),
+  );
 }

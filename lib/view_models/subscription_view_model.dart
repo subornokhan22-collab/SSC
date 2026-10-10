@@ -8,7 +8,7 @@ import '../repositories/subscription_repository.dart';
 /// Reactive subscription state shared by home, payment, AI, OMR and export UI.
 class SubscriptionViewModel extends ChangeNotifier {
   SubscriptionViewModel({SubscriptionRepository? repository})
-      : repository = repository ?? SubscriptionRepository();
+    : repository = repository ?? SubscriptionRepository();
 
   final SubscriptionRepository repository;
   SubscriptionEntitlement _entitlement = SubscriptionEntitlement.free();
@@ -19,8 +19,10 @@ class SubscriptionViewModel extends ChangeNotifier {
   int aiUsedToday = 0;
   bool initialized = false;
 
-  static const bool planDiagnosticsEnabled =
-      bool.fromEnvironment('ENABLE_PLAN_DIAGNOSTICS', defaultValue: false);
+  static const bool planDiagnosticsEnabled = bool.fromEnvironment(
+    'ENABLE_PLAN_DIAGNOSTICS',
+    defaultValue: false,
+  );
   static const String diagnosticAccount = 'subornokhan22@gmail.com';
 
   SubscriptionEntitlement get entitlement =>
@@ -73,11 +75,12 @@ class SubscriptionViewModel extends ChangeNotifier {
       (feature != PremiumFeature.aiAssistant || aiRemainingToday > 0);
 
   UpgradeReason? reasonFor(PremiumFeature feature) => entitlement.reasonFor(
-        feature,
-        dailyLimitReached: feature == PremiumFeature.aiAssistant &&
-            entitlement.aiAssistant &&
-            aiRemainingToday <= 0,
-      );
+    feature,
+    dailyLimitReached:
+        feature == PremiumFeature.aiAssistant &&
+        entitlement.aiAssistant &&
+        aiRemainingToday <= 0,
+  );
 
   /// Cycles the designated diagnostic account through every plan. This code
   /// is inert unless the APK was compiled with ENABLE_PLAN_DIAGNOSTICS=true;

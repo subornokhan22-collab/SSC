@@ -25,118 +25,121 @@ class PaperQuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => FadeSlideIn(
-      key: ValueKey('${question.id}:${question.questionText}'),
-      duration: const Duration(milliseconds: 240),
-      offset: const Offset(0, 6),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text(
-                AiTextFormatter.format(question.questionText),
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    fontFamilyFallback: ['DejaVu Sans']),
+    key: ValueKey('${question.id}:${question.questionText}'),
+    duration: const Duration(milliseconds: 240),
+    offset: const Offset(0, 6),
+    child: Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            Text(
+              AiTextFormatter.format(question.questionText),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamilyFallback: ['DejaVu Sans'],
               ),
-              if (question.figure != null)
-                const Padding(
-                  padding: EdgeInsets.only(top: 4),
-                  child: Text(
-                    'Includes a figure — visible in the paper preview.',
-                    style: TextStyle(color: AppTheme.muted, fontSize: 12),
-                  ),
+            ),
+            if (question.figure != null)
+              const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Text(
+                  'Includes a figure — visible in the paper preview.',
+                  style: TextStyle(color: AppTheme.muted, fontSize: 12),
                 ),
-              const SizedBox(height: 10),
-              for (var i = 0; i < question.options.length; i++)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppIcon(
-                        i == question.correctIndex
-                            ? PhosphorIcons.checkCircle
-                            : PhosphorIcons.circle,
-                        size: 17,
-                        color: i == question.correctIndex
-                            ? AppTheme.success
-                            : AppTheme.muted,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${[
-                            'ক',
-                            'খ',
-                            'গ',
-                            'ঘ'
-                          ][i]}. ${AiTextFormatter.format(question.options[i])}',
-                          style: const TextStyle(
-                              fontFamilyFallback: ['DejaVu Sans']),
+              ),
+            const SizedBox(height: 10),
+            for (var i = 0; i < question.options.length; i++)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppIcon(
+                      i == question.correctIndex
+                          ? PhosphorIcons.checkCircle
+                          : PhosphorIcons.circle,
+                      size: 17,
+                      color: i == question.correctIndex
+                          ? AppTheme.success
+                          : AppTheme.muted,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${['ক', 'খ', 'গ', 'ঘ'][i]}. ${AiTextFormatter.format(question.options[i])}',
+                        style: const TextStyle(
+                          fontFamilyFallback: ['DejaVu Sans'],
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              title: const Text('Explanation', style: TextStyle(fontSize: 13)),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      AiTextFormatter.format(question.explanation),
+                      style: const TextStyle(
+                        fontFamilyFallback: ['DejaVu Sans'],
+                      ),
+                    ),
                   ),
                 ),
-              ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title:
-                    const Text('Explanation', style: TextStyle(fontSize: 13)),
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(AiTextFormatter.format(question.explanation),
-                          style: const TextStyle(
-                              fontFamilyFallback: ['DejaVu Sans'])),
-                    ),
+              ],
+            ),
+            Wrap(
+              spacing: 8,
+              children: [
+                if (onEdit != null)
+                  TextButton.icon(
+                    onPressed: () async {
+                      final changed = await showDialog<Question>(
+                        context: context,
+                        builder: (_) => _QuestionEditor(question),
+                      );
+                      if (changed != null) onEdit!(changed);
+                    },
+                    icon: const AppIcon(PhosphorIcons.pencilSimple, size: 17),
+                    label: const Text('Edit / answer key'),
                   ),
-                ],
-              ),
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (onEdit != null)
-                    TextButton.icon(
-                      onPressed: () async {
-                        final changed = await showDialog<Question>(
-                          context: context,
-                          builder: (_) => _QuestionEditor(question),
-                        );
-                        if (changed != null) onEdit!(changed);
-                      },
-                      icon: const AppIcon(PhosphorIcons.pencilSimple, size: 17),
-                      label: const Text('Edit / answer key'),
+                if (onReplace != null)
+                  TextButton.icon(
+                    onPressed: onReplace,
+                    icon: const AppIcon(
+                      PhosphorIcons.arrowsLeftRight,
+                      size: 17,
                     ),
-                  if (onReplace != null)
-                    TextButton.icon(
-                      onPressed: onReplace,
-                      icon: const AppIcon(PhosphorIcons.arrowsLeftRight,
-                          size: 17),
-                      label: const Text('Replace'),
-                    ),
-                  if (onImprove != null)
-                    TextButton.icon(
-                        onPressed: onImprove,
-                        icon: const AppIcon(PhosphorIcons.magicWand, size: 17),
-                        label: const Text('Improve with AI')),
-                  if (onDelete != null)
-                    IconButton(
-                      tooltip: 'Remove question',
-                      onPressed: onDelete,
-                      icon: const AppIcon(PhosphorIcons.trash, size: 19),
-                    ),
-                ],
-              ),
-            ],
-          ),
+                    label: const Text('Replace'),
+                  ),
+                if (onImprove != null)
+                  TextButton.icon(
+                    onPressed: onImprove,
+                    icon: const AppIcon(PhosphorIcons.magicWand, size: 17),
+                    label: const Text('Improve with AI'),
+                  ),
+                if (onDelete != null)
+                  IconButton(
+                    tooltip: 'Remove question',
+                    onPressed: onDelete,
+                    icon: const AppIcon(PhosphorIcons.trash, size: 19),
+                  ),
+              ],
+            ),
+          ],
         ),
-      ));
+      ),
+    ),
+  );
 }
 
 class _QuestionEditor extends StatefulWidget {
@@ -192,54 +195,53 @@ class _QuestionEditorState extends State<_QuestionEditor> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Review question'),
-        content: SizedBox(
-          width: 500,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < fields.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: TextField(
-                      controller: fields[i],
-                      minLines: i == 0 || i == 5 ? 2 : 1,
-                      maxLines: 6,
-                      decoration: InputDecoration(
-                        labelText: i == 0
-                            ? 'Question'
-                            : i == 5
-                                ? 'Explanation'
-                                : 'Option ${['ক', 'খ', 'গ', 'ঘ'][i - 1]}',
-                      ),
-                    ),
+    title: const Text('Review question'),
+    content: SizedBox(
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < fields.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: TextField(
+                  controller: fields[i],
+                  minLines: i == 0 || i == 5 ? 2 : 1,
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    labelText: i == 0
+                        ? 'Question'
+                        : i == 5
+                        ? 'Explanation'
+                        : 'Option ${['ক', 'খ', 'গ', 'ঘ'][i - 1]}',
                   ),
-                DropdownButtonFormField<int>(
-                  value: answer,
-                  decoration:
-                      const InputDecoration(labelText: 'Correct answer'),
-                  items: [
-                    for (var i = 0; i < 4; i++)
-                      DropdownMenuItem(
-                        value: i,
-                        child: Text(['ক', 'খ', 'গ', 'ঘ'][i]),
-                      ),
-                  ],
-                  onChanged: (i) => setState(() => answer = i!),
                 ),
-                if (error != null)
-                  Text(error!, style: const TextStyle(color: AppTheme.danger)),
+              ),
+            DropdownButtonFormField<int>(
+              value: answer,
+              decoration: const InputDecoration(labelText: 'Correct answer'),
+              items: [
+                for (var i = 0; i < 4; i++)
+                  DropdownMenuItem(
+                    value: i,
+                    child: Text(['ক', 'খ', 'গ', 'ঘ'][i]),
+                  ),
               ],
+              onChanged: (i) => setState(() => answer = i!),
             ),
-          ),
+            if (error != null)
+              Text(error!, style: const TextStyle(color: AppTheme.danger)),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(onPressed: save, child: const Text('Save changes')),
-        ],
-      );
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(onPressed: save, child: const Text('Save changes')),
+    ],
+  );
 }

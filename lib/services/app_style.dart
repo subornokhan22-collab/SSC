@@ -44,8 +44,9 @@ class AppStyle {
 
   /// Area currently on screen. Not a notifier of its own: screens use this
   /// only for semantic neutral control colours.
-  static final ValueNotifier<WorkspaceMood> mood =
-      ValueNotifier<WorkspaceMood>(WorkspaceMood.home);
+  static final ValueNotifier<WorkspaceMood> mood = ValueNotifier<WorkspaceMood>(
+    WorkspaceMood.home,
+  );
 
   /// Accent for the area on screen. Each productive area gets a distinct
   /// readable accent; OMR keeps the printed-sheet pink.

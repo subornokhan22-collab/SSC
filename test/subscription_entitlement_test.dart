@@ -45,15 +45,17 @@ void main() {
       expect(e.omrScanner, isFalse);
     });
 
-    test('Pro allows five subjects, watermark-free export, and 20 AI requests',
-        () {
-      final e = SubscriptionEntitlement.defaults(SubscriptionPlan.pro);
-      expect(e.subjectLimit, 5);
-      expect(e.noWatermark, isTrue);
-      expect(e.canUse(PremiumFeature.aiAssistant), isTrue);
-      expect(e.aiDailyLimit, 20);
-      expect(e.canUse(PremiumFeature.omrScanner), isFalse);
-    });
+    test(
+      'Pro allows five subjects, watermark-free export, and 20 AI requests',
+      () {
+        final e = SubscriptionEntitlement.defaults(SubscriptionPlan.pro);
+        expect(e.subjectLimit, 5);
+        expect(e.noWatermark, isTrue);
+        expect(e.canUse(PremiumFeature.aiAssistant), isTrue);
+        expect(e.aiDailyLimit, 20);
+        expect(e.canUse(PremiumFeature.omrScanner), isFalse);
+      },
+    );
 
     test('Professional has unlimited subjects and OMR', () {
       final e = SubscriptionEntitlement.defaults(SubscriptionPlan.professional);
@@ -63,38 +65,44 @@ void main() {
       expect(e.canUse(PremiumFeature.omrScanner), isTrue);
     });
 
-    test('expired, cancelled, and pending paid states immediately become Free',
-        () {
-      final expired = SubscriptionEntitlement.defaults(
-        SubscriptionPlan.professional,
-        expiresAt: DateTime.now().toUtc().subtract(const Duration(minutes: 1)),
-      );
-      expect(expired.isExpired, isTrue);
-      expect(expired.effective.plan, SubscriptionPlan.free);
-
-      for (final status in [
-        SubscriptionStatus.cancelled,
-        SubscriptionStatus.pending,
-        SubscriptionStatus.failed,
-        SubscriptionStatus.expired,
-      ]) {
-        final e = SubscriptionEntitlement.defaults(
-          SubscriptionPlan.pro,
-          status: status,
-          expiresAt: DateTime.now().toUtc().add(const Duration(days: 30)),
+    test(
+      'expired, cancelled, and pending paid states immediately become Free',
+      () {
+        final expired = SubscriptionEntitlement.defaults(
+          SubscriptionPlan.professional,
+          expiresAt: DateTime.now().toUtc().subtract(
+            const Duration(minutes: 1),
+          ),
         );
-        expect(e.isActive, isFalse, reason: status.name);
-        expect(e.effective.plan, SubscriptionPlan.free, reason: status.name);
-        expect(e.effective.noWatermark, isFalse, reason: status.name);
-      }
-    });
+        expect(expired.isExpired, isTrue);
+        expect(expired.effective.plan, SubscriptionPlan.free);
+
+        for (final status in [
+          SubscriptionStatus.cancelled,
+          SubscriptionStatus.pending,
+          SubscriptionStatus.failed,
+          SubscriptionStatus.expired,
+        ]) {
+          final e = SubscriptionEntitlement.defaults(
+            SubscriptionPlan.pro,
+            status: status,
+            expiresAt: DateTime.now().toUtc().add(const Duration(days: 30)),
+          );
+          expect(e.isActive, isFalse, reason: status.name);
+          expect(e.effective.plan, SubscriptionPlan.free, reason: status.name);
+          expect(e.effective.noWatermark, isFalse, reason: status.name);
+        }
+      },
+    );
 
     test('legacy plan values map safely to Pro', () {
       expect(subscriptionPlanFromString('monthly'), SubscriptionPlan.pro);
       expect(subscriptionPlanFromString('yearly'), SubscriptionPlan.pro);
       expect(subscriptionPlanFromString('lifetime'), SubscriptionPlan.pro);
-      expect(subscriptionPlanFromString('professional'),
-          SubscriptionPlan.professional);
+      expect(
+        subscriptionPlanFromString('professional'),
+        SubscriptionPlan.professional,
+      );
       expect(subscriptionPlanFromString('unknown'), SubscriptionPlan.free);
     });
 

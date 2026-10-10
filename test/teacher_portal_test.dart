@@ -173,8 +173,9 @@ void main() {
       final pubspec = File('pubspec.yaml').readAsStringSync();
       expect(pubspec.contains('name: tutors_desk'), isTrue);
       expect(pubspec.contains('a_learning'), isFalse);
-      final manifest =
-          File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
+      final manifest = File(
+        'android/app/src/main/AndroidManifest.xml',
+      ).readAsStringSync();
       expect(manifest.contains("Tutor\'s Desk"), isTrue);
       expect(manifest.contains('ssc_prep_app'), isFalse);
     });
@@ -207,17 +208,12 @@ void main() {
       final logo = File('lib/widgets/app_logo.dart');
       expect(logo.existsSync(), isTrue);
       expect(
-        logo.readAsStringSync().contains(
-              "assetPath = 'New UI 4.0/Logo 2.png'",
-            ),
+        logo.readAsStringSync().contains("assetPath = 'New UI 4.0/Logo 2.png'"),
         isTrue,
       );
       expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
       final pubspec = File('pubspec.yaml').readAsStringSync();
-      expect(
-        pubspec,
-        contains('image_path: "New UI 4.0/Logo 1.jpg"'),
-      );
+      expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
       expect(pubspec, isNot(contains('adaptive_icon_foreground')));
       expect(pubspec, isNot(contains('adaptive_icon_background')));
     });

@@ -12,32 +12,28 @@ class TeacherAiError extends StateError {
   final String code;
   final int? statusCode;
 
-  TeacherAiError(
-    String message, {
-    required this.code,
-    this.statusCode,
-  }) : super(message);
+  TeacherAiError(String message, {required this.code, this.statusCode})
+    : super(message);
 
   String get userMessage => switch (code) {
-        'AI_DAILY_LIMIT' =>
-          "You've used today's AI allowance. It resets at midnight.",
-        'AI_BURST_LIMIT' ||
-        'GEMINI_RATE_LIMIT' =>
-          'AI is temporarily busy. Try again shortly.',
-        'GEMINI_QUOTA' =>
-          'The AI service quota is temporarily unavailable. Try again later.',
-        'AI_UPGRADE_REQUIRED' =>
-          'AI Assistant requires an active Pro or Professional plan.',
-        _ => message,
-      };
+    'AI_DAILY_LIMIT' =>
+      "You've used today's AI allowance. It resets at midnight.",
+    'AI_BURST_LIMIT' ||
+    'GEMINI_RATE_LIMIT' => 'AI is temporarily busy. Try again shortly.',
+    'GEMINI_QUOTA' =>
+      'The AI service quota is temporarily unavailable. Try again later.',
+    'AI_UPGRADE_REQUIRED' =>
+      'AI Assistant requires an active Pro or Professional plan.',
+    _ => message,
+  };
 }
 
 class TeacherAiClient {
   final http.Client _client;
   final String? Function() _tokenProvider;
   TeacherAiClient({http.Client? client, String? Function()? tokenProvider})
-      : _client = client ?? http.Client(),
-        _tokenProvider = tokenProvider ?? (() => AuthService.currentUserToken);
+    : _client = client ?? http.Client(),
+      _tokenProvider = tokenProvider ?? (() => AuthService.currentUserToken);
   void close() => _client.close();
   Future<Map<String, dynamic>> request(
     Map<String, dynamic> payload,
@@ -45,31 +41,31 @@ class TeacherAiClient {
   ) async {
     final token = _tokenProvider();
     if (token == null)
-      throw StateError(
-        'Sign in and connect to the internet to use AI Tools.',
-      );
-    final req = http.Request(
-      'POST',
-      Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
-    )
-      ..headers.addAll({
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-        'apikey': SupabaseConfig.anonKey,
-      })
-      ..body = jsonEncode(payload);
+      throw StateError('Sign in and connect to the internet to use AI Tools.');
+    final req =
+        http.Request(
+            'POST',
+            Uri.parse('${SupabaseConfig.url}/functions/v1/mimi'),
+          )
+          ..headers.addAll({
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+            'apikey': SupabaseConfig.anonKey,
+          })
+          ..body = jsonEncode(payload);
     // The Edge Function has a 120 second provider deadline. Allow time to
     // establish the stream, then keep a small drain margin below the mobile
     // request's overall watchdog.
-    final response =
-        await _client.send(req).timeout(const Duration(seconds: 30));
+    final response = await _client
+        .send(req)
+        .timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) {
       if (response.statusCode == 401) {
         await AuthService.signOut();
       }
       final raw = await response.stream.bytesToString().timeout(
-            const Duration(seconds: 30),
-          );
+        const Duration(seconds: 30),
+      );
       String message = 'AI server error (${response.statusCode}). Try again.';
       var code = 'AI_ERROR';
       try {
@@ -88,14 +84,16 @@ class TeacherAiClient {
         response.headers['x-teacher-attachments-version'] != '1') {
       await response.stream.listen((_) {}).cancel();
       throw StateError(
-          'The server needs the AI Tools attachment update. No result was accepted; update the existing mimi function first.');
+        'The server needs the AI Tools attachment update. No result was accepted; update the existing mimi function first.',
+      );
     }
     Map<String, dynamic>? result;
     var event = '';
-    await for (final line in response.stream
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .timeout(const Duration(seconds: 135))) {
+    await for (final line
+        in response.stream
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .timeout(const Duration(seconds: 135))) {
       if (line.startsWith('event:')) {
         event = line.substring(6).trim();
         continue;

@@ -33,8 +33,8 @@ void main() {
     await LocalDiagnostics.clear();
     calls = <Map<String, Object?>>[];
     sharedWritable = true;
-    PaperBackup.debugBaseDir =
-        () async => Directory('${external.path}/TutorsDesk');
+    PaperBackup.debugBaseDir = () async =>
+        Directory('${external.path}/TutorsDesk');
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(paths, (call) async {
@@ -69,7 +69,8 @@ void main() {
           final target = File('${sdcard.path}/$relative/$name');
           target.parent.createSync(recursive: true);
           target.writeAsBytesSync(
-              File(args['source'] as String).readAsBytesSync());
+            File(args['source'] as String).readAsBytesSync(),
+          );
           return '$relative/$name';
       }
       return null;
@@ -85,30 +86,31 @@ void main() {
   });
 
   SavedPaper paper({String id = 'sp_1'}) => SavedPaper(
-        id: id,
-        title: 'Physics Model Test',
-        subject: 'Physics',
-        subjectId: 'physics',
-        subjectCode: '109',
-        setCode: 'ক',
-        total: 1,
-        key: const [2],
-        questions: const [
-          SavedQuestion(
-            text: 'ত্বরণের একক কী?',
-            options: ['m/s', 'm', 'm/s²', 'kg'],
-            answer: 2,
-          ),
-        ],
-        createdAt: DateTime(2026, 9, 26),
-        pages: 1,
-      );
+    id: id,
+    title: 'Physics Model Test',
+    subject: 'Physics',
+    subjectId: 'physics',
+    subjectCode: '109',
+    setCode: 'ক',
+    total: 1,
+    key: const [2],
+    questions: const [
+      SavedQuestion(
+        text: 'ত্বরণের একক কী?',
+        options: ['m/s', 'm', 'm/s²', 'kg'],
+        answer: 2,
+      ),
+    ],
+    createdAt: DateTime(2026, 9, 26),
+    pages: 1,
+  );
 
   File inAppCopy() =>
       File('${external.path}/TutorsDesk/tutors_desk_backup_signed_out.json');
 
   File sharedCopy() => File(
-      '${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json');
+    '${sdcard.path}/Download/TutorsDesk/tutors_desk_backup_signed_out.json',
+  );
 
   /// Included in failure messages so a CI failure explains itself instead of
   /// only reporting a bare false.
@@ -126,15 +128,17 @@ void main() {
     expect(await PaperLibrary.loadEntries(), isEmpty);
     expect(await PaperLibrary.savedPaper('only_a'), isNull);
     expect(
-      File('${external.path}/TutorsDesk/'
-              'tutors_desk_backup_account_a.json')
-          .existsSync(),
+      File(
+        '${external.path}/TutorsDesk/'
+        'tutors_desk_backup_account_a.json',
+      ).existsSync(),
       isTrue,
     );
     expect(
-      File('${external.path}/TutorsDesk/'
-              'tutors_desk_backup_account_b.json')
-          .existsSync(),
+      File(
+        '${external.path}/TutorsDesk/'
+        'tutors_desk_backup_account_b.json',
+      ).existsSync(),
       isFalse,
     );
   });
@@ -143,15 +147,23 @@ void main() {
     await PaperLibrary.addSavedPaper(paper());
     await PaperBackup.autoSave();
 
-    expect(inAppCopy().existsSync(), isTrue,
-        reason: 'the in-app copy still keeps working offline');
-    expect(sharedCopy().existsSync(), isTrue,
-        reason: 'the shared copy is the only one that survives an uninstall');
+    expect(
+      inAppCopy().existsSync(),
+      isTrue,
+      reason: 'the in-app copy still keeps working offline',
+    );
+    expect(
+      sharedCopy().existsSync(),
+      isTrue,
+      reason: 'the shared copy is the only one that survives an uninstall',
+    );
 
     final request = calls.firstWhere((c) => c['method'] == 'copyToDownloads');
-    expect(request['relativePath'], 'Download/TutorsDesk',
-        reason:
-            'must not reuse the TutorsDeskDebug folder the restore ignores');
+    expect(
+      request['relativePath'],
+      'Download/TutorsDesk',
+      reason: 'must not reuse the TutorsDeskDebug folder the restore ignores',
+    );
     expect(request['name'], 'tutors_desk_backup_signed_out.json');
     expect(request['mime'], 'application/json');
 
@@ -181,28 +193,35 @@ void main() {
     expect(restored?.questions.single.text, 'ত্বরণের একক কী?');
   });
 
-  test('manual export reports failure honestly when shared storage refuses',
-      () async {
-    await PaperLibrary.addSavedPaper(paper());
-    await PaperBackup.autoSave();
-    expect(inAppCopy().existsSync(), isTrue);
-    sharedWritable = false;
-    calls.clear();
+  test(
+    'manual export reports failure honestly when shared storage refuses',
+    () async {
+      await PaperLibrary.addSavedPaper(paper());
+      await PaperBackup.autoSave();
+      expect(inAppCopy().existsSync(), isTrue);
+      sharedWritable = false;
+      calls.clear();
 
-    expect(await PaperBackup.exportToDownload(), isNull);
-    expect(calls.any((c) => c['method'] == 'copyToDownloads'), isTrue);
-    expect(inAppCopy().existsSync(), isTrue,
-        reason: 'a failed shared copy must not lose the in-app backup');
-  });
+      expect(await PaperBackup.exportToDownload(), isNull);
+      expect(calls.any((c) => c['method'] == 'copyToDownloads'), isTrue);
+      expect(
+        inAppCopy().existsSync(),
+        isTrue,
+        reason: 'a failed shared copy must not lose the in-app backup',
+      );
+    },
+  );
 
   test('the shared copy survives an unusable in-app folder', () async {
     await PaperLibrary.addSavedPaper(paper());
     PaperBackup.debugBaseDir = () async => throw StateError('storage gone');
 
-    expect(await PaperBackup.exportToDownload(),
-        'Download/TutorsDesk/tutors_desk_backup_signed_out.json',
-        reason:
-            'the uninstall-safe copy must not depend on app storage; ${await why()}');
+    expect(
+      await PaperBackup.exportToDownload(),
+      'Download/TutorsDesk/tutors_desk_backup_signed_out.json',
+      reason:
+          'the uninstall-safe copy must not depend on app storage; ${await why()}',
+    );
     expect(sharedCopy().existsSync(), isTrue);
   });
 
@@ -213,16 +232,19 @@ void main() {
 
     // Wiped library: a fresh install before restore has run, or a transient
     // read failure. The next automatic save must not empty the backup.
-    File('${appDoc.path}/tutors_desk_papers/accounts/signed_out/index.json')
-        .writeAsStringSync('[]');
+    File(
+      '${appDoc.path}/tutors_desk_papers/accounts/signed_out/index.json',
+    ).writeAsStringSync('[]');
     expect(await PaperLibrary.loadEntries(), isEmpty);
 
     await PaperBackup.autoSave();
 
     final backup = jsonDecode(sharedCopy().readAsStringSync()) as Map;
-    expect(backup['entries'], isNotEmpty,
-        reason:
-            'an empty snapshot must not erase a real backup; ${await why()}');
+    expect(
+      backup['entries'],
+      isNotEmpty,
+      reason: 'an empty snapshot must not erase a real backup; ${await why()}',
+    );
     expect(await PaperBackup.exportToDownload(), isNull);
   });
 
@@ -235,7 +257,9 @@ void main() {
     ).readAsStringSync();
     expect(kotlin, contains('RELATIVE_PATH, relative'));
     expect(
-        kotlin, isNot(contains('RELATIVE_PATH, "Download/TutorsDeskDebug"')));
+      kotlin,
+      isNot(contains('RELATIVE_PATH, "Download/TutorsDeskDebug"')),
+    );
     expect(kotlin, contains('path = relative'));
   });
 
@@ -243,31 +267,35 @@ void main() {
     await PaperLibrary.addSavedPaper(paper());
     await PaperBackup.autoSave();
 
-    expect(await PaperBackup.tryAutoRestore(), 0,
-        reason: 'a non-empty library must never be overwritten');
+    expect(
+      await PaperBackup.tryAutoRestore(),
+      0,
+      reason: 'a non-empty library must never be overwritten',
+    );
     final entries = await PaperLibrary.loadEntries();
     expect(entries.where((e) => e.id == 'sp_1').length, 1);
   });
 
   test('restore ignores unsafe imported ids and filenames', () async {
     final backup = File('${sdcard.path}/unsafe.json');
-    backup.writeAsStringSync(jsonEncode({
-      'app': 'tutors_desk',
-      'entries': [
-        paper(id: 'sp_safe').toJson(),
-        paper(id: '../escape').toJson(),
-      ],
-      'files': {
-        'sp_safe/paper.json': base64Encode(utf8.encode('{}')),
-        '../escape/evil.txt': base64Encode(utf8.encode('secret')),
-      },
-    }));
+    backup.writeAsStringSync(
+      jsonEncode({
+        'app': 'tutors_desk',
+        'entries': [
+          paper(id: 'sp_safe').toJson(),
+          paper(id: '../escape').toJson(),
+        ],
+        'files': {
+          'sp_safe/paper.json': base64Encode(utf8.encode('{}')),
+          '../escape/evil.txt': base64Encode(utf8.encode('secret')),
+        },
+      }),
+    );
 
     expect(await PaperBackup.restore(backup), 1);
-    expect(
-      (await PaperLibrary.loadEntries()).map((e) => e.id).toList(),
-      ['sp_safe'],
-    );
+    expect((await PaperLibrary.loadEntries()).map((e) => e.id).toList(), [
+      'sp_safe',
+    ]);
     expect(File('${external.path}/escape/evil.txt').existsSync(), isFalse);
   });
 }

@@ -93,32 +93,42 @@ class _BootSequenceState extends State<BootSequence> {
                   for (var i = 0; i < widget.steps.length; i++)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 9),
-                      child: Row(children: [
-                        if (i < completed)
-                          const AppIcon(PhosphorIcons.checkCircle,
-                              color: Colors.black, size: 20)
-                        else if (i == completed && !failed)
-                          const ActivityIndicator(size: 20, color: Colors.black)
-                        else
-                          AppIcon(
+                      child: Row(
+                        children: [
+                          if (i < completed)
+                            const AppIcon(
+                              PhosphorIcons.checkCircle,
+                              color: Colors.black,
+                              size: 20,
+                            )
+                          else if (i == completed && !failed)
+                            const ActivityIndicator(
+                              size: 20,
+                              color: Colors.black,
+                            )
+                          else
+                            AppIcon(
                               i == completed && failed
                                   ? PhosphorIcons.warningCircle
                                   : PhosphorIcons.circle,
                               size: 20,
-                              color: Colors.grey),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(widget.steps[i].label)),
-                      ]),
+                              color: Colors.grey,
+                            ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(widget.steps[i].label)),
+                        ],
+                      ),
                     ),
                   Semantics(
                     liveRegion: true,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 16),
                       child: Text(
-                          failed
-                              ? 'This step could not finish. Your saved data has not been cleared.'
-                              : '${completed + 1} of ${widget.steps.length}: ${widget.steps[completed].label}',
-                          style: const TextStyle(color: Colors.grey)),
+                        failed
+                            ? 'This step could not finish. Your saved data has not been cleared.'
+                            : '${completed + 1} of ${widget.steps.length}: ${widget.steps[completed].label}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ),
                   ),
                   if (failed) ...[

@@ -353,10 +353,7 @@ class AppTheme {
           ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
-          (s) => IconThemeData(
-            size: 23,
-            color: Colors.black,
-          ),
+          (s) => IconThemeData(size: 23, color: Colors.black),
         ),
       ),
     );

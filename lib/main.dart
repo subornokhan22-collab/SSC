@@ -34,9 +34,13 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   ErrorWidget.builder = (details) => _FriendlyErrorView(details: details);
   FlutterError.onError = (details) {
-    unawaited(LocalDiagnostics.record(
-        details.exception, details.stack ?? StackTrace.empty,
-        scope: 'flutter'));
+    unawaited(
+      LocalDiagnostics.record(
+        details.exception,
+        details.stack ?? StackTrace.empty,
+        scope: 'flutter',
+      ),
+    );
     if (kDebugMode) FlutterError.presentError(details);
   };
   PlatformDispatcher.instance.onError = (error, stack) {
@@ -49,32 +53,32 @@ void main() {
 }
 
 List<BootStep> _bootSteps() => [
-      BootStep('Restoring your preferences', () async {
-        await SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ]);
-        await AppStyle.load();
-        await AppSettings.load();
-      }),
-      BootStep('Loading the question bank', QuestionBank.load),
-      BootStep('Restoring saved content', () async {
-        // Cached overlays MUST follow the bundled bank, never race it.
-        await QuestionSync.loadCache();
-        await EnglishPaperSync.loadCache();
-        await ContentCatalogSync.loadCache();
-      }),
-      BootStep('Restoring sign-in', AuthService.init),
-      BootStep('Preparing your paper library', () async {
-        // Wait for restoration before home/library can read the files.
-        await PaperBackup.tryAutoRestore();
-        _pendingCrashReport = await _readCrashLog();
-        // These services handle offline errors; network sync never blocks boot.
-        unawaited(QuestionSync.refresh());
-        unawaited(EnglishPaperSync.refresh());
-        unawaited(ContentCatalogSync.refresh());
-      }),
-    ];
+  BootStep('Restoring your preferences', () async {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    await AppStyle.load();
+    await AppSettings.load();
+  }),
+  BootStep('Loading the question bank', QuestionBank.load),
+  BootStep('Restoring saved content', () async {
+    // Cached overlays MUST follow the bundled bank, never race it.
+    await QuestionSync.loadCache();
+    await EnglishPaperSync.loadCache();
+    await ContentCatalogSync.loadCache();
+  }),
+  BootStep('Restoring sign-in', AuthService.init),
+  BootStep('Preparing your paper library', () async {
+    // Wait for restoration before home/library can read the files.
+    await PaperBackup.tryAutoRestore();
+    _pendingCrashReport = await _readCrashLog();
+    // These services handle offline errors; network sync never blocks boot.
+    unawaited(QuestionSync.refresh());
+    unawaited(EnglishPaperSync.refresh());
+    unawaited(ContentCatalogSync.refresh());
+  }),
+];
 
 /// Consume only the presence of a native crash, never its private message.
 /// Clean up both the corrected location and the old misplaced log.
@@ -85,7 +89,7 @@ Future<String?> _readCrashLog() async {
     var found = false;
     for (final path in [
       '${dir.path}/crash.log',
-      '${support.path}/app_flutter/crash.log'
+      '${support.path}/app_flutter/crash.log',
     ]) {
       final file = File(path);
       if (await file.exists()) {
@@ -96,8 +100,11 @@ Future<String?> _readCrashLog() async {
       }
     }
     if (found) {
-      await LocalDiagnostics.record(NativeCrashDetected(), StackTrace.empty,
-          scope: 'native');
+      await LocalDiagnostics.record(
+        NativeCrashDetected(),
+        StackTrace.empty,
+        scope: 'native',
+      );
       return 'The previous session ended unexpectedly. A privacy-safe event was saved on this device. Review or clear it in Settings. No report was sent.';
     }
   } catch (_) {}

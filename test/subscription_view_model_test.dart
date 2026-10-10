@@ -24,23 +24,25 @@ class FakeSubscriptionRepository extends SubscriptionRepository {
 }
 
 void main() {
-  test('plan cycling is disabled unless explicitly compiled for diagnostics',
-      () async {
-    final repository = FakeSubscriptionRepository(
-      SubscriptionEntitlement.defaults(SubscriptionPlan.basic),
-    );
-    final viewModel = SubscriptionViewModel(repository: repository);
-    await viewModel.initialize(refresh: false);
+  test(
+    'plan cycling is disabled unless explicitly compiled for diagnostics',
+    () async {
+      final repository = FakeSubscriptionRepository(
+        SubscriptionEntitlement.defaults(SubscriptionPlan.basic),
+      );
+      final viewModel = SubscriptionViewModel(repository: repository);
+      await viewModel.initialize(refresh: false);
 
-    expect(SubscriptionViewModel.planDiagnosticsEnabled, isFalse);
-    expect(
-      viewModel.cycleDiagnosticPlan(
-        accountEmail: SubscriptionViewModel.diagnosticAccount,
-      ),
-      isFalse,
-    );
-    expect(viewModel.plan, SubscriptionPlan.basic);
-  });
+      expect(SubscriptionViewModel.planDiagnosticsEnabled, isFalse);
+      expect(
+        viewModel.cycleDiagnosticPlan(
+          accountEmail: SubscriptionViewModel.diagnosticAccount,
+        ),
+        isFalse,
+      );
+      expect(viewModel.plan, SubscriptionPlan.basic);
+    },
+  );
 
   test('view model exposes effective Free state after expiry', () async {
     final repository = FakeSubscriptionRepository(
@@ -78,15 +80,11 @@ void main() {
 
   test('Dhaka date cache key follows the Asia/Dhaka calendar day', () {
     expect(
-      SubscriptionRepository.dhakaDateString(
-        DateTime.utc(2026, 1, 1, 17, 59),
-      ),
+      SubscriptionRepository.dhakaDateString(DateTime.utc(2026, 1, 1, 17, 59)),
       '2026-01-01',
     );
     expect(
-      SubscriptionRepository.dhakaDateString(
-        DateTime.utc(2026, 1, 1, 18),
-      ),
+      SubscriptionRepository.dhakaDateString(DateTime.utc(2026, 1, 1, 18)),
       '2026-01-02',
     );
   });
