@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/foundation.dart' show compute, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
+
+import 'local_account_scope.dart';
+import 'local_diagnostics.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -55,9 +58,8 @@ class PaperEntry {
         year: m['year'] as String? ?? '',
         kind: m['kind'] as String? ?? 'images',
         pages: m['pages'] as int? ?? 1,
-        createdAt:
-            DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-                DateTime.now(),
+        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
+            DateTime.now(),
       );
 }
 
@@ -73,8 +75,11 @@ class SavedQuestion {
     required this.answer,
   });
 
-  Map<String, dynamic> toJson() =>
-      {'text': text, 'options': options, 'answer': answer};
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'options': options,
+        'answer': answer,
+      };
 
   static SavedQuestion fromJson(Map<String, dynamic> m) => SavedQuestion(
         text: m['text'] as String? ?? '',
@@ -100,6 +105,7 @@ class SavedPaper {
   final List<int> key; // option index (0–3) per MCQ
   final List<SavedQuestion> questions;
   final DateTime createdAt;
+
   /// Rendered page count (p1.jpg…pN.jpg in the entry dir). 0 for entries
   /// saved before pages were stored.
   final int pages;
@@ -147,9 +153,8 @@ class SavedPaper {
             .map((e) =>
                 SavedQuestion.fromJson((e as Map).cast<String, dynamic>()))
             .toList(),
-        createdAt:
-            DateTime.tryParse(m['createdAt'] as String? ?? '') ??
-                DateTime.now(),
+        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
+            DateTime.now(),
         pages: m['pages'] as int? ?? 0,
       );
 }
@@ -158,26 +163,107 @@ class PaperLibrary {
   PaperLibrary._();
 
   static const _indexName = 'index.json';
+  static final _storageIdPattern = RegExp(r'^[A-Za-z0-9_-]{1,128}$');
+  static final _backupFilePattern = RegExp(r'^p[1-9][0-9]*\.jpg$');
+
+  /// IDs are used as directory names. Keep imported/indexed values to the
+  /// same narrow form produced by the app so a crafted backup cannot escape
+  /// the paper-library root through `..` or path separators.
+  static bool isSafeStorageId(String value) =>
+      _storageIdPattern.hasMatch(value);
+
+  static bool _isSafeBackupFile(String value) =>
+      value == 'paper.json' ||
+      value == 'thumb.jpg' ||
+      value == 'doc.pdf' ||
+      _backupFilePattern.hasMatch(value);
 
   static Future<Directory> root() async {
     final appDoc = await getApplicationDocumentsDirectory();
-    final dir = Directory('${appDoc.path}${Platform.pathSeparator}tutors_desk_papers');
+    final legacy = Directory(
+      '${appDoc.path}${Platform.pathSeparator}tutors_desk_papers',
+    );
+    final dir = Directory(
+      '${legacy.path}${Platform.pathSeparator}accounts'
+      '${Platform.pathSeparator}${LocalAccountScope.id}',
+    );
     if (!dir.existsSync()) dir.createSync(recursive: true);
+    await _claimLegacyLibrary(legacy, dir);
     return dir;
   }
 
-  static Future<File> _indexFile() async =>
-      File((await root()).path + '$_indexName');
+  /// Assign data written by pre-account-scoping builds to the account that is
+  /// signed in during the upgrade. It is moved once, so later accounts can
+  /// never see or claim the same papers.
+  static Future<void> _claimLegacyLibrary(
+    Directory legacy,
+    Directory scoped,
+  ) async {
+    final marker = File(
+      '${scoped.path}${Platform.pathSeparator}.legacy_claimed',
+    );
+    if (marker.existsSync()) return;
+    final oldIndex = File('${legacy.path}${Platform.pathSeparator}$_indexName');
+    final newIndex = File('${scoped.path}${Platform.pathSeparator}$_indexName');
+    if (oldIndex.existsSync() && !newIndex.existsSync()) {
+      try {
+        final raw = json.decode(await oldIndex.readAsString());
+        if (raw is List) {
+          await oldIndex.copy(newIndex.path);
+          for (final item in raw) {
+            if (item is! Map) continue;
+            final id = item['id']?.toString() ?? '';
+            if (!isSafeStorageId(id)) continue;
+            final oldDir = Directory(
+              '${legacy.path}${Platform.pathSeparator}$id',
+            );
+            final newDir = Directory(
+              '${scoped.path}${Platform.pathSeparator}$id',
+            );
+            if (oldDir.existsSync() && !newDir.existsSync()) {
+              await oldDir.rename(newDir.path);
+            }
+          }
+          await oldIndex.delete();
+        }
+      } catch (_) {
+        // Keep recovery data untouched if migration cannot complete.
+      }
+    }
+    try {
+      await marker.writeAsString(LocalAccountScope.id, flush: true);
+    } catch (_) {}
+  }
+
+  static Future<File> _indexFile() async {
+    final dir = await root();
+    final correct = File('${dir.path}${Platform.pathSeparator}$_indexName');
+    // Older builds omitted the separator. Copy once, keeping the old file as
+    // recovery data so an upgrade never loses a teacher's saved papers.
+    final legacy = File('${dir.path}$_indexName');
+    if (!await correct.exists() && await legacy.exists()) {
+      await legacy.copy(correct.path);
+    }
+    return correct;
+  }
 
   static Future<List<PaperEntry>> loadEntries() async {
     final f = await _indexFile();
     if (!f.existsSync()) return const [];
     try {
-      final list = json.decode(f.readAsStringSync()) as List;
-      final entries = list
-          .map((e) => PaperEntry.fromJson((e as Map).cast<String, dynamic>()))
-          .toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final raw = json.decode(f.readAsStringSync());
+      if (raw is! List) return const [];
+      final entries = <PaperEntry>[];
+      for (final item in raw) {
+        try {
+          if (item is! Map) continue;
+          final entry = PaperEntry.fromJson(item.cast<String, dynamic>());
+          if (isSafeStorageId(entry.id)) entries.add(entry);
+        } catch (_) {
+          // One damaged/imported row must not hide every valid saved paper.
+        }
+      }
+      entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return entries;
     } catch (_) {
       return const [];
@@ -190,8 +276,8 @@ class PaperLibrary {
   }
 
   static Future<Directory> _dirFor(String id) async {
-    final dir =
-        Directory((await root()).path + Platform.pathSeparator + id);
+    if (!isSafeStorageId(id)) throw ArgumentError.value(id, 'id');
+    final dir = Directory((await root()).path + Platform.pathSeparator + id);
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir;
   }
@@ -206,21 +292,23 @@ class PaperLibrary {
     if (pages.isEmpty) {
       throw Exception('Add at least one page photo.');
     }
-    final id = 'p_${DateTime.now().millisecondsSinceEpoch}';
+    final id = 'p_${DateTime.now().microsecondsSinceEpoch}';
     final dir = await _dirFor(id);
     final norm = <Uint8List>[];
     for (final raw in pages) {
       norm.add(await _normalizeJpeg(raw));
     }
     for (var i = 0; i < norm.length; i++) {
-      await File('${dir.path}${Platform.pathSeparator}p${i + 1}.jpg')
-          .writeAsBytes(norm[i]);
+      await File(
+        '${dir.path}${Platform.pathSeparator}p${i + 1}.jpg',
+      ).writeAsBytes(norm[i]);
     }
     // Thumbnail from the *normalized* first page so it matches what is
     // stored and printed.
     final thumb = await _thumbFrom(norm.first);
-    await File('${dir.path}${Platform.pathSeparator}thumb.jpg')
-        .writeAsBytes(thumb);
+    await File(
+      '${dir.path}${Platform.pathSeparator}thumb.jpg',
+    ).writeAsBytes(thumb);
 
     final entry = PaperEntry(
       id: id,
@@ -246,10 +334,11 @@ class PaperLibrary {
     int pages = 0,
   }) async {
     if (bytes.isEmpty) throw Exception('The PDF file is empty.');
-    final id = 'p_${DateTime.now().millisecondsSinceEpoch}';
+    final id = 'p_${DateTime.now().microsecondsSinceEpoch}';
     final dir = await _dirFor(id);
-    await File('${dir.path}${Platform.pathSeparator}doc.pdf')
-        .writeAsBytes(bytes);
+    await File(
+      '${dir.path}${Platform.pathSeparator}doc.pdf',
+    ).writeAsBytes(bytes);
     // No raster thumbnail for PDFs — the list shows a document icon.
 
     final entry = PaperEntry(
@@ -292,17 +381,21 @@ class PaperLibrary {
         try {
           norm.add(await _normalizeJpeg(raw));
         } catch (_) {
-          // Unencodable page — skip rather than fail the whole save.
+          throw StateError(
+            'A page could not be saved. No incomplete paper was added to your library.',
+          );
         }
       }
       if (norm.isNotEmpty) {
         for (var i = 0; i < norm.length; i++) {
-          await File('${dir.path}${Platform.pathSeparator}p${i + 1}.jpg')
-              .writeAsBytes(norm[i]);
+          await File(
+            '${dir.path}${Platform.pathSeparator}p${i + 1}.jpg',
+          ).writeAsBytes(norm[i]);
         }
         final thumb = await _thumbFrom(norm.first);
-        await File('${dir.path}${Platform.pathSeparator}thumb.jpg')
-            .writeAsBytes(thumb);
+        await File(
+          '${dir.path}${Platform.pathSeparator}thumb.jpg',
+        ).writeAsBytes(thumb);
         pages = norm.length;
       }
     }
@@ -319,8 +412,9 @@ class PaperLibrary {
       createdAt: paper.createdAt,
       pages: pages,
     );
-    await File('${dir.path}${Platform.pathSeparator}paper.json')
-        .writeAsString(json.encode(saved.toJson()));
+    await File(
+      '${dir.path}${Platform.pathSeparator}paper.json',
+    ).writeAsString(json.encode(saved.toJson()));
     final entry = PaperEntry(
       id: paper.id,
       title: paper.title,
@@ -338,12 +432,14 @@ class PaperLibrary {
 
   /// The saved paper (with its answer key) stored under entry [id], if any.
   static Future<SavedPaper?> savedPaper(String id) async {
-    final f =
-        File((await _dirFor(id)).path + Platform.pathSeparator + 'paper.json');
+    final f = File(
+      (await _dirFor(id)).path + Platform.pathSeparator + 'paper.json',
+    );
     if (!f.existsSync()) return null;
     try {
       return SavedPaper.fromJson(
-          (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>());
+        (json.decode(f.readAsStringSync()) as Map).cast<String, dynamic>(),
+      );
     } catch (_) {
       return null;
     }
@@ -366,38 +462,36 @@ class PaperLibrary {
 
   static Future<Uint8List?> pageBytes(String id, int page) async {
     final f = File(
-        (await _dirFor(id)).path + Platform.pathSeparator + 'p${page}.jpg');
+      (await _dirFor(id)).path + Platform.pathSeparator + 'p${page}.jpg',
+    );
     if (!f.existsSync()) return null;
     return f.readAsBytes();
   }
 
   static Future<Uint8List?> pdfBytes(String id) async {
-    final f =
-        File((await _dirFor(id)).path + Platform.pathSeparator + 'doc.pdf');
+    final f = File(
+      (await _dirFor(id)).path + Platform.pathSeparator + 'doc.pdf',
+    );
     if (!f.existsSync()) return null;
     return f.readAsBytes();
   }
 
   static Future<Uint8List?> thumbBytes(String id) async {
-    final f =
-        File((await _dirFor(id)).path + Platform.pathSeparator + 'thumb.jpg');
+    final f = File(
+      (await _dirFor(id)).path + Platform.pathSeparator + 'thumb.jpg',
+    );
     if (!f.existsSync()) return null;
     return f.readAsBytes();
   }
 
-  /// Prints (or shares, when the system print service is unavailable) the
-  /// paper. Image papers are assembled into an A4 PDF on the fly.
-  static Future<void> printEntry(PaperEntry entry) async {
-    if (entry.kind == 'pdf') {
-      final bytes = await pdfBytes(entry.id);
-      if (bytes == null) throw Exception('PDF not found.');
-      await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
-      return;
-    }
+  static Future<pw.Document> _imageDocument(PaperEntry entry) async {
+    if (entry.pages <= 0) throw StateError('This paper has no pages.');
     final doc = pw.Document();
     for (var i = 1; i <= entry.pages; i++) {
       final bytes = await pageBytes(entry.id, i);
-      if (bytes == null) continue;
+      if (bytes == null) {
+        throw StateError('Page $i of this paper is missing.');
+      }
       doc.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
@@ -411,6 +505,19 @@ class PaperLibrary {
         ),
       );
     }
+    return doc;
+  }
+
+  /// Prints (or shares, when the system print service is unavailable) the
+  /// paper. Image papers are assembled into an A4 PDF on the fly.
+  static Future<void> printEntry(PaperEntry entry) async {
+    if (entry.kind == 'pdf') {
+      final bytes = await pdfBytes(entry.id);
+      if (bytes == null) throw Exception('PDF not found.');
+      await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
+      return;
+    }
+    final doc = await _imageDocument(entry);
     final bytes = await doc.save();
     await _layoutOrShare(bytes, '${_safeName(entry.title)}.pdf');
   }
@@ -426,23 +533,7 @@ class PaperLibrary {
       );
       return;
     }
-    final doc = pw.Document();
-    for (var i = 1; i <= entry.pages; i++) {
-      final bytes = await pageBytes(entry.id, i);
-      if (bytes == null) continue;
-      doc.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.zero,
-          build: (_) => pw.Image(
-            pw.MemoryImage(bytes),
-            width: PdfPageFormat.a4.width,
-            height: PdfPageFormat.a4.height,
-            fit: pw.BoxFit.contain,
-          ),
-        ),
-      );
-    }
+    final doc = await _imageDocument(entry);
     final bytes = await doc.save();
     await Printing.sharePdf(
       bytes: bytes,
@@ -459,8 +550,7 @@ class PaperLibrary {
   }
 
   static String _safeName(String title) {
-    final clean =
-        title.replaceAll(RegExp(r'[\\/:*?"<>|]'), ' ').trim();
+    final clean = title.replaceAll(RegExp(r'[\\/:*?"<>|]'), ' ').trim();
     return clean.isEmpty ? 'paper' : clean;
   }
 
@@ -512,10 +602,7 @@ class PaperLibrary {
               little ? (j[o] | (j[o + 1] << 8)) : ((j[o] << 8) | j[o + 1]);
           int u32e(int o) => little
               ? (j[o] | (j[o + 1] << 8) | (j[o + 2] << 16) | (j[o + 3] << 24))
-              : ((j[o] << 24) |
-                  (j[o + 1] << 16) |
-                  (j[o + 2] << 8) |
-                  j[o + 3]);
+              : ((j[o] << 24) | (j[o + 1] << 16) | (j[o + 2] << 8) | j[o + 3]);
           final ifdOff = u32e(tiffStart + 4);
           final ifd = tiffStart + ifdOff; // TIFF offsets are relative
           if (ifd + 2 <= j.length) {
@@ -574,9 +661,10 @@ Uint8List _normalizeJpegCore(Uint8List raw) {
   if (side > maxSide) {
     final s = maxSide / side;
     im = img.copyResize(
-        im,
-        width: (im.width * s).round(),
-        height: (im.height * s).round());
+      im,
+      width: (im.width * s).round(),
+      height: (im.height * s).round(),
+    );
   }
   return img.encodeJpg(im, quality: 85);
 }
@@ -588,8 +676,11 @@ Uint8List _thumbCore(Uint8List page) {
   if (image == null) return page;
   final s = 360.0 / (image.width > image.height ? image.width : image.height);
   final im = s < 1
-      ? img.copyResize(image,
-          width: (image.width * s).round(), height: (image.height * s).round())
+      ? img.copyResize(
+          image,
+          width: (image.width * s).round(),
+          height: (image.height * s).round(),
+        )
       : image;
   return img.encodeJpg(im, quality: 78);
 }
@@ -608,13 +699,13 @@ class PaperBackup {
 
   static const _channel = MethodChannel('com.tutorsdesk.app/storage');
   static const _dirName = 'TutorsDesk';
-  static const _fileName = 'tutors_desk_backup.json';
+  static String get _fileName =>
+      'tutors_desk_backup_${LocalAccountScope.id}.json';
 
   /// Whether the app may write into the shared Download folder.
   static Future<bool> permissionGranted() async {
     try {
-      return (await _channel.invokeMethod<bool>('canManageAllFiles')) ??
-          true;
+      return (await _channel.invokeMethod<bool>('canManageAllFiles')) ?? true;
     } catch (_) {
       return true;
     }
@@ -636,6 +727,17 @@ class PaperBackup {
   /// needs the "all files access" permission, which users often never
   /// grant — so auto-save was a silent no-op on many phones.
   static Future<String?> _backupPath() async {
+    final override = debugBaseDir;
+    if (override != null) {
+      try {
+        final dir = await override();
+        if (dir == null) return null;
+        if (!dir.existsSync()) dir.createSync(recursive: true);
+        return '${dir.path}/$_fileName';
+      } catch (_) {
+        return null;
+      }
+    }
     try {
       Directory? base;
       try {
@@ -650,8 +752,9 @@ class PaperBackup {
     }
   }
 
-  /// Legacy backup location (shared Download folder) — still readable on
-  /// installs that had the special permission granted.
+  /// Backup location in the shared Download folder — the copy that survives
+  /// an uninstall, written by [_writeSharedCopy] and readable here after a
+  /// reinstall.
   static Future<File?> _legacyBackupFile() async {
     try {
       final base = await _channel.invokeMethod<String>('externalStorageDir');
@@ -669,8 +772,7 @@ class PaperBackup {
     final entries = await PaperLibrary.loadEntries();
     final files = <String, String>{};
     for (final e in entries) {
-      final dir =
-          Directory('${rootDir.path}${Platform.pathSeparator}${e.id}');
+      final dir = Directory('${rootDir.path}${Platform.pathSeparator}${e.id}');
       if (!dir.existsSync()) continue;
       for (final f in dir.listSync()) {
         if (f is File) {
@@ -681,27 +783,148 @@ class PaperBackup {
     }
     return {
       'app': 'tutors_desk',
-      'version': 1,
+      'version': 2,
+      'ownerId': LocalAccountScope.id,
       'exportedAt': DateTime.now().toIso8601String(),
       'entries': [for (final e in entries) e.toJson()],
       'files': files,
     };
   }
 
-  /// Takes one snapshot of the whole library into the shared Download
-  /// folder. Silent no-op when the permission or storage is unavailable —
-  /// auto-save must never disturb the user.
-  static Future<void> autoSave() async {
+  /// Test seam: replaces app-storage resolution so tests do not depend on how
+  /// a particular path_provider version resolves platform directories.
+  /// Always null in the app.
+  @visibleForTesting
+  static Future<Directory?> Function()? debugBaseDir;
+
+  /// Takes one snapshot of the whole library.
+  ///
+  /// Writes the in-app copy (no permission needed, but Android deletes it on
+  /// uninstall) and then the shared `Download/TutorsDesk` copy through
+  /// MediaStore — the one a reinstall can find, needing no permission on
+  /// Android 10+. The two are independent: a failure in one must never skip
+  /// the other. Silent no-op when storage is unavailable, because auto-save
+  /// must never disturb the user.
+  static Future<void>? _saveWorker;
+  static bool _saveRequested = false;
+
+  static Future<void> autoSave() {
+    // A burst of edits can request several full-library snapshots in one
+    // frame. Coalesce those requests into one worker and, if data changes
+    // while it runs, one final up-to-date pass. This keeps backup automatic
+    // without competing disk/base64 work causing UI jank.
+    _saveRequested = true;
+    return _saveWorker ??= _drainAutoSaves().whenComplete(() {
+      _saveWorker = null;
+      if (_saveRequested) unawaited(autoSave());
+    });
+  }
+
+  static Future<void> _drainAutoSaves() async {
+    while (_saveRequested) {
+      _saveRequested = false;
+      await _saveOnce();
+    }
+  }
+
+  static Future<void> _saveOnce() async {
+    String document;
     try {
-      // The app-scoped folder needs no permission, so no gate here.
-      final path = await _backupPath();
-      if (path == null) return;
       final payload = await _payload();
-      final tmp = '$path.tmp';
-      await File(tmp).writeAsString(json.encode(payload), flush: true);
-      File(tmp).renameSync(path); // atomic: readers never see a half file
+      if (((payload['entries'] as List?) ?? const []).isEmpty &&
+          await _backupExists()) {
+        // An empty library must never replace a real backup: a fresh install,
+        // a wiped library or a transient read failure would otherwise erase
+        // the teacher's papers — including the copy a reinstall needs.
+        return;
+      }
+      document = json.encode(payload);
     } catch (_) {
-      // Swallow — see above.
+      return;
+    }
+    try {
+      final path = await _backupPath();
+      if (path != null) {
+        final tmp = '$path.tmp';
+        await File(tmp).writeAsString(document, flush: true);
+        File(tmp).renameSync(path); // atomic: readers never see a half file
+      }
+    } catch (_) {
+      // The shared copy below is still attempted.
+    }
+    await _writeSharedCopy(document);
+  }
+
+  /// Copies the current library backup into the shared Download folder and
+  /// returns its location, or null when this device cannot (for example
+  /// pre-Android 10 without the all-files permission).
+  static Future<String?> exportToDownload() async {
+    try {
+      final payload = await _payload();
+      if (((payload['entries'] as List?) ?? const []).isEmpty &&
+          await _backupExists()) {
+        return null; // keep the existing backup instead of emptying it
+      }
+      return await _writeSharedCopy(json.encode(payload));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// True when any backup copy already exists, in-app or shared.
+  static Future<bool> _backupExists() async {
+    try {
+      final path = await _backupPath();
+      if (path != null && File(path).existsSync()) return true;
+      return await _legacyBackupFile() != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// MediaStore is the sanctioned no-permission route on Android 10+ and is
+  /// where [tryAutoRestore] looks after a reinstall. Falls back to a temporary
+  /// source file when app storage is unavailable, so the uninstall-safe copy
+  /// does not depend on the in-app copy succeeding.
+  /// Shared copies are serialized: an automatic save and a manual export can
+  /// overlap, and two writers must not race over one temporary source file.
+  static Future<void> _sharedWrites = Future.value();
+
+  static Future<String?> _writeSharedCopy(String document) {
+    final result = _sharedWrites.then((_) => _writeSharedCopyNow(document));
+    _sharedWrites = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  static Future<String?> _writeSharedCopyNow(String document) async {
+    File? temporary;
+    try {
+      var source = await _backupPath();
+      if (source == null) {
+        // Unique per call, so a concurrent copy can never read a file another
+        // call has already deleted.
+        temporary = File(
+          '${Directory.systemTemp.path}/$_fileName.'
+          '${DateTime.now().microsecondsSinceEpoch}.tmp',
+        );
+        source = temporary.path;
+      }
+      await File(source).writeAsString(document, flush: true);
+      final display = await _channel.invokeMethod<String>('copyToDownloads', {
+        'source': source,
+        'name': _fileName,
+        'mime': 'application/json',
+        'relativePath': 'Download/$_dirName',
+      });
+      return display?.trim().isNotEmpty == true
+          ? 'Download/$_dirName/$_fileName'
+          : null;
+    } catch (_) {
+      return null;
+    } finally {
+      try {
+        temporary?.deleteSync();
+      } catch (_) {}
     }
   }
 
@@ -721,7 +944,10 @@ class PaperBackup {
       final legacy = await _legacyBackupFile();
       if (legacy != null) return await restore(legacy);
       return 0;
-    } catch (_) {
+    } catch (error, stack) {
+      // A failed restore must stay silent to the teacher, but it must not be
+      // invisible to diagnosis either.
+      unawaited(LocalDiagnostics.record(error, stack, scope: 'workflow'));
       return 0;
     }
   }
@@ -738,6 +964,22 @@ class PaperBackup {
         m['files'] is! Map) {
       throw Exception("That is not a Tutor's Desk backup file.");
     }
+    final ownerId = m['ownerId']?.toString();
+    if (ownerId != null && ownerId != LocalAccountScope.id) {
+      throw StateError('This backup belongs to a different account.');
+    }
+    // Parse and validate the index before writing any file. A backup is an
+    // import boundary, so malformed rows are ignored rather than becoming
+    // directory names or aborting restoration of every valid paper.
+    final restored = <PaperEntry>[];
+    for (final raw in m['entries'] as List) {
+      try {
+        if (raw is! Map) continue;
+        final entry = PaperEntry.fromJson(raw.cast<String, dynamic>());
+        if (PaperLibrary.isSafeStorageId(entry.id)) restored.add(entry);
+      } catch (_) {}
+    }
+    final restoredIds = restored.map((entry) => entry.id).toSet();
     final rootDir = await PaperLibrary.root();
     final files = (m['files'] as Map).cast<String, dynamic>();
     files.forEach((key, value) {
@@ -745,24 +987,23 @@ class PaperBackup {
       if (parts.length != 2) return;
       final id = parts[0];
       final name = parts[1];
-      if (id.isEmpty ||
-          name.isEmpty ||
-          id.startsWith('.') ||
-          name.startsWith('.') ||
-          id.contains(Platform.pathSeparator) ||
-          name.contains(Platform.pathSeparator)) {
+      if (!restoredIds.contains(id) || !PaperLibrary._isSafeBackupFile(name)) {
         return;
       }
+      if (value is! String) return;
       final dir = Directory('${rootDir.path}${Platform.pathSeparator}$id');
       if (!dir.existsSync()) dir.createSync(recursive: true);
-      File('${dir.path}${Platform.pathSeparator}$name')
-          .writeAsBytesSync(base64Decode(value as String));
+      File(
+        '${dir.path}${Platform.pathSeparator}$name',
+      ).writeAsBytesSync(base64Decode(value));
     });
-    final current = await PaperLibrary.loadEntries();
+    // loadEntries() returns an unmodifiable list while there is no index yet
+    // (exactly the fresh-install case this restore exists for), so copy it
+    // before adding restored papers.
+    final current = List<PaperEntry>.of(await PaperLibrary.loadEntries());
     final known = current.map((e) => e.id).toSet();
     var added = 0;
-    for (final raw in m['entries'] as List) {
-      final e = PaperEntry.fromJson((raw as Map).cast<String, dynamic>());
+    for (final e in restored) {
       if (known.contains(e.id)) continue;
       current.add(e);
       known.add(e.id);

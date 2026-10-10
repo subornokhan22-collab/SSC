@@ -1,20 +1,22 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'paper_license.dart';
 import 'supabase_config.dart';
+import 'subscription_state.dart';
 
-/// Email + password sign-in, tutor profile (name / phone), Pro sync (Supabase).
+/// Email + password sign-in and tutor profile (name / phone) service.
+///
+/// Subscription state is refreshed separately through SubscriptionRepository;
+/// this class only owns authentication and profile identity.
 ///
 /// Flow:
 ///  1) Sign up — name, +880 phone, email + password. Supabase emails a
 ///     one-time code to confirm the address, then a `profiles` row is created
 ///     with role `teacher`. This is the ONLY time a code is sent.
 ///  2) Sign in — email + password. No code, no email round-trip.
-///  3) If `profiles.is_pro` is true, syncing turns Pro on for this device.
 ///
 /// Tutor's Desk is a tutor-only product, so every account is a teacher account.
 /// When Supabase is not configured ([SupabaseConfig] empty) every call degrades
-/// gracefully instead of throwing, and the offline features keep working.
+/// gracefully instead of throwing, while connectivity is required for the workspace.
 class AuthService {
   AuthService._();
 
@@ -41,6 +43,10 @@ class AuthService {
 
   static SupabaseClient get _c => Supabase.instance.client;
 
+  /// Auth events let the root gate react when Supabase revokes a session on
+  /// another device (for example after a newer device signs in).
+  static Stream<AuthState> get authChanges => _c.auth.onAuthStateChange;
+
   static bool get isLoggedIn {
     if (!ready) return false;
     try {
@@ -51,6 +57,20 @@ class AuthService {
   }
 
   static String? get email => isLoggedIn ? _c.auth.currentUser?.email : null;
+
+  /// Stable account identity for account-scoped local caches and promotions.
+  static String? get userId => isLoggedIn ? _c.auth.currentUser?.id : null;
+
+  /// The signed-in user's Supabase JWT — what the `mimi` edge function
+  /// (server-side AI) needs to identify the caller. Null when signed out.
+  static String? get currentUserToken {
+    if (!isLoggedIn) return null;
+    try {
+      return _c.auth.currentSession?.accessToken;
+    } catch (_) {
+      return null;
+    }
+  }
 
   static Map<String, dynamic>? _profileCache;
 
@@ -88,12 +108,16 @@ class AuthService {
     final e = _validEmail(email);
     if (password.length < minPasswordLength) {
       throw AuthException(
-          'Password must be at least $minPasswordLength characters');
+        'Password must be at least $minPasswordLength characters',
+      );
     }
     final res = await _c.auth.signUp(email: e, password: password);
     // When email confirmation is disabled in the Supabase project the session
     // arrives immediately and no code needs to be entered.
-    if (res.session != null) _profileCache = null;
+    if (res.session != null) {
+      await _revokeOtherSessions();
+      _profileCache = null;
+    }
   }
 
   /// True when sign-up returned a usable session (no email confirmation step).
@@ -111,15 +135,34 @@ class AuthService {
     AuthResponse? res;
     // Newer projects issue a `signup` token; older ones fall back to `email`.
     try {
-      res = await _c.auth
-          .verifyOTP(type: OtpType.signup, token: c, email: e);
+      res = await _c.auth.verifyOTP(type: OtpType.signup, token: c, email: e);
     } on AuthException {
       res = await _c.auth.verifyOTP(type: OtpType.email, token: c, email: e);
     }
     if (res.session == null) {
       throw const AuthException('The code did not match — please try again');
     }
+    await _revokeOtherSessions();
     _profileCache = null;
+  }
+
+  /// Makes the newest verified session the only session allowed to continue.
+  /// If the server cannot revoke other sessions, sign out the current session
+  /// too instead of leaving multiple active devices.
+  static Future<void> _revokeOtherSessions() async {
+    final accountId = userId;
+    try {
+      await _c.auth.signOut(scope: SignOutScope.others);
+    } catch (_) {
+      try {
+        await _c.auth.signOut();
+      } catch (_) {}
+      _profileCache = null;
+      SubscriptionState.clear(accountId: accountId);
+      throw const AuthException(
+        'Could not enforce the one-device sign-in policy. Please try again.',
+      );
+    }
   }
 
   // ── Sign in: email + password only, never a code ──────────────────
@@ -134,6 +177,9 @@ class AuthService {
     if (res.session == null) {
       throw const AuthException('Could not sign in — please try again');
     }
+    // Keep the newly authenticated session and revoke every other refresh
+    // token. Fail closed if Supabase cannot enforce the one-device policy.
+    await _revokeOtherSessions();
     _profileCache = null;
   }
 
@@ -142,7 +188,8 @@ class AuthService {
     _requireReady();
     if (password.length < minPasswordLength) {
       throw AuthException(
-          'Password must be at least $minPasswordLength characters');
+        'Password must be at least $minPasswordLength characters',
+      );
     }
     await _c.auth.updateUser(UserAttributes(password: password));
   }
@@ -183,7 +230,9 @@ class AuthService {
   }
 
   // ── Reading the profile ───────────────────────────────────────────
-  static Future<Map<String, dynamic>?> fetchProfile({bool refresh = true}) async {
+  static Future<Map<String, dynamic>?> fetchProfile({
+    bool refresh = true,
+  }) async {
     if (!isLoggedIn) return null;
     if (!refresh && _profileCache != null) return _profileCache;
     final u = _c.auth.currentUser;
@@ -213,15 +262,13 @@ class AuthService {
     final existing = await fetchProfile();
     try {
       if (existing == null) {
-        await _c.from('profiles')
-            .insert({
-              'id': u.id,
-              'email': u.email ?? '',
-              'role': teacherRole,
-              'name': name,
-              'phone': phone,
-            })
-            .timeout(const Duration(seconds: 6));
+        await _c.from('profiles').insert({
+          'id': u.id,
+          'email': u.email ?? '',
+          'role': teacherRole,
+          'name': name,
+          'phone': phone,
+        }).timeout(const Duration(seconds: 6));
       } else {
         final patch = <String, dynamic>{};
         if ((existing['name']?.toString() ?? '').isEmpty && name.isNotEmpty) {
@@ -234,7 +281,8 @@ class AuthService {
           patch['role'] = teacherRole;
         }
         if (patch.isNotEmpty) {
-          await _c.from('profiles')
+          await _c
+              .from('profiles')
               .update(patch)
               .eq('id', u.id)
               .timeout(const Duration(seconds: 6));
@@ -255,7 +303,7 @@ class AuthService {
     return p;
   }
 
-  /// Updates name / phone only — email, role and is_pro are never touched.
+  /// Updates name / phone only — email, role and subscription authority are never touched.
   static Future<void> updateProfile({String? name, String? phone}) async {
     _requireReady();
     final u = _c.auth.currentUser;
@@ -264,40 +312,123 @@ class AuthService {
     if (name != null) patch['name'] = name.trim();
     if (phone != null) patch['phone'] = phone.trim();
     if (patch.isEmpty) return;
-    await _c.from('profiles')
+    await _c
+        .from('profiles')
         .update(patch)
         .eq('id', u.id)
         .timeout(const Duration(seconds: 6));
     await fetchProfile();
   }
 
-  /// Turns Pro on for this device when the server has it enabled.
-  /// Carries the subscription end date (monthly / yearly plans); a
-  /// one-time unlock leaves it null = forever.
-  static Future<bool> syncProFromServer() async {
+  /// Refreshes the centralized server-authoritative entitlement.
+  ///
+  /// Refreshes the centralized, server-authoritative entitlement after auth
+  /// changes. It does not write a local paid flag or read plan rules itself.
+  static Future<bool> refreshSubscription() async {
     if (!isLoggedIn) return false;
-    final p = await fetchProfile();
-    if (p == null || p['is_pro'] != true) return false;
-    DateTime? until;
-    final raw = p['pro_until']?.toString();
-    if (raw != null && raw.isNotEmpty) {
-      until = DateTime.tryParse(raw.replaceFirst('Z', '+00:00'));
+    await SubscriptionState.instance.refresh();
+    return SubscriptionState.instance.entitlement.isPaid;
+  }
+
+  /// Confirms the local session is still accepted by Supabase. This is the
+  /// startup/API boundary that turns a newer-device revocation into a clean
+  /// return to authentication instead of leaving a stale workspace visible.
+  static Future<bool> verifyCurrentSession() async {
+    if (!ready || !isLoggedIn) return false;
+    try {
+      final result = await _c.auth.getUser().timeout(
+            const Duration(seconds: 8),
+          );
+      // A successful request with no user is an invalid local session. Unlike
+      // a transport failure, it is safe to clear the session here.
+      if (result.user != null) return true;
+      await signOut();
+      return false;
+    } on AuthException catch (error) {
+      // An access JWT expiring is normal after the app has been idle. Do not
+      // destroy the persisted refresh token: refresh once, then reject only
+      // when Supabase explicitly says that refresh token is invalid/revoked.
+      if (_isAccessTokenExpiry(error)) {
+        return _refreshExpiredSession();
+      }
+      // getUser() also throws for timeouts, DNS failures and other temporary
+      // transport problems. Signing out for those failures strands an
+      // otherwise valid offline session. Only known auth rejections revoke it;
+      // the server remains authoritative for every online operation.
+      if (_isRejectedSession(error)) {
+        await signOut();
+        return false;
+      }
+      return true;
+    } catch (_) {
+      // Preserve the locally restored session while the network is unavailable.
+      return true;
     }
-    await PaperLicense.markProFromServer(until: until);
-    return true;
+  }
+
+  static bool _isAccessTokenExpiry(AuthException error) {
+    final message = error.message.toLowerCase();
+    if (message.contains('refresh token')) return false;
+    return message.contains('jwt expired') ||
+        message.contains('token is expired') ||
+        message.contains('token has expired') ||
+        message.contains('access token') && message.contains('expired');
+  }
+
+  static Future<bool> _refreshExpiredSession() async {
+    try {
+      final response = await _c.auth.refreshSession().timeout(
+            const Duration(seconds: 8),
+          );
+      return response.session != null;
+    } on AuthException catch (error) {
+      if (_isInvalidRefreshToken(error)) {
+        await signOut();
+        return false;
+      }
+      // Network/server failures must not erase a restorable local session.
+      return true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  static bool _isInvalidRefreshToken(AuthException error) {
+    final message = error.message.toLowerCase();
+    return message.contains('invalid refresh token') ||
+        message.contains('refresh token not found') ||
+        message.contains('refresh token has been revoked') ||
+        message.contains('refresh_token_not_found');
+  }
+
+  static bool _isRejectedSession(AuthException error) {
+    final code = error.statusCode?.toString();
+    final message = error.message.toLowerCase();
+    // A bare 401 can be an ordinary expired access JWT; only reject it when
+    // the response also confirms invalid credentials/session. A 403 is a
+    // server-authoritative denial (for example a disabled account).
+    return code == '403' ||
+        message.contains('invalid jwt') ||
+        _isInvalidRefreshToken(error) ||
+        message.contains('session has expired');
   }
 
   static Future<void> signOut() async {
+    final accountId = userId;
     try {
       if (ready) await _c.auth.signOut();
     } catch (_) {}
     _profileCache = null;
+    // Clear the account-scoped in-memory state and cache for the account that
+    // just signed out, not the anonymous key after Supabase clears the user.
+    SubscriptionState.clear(accountId: accountId);
   }
 
   static void _requireReady() {
     if (!ready) {
       throw const AuthException(
-          'Sign-in is not configured yet — offline features still work');
+        'Sign-in is not configured yet — connect to continue.',
+      );
     }
   }
 

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
+import '../widgets/aurora_ribbons.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
+import '../widgets/app_icon.dart';
 
 /// Sign up — creates a new tutor account.
 ///
@@ -69,7 +72,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!RegExp(r'^1\d{9}$').hasMatch(_localPhone(_phoneCtrl.text))) {
       return 'Enter a valid mobile number, e.g. 1XXXXXXXXX.';
     }
-    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_emailCtrl.text.trim())) {
+    if (!RegExp(
+      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+    ).hasMatch(_emailCtrl.text.trim())) {
       return 'Enter a valid email address.';
     }
     if (_passCtrl.text.length < AuthService.minPasswordLength) {
@@ -127,9 +132,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       await AuthService.resendSignUpCode(_emailCtrl.text);
       if (!mounted) return;
-      setState(() => _msg =
-          'Code sent again. If nothing arrives, check spam — the free mail '
-          'service only allows a few messages an hour.');
+      setState(
+        () => _msg =
+            'Code sent again. If nothing arrives, check spam — the free mail '
+                'service only allows a few messages an hour.',
+      );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
     } finally {
@@ -167,41 +174,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
       name: _nameCtrl.text.trim(),
       phone: _fullPhone,
     );
-    await AuthService.syncProFromServer();
+    await AuthService.refreshSubscription();
     if (!mounted) return;
     RootGate.restart(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(_otpSent ? 'Verify Code' : 'Create Account')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
-          children: Stagger.list([
-            AuthHero(
-              icon: _otpSent
-                  ? Icons.mark_email_read_rounded
-                  : Icons.person_add_alt_1_rounded,
-              title: _otpSent ? 'Almost there' : 'Tutor account',
-              subtitle: _otpSent
-                  ? 'We sent a code to ${_emailCtrl.text.trim()}. Enter it below to finish setting up your workspace.'
-                  : 'Choose a password you will use to sign in. We email a code once, just to confirm this address.',
-            ),
-            const SizedBox(height: 18),
-            SoftSwitcher(
-              child: _otpSent ? _codeCard() : _detailsCard(),
-            ),
-            if (_msg != null) ...[
-              const SizedBox(height: 14),
-              InfoBanner.success(_msg!),
+    return AuroraRibbons(
+      enabled: true,
+      opacity: .45,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_otpSent ? 'Verify Code' : 'Create Account'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+        ),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+            children: [
+              AuthHero(
+                icon: _otpSent
+                    ? PhosphorIcons.envelopeOpen
+                    : PhosphorIcons.userPlus,
+                title: _otpSent ? 'Almost there' : 'Tutor account',
+                subtitle: _otpSent
+                    ? 'We sent a code to ${_emailCtrl.text.trim()}. Enter it below to finish setting up your workspace.'
+                    : 'Choose a password you will use to sign in. We email a code once, just to confirm this address.',
+              ),
+              const SizedBox(height: 18),
+              SoftSwitcher(child: _otpSent ? _codeCard() : _detailsCard()),
+              if (_msg != null) ...[
+                const SizedBox(height: 14),
+                InfoBanner.success(_msg!),
+              ],
+              if (_err != null) ...[
+                const SizedBox(height: 14),
+                InfoBanner.error(_err!),
+              ],
             ],
-            if (_err != null) ...[
-              const SizedBox(height: 14),
-              InfoBanner.error(_err!),
-            ],
-          ]),
+          ),
         ),
       ),
     );
@@ -216,7 +230,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SectionTitle(
             title: 'Your details',
             subtitle: 'Used on your papers and to recover your account.',
-            icon: Icons.badge_outlined,
+            icon: PhosphorIcons.identificationBadge,
           ),
           TextField(
             controller: _nameCtrl,
@@ -225,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             autofillHints: const [AutofillHints.name],
             decoration: const InputDecoration(
               labelText: 'Full name',
-              prefixIcon: Icon(Icons.badge_outlined),
+              prefixIcon: AppIcon(PhosphorIcons.identificationBadge),
             ),
           ),
           const SizedBox(height: 14),
@@ -241,10 +255,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
               labelText: 'Mobile number',
               hintText: '1XXXXXXXXX',
               counterText: '',
-              prefixIcon: Icon(Icons.phone_iphone_rounded),
+              prefixIcon: AppIcon(PhosphorIcons.deviceMobile),
               prefixText: '+880  ',
               prefixStyle: TextStyle(
-                  fontWeight: FontWeight.bold, color: AppTheme.primary),
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primary,
+              ),
             ),
           ),
           const SizedBox(height: 14),
@@ -256,7 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             decoration: const InputDecoration(
               labelText: 'Email address',
               hintText: 'you@example.com',
-              prefixIcon: Icon(Icons.alternate_email_rounded),
+              prefixIcon: AppIcon(PhosphorIcons.at),
             ),
           ),
           const SizedBox(height: 18),
@@ -264,7 +280,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             title: 'Choose a password',
             subtitle:
                 'You will use this every time you sign in — no more codes.',
-            icon: Icons.lock_outline_rounded,
+            icon: PhosphorIcons.lock,
           ),
           TextField(
             controller: _passCtrl,
@@ -275,13 +291,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               labelText: 'Password',
               helperText:
                   'At least ${AuthService.minPasswordLength} characters.',
-              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              prefixIcon: const AppIcon(PhosphorIcons.lock),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(_obscure
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded),
+                icon: AppIcon(
+                  _obscure ? PhosphorIcons.eye : PhosphorIcons.eyeSlash,
+                ),
               ),
             ),
           ),
@@ -294,13 +310,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             onSubmitted: (_) => _busy ? null : _next(),
             decoration: const InputDecoration(
               labelText: 'Confirm password',
-              prefixIcon: Icon(Icons.lock_reset_rounded),
+              prefixIcon: AppIcon(PhosphorIcons.lockKeyOpen),
             ),
           ),
           const SizedBox(height: 18),
           SubmitButton(
             busy: _busy,
-            icon: Icons.arrow_forward_rounded,
+            icon: PhosphorIcons.arrowRight,
             label: 'Create Account',
             onPressed: _next,
           ),
@@ -317,7 +333,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         children: [
           const SectionTitle(
             title: 'Verification code',
-            icon: Icons.password_rounded,
+            icon: PhosphorIcons.password,
           ),
           TextField(
             controller: _codeCtrl,
@@ -341,7 +357,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SizedBox(height: 16),
           SubmitButton(
             busy: _busy,
-            icon: Icons.verified_user_rounded,
+            icon: PhosphorIcons.shieldCheck,
             label: 'Verify & Create Account',
             onPressed: _verify,
           ),
