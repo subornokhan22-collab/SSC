@@ -4,6 +4,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../theme/app_theme.dart';
 import 'animations.dart';
 import 'motion_policy.dart';
+import 'app_icon.dart';
 
 /// Quiet white reference surface used for every panel in the tutor portal.
 /// The rounded border keeps long-form content readable over the shared
@@ -107,7 +108,7 @@ class SectionTitle extends StatelessWidget {
                 Row(
                   children: [
                     if (icon != null) ...[
-                      Icon(icon, size: 17, color: AppTheme.primary),
+                      AppIcon(icon, size: 17, color: AppTheme.primary),
                       const SizedBox(width: 7),
                     ],
                     Flexible(
@@ -170,7 +171,7 @@ class StatusPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 13, color: color),
+            AppIcon(icon, size: 13, color: color),
             const SizedBox(width: 5),
           ],
           Text(
@@ -228,7 +229,7 @@ class InfoBanner extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 18, color: color),
+            AppIcon(icon, size: 18, color: color),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -274,7 +275,7 @@ class EmptyState extends StatelessWidget {
                   color: AppTheme.primary.withOpacity(.10),
                   border: Border.all(color: AppTheme.primary.withOpacity(.35)),
                 ),
-                child: Icon(icon, size: 34, color: AppTheme.primary),
+                child: AppIcon(icon, size: 34, color: AppTheme.primary),
               ),
             ),
             const SizedBox(height: 16),
@@ -331,7 +332,7 @@ class BusyIndicator extends StatelessWidget {
                     min: .88,
                     max: 1.06,
                     period: const Duration(milliseconds: 1100),
-                    child: const Icon(
+                    child: const AppIcon(
                       PhosphorIcons.magicWand,
                       color: AppTheme.primary,
                       size: 26,

@@ -6,6 +6,7 @@ import '../services/ai/ai_text_formatter.dart';
 import '../services/ai/question_schema_validator.dart';
 import '../theme/app_theme.dart';
 import 'animations.dart';
+import 'app_icon.dart';
 
 class PaperQuestionCard extends StatelessWidget {
   final Question question;
@@ -56,7 +57,7 @@ class PaperQuestionCard extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
+                      AppIcon(
                         i == question.correctIndex
                             ? PhosphorIcons.checkCircle
                             : PhosphorIcons.circle,
@@ -109,25 +110,25 @@ class PaperQuestionCard extends StatelessWidget {
                         );
                         if (changed != null) onEdit!(changed);
                       },
-                      icon: const Icon(PhosphorIcons.pencilSimple, size: 17),
+                      icon: const AppIcon(PhosphorIcons.pencilSimple, size: 17),
                       label: const Text('Edit / answer key'),
                     ),
                   if (onReplace != null)
                     TextButton.icon(
                       onPressed: onReplace,
-                      icon: const Icon(PhosphorIcons.arrowsLeftRight, size: 17),
+                      icon: const AppIcon(PhosphorIcons.arrowsLeftRight, size: 17),
                       label: const Text('Replace'),
                     ),
                   if (onImprove != null)
                     TextButton.icon(
                         onPressed: onImprove,
-                        icon: const Icon(PhosphorIcons.magicWand, size: 17),
+                        icon: const AppIcon(PhosphorIcons.magicWand, size: 17),
                         label: const Text('Improve with AI')),
                   if (onDelete != null)
                     IconButton(
                       tooltip: 'Remove question',
                       onPressed: onDelete,
-                      icon: const Icon(PhosphorIcons.trash, size: 19),
+                      icon: const AppIcon(PhosphorIcons.trash, size: 19),
                     ),
                 ],
               ),

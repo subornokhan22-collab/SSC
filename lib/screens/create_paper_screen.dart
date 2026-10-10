@@ -190,13 +190,13 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
         secondary: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            AppIcon(
               english ? PhosphorIcons.notePencil : PhosphorIcons.bookOpen,
               color: english ? AppColors.writing : AppTheme.muted,
             ),
             if (locked) ...[
               const SizedBox(width: 8),
-              const Icon(PhosphorIcons.lock, size: 18),
+              const AppIcon(PhosphorIcons.lock, size: 18),
             ],
           ],
         ),
@@ -508,7 +508,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                       if (step == 4) setState(() => step = 3);
                     }
                   : null,
-              icon: const Icon(PhosphorIcons.arrowCounterClockwise)),
+              icon: const AppIcon(PhosphorIcons.arrowCounterClockwise)),
           IconButton(
               tooltip: 'Redo',
               onPressed: c.canRedo
@@ -517,7 +517,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                       if (step == 4) setState(() => step = 3);
                     }
                   : null,
-              icon: const Icon(PhosphorIcons.arrowClockwise)),
+              icon: const AppIcon(PhosphorIcons.arrowClockwise)),
         ]),
         body: !c.initialized
             ? const Center(child: ActivityIndicator(size: 24))
@@ -584,7 +584,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                                     width: 16,
                                     height: 16,
                                     child: ActivityIndicator(strokeWidth: 2))
-                                : Icon(
+                                : AppIcon(
                                     step == 3
                                         ? PhosphorIcons.eye
                                         : PhosphorIcons.arrowRight,
@@ -701,7 +701,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           Card(
               child: RadioListTile<PaperFormat>(
                   secondary: _formatIsLocked(f)
-                      ? const Icon(PhosphorIcons.lock)
+                      ? const AppIcon(PhosphorIcons.lock)
                       : null,
                   title: Text(switch (f) {
                     PaperFormat.board =>
@@ -809,14 +809,14 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 IconButton(
                     tooltip: 'Fewer $label',
                     onPressed: value > 0 ? () => change(value - 1) : null,
-                    icon: const Icon(PhosphorIcons.minusCircle)),
+                    icon: const AppIcon(PhosphorIcons.minusCircle)),
                 SizedBox(
                     width: 32,
                     child: Text('$value', textAlign: TextAlign.center)),
                 IconButton(
                     tooltip: 'More $label',
                     onPressed: value < max ? () => change(value + 1) : null,
-                    icon: const Icon(PhosphorIcons.plusCircle)),
+                    icon: const AppIcon(PhosphorIcons.plusCircle)),
               ])));
   Widget reviewStep() {
     final p = c.paper;
@@ -935,7 +935,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           child: Padding(
             padding: const EdgeInsets.only(top: 12),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Icon(PhosphorIcons.checkCircle,
+              const AppIcon(PhosphorIcons.checkCircle,
                   color: AppTheme.success, size: 18),
               const SizedBox(width: 8),
               Text('PDF ready · ${preview!.pages.length} pages',

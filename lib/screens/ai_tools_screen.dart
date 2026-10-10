@@ -129,7 +129,7 @@ class _AiToolsScreenState extends State<AiToolsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(PhosphorIcons.lock, size: 42),
+                const AppIcon(PhosphorIcons.lock, size: 42),
                 const SizedBox(height: 14),
                 const Text(
                   'AI Assistant requires an active Pro or Professional plan.',

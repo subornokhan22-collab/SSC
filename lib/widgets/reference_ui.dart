@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+import 'app_icon.dart';
 
 /// Visual language used by the supplied home-screen reference: solid white
 /// canvas, white cards, black icons, and neutral grey borders.
@@ -30,12 +31,10 @@ class ReferenceIcon extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PhosphorIcon(
+  Widget build(BuildContext context) => AppIcon(
         icon,
         size: size,
         color: color,
-        duotoneSecondaryColor: secondaryColor,
-        duotoneSecondaryOpacity: secondaryOpacity,
       );
 }
 
@@ -168,7 +167,7 @@ class ReferenceActionCard extends StatelessWidget {
           ? ReferenceIcon(icon, size: _iconSize)
           : ReferenceImageIcon(asset!, size: _iconSize));
 
-  Widget _lockIcon() => const Icon(
+  Widget _lockIcon() => const AppIcon(
         PhosphorIcons.lock,
         size: 18,
         color: ReferencePalette.mutedInk,
@@ -313,13 +312,11 @@ class ReferenceBottomBar extends StatelessWidget {
                           icon: PhosphorIcons.house,
                           label: 'Home',
                           onTap: () {},
-                          asset: 'New UI 4.0/Home.png',
                         ),
                         _item(
                           icon: PhosphorIcons.gear,
                           label: 'Settings',
                           onTap: onSettings,
-                          asset: 'New UI 4.0/Settings.png',
                         ),
                       ],
                     ),

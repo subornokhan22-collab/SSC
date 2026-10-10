@@ -156,7 +156,7 @@ class _TeacherAttachmentPanelState extends State<TeacherAttachmentPanel> {
                 onPressed: !widget.enabled || picking
                     ? null
                     : () => widget.onChanged([...widget.files]..removeAt(i)),
-                icon: const Icon(PhosphorIcons.x)),
+                icon: const AppIcon(PhosphorIcons.x)),
           ),
       ]);
 }

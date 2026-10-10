@@ -7,6 +7,7 @@ import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
 import 'signup_screen.dart';
+import '../widgets/app_icon.dart';
 
 /// Sign in — email + password.
 ///
@@ -133,7 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             decoration: const InputDecoration(
                               labelText: 'Email',
                               hintText: 'you@example.com',
-                              prefixIcon: Icon(PhosphorIcons.at),
+                              prefixIcon: AppIcon(PhosphorIcons.at),
                             ),
                           ),
                           const SizedBox(height: 14),
@@ -146,14 +147,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             onSubmitted: (_) => _busy ? null : _signIn(),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              prefixIcon: const Icon(PhosphorIcons.lock),
+                              prefixIcon: const AppIcon(PhosphorIcons.lock),
                               suffixIcon: IconButton(
                                 tooltip: _obscure
                                     ? 'Show password'
                                     : 'Hide password',
                                 onPressed: () =>
                                     setState(() => _obscure = !_obscure),
-                                icon: Icon(
+                                icon: AppIcon(
                                   _obscure
                                       ? PhosphorIcons.eye
                                       : PhosphorIcons.eyeSlash,
@@ -199,7 +200,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   ),
                                 ),
-                        icon: const Icon(PhosphorIcons.userPlus, size: 18),
+                        icon: const AppIcon(PhosphorIcons.userPlus, size: 18),
                         label: const Text('No account yet? Create one'),
                       ),
                     ),

@@ -15,7 +15,8 @@ dependencies:
   printing: ^5.15.0
   # ইমেইল OTP লগইন + Pro সিংক (Supabase)
   supabase_flutter: ^2.8.0
-  phosphoricons_flutter: ^1.0.0  # unified Phosphor icon family
+  phosphoricons_flutter: ^1.0.0  # fallback for any future unmapped icon
+  flutter_svg: ^2.0.10+1       # supplied Streamline SVG icon set
   # OMR scanner + question-paper library
   image_picker: ^1.1.0   # OMR শিট / প্রশ্নপত্রের ফটো (ক্যামেরা + গ্যালারি)
   camera: ^0.12.1        # লাইভ ক্যামেরা প্রিভিউ + গাইডেড অটো-ক্যাপচার (OMR)
@@ -55,6 +56,7 @@ flutter:
     - assets/question_figures/
     - assets/icon/icon.png
     - assets/icon/icon_foreground.png
+    - assets/icons/
     - assets/fonts/NotoSerifBengali-Regular.ttf
     - assets/fonts/NotoSerifBengali-Bold.ttf
     - assets/fonts/HindSiliguri-Regular.ttf

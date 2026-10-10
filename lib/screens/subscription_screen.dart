@@ -13,6 +13,7 @@ import '../theme/app_theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/problem_dialog.dart';
+import '../widgets/app_icon.dart';
 
 class _PlanFeature {
   final IconData icon;
@@ -460,7 +461,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                               width: 1.4,
                             ),
                           ),
-                          child: const Icon(
+                          child: const AppIcon(
                             PhosphorIcons.sealCheck,
                             color: AppTheme.accent,
                             size: 44,
@@ -497,7 +498,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                     padding: const EdgeInsets.only(bottom: 7),
                     child: Row(
                       children: [
-                        Icon(
+                        AppIcon(
                           feature.included
                               ? PhosphorIcons.checkCircle
                               : PhosphorIcons.lock,
@@ -525,7 +526,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: _buying ? null : _renewCurrentPlan,
-                    icon: const Icon(PhosphorIcons.receipt, size: 18),
+                    icon: const AppIcon(PhosphorIcons.receipt, size: 18),
                     label: Text(_buying
                         ? 'Starting secure checkout…'
                         : 'Pay monthly subscription bill'),
@@ -536,7 +537,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _buying ? null : _openPlanPicker,
-                    icon: const Icon(PhosphorIcons.arrowsLeftRight, size: 18),
+                    icon: const AppIcon(PhosphorIcons.arrowsLeftRight, size: 18),
                     label: const Text('Change plan'),
                   ),
                 ),
@@ -579,7 +580,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                     min: .95,
                     max: 1.06,
                     period: const Duration(milliseconds: 2100),
-                    child: const Icon(
+                    child: const AppIcon(
                       PhosphorIcons.crown,
                       color: AppTheme.accent,
                       size: 32,
@@ -647,7 +648,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                                   : AppTheme.border,
                             ),
                           ),
-                          child: Icon(
+                          child: AppIcon(
                             feature.icon,
                             color: feature.included
                                 ? AppTheme.accent
@@ -682,7 +683,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                             ],
                           ),
                         ),
-                        Icon(
+                        AppIcon(
                           feature.included
                               ? PhosphorIcons.checkCircle
                               : PhosphorIcons.lock,
@@ -744,7 +745,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                     ),
                   )
                 else
-                  const Icon(
+                  const AppIcon(
                     PhosphorIcons.wallet,
                     color: Colors.white,
                     size: 20,
@@ -824,7 +825,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      const AppIcon(
                         PhosphorIcons.headset,
                         color: AppTheme.accent,
                         size: 20,
@@ -841,7 +842,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                           ),
                         ),
                       ),
-                      const Icon(
+                      const AppIcon(
                         PhosphorIcons.copy,
                         color: AppTheme.muted,
                         size: 17,
@@ -944,7 +945,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   ],
                 ),
               ),
-              const Icon(PhosphorIcons.caretRight, color: AppTheme.muted),
+              const AppIcon(PhosphorIcons.caretRight, color: AppTheme.muted),
             ],
           ),
         ),

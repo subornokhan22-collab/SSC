@@ -3,6 +3,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
 import 'motion_policy.dart';
+import 'app_icon.dart';
 
 /// One action inside a problem dialog.
 class ProblemAction {
@@ -172,7 +173,7 @@ class _ProblemCardState extends State<_ProblemCard> {
                           shape: BoxShape.circle,
                           color: col.withOpacity(.12 + .10 * t),
                         ),
-                        child: Icon(
+                        child: AppIcon(
                           PhosphorIcons.warningCircle,
                           size: 36,
                           color: col,

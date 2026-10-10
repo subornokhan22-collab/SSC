@@ -6,6 +6,7 @@ import '../services/local_diagnostics.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 import 'profile_screen.dart';
+import '../widgets/app_icon.dart';
 
 /// Settings — profile (moved here from the home screen), OMR scanner
 /// preferences and the default paper name.
@@ -127,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: const Text('Local diagnostics'),
                       subtitle: const Text(
                           'On this device only · Remote reporting off'),
-                      trailing: const Icon(PhosphorIcons.caretRight),
+                      trailing: const AppIcon(PhosphorIcons.caretRight),
                       onTap: _diagnostics,
                     ),
                   ),
@@ -156,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               color: AppTheme.primary.withOpacity(.35),
                             ),
                           ),
-                          child: const Icon(
+                          child: const AppIcon(
                             PhosphorIcons.user,
                             color: AppTheme.primary,
                             size: 22,
@@ -185,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ],
                           ),
                         ),
-                        Icon(
+                        AppIcon(
                           PhosphorIcons.caretRight,
                           color: AppTheme.muted,
                         ),
@@ -212,7 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: AppTheme.secondary.withOpacity(.35),
                               ),
                             ),
-                            child: const Icon(
+                            child: const AppIcon(
                               PhosphorIcons.table,
                               color: AppTheme.secondary,
                               size: 22,
@@ -336,7 +337,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
           child: Row(
             children: [
-              Icon(icon, size: 18, color: AppTheme.primary),
+              AppIcon(icon, size: 18, color: AppTheme.primary),
               const SizedBox(width: 8),
               Text(
                 title,

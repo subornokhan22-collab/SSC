@@ -24,6 +24,7 @@ import 'theme/app_theme.dart';
 import 'screens/root_gate.dart';
 import 'widgets/alive_background.dart';
 import 'widgets/offline_banner.dart';
+import 'widgets/app_icon.dart';
 
 // Set by _readCrashLog(); consumed by _CrashReportGate after the first
 // frame so the dialog can use a live navigator.
@@ -220,7 +221,7 @@ class _FriendlyErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              const AppIcon(
                 PhosphorIcons.wrench,
                 color: AppTheme.accent,
                 size: 44,

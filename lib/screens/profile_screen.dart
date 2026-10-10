@@ -14,6 +14,7 @@ import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
 import 'subscription_screen.dart';
+import '../widgets/app_icon.dart';
 
 /// Profile & settings — account details, workspace theme, subscription refresh, sign out.
 ///
@@ -200,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   labelText: 'Full name',
-                  prefixIcon: Icon(PhosphorIcons.identificationBadge),
+                  prefixIcon: AppIcon(PhosphorIcons.identificationBadge),
                 ),
               ),
               const SizedBox(height: 14),
@@ -403,7 +404,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: const InputDecoration(
               labelText: 'Email',
               hintText: 'you@example.com',
-              prefixIcon: Icon(PhosphorIcons.at),
+              prefixIcon: AppIcon(PhosphorIcons.at),
             ),
           ),
           const SizedBox(height: 14),
@@ -415,11 +416,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onSubmitted: (_) => _busy ? null : _signIn(),
             decoration: InputDecoration(
               labelText: 'Password',
-              prefixIcon: const Icon(PhosphorIcons.lock),
+              prefixIcon: const AppIcon(PhosphorIcons.lock),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(
+                icon: AppIcon(
                   _obscure ? PhosphorIcons.eye : PhosphorIcons.eyeSlash,
                 ),
               ),
@@ -535,7 +536,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      const AppIcon(
                         PhosphorIcons.crown,
                         size: 14,
                         color: AppTheme.accent,
@@ -561,7 +562,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : _editDetails,
-                  icon: const Icon(PhosphorIcons.pencilSimple, size: 18),
+                  icon: const AppIcon(PhosphorIcons.pencilSimple, size: 18),
                   label: const Text('Edit details'),
                 ),
               ),
@@ -569,7 +570,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: _busy ? null : _openPlans,
-                  icon: const Icon(PhosphorIcons.wallet, size: 18),
+                  icon: const AppIcon(PhosphorIcons.wallet, size: 18),
                   label: Text(
                     hasPaidSubscription ? 'Buy / change plan' : 'View plans',
                   ),
@@ -587,7 +588,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 15,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(PhosphorIcons.arrowsClockwise, size: 17),
+                    : const AppIcon(PhosphorIcons.arrowsClockwise, size: 17),
                 label: Text(
                   diagnosticAccount
                       ? 'Diagnostic: switch to next plan'
@@ -600,7 +601,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: double.infinity,
             child: TextButton.icon(
               onPressed: _busy ? null : _logout,
-              icon: const Icon(PhosphorIcons.signOut, size: 18),
+              icon: const AppIcon(PhosphorIcons.signOut, size: 18),
               label: const Text('Sign out'),
               style: TextButton.styleFrom(foregroundColor: AppTheme.danger),
             ),
@@ -620,7 +621,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               min: .95,
               max: 1.07,
               period: const Duration(milliseconds: 2200),
-              child: const Icon(
+              child: const AppIcon(
                 PhosphorIcons.crown,
                 color: AppTheme.accent,
                 size: 30,
@@ -666,7 +667,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: Row(
         children: [
-          const Icon(
+          const AppIcon(
             PhosphorIcons.crown,
             color: AppTheme.accent,
             size: 30,
@@ -696,7 +697,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-          const Icon(PhosphorIcons.caretRight, color: AppTheme.accent),
+          const AppIcon(PhosphorIcons.caretRight, color: AppTheme.accent),
         ],
       ),
     );

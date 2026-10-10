@@ -7,6 +7,7 @@ import '../services/app_style.dart';
 import '../services/omr/omr_store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/app_icon.dart';
 
 /// OMR class analytics built from the on-device scan history:
 /// overview, subject-wise breakdown, a class leaderboard (top scorers
@@ -413,7 +414,7 @@ class _OMrAnalyticsScreenState extends State<OMrAnalyticsScreen> {
 
   Widget _head(String title, IconData icon) => Row(
         children: [
-          Icon(icon, size: 18, color: AppTheme.primary),
+          AppIcon(icon, size: 18, color: AppTheme.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

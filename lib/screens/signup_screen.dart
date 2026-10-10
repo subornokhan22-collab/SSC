@@ -9,6 +9,7 @@ import '../widgets/aurora_ribbons.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/glass_card.dart';
 import 'root_gate.dart';
+import '../widgets/app_icon.dart';
 
 /// Sign up — creates a new tutor account.
 ///
@@ -237,7 +238,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             autofillHints: const [AutofillHints.name],
             decoration: const InputDecoration(
               labelText: 'Full name',
-              prefixIcon: Icon(PhosphorIcons.identificationBadge),
+              prefixIcon: AppIcon(PhosphorIcons.identificationBadge),
             ),
           ),
           const SizedBox(height: 14),
@@ -253,7 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               labelText: 'Mobile number',
               hintText: '1XXXXXXXXX',
               counterText: '',
-              prefixIcon: Icon(PhosphorIcons.deviceMobile),
+              prefixIcon: AppIcon(PhosphorIcons.deviceMobile),
               prefixText: '+880  ',
               prefixStyle: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -270,7 +271,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             decoration: const InputDecoration(
               labelText: 'Email address',
               hintText: 'you@example.com',
-              prefixIcon: Icon(PhosphorIcons.at),
+              prefixIcon: AppIcon(PhosphorIcons.at),
             ),
           ),
           const SizedBox(height: 18),
@@ -289,11 +290,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               labelText: 'Password',
               helperText:
                   'At least ${AuthService.minPasswordLength} characters.',
-              prefixIcon: const Icon(PhosphorIcons.lock),
+              prefixIcon: const AppIcon(PhosphorIcons.lock),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(
+                icon: AppIcon(
                   _obscure ? PhosphorIcons.eye : PhosphorIcons.eyeSlash,
                 ),
               ),
@@ -308,7 +309,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             onSubmitted: (_) => _busy ? null : _next(),
             decoration: const InputDecoration(
               labelText: 'Confirm password',
-              prefixIcon: Icon(PhosphorIcons.lockKeyOpen),
+              prefixIcon: AppIcon(PhosphorIcons.lockKeyOpen),
             ),
           ),
           const SizedBox(height: 18),

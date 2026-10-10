@@ -3,6 +3,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../data/questions_data.dart';
 import '../services/question_validation.dart';
 import '../theme/app_theme.dart';
+import 'app_icon.dart';
 
 class WrittenQuestionCard extends StatelessWidget {
   final Object question;
@@ -75,7 +76,7 @@ class WrittenQuestionCard extends StatelessWidget {
                 if (onDraftAnswerKey != null)
                   TextButton.icon(
                     onPressed: onDraftAnswerKey,
-                    icon: const Icon(PhosphorIcons.sparkle, size: 17),
+                    icon: const AppIcon(PhosphorIcons.sparkle, size: 17),
                     label: Text((q is ShortQuestion
                                 ? q.answerKey
                                 : (q as CreativeQuestion).answerKey)
@@ -90,17 +91,17 @@ class WrittenQuestionCard extends StatelessWidget {
                           context: context, builder: (_) => _Editor(q));
                       if (edited != null) onEdit(edited);
                     },
-                    icon: const Icon(PhosphorIcons.pencilSimple, size: 17),
+                    icon: const AppIcon(PhosphorIcons.pencilSimple, size: 17),
                     label: const Text('Edit')),
                 TextButton.icon(
                     onPressed: onReplace,
-                    icon: const Icon(PhosphorIcons.arrowsLeftRight, size: 17),
+                    icon: const AppIcon(PhosphorIcons.arrowsLeftRight, size: 17),
                     label: const Text('Replace')),
                 if (onDelete != null)
                   IconButton(
                       tooltip: 'Remove question',
                       onPressed: onDelete,
-                      icon: const Icon(PhosphorIcons.trash, size: 18)),
+                      icon: const AppIcon(PhosphorIcons.trash, size: 18)),
               ]),
             ])));
   }

@@ -166,7 +166,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                     cacheWidth: 1080,
                     errorBuilder: (_, __, ___) => const SizedBox(
                       height: 120,
-                      child: Center(child: Icon(PhosphorIcons.imageBroken)),
+                      child: Center(child: AppIcon(PhosphorIcons.imageBroken)),
                     ),
                   ),
                 ),
@@ -404,7 +404,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                           height: 108,
                           child: ReferenceActionCard(
                             icon: PhosphorIcons.wallet,
-                            asset: 'New UI 4.0/Buy plan.png',
                             label: 'BUY PLANS',
                             onTap: () =>
                                 _openScreen(const SubscriptionScreen()),
@@ -667,9 +666,10 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                 child: SizedBox(
                   width: 42,
                   height: 42,
-                  child: ReferenceImageIcon(
-                    'New UI 4.0/Profile.png',
-                    size: 38,
+                  child: AppIcon(
+                    PhosphorIcons.user,
+                    size: 34,
+                    color: ReferencePalette.ink,
                   ),
                 ),
               ),
@@ -705,7 +705,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                             Expanded(
                               child: ReferenceActionCard(
                                 icon: PhosphorIcons.magicWand,
-                                asset: 'New UI 4.0/Ai assistant.png',
                                 label: 'Assistant',
                                 locked: !SubscriptionState.instance
                                     .canUse(PremiumFeature.aiAssistant),
@@ -719,7 +718,6 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                             Expanded(
                               child: ReferenceActionCard(
                                 icon: PhosphorIcons.bookmarkSimple,
-                                asset: 'New UI 4.0/Saved papers.png',
                                 label: 'My Papers',
                                 onTap: () =>
                                     _openScreen(const PapersLibraryScreen()),

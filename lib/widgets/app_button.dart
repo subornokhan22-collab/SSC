@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
+import 'app_icon.dart';
 import 'motion_policy.dart';
 
 /// Shared primary action. Loading disables both pointer and semantic actions.
@@ -45,7 +45,7 @@ class _AppButtonState extends State<AppButton> {
         if (widget.loading)
           ActivityIndicator(color: foreground)
         else if (widget.icon != null)
-          PhosphorIcon(
+          AppIcon(
             widget.icon!,
             size: 20,
             color: foreground,

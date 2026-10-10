@@ -4,6 +4,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../theme/app_theme.dart';
 import 'animations.dart';
 import 'motion_policy.dart';
+import 'app_icon.dart';
 
 class WorkflowProgress extends StatelessWidget {
   final List<String> steps;
@@ -75,7 +76,7 @@ class OperationNotice extends StatelessWidget {
         ),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           if (error != null)
-            Icon(PhosphorIcons.info, color: color, size: 20)
+            AppIcon(PhosphorIcons.info, color: color, size: 20)
           else
             ActivityIndicator(color: color),
           const SizedBox(width: 10),

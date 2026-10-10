@@ -12,6 +12,7 @@ import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 import '../services/local_diagnostics.dart';
 import '../widgets/motion_policy.dart';
+import '../widgets/app_icon.dart';
 
 /// Full-screen guided OMR capture.
 ///
@@ -296,7 +297,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      const AppIcon(
                         PhosphorIcons.cameraSlash,
                         size: 44,
                         color: Colors.black,
@@ -397,7 +398,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
                                   color: AppColors.omr,
                                 ),
                               )
-                            : const Icon(
+                            : const AppIcon(
                                 PhosphorIcons.camera,
                                 color: AppColors.omr,
                                 size: 34,
@@ -454,7 +455,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
             color: Colors.black54,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.white, size: 22),
+          child: AppIcon(icon, color: Colors.white, size: 22),
         ),
       );
 }

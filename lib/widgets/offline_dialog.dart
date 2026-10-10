@@ -6,6 +6,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
 import 'motion_policy.dart';
+import 'app_icon.dart';
 
 /// A dramatic "offline" alert for the app-open page: dark card, glowing
 /// red frame, a still cloud-off icon, and a live
@@ -169,7 +170,7 @@ class _OfflineCardState extends State<_OfflineCard> {
                                 shape: BoxShape.circle,
                                 color: Color(0x2AE5484D),
                               ),
-                              child: const Icon(
+                              child: const AppIcon(
                                 PhosphorIcons.cloudSlash,
                                 size: 40,
                                 color: Colors.white,
@@ -241,7 +242,7 @@ class _OfflineCardState extends State<_OfflineCard> {
                               height: 14,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(PhosphorIcons.wifiHigh, size: 17),
+                          : const AppIcon(PhosphorIcons.wifiHigh, size: 17),
                       label: Text(
                         _checking ? 'Checking…' : 'Check connection',
                         style: const TextStyle(

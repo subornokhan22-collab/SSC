@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/app_settings.dart';
+import 'app_icon.dart';
 
 /// One policy for system accessibility, the in-app preference and lifecycle.
 /// Keep this above the Navigator so pushed routes inherit it too.
@@ -134,7 +135,7 @@ class ActivityIndicator extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox.square(
         dimension: size,
         child: MotionPolicy.reduce(context)
-            ? Icon(PhosphorIcons.hourglass, size: size, color: color)
+            ? AppIcon(PhosphorIcons.hourglass, size: size, color: color)
             : CircularProgressIndicator(strokeWidth: strokeWidth, color: color),
       );
 }

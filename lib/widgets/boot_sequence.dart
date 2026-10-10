@@ -5,6 +5,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../services/local_diagnostics.dart';
 import 'app_logo.dart';
 import 'motion_policy.dart';
+import 'app_icon.dart';
 
 class BootStep {
   final String label;
@@ -94,12 +95,12 @@ class _BootSequenceState extends State<BootSequence> {
                       padding: const EdgeInsets.symmetric(vertical: 9),
                       child: Row(children: [
                         if (i < completed)
-                          const Icon(PhosphorIcons.checkCircle,
+                          const AppIcon(PhosphorIcons.checkCircle,
                               color: Colors.black, size: 20)
                         else if (i == completed && !failed)
                           const ActivityIndicator(size: 20, color: Colors.black)
                         else
-                          Icon(
+                          AppIcon(
                               i == completed && failed
                                   ? PhosphorIcons.warningCircle
                                   : PhosphorIcons.circle,
@@ -128,7 +129,7 @@ class _BootSequenceState extends State<BootSequence> {
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                       ),
-                      icon: const Icon(PhosphorIcons.arrowClockwise),
+                      icon: const AppIcon(PhosphorIcons.arrowClockwise),
                       label: const Text('Retry opening desk'),
                     ),
                   ],

@@ -3,6 +3,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/omr/omr_scanner.dart';
 import '../theme/app_theme.dart';
+import 'app_icon.dart';
 
 /// Confidence is a measured ink gap, never a fabricated probability.
 class OmrAnswerReview extends StatelessWidget {
@@ -74,7 +75,7 @@ class OmrAnswerReview extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 const Spacer(),
-                Icon(
+                AppIcon(
                   corrected
                       ? PhosphorIcons.pencilSimple
                       : uncertain
