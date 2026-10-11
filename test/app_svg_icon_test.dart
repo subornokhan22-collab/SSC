@@ -57,6 +57,8 @@ void main() {
       contains("value == PhosphorIcons.arrowLeftDuotone ? 2 : 0"),
     );
     expect(adapter, contains("asset('Next')"));
+    expect(adapter, contains('widthFactor: 1'));
+    expect(adapter, contains('heightFactor: 1'));
     for (final exactAsset in [
       'Camera-Disabled',
       'Document',

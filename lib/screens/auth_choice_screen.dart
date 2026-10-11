@@ -23,9 +23,14 @@ class AuthChoiceScreen extends StatelessWidget {
                   children: [
                     const AppLogo(size: 64),
                     const SizedBox(height: 28),
-                    Text(
+                    const Text(
                       'Tutor’s Desk',
-                      style: Theme.of(context).textTheme.headlineLarge,
+                      style: TextStyle(
+                        fontFamily: 'Bartino Outline',
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: .2,
+                      ),
                     ),
                     const SizedBox(height: 14),
                     Text(

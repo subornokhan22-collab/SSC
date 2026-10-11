@@ -148,7 +148,11 @@ class AppIcon extends StatelessWidget {
     final effectiveSize = size ?? IconTheme.of(context).size ?? 24;
     final effectiveColor = color ?? IconTheme.of(context).color;
     if (resolved == null) {
-      return PhosphorIcon(icon, size: effectiveSize, color: effectiveColor);
+      return Align(
+        widthFactor: 1,
+        heightFactor: 1,
+        child: PhosphorIcon(icon, size: effectiveSize, color: effectiveColor),
+      );
     }
     final svg = SvgPicture.asset(
       resolved.path,
@@ -160,9 +164,17 @@ class AppIcon extends StatelessWidget {
           ? null
           : ColorFilter.mode(effectiveColor, BlendMode.srcIn),
     );
-    return resolved.quarterTurns == 0
+    final artwork = resolved.quarterTurns == 0
         ? svg
         : RotatedBox(quarterTurns: resolved.quarterTurns, child: svg);
+    // Text-field prefix/suffix slots impose a tight 48 px box. Align loosens
+    // those constraints for the artwork so an explicitly requested 22 px icon
+    // remains 22 px instead of being stretched to fill the whole slot.
+    return Align(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: artwork,
+    );
   }
 }
 
