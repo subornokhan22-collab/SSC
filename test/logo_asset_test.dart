@@ -16,7 +16,10 @@ void main() {
     expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
     expect(pubspec, contains('- New UI 4.0/Logo 2.png'));
     expect(paperExport, contains("New UI 4.0/Logo 2.png"));
-    expect(paperExport, contains('Future.wait(images.map(_watermarkPage))'));
+    expect(paperExport, contains('includeText: index != omrPageIndex'));
+    expect(paperExport, contains('if (includeText)'));
+    expect(paperExport, contains('paper.mcqs.isNotEmpty'));
+    expect(paperExport, contains('pages.length - 1'));
     expect(paperExport, contains('pageSize.width * .58'));
     expect(paperExport, contains('pageSize.height * .28'));
     expect(paperExport, contains('pageSize.width * .045'));

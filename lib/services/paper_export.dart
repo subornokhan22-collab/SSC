@@ -81,6 +81,12 @@ class PaperExport {
             mathCqThreePart: draft.subjectId == 'general_math' ||
                 draft.subjectId == 'higher_math',
           );
+    // Bengali papers append their scanner-locked OMR sheet as the final base
+    // page. Keep its watermark logo-only so no text crosses bubbles or timing
+    // marks used by the scanner.
+    final omrPageIndex = paper.english.isEmpty && paper.mcqs.isNotEmpty
+        ? pages.length - 1
+        : -1;
     final images = List<Uint8List>.of(pages);
     if (draft.answerKey) {
       if (paper.mcqs.isNotEmpty) {
@@ -97,7 +103,13 @@ class PaperExport {
     // preview or assembling the PDF. This keeps both outputs identical and
     // avoids the old text/blank-box watermark path.
     final outputImages = effectiveWatermark
-        ? await Future.wait(images.map(_watermarkPage))
+        ? await Future.wait([
+            for (var index = 0; index < images.length; index++)
+              _watermarkPage(
+                images[index],
+                includeText: index != omrPageIndex,
+              ),
+          ])
         : images;
     final doc = pw.Document();
     for (final png in outputImages) {
@@ -125,7 +137,10 @@ class PaperExport {
     }();
   }
 
-  static Future<Uint8List> _watermarkPage(Uint8List page) async {
+  static Future<Uint8List> _watermarkPage(
+    Uint8List page, {
+    required bool includeText,
+  }) async {
     final pageCodec = await ui.instantiateImageCodec(page);
     final pageFrame = await pageCodec.getNextFrame();
     pageCodec.dispose();
@@ -167,31 +182,33 @@ class PaperExport {
     );
     canvas.restore();
 
-    // The supplied Logo 2 remains the artwork source; the brand name is
-    // drawn separately so the watermark is readable even when the logo's
-    // transparent text is subtle on a white page.
-    final brand = TextPainter(
-      text: TextSpan(
-        text: "TUTOR'S DESK",
-        style: TextStyle(
-          // Large but deliberately pale so questions remain easy to read.
-          color: Colors.black.withAlpha(72),
-          fontFamily: 'Bartino',
-          fontSize: (pageSize.width * .045).clamp(50.0, 86.0),
-          fontWeight: FontWeight.w900,
-          letterSpacing: 3.2,
+    if (includeText) {
+      // Text branding belongs on question and answer pages. OMR sheets use
+      // only the supplied logo because overlaid text can interfere with the
+      // scanner's bubble and registration-mark detection.
+      final brand = TextPainter(
+        text: TextSpan(
+          text: "TUTOR'S DESK",
+          style: TextStyle(
+            // Large but deliberately pale so questions remain easy to read.
+            color: Colors.black.withAlpha(72),
+            fontFamily: 'Bartino',
+            fontSize: (pageSize.width * .045).clamp(50.0, 86.0),
+            fontWeight: FontWeight.w900,
+            letterSpacing: 3.2,
+          ),
         ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout(maxWidth: pageSize.width * .82);
-    brand.paint(
-      canvas,
-      Offset(
-        (pageSize.width - brand.width) / 2,
-        destination.bottom + pageSize.height * .008,
-      ),
-    );
-    brand.dispose();
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: pageSize.width * .82);
+      brand.paint(
+        canvas,
+        Offset(
+          (pageSize.width - brand.width) / 2,
+          destination.bottom + pageSize.height * .008,
+        ),
+      );
+      brand.dispose();
+    }
 
     final picture = recorder.endRecording();
     final output = await picture.toImage(pageImage.width, pageImage.height);
