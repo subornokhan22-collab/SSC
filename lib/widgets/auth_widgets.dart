@@ -114,12 +114,11 @@ class DeskWelcome extends StatelessWidget {
                   children: [
                     Text(
                       'Tutor’s Desk',
-                      style:
-                          TextStyle(
-                            fontFamily: 'Bartino Outline',
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                          ),
+                      style: TextStyle(
+                        fontFamily: 'Bartino Outline',
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     Text(
                       'YOUR TEACHING WORKSPACE',

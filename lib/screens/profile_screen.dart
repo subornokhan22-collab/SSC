@@ -207,7 +207,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   labelText: 'Full name',
-                  prefixIcon: AppIcon(PhosphorIcons.identificationBadge, size: 22),
+                  prefixIcon:
+                      AppIcon(PhosphorIcons.identificationBadge, size: 22),
                 ),
               ),
               const SizedBox(height: 14),
