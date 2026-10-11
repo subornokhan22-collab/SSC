@@ -157,8 +157,7 @@ class DeskWelcome extends StatelessWidget {
               FeatureHighlight(
                 icon: PhosphorIcons.magicWandDuotone,
                 title: 'AI Tools',
-                description:
-                    'Generate, improve, and check questions with AI.',
+                description: 'Generate, improve, and check questions with AI.',
               ),
             ],
           ),
