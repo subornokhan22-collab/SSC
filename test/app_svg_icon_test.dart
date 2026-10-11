@@ -17,7 +17,10 @@ void main() {
     expect(pubspec, contains('family: Bartino'));
     expect(pubspec, contains('family: Bartino Outline'));
     expect(File('assets/fonts/Bartino-Regular.ttf').existsSync(), isTrue);
-    expect(File('assets/fonts/BartinoOutline-Regular.ttf').existsSync(), isTrue);
+    expect(
+      File('assets/fonts/BartinoOutline-Regular.ttf').existsSync(),
+      isTrue,
+    );
 
     for (final file in files) {
       final svg = file.readAsStringSync().toLowerCase();
@@ -31,8 +34,10 @@ void main() {
   test('every Phosphor icon used by the app has an SVG mapping', () {
     final adapter = File('lib/widgets/app_icon.dart').readAsStringSync();
     final usePattern = RegExp(r'PhosphorIcons\.([A-Za-z0-9_]+)');
-    final mapped =
-        usePattern.allMatches(adapter).map((match) => match.group(1)).toSet();
+    final mapped = usePattern
+        .allMatches(adapter)
+        .map((match) => match.group(1))
+        .toSet();
     final used = <String>{};
 
     for (final entity in Directory('lib').listSync(recursive: true)) {

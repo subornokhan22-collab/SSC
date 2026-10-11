@@ -31,8 +31,8 @@ class Bangla2WrittenQuestion {
   });
 }
 
-const List<Bangla2WrittenQuestion> bangla2ndWrittenQuestions =
-    <Bangla2WrittenQuestion>[
+const List<Bangla2WrittenQuestion>
+bangla2ndWrittenQuestions = <Bangla2WrittenQuestion>[
   Bangla2WrittenQuestion(
     id: 'bangla2nd_paragraph_001',
     type: Bangla2WrittenType.paragraph,

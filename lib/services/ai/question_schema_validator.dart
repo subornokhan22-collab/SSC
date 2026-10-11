@@ -14,9 +14,9 @@ class QuestionValidation {
 
   /// Merges another validation into a new one.
   QuestionValidation merged(QuestionValidation other) => QuestionValidation(
-        errors: [...errors, ...other.errors],
-        warnings: [...warnings, ...other.warnings],
-      );
+    errors: [...errors, ...other.errors],
+    warnings: [...warnings, ...other.warnings],
+  );
 }
 
 /// Structural + content validation for AI-generated MCQs (review items
@@ -44,7 +44,8 @@ class QuestionSchemaValidator {
 
     if (q.id.trim().isEmpty ||
         q.subjectId.trim().isEmpty ||
-        q.chapter.trim().isEmpty) errors.add('missing question metadata');
+        q.chapter.trim().isEmpty)
+      errors.add('missing question metadata');
     final stem = q.questionText.trim();
     if (stem.isEmpty) errors.add('empty question text');
 

@@ -9,18 +9,18 @@ Question q({
   List<String>? options,
   int correctIndex = 0,
   String? explanation,
-}) =>
-    Question(
-      id: id,
-      subjectId: 'biology',
-      chapter: 'অধ্যায় ৩: কোষ বিভাজন',
-      questionText: stem,
-      options:
-          options ?? const ['Carbon dioxide', 'Oxygen', 'Nitrogen', 'Hydrogen'],
-      correctIndex: correctIndex,
-      explanation: explanation ??
-          'Plants absorb carbon dioxide during photosynthesis to make glucose.',
-    );
+}) => Question(
+  id: id,
+  subjectId: 'biology',
+  chapter: 'অধ্যায় ৩: কোষ বিভাজন',
+  questionText: stem,
+  options:
+      options ?? const ['Carbon dioxide', 'Oxygen', 'Nitrogen', 'Hydrogen'],
+  correctIndex: correctIndex,
+  explanation:
+      explanation ??
+      'Plants absorb carbon dioxide during photosynthesis to make glucose.',
+);
 
 void main() {
   group('schema validator', () {
