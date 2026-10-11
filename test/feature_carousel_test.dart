@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
@@ -17,6 +19,13 @@ const _features = [
 ];
 
 void main() {
+  test('carousel belongs to account choice, not the sign-in welcome', () {
+    final choice = File('lib/screens/auth_choice_screen.dart').readAsStringSync();
+    final authWidgets = File('lib/widgets/auth_widgets.dart').readAsStringSync();
+    expect(choice, contains('FeatureCarousel('));
+    expect(authWidgets, isNot(contains('FeatureCarousel(')));
+  });
+
   testWidgets('reduced motion renders a static feature card', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(

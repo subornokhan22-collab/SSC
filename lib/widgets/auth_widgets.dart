@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../theme/app_theme.dart';
-import '../theme/design_tokens.dart';
 import 'app_icon.dart';
 import 'app_logo.dart';
-import 'feature_carousel.dart';
 import 'motion_policy.dart';
 
 /// Header used at the top of the sign-in / sign-up screens.
@@ -138,28 +136,6 @@ class DeskWelcome extends StatelessWidget {
           const Text(
             'Less preparation. More teaching.\nSign in to open your desk.',
             style: TextStyle(color: AppTheme.muted, height: 1.6),
-          ),
-          const SizedBox(height: 18),
-          FeatureCarousel(
-            features: const [
-              FeatureHighlight(
-                icon: PhosphorIcons.fileTextDuotone,
-                title: 'Paper builder',
-                description:
-                    'Compose board-pattern question papers in minutes.',
-              ),
-              FeatureHighlight(
-                icon: PhosphorIcons.scanDuotone,
-                title: 'OMR review',
-                description:
-                    'Scan answer sheets and get instant, scored results.',
-              ),
-              FeatureHighlight(
-                icon: PhosphorIcons.magicWandDuotone,
-                title: 'AI Tools',
-                description: 'Generate, improve, and check questions with AI.',
-              ),
-            ],
           ),
         ],
       );

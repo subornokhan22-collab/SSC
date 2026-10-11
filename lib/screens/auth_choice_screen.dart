@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_logo.dart';
+import '../widgets/feature_carousel.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
 
@@ -34,7 +36,30 @@ class AuthChoiceScreen extends StatelessWidget {
                     const Text(
                       'Create papers, review the SSC question bank and grade OMR sheets with a secure online account.',
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+                    const FeatureCarousel(
+                      features: [
+                        FeatureHighlight(
+                          icon: PhosphorIcons.fileTextDuotone,
+                          title: 'Paper builder',
+                          description:
+                              'Compose board-pattern question papers in minutes.',
+                        ),
+                        FeatureHighlight(
+                          icon: PhosphorIcons.scanDuotone,
+                          title: 'OMR review',
+                          description:
+                              'Scan answer sheets and get instant, scored results.',
+                        ),
+                        FeatureHighlight(
+                          icon: PhosphorIcons.magicWandDuotone,
+                          title: 'AI Tools',
+                          description:
+                              'Generate, improve, and check questions with AI.',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
                     if (AuthService.ready) ...[
                       SizedBox(
                         width: double.infinity,
