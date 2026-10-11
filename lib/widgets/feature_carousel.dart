@@ -21,8 +21,9 @@ class FeatureHighlight {
 
 /// Compact, accessible feature tour for the authentication welcome surface.
 ///
-/// The center card receives the only decorative glow. Auto-play pauses for
-/// touch, reduced motion, hidden routes, and background app lifecycle states.
+/// The center card receives the only decorative glow. Auto-play remains
+/// continuous during touch interaction, while still respecting reduced motion,
+/// hidden routes, and background app lifecycle states.
 class FeatureCarousel extends StatefulWidget {
   final List<FeatureHighlight> features;
   final Duration interval;
@@ -43,14 +44,12 @@ class _FeatureCarouselState extends State<FeatureCarousel>
   late final PageController _controller;
   Timer? _timer;
   bool _foreground = true;
-  bool _touching = false;
   int _page = _initialPage;
 
   bool get _canAutoPlay =>
       mounted &&
       widget.features.length > 1 &&
       _foreground &&
-      !_touching &&
       !MotionPolicy.reduce(context) &&
       TickerMode.of(context);
 
@@ -97,12 +96,6 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     });
   }
 
-  void _setTouching(bool touching) {
-    if (_touching == touching) return;
-    _touching = touching;
-    _synchronizeTimer();
-  }
-
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -122,12 +115,8 @@ class _FeatureCarouselState extends State<FeatureCarousel>
       label: 'Tutor’s Desk features',
       child: SizedBox(
         height: 126,
-        child: Listener(
-          onPointerDown: (_) => _setTouching(true),
-          onPointerUp: (_) => _setTouching(false),
-          onPointerCancel: (_) => _setTouching(false),
-          child: PageView.builder(
-            controller: _controller,
+        child: PageView.builder(
+          controller: _controller,
             onPageChanged: (page) => setState(() => _page = page),
             itemBuilder: (context, index) {
               final feature = widget.features[index % widget.features.length];
@@ -151,8 +140,7 @@ class _FeatureCarouselState extends State<FeatureCarousel>
                   );
                 },
               );
-            },
-          ),
+          },
         ),
       ),
     );

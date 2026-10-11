@@ -24,14 +24,20 @@ void main() {
         File('lib/screens/auth_choice_screen.dart').readAsStringSync();
     final authWidgets =
         File('lib/widgets/auth_widgets.dart').readAsStringSync();
+    final carousel =
+        File('lib/widgets/feature_carousel.dart').readAsStringSync();
     expect(choice, contains('FeatureCarousel('));
     expect(choice, contains("title: 'PDF export'"));
     expect(choice, contains("title: 'Saved papers'"));
     expect(choice, contains("title: 'Class insights'"));
     expect(choice, contains("title: 'Secure workspace'"));
-    expect(choice, contains('AppLogo(size: 72)'));
-    expect(choice, contains('AppBrandName(fontSize: 34)'));
+    expect(choice, contains('AppLogo(size: 96)'));
+    expect(choice, contains('AppBrandName(fontSize: 36)'));
+    expect(choice, contains('YOUR TEACHING WORKSPACE'));
+    expect(choice, isNot(contains('Question papers, ready for class.')));
     expect(authWidgets, isNot(contains('FeatureCarousel(')));
+    expect(carousel, isNot(contains('Listener(')));
+    expect(carousel, isNot(contains('_touching')));
   });
 
   testWidgets('reduced motion renders a static feature card', (tester) async {

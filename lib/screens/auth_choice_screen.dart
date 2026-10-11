@@ -27,20 +27,20 @@ class AuthChoiceScreen extends StatelessWidget {
                     const Center(
                       child: Column(
                         children: [
-                          AppLogo(size: 72),
-                          SizedBox(height: 18),
-                          AppBrandName(fontSize: 34),
+                          AppLogo(size: 96),
+                          SizedBox(height: 20),
+                          AppBrandName(fontSize: 36),
+                          SizedBox(height: 8),
+                          Text(
+                            'YOUR TEACHING WORKSPACE',
+                            style: TextStyle(
+                              fontSize: 11,
+                              letterSpacing: 1.4,
+                              color: AppTheme.muted,
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Question papers, ready for class.',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Create papers, review the SSC question bank and grade OMR sheets with a secure online account.',
                     ),
                     const SizedBox(height: 24),
                     const FeatureCarousel(
