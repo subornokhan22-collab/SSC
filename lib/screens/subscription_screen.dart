@@ -15,6 +15,12 @@ import '../widgets/glass_card.dart';
 import '../widgets/problem_dialog.dart';
 import '../widgets/app_icon.dart';
 
+String _planIconName(SubscriptionPlan plan) => switch (plan) {
+      SubscriptionPlan.professional => 'PROFESSIONAL',
+      SubscriptionPlan.pro => 'PRO',
+      SubscriptionPlan.basic || SubscriptionPlan.free => 'BASIC-2',
+    };
+
 class _PlanFeature {
   final IconData icon;
   final String title;
@@ -411,6 +417,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           _hasPaidPlan
               ? "Tutor's Desk ${SubscriptionState.instance.entitlement.plan.displayName}"
               : 'Choose a plan',
+          style: TextStyle(
+            fontFamily: _hasPaidPlan ? 'Bartino Outline' : null,
+            fontSize: _hasPaidPlan ? 22 : null,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
       body: SafeArea(
@@ -462,10 +473,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                               width: 1.4,
                             ),
                           ),
-                          child: const AppIcon(
-                            PhosphorIcons.sealCheck,
+                          child: AppIcon.asset(
+                            _planIconName(activePlan.plan),
                             color: AppTheme.accent,
-                            size: 44,
+                            size: 52,
+                            semanticLabel: '${activePlan.label} plan',
                           ),
                         ),
                       ),
@@ -541,7 +553,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   child: OutlinedButton.icon(
                     onPressed: _buying ? null : _openPlanPicker,
                     icon: const AppIcon(
-                      PhosphorIcons.arrowsLeftRight,
+                      PhosphorIcons.arrowsClockwise,
                       size: 18,
                     ),
                     label: const Text('Change plan'),
@@ -586,11 +598,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                     min: .95,
                     max: 1.06,
                     period: const Duration(milliseconds: 2100),
-                    child: const AppIcon(
-                      PhosphorIcons.crown,
-                      color: AppTheme.accent,
-                      size: 32,
-                    ),
+                    child: selectedPlan == null
+                        ? const AppIcon(
+                            PhosphorIcons.crown,
+                            color: AppTheme.accent,
+                            size: 32,
+                          )
+                        : AppIcon.asset(
+                            _planIconName(selectedPlan.plan),
+                            color: AppTheme.accent,
+                            size: 38,
+                            semanticLabel: '${selectedPlan.label} plan',
+                          ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -886,6 +905,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           ),
           child: Row(
             children: [
+              AppIcon.asset(
+                _planIconName(plan.plan),
+                size: 34,
+                color: AppTheme.textDark,
+                semanticLabel: '${plan.label} plan',
+              ),
+              const SizedBox(width: 12),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 width: 24,

@@ -134,7 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Email',
                           hintText: 'you@example.com',
-                          prefixIcon: AppIcon(PhosphorIcons.at),
+                          prefixIcon: AppIcon(PhosphorIcons.at, size: 22),
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -147,7 +147,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         onSubmitted: (_) => _busy ? null : _signIn(),
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          prefixIcon: const AppIcon(PhosphorIcons.lock),
+                          prefixIcon: const AppIcon(PhosphorIcons.lock, size: 22),
                           suffixIcon: IconButton(
                             tooltip:
                                 _obscure ? 'Show password' : 'Hide password',

@@ -239,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             autofillHints: const [AutofillHints.name],
             decoration: const InputDecoration(
               labelText: 'Full name',
-              prefixIcon: AppIcon(PhosphorIcons.identificationBadge),
+              prefixIcon: AppIcon(PhosphorIcons.identificationBadge, size: 22),
             ),
           ),
           const SizedBox(height: 14),
@@ -255,7 +255,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               labelText: 'Mobile number',
               hintText: '1XXXXXXXXX',
               counterText: '',
-              prefixIcon: AppIcon(PhosphorIcons.deviceMobile),
+              prefixIcon: AppIcon(PhosphorIcons.deviceMobile, size: 22),
               prefixText: '+880  ',
               prefixStyle: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -272,7 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             decoration: const InputDecoration(
               labelText: 'Email address',
               hintText: 'you@example.com',
-              prefixIcon: AppIcon(PhosphorIcons.at),
+              prefixIcon: AppIcon(PhosphorIcons.at, size: 22),
             ),
           ),
           const SizedBox(height: 18),
@@ -291,7 +291,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               labelText: 'Password',
               helperText:
                   'At least ${AuthService.minPasswordLength} characters.',
-              prefixIcon: const AppIcon(PhosphorIcons.lock),
+              prefixIcon: const AppIcon(PhosphorIcons.lock, size: 22),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
@@ -310,7 +310,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             onSubmitted: (_) => _busy ? null : _next(),
             decoration: const InputDecoration(
               labelText: 'Confirm password',
-              prefixIcon: AppIcon(PhosphorIcons.lockKeyOpen),
+              prefixIcon: AppIcon(PhosphorIcons.lockKeyOpen, size: 22),
             ),
           ),
           const SizedBox(height: 18),

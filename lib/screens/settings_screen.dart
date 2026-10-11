@@ -109,7 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 _section(
                   'Accessibility',
-                  icon: PhosphorIcons.personSimple,
+                  icon: PhosphorIcons.user,
                   child: GlassCard(
                     padding: EdgeInsets.zero,
                     child: ValueListenableBuilder<bool>(
@@ -263,7 +263,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _section(
                   'Default paper name',
-                  icon: PhosphorIcons.textT,
+                  icon: PhosphorIcons.fileText,
                   child: GlassCard(
                     padding: const EdgeInsets.all(16),
                     child: Column(

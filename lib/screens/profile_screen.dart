@@ -20,6 +20,12 @@ import '../widgets/app_icon.dart';
 ///
 /// If Supabase is not configured the screen still works: it simply shows the
 /// offline notice and the last verified subscription state, and never throws.
+String _profilePlanIconName(SubscriptionPlan plan) => switch (plan) {
+      SubscriptionPlan.professional => 'PROFESSIONAL',
+      SubscriptionPlan.pro => 'PRO',
+      SubscriptionPlan.basic || SubscriptionPlan.free => 'BASIC-2',
+    };
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -201,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   labelText: 'Full name',
-                  prefixIcon: AppIcon(PhosphorIcons.identificationBadge),
+                  prefixIcon: AppIcon(PhosphorIcons.identificationBadge, size: 22),
                 ),
               ),
               const SizedBox(height: 14),
@@ -376,7 +382,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const Center(
                 child: Text(
                   "Tutor's Desk — Tutor Edition",
-                  style: TextStyle(fontSize: 11.5, color: AppTheme.muted),
+                  style: TextStyle(
+                    fontFamily: 'Bartino Outline',
+                    fontSize: 13,
+                    color: AppTheme.muted,
+                  ),
                 ),
               ),
             ],
@@ -405,7 +415,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: const InputDecoration(
               labelText: 'Email',
               hintText: 'you@example.com',
-              prefixIcon: AppIcon(PhosphorIcons.at),
+              prefixIcon: AppIcon(PhosphorIcons.at, size: 22),
             ),
           ),
           const SizedBox(height: 14),
@@ -417,7 +427,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onSubmitted: (_) => _busy ? null : _signIn(),
             decoration: InputDecoration(
               labelText: 'Password',
-              prefixIcon: const AppIcon(PhosphorIcons.lock),
+              prefixIcon: const AppIcon(PhosphorIcons.lock, size: 22),
               suffixIcon: IconButton(
                 tooltip: _obscure ? 'Show password' : 'Hide password',
                 onPressed: () => setState(() => _obscure = !_obscure),
@@ -537,9 +547,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AppIcon(
-                        PhosphorIcons.crown,
-                        size: 14,
+                      AppIcon.asset(
+                        _profilePlanIconName(
+                          SubscriptionState.instance.entitlement.plan,
+                        ),
+                        size: 18,
                         color: AppTheme.accent,
                       ),
                       const SizedBox(width: 5),
@@ -622,10 +634,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               min: .95,
               max: 1.07,
               period: const Duration(milliseconds: 2200),
-              child: const AppIcon(
-                PhosphorIcons.crown,
+              child: AppIcon.asset(
+                _profilePlanIconName(
+                  SubscriptionState.instance.entitlement.plan,
+                ),
                 color: AppTheme.accent,
-                size: 30,
+                size: 34,
               ),
             ),
             const SizedBox(width: 14),
@@ -668,7 +682,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: Row(
         children: [
-          const AppIcon(PhosphorIcons.crown, color: AppTheme.accent, size: 30),
+          const AppIcon.asset('PRO', color: AppTheme.accent, size: 34),
           const SizedBox(width: 14),
           const Expanded(
             child: Column(

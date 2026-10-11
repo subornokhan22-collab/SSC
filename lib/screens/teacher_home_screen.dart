@@ -634,7 +634,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             style: TextStyle(
               color: ReferencePalette.ink,
               fontFamily: 'Bartino Outline',
-              fontSize: 20,
+              fontSize: 23,
               fontWeight: FontWeight.w700,
               letterSpacing: .1,
             ),

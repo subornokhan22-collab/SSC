@@ -19,7 +19,8 @@ void main() {
     expect(paperExport, contains('Future.wait(images.map(_watermarkPage))'));
     expect(paperExport, contains('pageSize.width * .58'));
     expect(paperExport, contains('pageSize.height * .28'));
-    expect(paperExport, contains('pageSize.width * .034'));
+    expect(paperExport, contains('pageSize.width * .045'));
+    expect(paperExport, contains("fontFamily: 'Bartino'"));
     expect(paperExport, contains('Colors.black.withAlpha(72)'));
     expect(paperExport, isNot(contains('DEMO • TUTOR’S DESK')));
     expect(pubspec, isNot(contains('adaptive_icon_foreground')));

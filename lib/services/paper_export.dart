@@ -177,7 +177,7 @@ class PaperExport {
           // Large but deliberately pale so questions remain easy to read.
           color: Colors.black.withAlpha(72),
           fontFamily: 'Bartino',
-          fontSize: (pageSize.width * .034).clamp(38.0, 68.0),
+          fontSize: (pageSize.width * .045).clamp(50.0, 86.0),
           fontWeight: FontWeight.w900,
           letterSpacing: 3.2,
         ),

@@ -21,12 +21,22 @@ class AppIcon extends StatelessWidget {
     this.textDirection,
   });
 
+  const AppIcon.asset(
+    String assetName, {
+    super.key,
+    this.size,
+    this.color,
+    this.semanticLabel,
+    this.textDirection,
+  }) : icon = assetName;
+
   static const _root = 'assets/icons/';
 
   static String _asset(String name) => '$_root$name--Streamline-Core.svg';
 
   static ({String path, int quarterTurns})? _resolve(Object value) {
     String asset(String name) => _asset(name);
+    if (value is String) return (path: asset(value), quarterTurns: 0);
     final path = switch (value) {
       PhosphorIcons.filePlus => asset('Document'),
       PhosphorIcons.filePdf || PhosphorIcons.filePdfDuotone => asset('PDF'),
@@ -40,8 +50,8 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.article ||
       PhosphorIcons.fileText ||
       PhosphorIcons.fileTextDuotone =>
-        asset('App Manual-Book'),
-      PhosphorIcons.at => asset('User-Identifier-Card'),
+        asset('Document'),
+      PhosphorIcons.at => asset('Email'),
       PhosphorIcons.bellRinging => asset('Ringing-Bell-Notification'),
       PhosphorIcons.bookOpen => asset('Open-Book'),
       PhosphorIcons.bookmarkSimple ||
@@ -62,9 +72,9 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.crop => asset('Crop-Selection'),
       PhosphorIcons.crown => asset('Crown'),
       PhosphorIcons.trophy => asset('Trophy'),
-      PhosphorIcons.cubeDuotone => asset('Scanner'),
+      PhosphorIcons.cubeDuotone => asset('grid-8'),
       PhosphorIcons.deviceMobile => asset('Phone'),
-      PhosphorIcons.envelopeOpen => asset('Email'),
+      PhosphorIcons.envelopeOpen => asset('Mail-varification'),
       PhosphorIcons.eye || PhosphorIcons.eyeDuotone => asset('Eye'),
       PhosphorIcons.eyeSlash => asset('hide-1'),
       PhosphorIcons.flagDuotone => asset('Triangle-Flag'),
@@ -74,7 +84,7 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.hourglass => asset('Circle-Clock'),
       PhosphorIcons.house => asset('Home-3'),
       PhosphorIcons.identificationBadge => asset('Name'),
-      PhosphorIcons.personSimple => asset('User-Identifier-Card'),
+      PhosphorIcons.personSimple => asset('User-Circle-Single'),
       PhosphorIcons.imageBroken ||
       PhosphorIcons.imagesDuotone =>
         asset('Multiple-image-2'),
@@ -82,9 +92,8 @@ class AppIcon extends StatelessWidget {
       PhosphorIcons.question => asset('Chat-Bubble-Square-Question'),
       PhosphorIcons.keyDuotone => asset('Key'),
       PhosphorIcons.password => asset('password-2'),
-      PhosphorIcons.lock ||
-      PhosphorIcons.lockKeyOpen =>
-        asset('Padlock-Square-1'),
+      PhosphorIcons.lock => asset('Padlock-Square-1'),
+      PhosphorIcons.lockKeyOpen => asset('password-2'),
       PhosphorIcons.magicWand ||
       PhosphorIcons.magicWandDuotone ||
       PhosphorIcons.rocketLaunch ||
