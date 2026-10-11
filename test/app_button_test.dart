@@ -4,9 +4,9 @@ import 'package:tutors_desk/theme/app_theme.dart';
 import 'package:tutors_desk/widgets/app_button.dart';
 
 Widget host(AppButton button) => MaterialApp(
-  theme: AppTheme.light(),
-  home: Scaffold(body: Center(child: button)),
-);
+      theme: AppTheme.light(),
+      home: Scaffold(body: Center(child: button)),
+    );
 
 void main() {
   testWidgets('enabled action invokes its callback', (tester) async {

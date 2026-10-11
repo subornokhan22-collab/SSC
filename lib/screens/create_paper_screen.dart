@@ -85,8 +85,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       ),
       paperUsage: PaperUsageService(),
     );
-    _subjectChosen =
-        widget.initialSubjectId != null ||
+    _subjectChosen = widget.initialSubjectId != null ||
         widget.initialQuestions?.isNotEmpty == true;
     c.addListener(sync);
     unawaited(initialize());
@@ -102,8 +101,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       await subscription.refresh();
     }
     await c.initialize(
-      restore:
-          widget.initialSubjectId == null &&
+      restore: widget.initialSubjectId == null &&
           widget.initialFormat == null &&
           widget.initialQuestions == null,
     );
@@ -149,8 +147,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           format != PaperFormat.board);
 
   Future<void> _explainLockedFormat(PaperFormat format) async {
-    final englishLocked =
-        PaperComposer.isEnglish(c.draft.subjectId) &&
+    final englishLocked = PaperComposer.isEnglish(c.draft.subjectId) &&
         format != PaperFormat.board;
     await showDialog<void>(
       context: context,
@@ -526,395 +523,396 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
 
   @override
   Widget build(BuildContext context) => PopScope(
-    canPop: step == 0 && !c.busy,
-    onPopInvoked: (didPop) {
-      if (!didPop && !c.busy && step > 0) setState(() => step--);
-    },
-    child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Paper'),
-        actions: [
-          IconButton(
-            tooltip: 'Undo',
-            onPressed: c.canUndo
-                ? () {
-                    c.undo();
-                    if (step == 4) setState(() => step = 3);
-                  }
-                : null,
-            icon: const AppIcon(PhosphorIcons.arrowCounterClockwise),
+        canPop: step == 0 && !c.busy,
+        onPopInvoked: (didPop) {
+          if (!didPop && !c.busy && step > 0) setState(() => step--);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Create Paper'),
+            actions: [
+              IconButton(
+                tooltip: 'Undo',
+                onPressed: c.canUndo
+                    ? () {
+                        c.undo();
+                        if (step == 4) setState(() => step = 3);
+                      }
+                    : null,
+                icon: const AppIcon(PhosphorIcons.arrowCounterClockwise),
+              ),
+              IconButton(
+                tooltip: 'Redo',
+                onPressed: c.canRedo
+                    ? () {
+                        c.redo();
+                        if (step == 4) setState(() => step = 3);
+                      }
+                    : null,
+                icon: const AppIcon(PhosphorIcons.arrowClockwise),
+              ),
+            ],
           ),
-          IconButton(
-            tooltip: 'Redo',
-            onPressed: c.canRedo
-                ? () {
-                    c.redo();
-                    if (step == 4) setState(() => step = 3);
-                  }
-                : null,
-            icon: const AppIcon(PhosphorIcons.arrowClockwise),
-          ),
-        ],
-      ),
-      body: !c.initialized
-          ? const Center(child: ActivityIndicator(size: 24))
-          : Column(
-              children: [
-                WorkflowProgress(steps: steps, current: step),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      const AppDuotoneIcon(
-                        PhosphorIcons.floppyDiskDuotone,
-                        size: 14,
-                        color: AppTheme.muted,
-                        secondaryColor: AppColors.secondary,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          c.saveError ??
-                              (c.savedAt == null
-                                  ? 'Draft saves automatically on this device'
-                                  : 'Auto-saved ${TimeOfDay.fromDateTime(c.savedAt!).format(context)}'),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: c.saveError == null
-                                ? AppTheme.muted
-                                : AppTheme.danger,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: AbsorbPointer(
-                    absorbing: c.busy,
-                    child: step == 4
-                        ? previewBody()
-                        : ListView(
-                            padding: const EdgeInsets.all(20),
-                            children: [
-                              OperationNotice(
-                                error: c.error,
-                                activity: c.activity,
-                              ),
-                              if (step == 0) subjectStep(),
-                              if (step == 1) chapterStep(),
-                              if (step == 2) countsStep(),
-                              if (step == 3) reviewStep(),
-                            ],
-                          ),
-                  ),
-                ),
-                if (step == 4)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: OperationNotice(
-                      error: c.error,
-                      activity: c.activity,
-                    ),
-                  ),
-              ],
-            ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
-          child: step < 4
-              ? Row(
+          body: !c.initialized
+              ? const Center(child: ActivityIndicator(size: 24))
+              : Column(
                   children: [
-                    if (step > 0)
-                      TextButton(
-                        onPressed: c.busy ? null : () => setState(() => step--),
-                        child: const Text('Back'),
-                      ),
-                    const Spacer(),
-                    FilledButton.icon(
-                      onPressed: c.busy || !c.initialized ? null : next,
-                      icon: c.busy
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: ActivityIndicator(strokeWidth: 2),
-                            )
-                          : AppIcon(
-                              step == 3
-                                  ? PhosphorIcons.eye
-                                  : PhosphorIcons.arrowRight,
-                              size: 18,
+                    WorkflowProgress(steps: steps, current: step),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          const AppDuotoneIcon(
+                            PhosphorIcons.floppyDiskDuotone,
+                            size: 14,
+                            color: AppTheme.muted,
+                            secondaryColor: AppColors.secondary,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              c.saveError ??
+                                  (c.savedAt == null
+                                      ? 'Draft saves automatically on this device'
+                                      : 'Auto-saved ${TimeOfDay.fromDateTime(c.savedAt!).format(context)}'),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: c.saveError == null
+                                    ? AppTheme.muted
+                                    : AppTheme.danger,
+                              ),
                             ),
-                      label: Text(
-                        c.busy
-                            ? 'Working…'
-                            : step == 2
-                            ? 'Select questions'
-                            : step == 3
-                            ? 'Preview paper'
-                            : 'Continue',
-                      ),
-                    ),
-                  ],
-                )
-              : Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 8,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: c.busy ? null : () => export('pdf'),
-                      icon: const AppDuotoneIcon(
-                        PhosphorIcons.filePdfDuotone,
-                        color: AppColors.onColor,
-                        secondaryColor: AppColors.light,
-                        size: 18,
-                      ),
-                      label: const Text('Export PDF'),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: c.busy ? null : () => export('save'),
-                      icon: const AppDuotoneIcon(
-                        PhosphorIcons.bookmarkSimpleDuotone,
-                        color: AppTheme.primary,
-                        secondaryColor: AppColors.secondary,
-                        size: 18,
-                      ),
-                      label: const Text('Save'),
-                    ),
-                    IconButton(
-                      tooltip: 'Print',
-                      onPressed: c.busy ? null : () => export('print'),
-                      icon: const AppDuotoneIcon(
-                        PhosphorIcons.printerDuotone,
-                        color: AppTheme.primary,
-                        secondaryColor: AppColors.secondary,
-                      ),
-                    ),
-                    if (c.paper?.mcqs.isNotEmpty == true)
-                      PopupMenuButton<String>(
-                        enabled: !c.busy,
-                        onSelected: (value) async {
-                          if (!await SubscriptionGuard.require(
-                            context,
-                            PremiumFeature.omrScanner,
-                          )) {
-                            return;
-                          }
-                          if (value == 'scan')
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => OMrScannerScreen(
-                                  initialKey: c.paper!.mcqs
-                                      .map((q) => q.correctIndex)
-                                      .toList(),
-                                  paperTitle: c.draft.title,
-                                  initialSubject: c.subject!.bengaliName,
-                                ),
-                              ),
-                            );
-                          else
-                            await export('omr');
-                        },
-                        itemBuilder: (_) => const [
-                          PopupMenuItem(
-                            value: 'omr',
-                            child: Text('Print OMR sheet'),
-                          ),
-                          PopupMenuItem(
-                            value: 'scan',
-                            child: Text('Scan answers'),
                           ),
                         ],
                       ),
+                    ),
+                    Expanded(
+                      child: AbsorbPointer(
+                        absorbing: c.busy,
+                        child: step == 4
+                            ? previewBody()
+                            : ListView(
+                                padding: const EdgeInsets.all(20),
+                                children: [
+                                  OperationNotice(
+                                    error: c.error,
+                                    activity: c.activity,
+                                  ),
+                                  if (step == 0) subjectStep(),
+                                  if (step == 1) chapterStep(),
+                                  if (step == 2) countsStep(),
+                                  if (step == 3) reviewStep(),
+                                ],
+                              ),
+                      ),
+                    ),
+                    if (step == 4)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: OperationNotice(
+                          error: c.error,
+                          activity: c.activity,
+                        ),
+                      ),
                   ],
                 ),
-        ),
-      ),
-    ),
-  );
-
-  Widget subjectStep() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        _subjectChosen ? 'What are you teaching?' : 'Choose a subject first',
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-      const SizedBox(height: 8),
-      const Text(
-        'Choose a subject. Questions come from the saved SSC bank. Your plan controls how many subjects you can keep selected.',
-      ),
-      const SizedBox(height: 20),
-      for (final s in allSubjects) _subjectTile(s),
-    ],
-  );
-  Widget chapterStep() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Choose the paper format',
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-      const SizedBox(height: 12),
-      if (PaperComposer.isEnglish(c.draft.subjectId)) ...[
-        DropdownButtonFormField<String>(
-          value:
-              EnglishPaperSync.choices(
-                c.draft.subjectId,
-              ).containsKey(c.draft.englishPaperId)
-              ? c.draft.englishPaperId
-              : '',
-          isExpanded: true,
-          decoration: const InputDecoration(
-            labelText: 'Randomized English model pool',
-          ),
-          items: const [
-            DropdownMenuItem(value: '', child: Text('Randomized practice set')),
-          ],
-          onChanged: (id) => c.update(
-            c.draft.copyWith(englishPaperId: id, clearEnglishPaper: id == ''),
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-      for (final f in PaperFormat.values)
-        Card(
-          child: RadioListTile<PaperFormat>(
-            secondary: _formatIsLocked(f)
-                ? const AppIcon(PhosphorIcons.lock)
-                : null,
-            title: Text(switch (f) {
-              PaperFormat.board => _isFreePlan ? 'Model Test' : 'Board Pattern',
-              PaperFormat.chapter => 'Chapter Test',
-              PaperFormat.custom => 'Custom Paper',
-              PaperFormat.mcq => 'MCQ + OMR',
-            }),
-            subtitle: Text(switch (f) {
-              PaperFormat.board =>
-                _isFreePlan
-                    ? 'Two server-verified generations per Asia/Dhaka month'
-                    : 'Complete subject pattern from the saved bank',
-              PaperFormat.chapter =>
-                _formatIsLocked(f)
-                    ? 'Upgrade to unlock this format'
-                    : 'Practice selected chapters',
-              PaperFormat.custom =>
-                _formatIsLocked(f)
-                    ? 'Upgrade to unlock this format'
-                    : 'Choose your MCQ, short-answer and CQ counts',
-              PaperFormat.mcq =>
-                _formatIsLocked(f)
-                    ? 'Upgrade to unlock this format'
-                    : 'Up to 100 MCQs with an answer key',
-            }),
-            value: f,
-            groupValue: c.draft.format,
-            onChanged: (next) {
-              if (next != null) _selectFormat(next);
-            },
-          ),
-        ),
-      if (c.draft.format != PaperFormat.board) ...[
-        const SizedBox(height: 20),
-        Text('Chapters', style: Theme.of(context).textTheme.titleLarge),
-        Text(
-          c.draft.format == PaperFormat.chapter
-              ? 'Select at least one chapter.'
-              : 'Leave all unchecked to use the whole bank.',
-        ),
-        if (c.chapters.isEmpty)
-          const OperationNotice(
-            error: 'No questions are available for this subject yet.',
-          ),
-        for (final ch in c.chapters)
-          CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(ch),
-            value: c.draft.chapters.contains(ch),
-            onChanged: (selected) {
-              final next = [...c.draft.chapters];
-              if (selected == true)
-                next.add(ch);
-              else
-                next.remove(ch);
-              c.update(c.draft.copyWith(chapters: next));
-            },
-          ),
-      ],
-    ],
-  );
-  Widget countsStep() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Set up your paper',
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-      const SizedBox(height: 18),
-      TextField(
-        controller: title,
-        decoration: const InputDecoration(labelText: 'Paper title'),
-        onChanged: (v) =>
-            c.update(c.draft.copyWith(title: v), preserveQuestions: true),
-      ),
-      const SizedBox(height: 16),
-      DropdownButtonFormField<String>(
-        value: c.draft.setCode,
-        decoration: const InputDecoration(labelText: 'Set code'),
-        items: [
-          for (final s in const ['ক', 'খ', 'গ', 'ঘ'])
-            DropdownMenuItem(value: s, child: Text(s)),
-        ],
-        onChanged: (s) =>
-            c.update(c.draft.copyWith(setCode: s), preserveQuestions: true),
-      ),
-      const SizedBox(height: 16),
-      if (c.draft.format == PaperFormat.board)
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              PaperComposer.isEnglish(c.draft.subjectId)
-                  ? 'Reading / Grammar and Writing • 100 marks. Complete English sections are preserved.'
-                  : '${_isFreePlan ? 'Model Test' : 'Board Pattern'} uses the subject’s fixed distribution and answer counts. Practical marks are not part of the printed theory paper.',
+          bottomNavigationBar: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
+              child: step < 4
+                  ? Row(
+                      children: [
+                        if (step > 0)
+                          TextButton(
+                            onPressed:
+                                c.busy ? null : () => setState(() => step--),
+                            child: const Text('Back'),
+                          ),
+                        const Spacer(),
+                        FilledButton.icon(
+                          onPressed: c.busy || !c.initialized ? null : next,
+                          icon: c.busy
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: ActivityIndicator(strokeWidth: 2),
+                                )
+                              : AppIcon(
+                                  step == 3
+                                      ? PhosphorIcons.eye
+                                      : PhosphorIcons.arrowRight,
+                                  size: 18,
+                                ),
+                          label: Text(
+                            c.busy
+                                ? 'Working…'
+                                : step == 2
+                                    ? 'Select questions'
+                                    : step == 3
+                                        ? 'Preview paper'
+                                        : 'Continue',
+                          ),
+                        ),
+                      ],
+                    )
+                  : Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: c.busy ? null : () => export('pdf'),
+                          icon: const AppDuotoneIcon(
+                            PhosphorIcons.filePdfDuotone,
+                            color: AppColors.onColor,
+                            secondaryColor: AppColors.light,
+                            size: 18,
+                          ),
+                          label: const Text('Export PDF'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: c.busy ? null : () => export('save'),
+                          icon: const AppDuotoneIcon(
+                            PhosphorIcons.bookmarkSimpleDuotone,
+                            color: AppTheme.primary,
+                            secondaryColor: AppColors.secondary,
+                            size: 18,
+                          ),
+                          label: const Text('Save'),
+                        ),
+                        IconButton(
+                          tooltip: 'Print',
+                          onPressed: c.busy ? null : () => export('print'),
+                          icon: const AppDuotoneIcon(
+                            PhosphorIcons.printerDuotone,
+                            color: AppTheme.primary,
+                            secondaryColor: AppColors.secondary,
+                          ),
+                        ),
+                        if (c.paper?.mcqs.isNotEmpty == true)
+                          PopupMenuButton<String>(
+                            enabled: !c.busy,
+                            onSelected: (value) async {
+                              if (!await SubscriptionGuard.require(
+                                context,
+                                PremiumFeature.omrScanner,
+                              )) {
+                                return;
+                              }
+                              if (value == 'scan')
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => OMrScannerScreen(
+                                      initialKey: c.paper!.mcqs
+                                          .map((q) => q.correctIndex)
+                                          .toList(),
+                                      paperTitle: c.draft.title,
+                                      initialSubject: c.subject!.bengaliName,
+                                    ),
+                                  ),
+                                );
+                              else
+                                await export('omr');
+                            },
+                            itemBuilder: (_) => const [
+                              PopupMenuItem(
+                                value: 'omr',
+                                child: Text('Print OMR sheet'),
+                              ),
+                              PopupMenuItem(
+                                value: 'scan',
+                                child: Text('Scan answers'),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
             ),
           ),
-        )
-      else ...[
-        count(
-          'MCQ',
-          c.draft.mcqCount,
-          100,
-          (v) => c.update(c.draft.copyWith(mcqCount: v)),
         ),
-        if (c.draft.format != PaperFormat.mcq) ...[
-          count(
-            'Short answer · 2 marks',
-            c.draft.saqCount,
-            30,
-            (v) => c.update(c.draft.copyWith(saqCount: v)),
+      );
+
+  Widget subjectStep() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _subjectChosen
+                ? 'What are you teaching?'
+                : 'Choose a subject first',
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          count(
-            'Creative question · 10 marks',
-            c.draft.cqCount,
-            15,
-            (v) => c.update(c.draft.copyWith(cqCount: v)),
+          const SizedBox(height: 8),
+          const Text(
+            'Choose a subject. Questions come from the saved SSC bank. Your plan controls how many subjects you can keep selected.',
+          ),
+          const SizedBox(height: 20),
+          for (final s in allSubjects) _subjectTile(s),
+        ],
+      );
+  Widget chapterStep() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Choose the paper format',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 12),
+          if (PaperComposer.isEnglish(c.draft.subjectId)) ...[
+            DropdownButtonFormField<String>(
+              value: EnglishPaperSync.choices(
+                c.draft.subjectId,
+              ).containsKey(c.draft.englishPaperId)
+                  ? c.draft.englishPaperId
+                  : '',
+              isExpanded: true,
+              decoration: const InputDecoration(
+                labelText: 'Randomized English model pool',
+              ),
+              items: const [
+                DropdownMenuItem(
+                    value: '', child: Text('Randomized practice set')),
+              ],
+              onChanged: (id) => c.update(
+                c.draft
+                    .copyWith(englishPaperId: id, clearEnglishPaper: id == ''),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          for (final f in PaperFormat.values)
+            Card(
+              child: RadioListTile<PaperFormat>(
+                secondary: _formatIsLocked(f)
+                    ? const AppIcon(PhosphorIcons.lock)
+                    : null,
+                title: Text(switch (f) {
+                  PaperFormat.board =>
+                    _isFreePlan ? 'Model Test' : 'Board Pattern',
+                  PaperFormat.chapter => 'Chapter Test',
+                  PaperFormat.custom => 'Custom Paper',
+                  PaperFormat.mcq => 'MCQ + OMR',
+                }),
+                subtitle: Text(switch (f) {
+                  PaperFormat.board => _isFreePlan
+                      ? 'Two server-verified generations per Asia/Dhaka month'
+                      : 'Complete subject pattern from the saved bank',
+                  PaperFormat.chapter => _formatIsLocked(f)
+                      ? 'Upgrade to unlock this format'
+                      : 'Practice selected chapters',
+                  PaperFormat.custom => _formatIsLocked(f)
+                      ? 'Upgrade to unlock this format'
+                      : 'Choose your MCQ, short-answer and CQ counts',
+                  PaperFormat.mcq => _formatIsLocked(f)
+                      ? 'Upgrade to unlock this format'
+                      : 'Up to 100 MCQs with an answer key',
+                }),
+                value: f,
+                groupValue: c.draft.format,
+                onChanged: (next) {
+                  if (next != null) _selectFormat(next);
+                },
+              ),
+            ),
+          if (c.draft.format != PaperFormat.board) ...[
+            const SizedBox(height: 20),
+            Text('Chapters', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              c.draft.format == PaperFormat.chapter
+                  ? 'Select at least one chapter.'
+                  : 'Leave all unchecked to use the whole bank.',
+            ),
+            if (c.chapters.isEmpty)
+              const OperationNotice(
+                error: 'No questions are available for this subject yet.',
+              ),
+            for (final ch in c.chapters)
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(ch),
+                value: c.draft.chapters.contains(ch),
+                onChanged: (selected) {
+                  final next = [...c.draft.chapters];
+                  if (selected == true)
+                    next.add(ch);
+                  else
+                    next.remove(ch);
+                  c.update(c.draft.copyWith(chapters: next));
+                },
+              ),
+          ],
+        ],
+      );
+  Widget countsStep() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Set up your paper',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 18),
+          TextField(
+            controller: title,
+            decoration: const InputDecoration(labelText: 'Paper title'),
+            onChanged: (v) =>
+                c.update(c.draft.copyWith(title: v), preserveQuestions: true),
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            value: c.draft.setCode,
+            decoration: const InputDecoration(labelText: 'Set code'),
+            items: [
+              for (final s in const ['ক', 'খ', 'গ', 'ঘ'])
+                DropdownMenuItem(value: s, child: Text(s)),
+            ],
+            onChanged: (s) =>
+                c.update(c.draft.copyWith(setCode: s), preserveQuestions: true),
+          ),
+          const SizedBox(height: 16),
+          if (c.draft.format == PaperFormat.board)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  PaperComposer.isEnglish(c.draft.subjectId)
+                      ? 'Reading / Grammar and Writing • 100 marks. Complete English sections are preserved.'
+                      : '${_isFreePlan ? 'Model Test' : 'Board Pattern'} uses the subject’s fixed distribution and answer counts. Practical marks are not part of the printed theory paper.',
+                ),
+              ),
+            )
+          else ...[
+            count(
+              'MCQ',
+              c.draft.mcqCount,
+              100,
+              (v) => c.update(c.draft.copyWith(mcqCount: v)),
+            ),
+            if (c.draft.format != PaperFormat.mcq) ...[
+              count(
+                'Short answer · 2 marks',
+                c.draft.saqCount,
+                30,
+                (v) => c.update(c.draft.copyWith(saqCount: v)),
+              ),
+              count(
+                'Creative question · 10 marks',
+                c.draft.cqCount,
+                15,
+                (v) => c.update(c.draft.copyWith(cqCount: v)),
+              ),
+            ],
+          ],
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Include answer key in PDF'),
+            subtitle: const Text(
+              'Includes available MCQ, SQ and reviewed/AI-draft CQ keys.',
+            ),
+            value: c.draft.answerKey,
+            onChanged: (v) => c.update(c.draft.copyWith(answerKey: v),
+                preserveQuestions: true),
           ),
         ],
-      ],
-      SwitchListTile(
-        contentPadding: EdgeInsets.zero,
-        title: const Text('Include answer key in PDF'),
-        subtitle: const Text(
-          'Includes available MCQ, SQ and reviewed/AI-draft CQ keys.',
-        ),
-        value: c.draft.answerKey,
-        onChanged: (v) =>
-            c.update(c.draft.copyWith(answerKey: v), preserveQuestions: true),
-      ),
-    ],
-  );
+      );
   Widget count(String label, int value, int max, ValueChanged<int> change) =>
       Card(
         child: Padding(
@@ -975,8 +973,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
                 if (!await SubscriptionGuard.require(
                   context,
                   PremiumFeature.aiAssistant,
-                ))
-                  return;
+                )) return;
                 final questions = await Navigator.push<List<Question>>(
                   context,
                   MaterialPageRoute(
@@ -1009,8 +1006,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
               if (!await SubscriptionGuard.require(
                 context,
                 PremiumFeature.aiAssistant,
-              ))
-                return;
+              )) return;
               final q = p.mcqs[i];
               final edited = await Navigator.push<List<Question>>(
                 context,

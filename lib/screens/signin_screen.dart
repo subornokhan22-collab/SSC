@@ -149,9 +149,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           labelText: 'Password',
                           prefixIcon: const AppIcon(PhosphorIcons.lock),
                           suffixIcon: IconButton(
-                            tooltip: _obscure
-                                ? 'Show password'
-                                : 'Hide password',
+                            tooltip:
+                                _obscure ? 'Show password' : 'Hide password',
                             onPressed: () =>
                                 setState(() => _obscure = !_obscure),
                             icon: AppIcon(
@@ -193,13 +192,13 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: _busy
                         ? null
                         : () => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => SignUpScreen(
-                                prefillEmail: _emailCtrl.text.trim(),
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SignUpScreen(
+                                  prefillEmail: _emailCtrl.text.trim(),
+                                ),
                               ),
                             ),
-                          ),
                     icon: const AppIcon(PhosphorIcons.userPlus, size: 18),
                     label: const Text('No account yet? Create one'),
                   ),

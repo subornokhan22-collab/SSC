@@ -181,9 +181,8 @@ class _EditorState extends State<_Editor> {
             questionK: values[1],
             questionKh: values[2],
             questionG: values[3],
-            questionGh: (q as CreativeQuestion).marks.length == 4
-                ? values[4]
-                : '',
+            questionGh:
+                (q as CreativeQuestion).marks.length == 4 ? values[4] : '',
             answerKey:
                 values[(q as CreativeQuestion).marks.length == 4 ? 5 : 4],
             marks: q.marks,
@@ -220,21 +219,21 @@ class _EditorState extends State<_Editor> {
                     decoration: InputDecoration(
                       labelText: short
                           ? (i == 0
-                                ? 'Question'
-                                : i == 1
-                                ? 'Answer'
-                                : 'AI draft key (review)')
+                              ? 'Question'
+                              : i == 1
+                                  ? 'Answer'
+                                  : 'AI draft key (review)')
                           : (i == 0
-                                ? 'উদ্দীপক'
-                                : i ==
+                              ? 'উদ্দীপক'
+                              : i ==
                                       ((widget.question as CreativeQuestion)
                                                   .marks
                                                   .length ==
                                               4
                                           ? 5
                                           : 4)
-                                ? 'AI draft key (review)'
-                                : ['ক', 'খ', 'গ', 'ঘ'][i - 1]),
+                                  ? 'AI draft key (review)'
+                                  : ['ক', 'খ', 'গ', 'ঘ'][i - 1]),
                     ),
                   ),
                 ),

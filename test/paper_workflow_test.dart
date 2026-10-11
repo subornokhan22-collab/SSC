@@ -18,11 +18,11 @@ void main() {
   setUpAll(BankFixture.ensureLoaded);
   setUp(() => SharedPreferences.setMockInitialValues({}));
   PaperComposer engine() => PaperComposer(
-    mcqBank: allMCQs,
-    saqBank: allSAQs,
-    cqBank: allCQs,
-    random: Random(7),
-  );
+        mcqBank: allMCQs,
+        saqBank: allSAQs,
+        cqBank: allCQs,
+        random: Random(7),
+      );
   test(
     'board CQ replacement keeps its section and never reuses a selected id',
     () async {
@@ -105,8 +105,8 @@ void main() {
           sid == 'ict'
               ? 25
               : PaperComposer.science.contains(sid)
-              ? 75
-              : 100,
+                  ? 75
+                  : 100,
           reason: sid,
         );
         if (sid == 'general_math') {

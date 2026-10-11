@@ -20,13 +20,14 @@ import 'package:tutors_desk/widgets/reference_ui.dart';
 import 'package:tutors_desk/widgets/workflow_progress.dart';
 
 Widget host(Widget child, {bool systemReduce = false}) => MaterialApp(
-  home: Builder(
-    builder: (context) => MediaQuery(
-      data: MediaQuery.of(context).copyWith(disableAnimations: systemReduce),
-      child: MotionPolicy(child: Scaffold(body: child)),
-    ),
-  ),
-);
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data:
+              MediaQuery.of(context).copyWith(disableAnimations: systemReduce),
+          child: MotionPolicy(child: Scaffold(body: child)),
+        ),
+      ),
+    );
 
 void main() {
   setUp(() {
@@ -75,11 +76,11 @@ void main() {
     'loops stop for disable, reduced motion, hidden tabs and background',
     (tester) async {
       Widget tree({bool enabled = true, bool visible = true}) => host(
-        TickerMode(
-          enabled: visible,
-          child: Pulse(enabled: enabled, child: const Text('Busy')),
-        ),
-      );
+            TickerMode(
+              enabled: visible,
+              child: Pulse(enabled: enabled, child: const Text('Busy')),
+            ),
+          );
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpWidget(tree());
       MotionLoopState<Pulse> state() => tester.state(find.byType(Pulse));

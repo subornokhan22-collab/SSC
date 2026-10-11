@@ -38,18 +38,16 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   TeacherAttachment pdf() => TeacherAttachment(
-    name: 'reference.pdf',
-    mimeType: 'application/pdf',
-    bytes: Uint8List.fromList(utf8.encode('%PDF-1.7 fixture')),
-  );
+        name: 'reference.pdf',
+        mimeType: 'application/pdf',
+        bytes: Uint8List.fromList(utf8.encode('%PDF-1.7 fixture')),
+      );
   test(
     'Dart/server share deterministic English numeral and scientific formatting',
     () {
-      final cases =
-          jsonDecode(
-                File('test/fixtures/ai_text_format.json').readAsStringSync(),
-              )
-              as List;
+      final cases = jsonDecode(
+        File('test/fixtures/ai_text_format.json').readAsStringSync(),
+      ) as List;
       for (final row in cases) {
         expect(AiTextFormatter.format(row[0] as String), row[1]);
         expect(AiTextFormatter.format(row[1] as String), row[1]);
@@ -129,15 +127,15 @@ void main() {
         client: client,
       );
       Future<bool> run(TeacherCommand command) => c.execute(
-        command: command,
-        subjectId: 'physics',
-        chapters: ['অধ্যায় ১'],
-        count: 1,
-        level: 'mixed',
-        text: '',
-        instruction: '',
-        attachments: [pdf()],
-      );
+            command: command,
+            subjectId: 'physics',
+            chapters: ['অধ্যায় ১'],
+            count: 1,
+            level: 'mixed',
+            text: '',
+            instruction: '',
+            attachments: [pdf()],
+          );
       expect(client.payload, isNull);
       for (final command in TeacherCommand.values) {
         expect(await run(command), true);
@@ -207,17 +205,17 @@ void main() {
     (tester) async {
       List<TeacherAttachment>? changed;
       Future<void> show(bool enabled) => tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: TeacherAttachmentPanel(
-              files: [pdf()],
-              enabled: enabled,
-              onChanged: (f) => changed = f,
-              onPicking: (_) {},
+            MaterialApp(
+              home: Scaffold(
+                body: TeacherAttachmentPanel(
+                  files: [pdf()],
+                  enabled: enabled,
+                  onChanged: (f) => changed = f,
+                  onPicking: (_) {},
+                ),
+              ),
             ),
-          ),
-        ),
-      );
+          );
       await show(false);
       expect(find.text('reference.pdf'), findsOneWidget);
       expect(find.text('Camera'), findsOneWidget);

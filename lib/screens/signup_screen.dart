@@ -135,7 +135,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       setState(
         () => _msg =
             'Code sent again. If nothing arrives, check spam — the free mail '
-            'service only allows a few messages an hour.',
+                'service only allows a few messages an hour.',
       );
     } catch (e) {
       if (mounted) setState(() => _err = AuthService.friendlyError(e));
@@ -372,11 +372,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: _busy
                   ? null
                   : () => setState(() {
-                      _otpSent = false;
-                      _err = null;
-                      _msg = null;
-                      _codeCtrl.clear();
-                    }),
+                        _otpSent = false;
+                        _err = null;
+                        _msg = null;
+                        _codeCtrl.clear();
+                      }),
               child: const Text('Edit details'),
             ),
           ),

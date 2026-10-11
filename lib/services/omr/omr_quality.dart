@@ -413,13 +413,12 @@ class OmQuality {
     for (var y = 1; y < h - 1; y++) {
       final row = y * w;
       for (var x = 1; x < w - 1; x++) {
-        final v =
-            (g[row + x - 1] +
-                    g[row + x + 1] +
-                    g[row - w + x] +
-                    g[row + w + x] -
-                    4 * g[row + x])
-                .toDouble();
+        final v = (g[row + x - 1] +
+                g[row + x + 1] +
+                g[row - w + x] +
+                g[row + w + x] -
+                4 * g[row + x])
+            .toDouble();
         sum += v;
         sum2 += v * v;
         n++;

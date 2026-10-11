@@ -54,11 +54,10 @@ class GeneralMathBoardPatternGenerator {
     Random random,
   ) {
     final validChapters = GeneralMathDivisions.chaptersFor(division).toSet();
-    final pool =
-        values
-            .where((value) => validChapters.contains(chapterOf(value)))
-            .toList()
-          ..shuffle(random);
+    final pool = values
+        .where((value) => validChapters.contains(chapterOf(value)))
+        .toList()
+      ..shuffle(random);
     if (pool.length < count) {
       throw StateError(
         '$division-এ ${count}টি প্রশ্ন দরকার, কিন্তু ব্যাংকে ${pool.length}টি আছে।',
@@ -70,20 +69,21 @@ class GeneralMathBoardPatternGenerator {
   static CreativeQuestion _mathThreePart(
     CreativeQuestion question,
     String division,
-  ) => CreativeQuestion(
-    id: question.id,
-    subjectId: question.subjectId,
-    chapter: question.chapter,
-    stem: '[$division] ${question.stem}',
-    questionK: question.questionK,
-    questionKh: question.questionKh,
-    questionG: question.questionG,
-    questionGh: '',
-    marks: const <int>[2, 4, 4],
-    source: question.source,
-    sourceLabel: question.sourceLabel,
-    figure: question.figure,
-  );
+  ) =>
+      CreativeQuestion(
+        id: question.id,
+        subjectId: question.subjectId,
+        chapter: question.chapter,
+        stem: '[$division] ${question.stem}',
+        questionK: question.questionK,
+        questionKh: question.questionKh,
+        questionG: question.questionG,
+        questionGh: '',
+        marks: const <int>[2, 4, 4],
+        source: question.source,
+        sourceLabel: question.sourceLabel,
+        figure: question.figure,
+      );
 
   static GeneralMathBoardPaper generate({
     required Iterable<Question> mcqBank,

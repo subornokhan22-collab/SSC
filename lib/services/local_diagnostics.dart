@@ -26,16 +26,15 @@ class LocalDiagnostics {
         defaultValue: 'dev',
       ),
       'platform': defaultTargetPlatform.name,
-      'scope':
-          const {
-            'app',
-            'startup',
-            'flutter',
-            'async',
-            'native',
-            'workflow',
-            'camera',
-          }.contains(scope)
+      'scope': const {
+        'app',
+        'startup',
+        'flutter',
+        'async',
+        'native',
+        'workflow',
+        'camera',
+      }.contains(scope)
           ? scope
           : 'app',
       // Runtime type only; toString() often contains private payloads.

@@ -27,16 +27,16 @@ class PaperUsageClaim {
   });
 
   String get message => switch (reason) {
-    'monthly_limit' =>
-      'You have used this month\'s 2 Free papers. Upgrade for unlimited paper creation.',
-    'format_locked' =>
-      'Free plan paper generation is limited to Model Test. Upgrade to unlock other formats.',
-    'server_required' =>
-      'Connect to verify your Free paper allowance before creating a new paper.',
-    'safety_limit' =>
-      'This paper exceeds the system question limits. Reduce the MCQ, SAQ, CQ, or total count.',
-    _ => 'Paper creation is not available on the current account.',
-  };
+        'monthly_limit' =>
+          'You have used this month\'s 2 Free papers. Upgrade for unlimited paper creation.',
+        'format_locked' =>
+          'Free plan paper generation is limited to Model Test. Upgrade to unlock other formats.',
+        'server_required' =>
+          'Connect to verify your Free paper allowance before creating a new paper.',
+        'safety_limit' =>
+          'This paper exceeds the system question limits. Reduce the MCQ, SAQ, CQ, or total count.',
+        _ => 'Paper creation is not available on the current account.',
+      };
 }
 
 /// Coordinates the server monthly Free-paper reservation and its safe local

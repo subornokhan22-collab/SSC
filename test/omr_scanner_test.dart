@@ -250,11 +250,11 @@ img.Image _warp(img.Image page, List<double> h, int pw, int ph) {
 }
 
 List<Offset> _pageMarks() => [
-  OMrGeometry.markCenter(0),
-  OMrGeometry.markCenter(1),
-  OMrGeometry.markCenter(2),
-  OMrGeometry.markCenter(3),
-];
+      OMrGeometry.markCenter(0),
+      OMrGeometry.markCenter(1),
+      OMrGeometry.markCenter(2),
+      OMrGeometry.markCenter(3),
+    ];
 
 void main() {
   const total = 30;

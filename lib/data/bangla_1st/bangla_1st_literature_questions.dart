@@ -30,8 +30,8 @@ class LiteratureQuestion {
   });
 }
 
-const List<LiteratureQuestion>
-banglaFirstLiteratureQuestions = <LiteratureQuestion>[
+const List<LiteratureQuestion> banglaFirstLiteratureQuestions =
+    <LiteratureQuestion>[
   // উপন্যাস: ১৯৭১ — 20 literature questions
   LiteratureQuestion(
     id: 'bangla1st_novel_lit_001',

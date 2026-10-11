@@ -30,15 +30,15 @@ class PromotionOffer {
   });
 
   factory PromotionOffer.fromMap(Map<String, dynamic> row) => PromotionOffer(
-    id: row['id']?.toString() ?? '',
-    planId: row['plan_id']?.toString() ?? '',
-    title: row['title']?.toString() ?? '',
-    description: row['description']?.toString() ?? '',
-    price: ((row['price'] as num?)?.round() ?? 0),
-    currency: row['currency']?.toString() ?? 'BDT',
-    periodDays: (row['period_days'] as num?)?.toInt(),
-    badge: row['badge']?.toString() ?? '',
-  );
+        id: row['id']?.toString() ?? '',
+        planId: row['plan_id']?.toString() ?? '',
+        title: row['title']?.toString() ?? '',
+        description: row['description']?.toString() ?? '',
+        price: ((row['price'] as num?)?.round() ?? 0),
+        currency: row['currency']?.toString() ?? 'BDT',
+        periodDays: (row['period_days'] as num?)?.toInt(),
+        badge: row['badge']?.toString() ?? '',
+      );
 
   String get periodText {
     if (periodDays == null) return 'One-time payment';
@@ -64,12 +64,12 @@ class PromotionPrize {
   });
 
   factory PromotionPrize.fromMap(Map<String, dynamic> row) => PromotionPrize(
-    id: row['id']?.toString() ?? '',
-    title: row['title']?.toString() ?? '',
-    description: row['description']?.toString() ?? '',
-    valueText: row['value_text']?.toString() ?? '',
-    imageUrl: row['image_url']?.toString() ?? '',
-  );
+        id: row['id']?.toString() ?? '',
+        title: row['title']?.toString() ?? '',
+        description: row['description']?.toString() ?? '',
+        valueText: row['value_text']?.toString() ?? '',
+        imageUrl: row['image_url']?.toString() ?? '',
+      );
 }
 
 class AppNotificationItem {
@@ -118,13 +118,13 @@ class PopupOfferAd {
   });
 
   factory PopupOfferAd.fromMap(Map<String, dynamic> row) => PopupOfferAd(
-    id: row['id']?.toString() ?? '',
-    title: row['title']?.toString() ?? '',
-    body: row['body']?.toString() ?? '',
-    imageUrl: row['image_url']?.toString() ?? '',
-    buttonText: row['button_text']?.toString() ?? 'View offer',
-    buttonUrl: row['button_url']?.toString() ?? '/plans',
-  );
+        id: row['id']?.toString() ?? '',
+        title: row['title']?.toString() ?? '',
+        body: row['body']?.toString() ?? '',
+        imageUrl: row['image_url']?.toString() ?? '',
+        buttonText: row['button_text']?.toString() ?? 'View offer',
+        buttonUrl: row['button_url']?.toString() ?? '/plans',
+      );
 }
 
 class PromotionFeed {

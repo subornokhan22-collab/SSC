@@ -225,8 +225,7 @@ void main() {
       expect(paper.mcqs.length, 30);
       expect(paper.saqs.length, 15);
       expect(paper.cqs.length, 8);
-      const answerMarks =
-          GeneralMathBoardPatternGenerator.cqAnswerCount * 10 +
+      const answerMarks = GeneralMathBoardPatternGenerator.cqAnswerCount * 10 +
           GeneralMathBoardPatternGenerator.saqAnswerCount * 2 +
           GeneralMathBoardPatternGenerator.mcqAnswerCount;
       expect(answerMarks, 100);

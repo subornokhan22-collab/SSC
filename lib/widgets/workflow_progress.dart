@@ -39,9 +39,8 @@ class WorkflowProgress extends StatelessWidget {
                         duration: MotionPolicy.duration(context, 180),
                         height: 5,
                         decoration: BoxDecoration(
-                          color: i <= index
-                              ? AppTheme.primary
-                              : AppTheme.border,
+                          color:
+                              i <= index ? AppTheme.primary : AppTheme.border,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),

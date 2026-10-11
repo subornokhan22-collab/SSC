@@ -64,7 +64,7 @@ class QuestionSync {
       // A full paginated official snapshot removes archived/deleted records.
       // The old updated_at > cursor missed removals and equal-timestamp pages.
       final rows = <dynamic>[];
-      for (var start = 0; ; start += 500) {
+      for (var start = 0;; start += 500) {
         final page = await _c
             .from('questions')
             .select()
@@ -79,7 +79,7 @@ class QuestionSync {
           throw StateError('Question sync safety limit');
       }
       final suppressed = <String>{};
-      for (var start = 0; ; start += 500) {
+      for (var start = 0;; start += 500) {
         final page = await _c
             .from('question_tombstones')
             .select('id')
@@ -93,8 +93,7 @@ class QuestionSync {
       if (!await prefs.setString(
         _cacheKey,
         json.encode({'rows': rows, 'suppressedIds': suppressed.toList()}),
-      ))
-        throw StateError('Question cache write failed');
+      )) throw StateError('Question cache write failed');
       await prefs.remove(_legacyCacheKey);
       _merge(rows, suppressedIds: suppressed);
       return rows.length;

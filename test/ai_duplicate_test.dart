@@ -4,14 +4,14 @@ import 'package:tutors_desk/services/ai/duplicate_detector.dart';
 import 'package:tutors_desk/data/questions_data.dart';
 
 Question q(String id, String stem) => Question(
-  id: id,
-  subjectId: 'physics',
-  chapter: 'অধ্যায় ২: গতি',
-  questionText: stem,
-  options: const ['a', 'b', 'c', 'd'],
-  correctIndex: 0,
-  explanation: 'test',
-);
+      id: id,
+      subjectId: 'physics',
+      chapter: 'অধ্যায় ২: গতি',
+      questionText: stem,
+      options: const ['a', 'b', 'c', 'd'],
+      correctIndex: 0,
+      explanation: 'test',
+    );
 
 void main() {
   group('similarity', () {

@@ -42,16 +42,16 @@ class PaperController extends OperationController {
   bool get canRedo => _redo.isNotEmpty && !busy;
   SubjectInfo? get subject => subjectById(draft.subjectId);
   List<String> get chapters => ChapterCatalog.ordered({
-    ...composer.mcqBank
-        .where((q) => q.subjectId == draft.subjectId)
-        .map((q) => q.chapter),
-    ...composer.saqBank
-        .where((q) => q.subjectId == draft.subjectId)
-        .map((q) => q.chapter),
-    ...composer.cqBank
-        .where((q) => q.subjectId == draft.subjectId)
-        .map((q) => q.chapter),
-  }, subjectId: draft.subjectId);
+        ...composer.mcqBank
+            .where((q) => q.subjectId == draft.subjectId)
+            .map((q) => q.chapter),
+        ...composer.saqBank
+            .where((q) => q.subjectId == draft.subjectId)
+            .map((q) => q.chapter),
+        ...composer.cqBank
+            .where((q) => q.subjectId == draft.subjectId)
+            .map((q) => q.chapter),
+      }, subjectId: draft.subjectId);
 
   Future<void> initialize({bool restore = true}) async {
     try {
@@ -131,8 +131,8 @@ class PaperController extends OperationController {
         format: PaperComposer.isEnglish(id)
             ? PaperFormat.board
             : !PaperComposer.codes.containsKey(id)
-            ? PaperFormat.custom
-            : draft.format,
+                ? PaperFormat.custom
+                : draft.format,
       ),
     );
   }
@@ -225,20 +225,18 @@ class PaperController extends OperationController {
   void replaceQuestion(int index) {
     if (busy || paper == null || !_hasIndex(paper!.mcqs, index)) return;
     final old = paper!.mcqs[index];
-    final used = paper!.mcqs
-        .map((q) => q.questionText.trim().toLowerCase())
-        .toSet();
-    final pool =
-        composer.mcqBank
-            .where(
-              (q) =>
-                  q.subjectId == old.subjectId &&
-                  q.chapter == old.chapter &&
-                  !used.contains(q.questionText.trim().toLowerCase()) &&
-                  QuestionSchemaValidator.validateMcq(q).valid,
-            )
-            .toList()
-          ..shuffle(composer.random);
+    final used =
+        paper!.mcqs.map((q) => q.questionText.trim().toLowerCase()).toSet();
+    final pool = composer.mcqBank
+        .where(
+          (q) =>
+              q.subjectId == old.subjectId &&
+              q.chapter == old.chapter &&
+              !used.contains(q.questionText.trim().toLowerCase()) &&
+              QuestionSchemaValidator.validateMcq(q).valid,
+        )
+        .toList()
+      ..shuffle(composer.random);
     if (pool.isEmpty) {
       error = 'No unused question is available in this chapter.';
       changed();
@@ -256,14 +254,14 @@ class PaperController extends OperationController {
       return;
     }
     if (paper!.mcqs.asMap().entries.any(
-      (e) =>
-          e.key != index &&
-          DuplicateDetector.isDuplicate(
-            q.questionText,
-            e.value.questionText,
-            threshold: 1,
-          ),
-    )) {
+          (e) =>
+              e.key != index &&
+              DuplicateDetector.isDuplicate(
+                q.questionText,
+                e.value.questionText,
+                threshold: 1,
+              ),
+        )) {
       error = 'This question already exists in the paper.';
       changed();
       return;
@@ -276,8 +274,7 @@ class PaperController extends OperationController {
     if (busy ||
         paper == null ||
         draft.format == PaperFormat.board ||
-        !_hasIndex(paper!.mcqs, index))
-      return;
+        !_hasIndex(paper!.mcqs, index)) return;
     if (paper!.mcqs.length == 1 && paper!.saqs.isEmpty && paper!.cqs.isEmpty) {
       error = 'Keep at least one question in the paper.';
       changed();
@@ -335,14 +332,14 @@ class PaperController extends OperationController {
     if (question is ShortQuestion) {
       if (!_hasIndex(paper!.saqs, index)) return;
       if (paper!.saqs.asMap().entries.any(
-        (e) =>
-            e.key != index &&
-            DuplicateDetector.isDuplicate(
-              question.questionText,
-              e.value.questionText,
-              threshold: 1,
-            ),
-      )) {
+            (e) =>
+                e.key != index &&
+                DuplicateDetector.isDuplicate(
+                  question.questionText,
+                  e.value.questionText,
+                  threshold: 1,
+                ),
+          )) {
         error = 'This question already exists in the paper.';
         changed();
         return;
@@ -352,14 +349,14 @@ class PaperController extends OperationController {
     } else if (question is CreativeQuestion) {
       if (!_hasIndex(paper!.cqs, index)) return;
       if (paper!.cqs.asMap().entries.any(
-        (e) =>
-            e.key != index &&
-            DuplicateDetector.isDuplicate(
-              question.stem,
-              e.value.stem,
-              threshold: 1,
-            ),
-      )) {
+            (e) =>
+                e.key != index &&
+                DuplicateDetector.isDuplicate(
+                  question.stem,
+                  e.value.stem,
+                  threshold: 1,
+                ),
+          )) {
         error = 'This stimulus already exists in the paper.';
         changed();
         return;
@@ -374,8 +371,7 @@ class PaperController extends OperationController {
         paper == null ||
         (creative
             ? !_hasIndex(paper!.cqs, index)
-            : !_hasIndex(paper!.saqs, index)))
-      return;
+            : !_hasIndex(paper!.saqs, index))) return;
     final candidates = <Object>[];
     String? section;
     if (creative) {
@@ -441,8 +437,7 @@ class PaperController extends OperationController {
         draft.format == PaperFormat.board ||
         (creative
             ? !_hasIndex(paper!.cqs, index)
-            : !_hasIndex(paper!.saqs, index)))
-      return;
+            : !_hasIndex(paper!.saqs, index))) return;
     if (paper!.mcqs.length + paper!.saqs.length + paper!.cqs.length <= 1) {
       error = 'Keep at least one question in the paper.';
       changed();
