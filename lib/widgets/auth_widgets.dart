@@ -112,14 +112,7 @@ class DeskWelcome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Tutor’s Desk',
-                      style: TextStyle(
-                        fontFamily: 'Bartino Outline',
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                    AppBrandName(fontSize: 27),
                     Text(
                       'YOUR TEACHING WORKSPACE',
                       style: TextStyle(

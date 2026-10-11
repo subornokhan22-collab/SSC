@@ -11,9 +11,10 @@ class AuthChoiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: SafeArea(
-          child: Center(
+          child: Align(
+            alignment: Alignment.topCenter,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(28),
+              padding: const EdgeInsets.fromLTRB(28, 48, 28, 32),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 440),
                 child: Column(
@@ -23,15 +24,7 @@ class AuthChoiceScreen extends StatelessWidget {
                   children: [
                     const AppLogo(size: 64),
                     const SizedBox(height: 28),
-                    const Text(
-                      'Tutor’s Desk',
-                      style: TextStyle(
-                        fontFamily: 'Bartino Outline',
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: .2,
-                      ),
-                    ),
+                    const AppBrandName(fontSize: 34),
                     const SizedBox(height: 14),
                     Text(
                       'Question papers, ready for class.',
