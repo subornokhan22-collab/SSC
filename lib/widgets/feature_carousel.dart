@@ -91,7 +91,7 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     _timer = Timer.periodic(widget.interval, (_) {
       if (!_canAutoPlay || !_controller.hasClients) return;
       _controller.nextPage(
-        duration: MotionPolicy.duration(context, 420),
+        duration: MotionPolicy.duration(context, 340),
         curve: Curves.easeOutCubic,
       );
     });
