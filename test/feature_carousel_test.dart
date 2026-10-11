@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+import 'package:tutors_desk/widgets/feature_carousel.dart';
+
+const _features = [
+  FeatureHighlight(
+    icon: PhosphorIcons.fileTextDuotone,
+    title: 'Paper builder',
+    description: 'Compose papers.',
+  ),
+  FeatureHighlight(
+    icon: PhosphorIcons.scanDuotone,
+    title: 'OMR review',
+    description: 'Review answer sheets.',
+  ),
+];
+
+void main() {
+  testWidgets('reduced motion renders a static feature card', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: MediaQuery(
+          data: MediaQueryData(disableAnimations: true),
+          child: Scaffold(body: FeatureCarousel(features: _features)),
+        ),
+      ),
+    );
+
+    expect(find.byType(PageView), findsNothing);
+    expect(find.text('Paper builder'), findsOneWidget);
+    expect(find.text('OMR review'), findsNothing);
+  });
+
+  testWidgets('carousel exposes a page view when motion is allowed',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: FeatureCarousel(features: _features)),
+      ),
+    );
+
+    expect(find.byType(PageView), findsOneWidget);
+    expect(find.text('Paper builder'), findsWidgets);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+}

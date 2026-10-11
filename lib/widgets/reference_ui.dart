@@ -209,7 +209,7 @@ class ReferenceActionCard extends StatelessWidget {
                         ? Text(
                             label,
                             maxLines: 2,
-                            overflow: TextOverflow.visible,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: ReferencePalette.ink,
                               fontSize: 16,

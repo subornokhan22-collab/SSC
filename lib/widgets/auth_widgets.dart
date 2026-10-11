@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 import 'app_icon.dart';
 import 'app_logo.dart';
+import 'feature_carousel.dart';
 import 'motion_policy.dart';
 
 /// Header used at the top of the sign-in / sign-up screens.
@@ -139,47 +140,28 @@ class DeskWelcome extends StatelessWidget {
             style: TextStyle(color: AppTheme.muted, height: 1.6),
           ),
           const SizedBox(height: 18),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              feature(
-                PhosphorIcons.fileTextDuotone,
-                'Paper builder',
-                AppTheme.primary,
+          FeatureCarousel(
+            features: const [
+              FeatureHighlight(
+                icon: PhosphorIcons.fileTextDuotone,
+                title: 'Paper builder',
+                description:
+                    'Compose board-pattern question papers in minutes.',
               ),
-              feature(PhosphorIcons.scanDuotone, 'OMR review', AppColors.omr),
-              feature(PhosphorIcons.magicWandDuotone, 'AI Tools', AppColors.ai),
+              FeatureHighlight(
+                icon: PhosphorIcons.scanDuotone,
+                title: 'OMR review',
+                description:
+                    'Scan answer sheets and get instant, scored results.',
+              ),
+              FeatureHighlight(
+                icon: PhosphorIcons.magicWandDuotone,
+                title: 'AI Tools',
+                description:
+                    'Generate, improve, and check questions with AI.',
+              ),
             ],
           ),
         ],
-      );
-  Widget feature(PhosphorDuotoneIconData icon, String label, Color color) =>
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppDuotoneIcon(
-              icon,
-              size: 15,
-              color: AppColors.onColor,
-              secondaryColor: AppColors.light,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.onColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
       );
 }
