@@ -31,7 +31,7 @@ class FeatureCarousel extends StatefulWidget {
   const FeatureCarousel({
     super.key,
     required this.features,
-    this.interval = const Duration(seconds: 4),
+    this.interval = const Duration(seconds: 3),
   });
 
   @override
