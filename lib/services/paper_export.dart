@@ -84,9 +84,8 @@ class PaperExport {
     // Bengali papers append their scanner-locked OMR sheet as the final base
     // page. Keep its watermark logo-only so no text crosses bubbles or timing
     // marks used by the scanner.
-    final omrPageIndex = paper.english.isEmpty && paper.mcqs.isNotEmpty
-        ? pages.length - 1
-        : -1;
+    final omrPageIndex =
+        paper.english.isEmpty && paper.mcqs.isNotEmpty ? pages.length - 1 : -1;
     final images = List<Uint8List>.of(pages);
     if (draft.answerKey) {
       if (paper.mcqs.isNotEmpty) {
