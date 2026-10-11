@@ -633,6 +633,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             "Tutor's Desk",
             style: TextStyle(
               color: ReferencePalette.ink,
+              fontFamily: 'Bartino Outline',
               fontSize: 20,
               fontWeight: FontWeight.w700,
               letterSpacing: .1,

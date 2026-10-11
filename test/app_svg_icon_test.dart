@@ -10,10 +10,14 @@ void main() {
         .where((file) => file.path.endsWith('.svg'))
         .toList();
 
-    expect(files, hasLength(67));
+    expect(files, hasLength(79));
     final pubspec = File('pubspec.yaml').readAsStringSync();
     expect(pubspec, contains('flutter_svg:'));
     expect(pubspec, contains('- assets/icons/'));
+    expect(pubspec, contains('family: Bartino'));
+    expect(pubspec, contains('family: Bartino Outline'));
+    expect(File('assets/fonts/Bartino-Regular.ttf').existsSync(), isTrue);
+    expect(File('assets/fonts/BartinoOutline-Regular.ttf').existsSync(), isTrue);
 
     for (final file in files) {
       final svg = file.readAsStringSync().toLowerCase();
@@ -50,6 +54,24 @@ void main() {
       contains("value == PhosphorIcons.arrowLeftDuotone ? 2 : 0"),
     );
     expect(adapter, contains("asset('Next')"));
+    for (final exactAsset in [
+      'Camera-Disabled',
+      'Document',
+      'Email',
+      'Information-Circle',
+      'Mail-varification',
+      'Name',
+      'PDF',
+      'Phone',
+      'Text size',
+      'Triangle-Flag',
+      'Trophy',
+      'User-Add-Plus',
+      'grid-8',
+      'password-2',
+    ]) {
+      expect(adapter, contains("asset('$exactAsset')"));
+    }
   });
 
   test('direct Flutter and Phosphor icon renderers stay centralized', () {

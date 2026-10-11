@@ -49,6 +49,12 @@ flutter:
         - asset: assets/fonts/NotoSerifBengali-Regular.ttf
         - asset: assets/fonts/NotoSerifBengali-Bold.ttf
           weight: 700
+    - family: Bartino
+      fonts:
+        - asset: assets/fonts/Bartino-Regular.ttf
+    - family: Bartino Outline
+      fonts:
+        - asset: assets/fonts/BartinoOutline-Regular.ttf
   assets:
     - assets/questions/
     - New UI 4.0/
@@ -59,6 +65,8 @@ flutter:
     - assets/icons/
     - assets/fonts/NotoSerifBengali-Regular.ttf
     - assets/fonts/NotoSerifBengali-Bold.ttf
+    - assets/fonts/Bartino-Regular.ttf
+    - assets/fonts/BartinoOutline-Regular.ttf
     - assets/fonts/HindSiliguri-Regular.ttf
     - assets/fonts/DejaVuSans.ttf
     - assets/fonts/DejaVuSans-Bold.ttf

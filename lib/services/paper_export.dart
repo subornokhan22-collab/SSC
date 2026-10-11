@@ -9,7 +9,6 @@ import 'package:pdf/widgets.dart' as pw;
 import '../data/questions_data.dart';
 import '../models/paper_draft.dart';
 import '../models/subject_info.dart';
-import '../theme/design_tokens.dart';
 import 'paper_composer.dart';
 import 'paper_pdf.dart';
 import 'subscription_state.dart';
@@ -177,7 +176,7 @@ class PaperExport {
         style: TextStyle(
           // Large but deliberately pale so questions remain easy to read.
           color: Colors.black.withAlpha(72),
-          fontFamily: AppTypography.uiFont,
+          fontFamily: 'Bartino',
           fontSize: (pageSize.width * .034).clamp(38.0, 68.0),
           fontWeight: FontWeight.w900,
           letterSpacing: 3.2,
@@ -225,7 +224,7 @@ class PaperExport {
           text: value,
           style: TextStyle(
             color: Colors.black,
-            fontFamily: AppTypography.uiFont,
+            fontFamily: 'Bartino',
             fontSize: size,
             fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
           ),
@@ -297,7 +296,7 @@ class PaperExport {
           text: value,
           style: TextStyle(
             color: Colors.black,
-            fontFamily: AppTypography.uiFont,
+            fontFamily: 'Bartino',
             fontSize: size,
           ),
         ),
