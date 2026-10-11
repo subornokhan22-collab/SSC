@@ -24,10 +24,16 @@ class AuthChoiceScreen extends StatelessWidget {
                   // Keep the account chooser static; animated offsets make
                   // the action buttons appear to duplicate or shake.
                   children: [
-                    const AppLogo(size: 64),
-                    const SizedBox(height: 28),
-                    const AppBrandName(fontSize: 34),
-                    const SizedBox(height: 14),
+                    const Center(
+                      child: Column(
+                        children: [
+                          AppLogo(size: 72),
+                          SizedBox(height: 18),
+                          AppBrandName(fontSize: 34),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Text(
                       'Question papers, ready for class.',
                       style: Theme.of(context).textTheme.headlineSmall,
@@ -56,6 +62,30 @@ class AuthChoiceScreen extends StatelessWidget {
                           title: 'AI Tools',
                           description:
                               'Generate, improve, and check questions with AI.',
+                        ),
+                        FeatureHighlight(
+                          icon: PhosphorIcons.filePdfDuotone,
+                          title: 'PDF export',
+                          description:
+                              'Preview, save, print, and share classroom-ready papers.',
+                        ),
+                        FeatureHighlight(
+                          icon: PhosphorIcons.bookmarkSimpleDuotone,
+                          title: 'Saved papers',
+                          description:
+                              'Keep reusable papers organized for every class.',
+                        ),
+                        FeatureHighlight(
+                          icon: PhosphorIcons.chartBarDuotone,
+                          title: 'Class insights',
+                          description:
+                              'Review OMR performance and spot learning gaps.',
+                        ),
+                        FeatureHighlight(
+                          icon: PhosphorIcons.shieldCheck,
+                          title: 'Secure workspace',
+                          description:
+                              'Sync account data with protected teacher access.',
                         ),
                       ],
                     ),

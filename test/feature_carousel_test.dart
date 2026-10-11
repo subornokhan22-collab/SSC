@@ -25,6 +25,12 @@ void main() {
     final authWidgets =
         File('lib/widgets/auth_widgets.dart').readAsStringSync();
     expect(choice, contains('FeatureCarousel('));
+    expect(choice, contains("title: 'PDF export'"));
+    expect(choice, contains("title: 'Saved papers'"));
+    expect(choice, contains("title: 'Class insights'"));
+    expect(choice, contains("title: 'Secure workspace'"));
+    expect(choice, contains('AppLogo(size: 72)'));
+    expect(choice, contains('AppBrandName(fontSize: 34)'));
     expect(authWidgets, isNot(contains('FeatureCarousel(')));
   });
 
