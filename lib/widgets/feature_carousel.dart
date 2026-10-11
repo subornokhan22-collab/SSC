@@ -117,29 +117,29 @@ class _FeatureCarouselState extends State<FeatureCarousel>
         height: 126,
         child: PageView.builder(
           controller: _controller,
-            onPageChanged: (page) => setState(() => _page = page),
-            itemBuilder: (context, index) {
-              final feature = widget.features[index % widget.features.length];
-              return AnimatedBuilder(
-                animation: _controller,
-                child: _FeatureCard(
-                  feature: feature,
-                  active: index == _page,
-                ),
-                builder: (context, child) {
-                  final current = _controller.hasClients &&
-                          _controller.position.haveDimensions
-                      ? _controller.page ?? _page.toDouble()
-                      : _page.toDouble();
-                  final distance = (current - index).abs().clamp(0.0, 1.0);
-                  final scale = 1 - distance * .08;
-                  final lift = 7 * (1 - distance);
-                  return Transform.translate(
-                    offset: Offset(0, -lift),
-                    child: Transform.scale(scale: scale, child: child),
-                  );
-                },
-              );
+          onPageChanged: (page) => setState(() => _page = page),
+          itemBuilder: (context, index) {
+            final feature = widget.features[index % widget.features.length];
+            return AnimatedBuilder(
+              animation: _controller,
+              child: _FeatureCard(
+                feature: feature,
+                active: index == _page,
+              ),
+              builder: (context, child) {
+                final current = _controller.hasClients &&
+                        _controller.position.haveDimensions
+                    ? _controller.page ?? _page.toDouble()
+                    : _page.toDouble();
+                final distance = (current - index).abs().clamp(0.0, 1.0);
+                final scale = 1 - distance * .08;
+                final lift = 7 * (1 - distance);
+                return Transform.translate(
+                  offset: Offset(0, -lift),
+                  child: Transform.scale(scale: scale, child: child),
+                );
+              },
+            );
           },
         ),
       ),
