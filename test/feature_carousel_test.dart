@@ -13,7 +13,7 @@ const _features = [
   ),
   FeatureHighlight(
     icon: PhosphorIcons.scanDuotone,
-    title: 'OMR review',
+    title: 'OMR scanner',
     description: 'Review answer sheets.',
   ),
 ];
@@ -46,7 +46,7 @@ void main() {
 
     expect(find.byType(PageView), findsNothing);
     expect(find.text('Paper builder'), findsOneWidget);
-    expect(find.text('OMR review'), findsNothing);
+    expect(find.text('OMR scanner'), findsNothing);
   });
 
   testWidgets('carousel exposes a page view when motion is allowed',

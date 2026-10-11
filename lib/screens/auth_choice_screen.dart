@@ -53,7 +53,7 @@ class AuthChoiceScreen extends StatelessWidget {
                         ),
                         FeatureHighlight(
                           icon: PhosphorIcons.scanDuotone,
-                          title: 'OMR review',
+                          title: 'OMR scanner',
                           description:
                               'Scan answer sheets and get instant, scored results.',
                         ),
