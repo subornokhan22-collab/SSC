@@ -5,11 +5,27 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
   const dotsContainer = carousel.querySelector('[data-carousel-dots]');
   const currentLabel = carousel.querySelector('[data-current-slide]');
   const totalLabel = carousel.querySelector('[data-total-slides]');
-  totalLabel.textContent = String(slides.length).padStart(2, '0');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let index = 0;
+  let visualIndex = 1;
   let timer = null;
   let pointerStart = null;
+
+  totalLabel.textContent = String(slides.length).padStart(2, '0');
+
+  // Bookend clones let the last card move naturally into the first card (and
+  // vice versa). After that short transition, the track silently resets to
+  // its equivalent real slide, creating one continuous circular rail.
+  const beforeClone = slides.at(-1).cloneNode(true);
+  const afterClone = slides[0].cloneNode(true);
+  [beforeClone, afterClone].forEach((clone) => {
+    clone.removeAttribute('data-slide');
+    clone.setAttribute('aria-hidden', 'true');
+    clone.classList.add('carousel-clone');
+  });
+  track.prepend(beforeClone);
+  track.append(afterClone);
+  const rail = [beforeClone, ...slides, afterClone];
 
   const dots = slides.map((slide, slideIndex) => {
     const dot = document.createElement('button');
@@ -31,17 +47,18 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
     });
   };
 
-  const render = () => {
-    const slide = slides[index];
-    const centeredLeft = slide.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
+  const render = ({ animate = true, updateProgress = true } = {}) => {
+    track.classList.toggle('no-transition', !animate);
+    const focusedCard = rail[visualIndex];
+    const centeredLeft = focusedCard.offsetLeft - (viewport.clientWidth - focusedCard.offsetWidth) / 2;
     track.style.transform = `translate3d(${-centeredLeft}px, 0, 0)`;
-    slides.forEach((slide, slideIndex) => {
-      slide.classList.toggle('is-active', slideIndex === index);
-      slide.classList.toggle('is-next', slideIndex === (index + 1) % slides.length);
-      slide.setAttribute('aria-hidden', String(slideIndex !== index));
+    rail.forEach((slide, railIndex) => {
+      slide.classList.toggle('is-active', railIndex === visualIndex);
+      slide.classList.toggle('is-next', railIndex === visualIndex + 1);
     });
+    slides.forEach((slide, slideIndex) => slide.setAttribute('aria-hidden', String(slideIndex !== index)));
     currentLabel.textContent = String(index + 1).padStart(2, '0');
-    restartProgress();
+    if (updateProgress) restartProgress();
   };
 
   const schedule = () => {
@@ -51,11 +68,31 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
   };
 
   function goTo(nextIndex, initiatedByUser = false) {
-    index = (nextIndex + slides.length) % slides.length;
+    if (nextIndex >= slides.length) {
+      index = 0;
+      visualIndex = slides.length + 1;
+    } else if (nextIndex < 0) {
+      index = slides.length - 1;
+      visualIndex = 0;
+    } else {
+      index = nextIndex;
+      visualIndex = index + 1;
+    }
     render();
     schedule();
     if (initiatedByUser) viewport.focus({ preventScroll: true });
   }
+
+  track.addEventListener('transitionend', (event) => {
+    if (event.propertyName !== 'transform') return;
+    if (visualIndex === slides.length + 1) {
+      visualIndex = 1;
+      render({ animate: false, updateProgress: false });
+    } else if (visualIndex === 0) {
+      visualIndex = slides.length;
+      render({ animate: false, updateProgress: false });
+    }
+  });
 
   carousel.querySelector('[data-carousel-prev]').addEventListener('click', () => goTo(index - 1, true));
   carousel.querySelector('[data-carousel-next]').addEventListener('click', () => goTo(index + 1, true));
@@ -71,9 +108,10 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
     if (Math.abs(distance) > 45) goTo(index + (distance < 0 ? 1 : -1), true);
   });
   document.addEventListener('visibilitychange', schedule);
-  reducedMotion.addEventListener('change', () => { render(); schedule(); });
-  window.addEventListener('resize', render);
+  reducedMotion.addEventListener('change', () => { render({ animate: false }); schedule(); });
+  window.addEventListener('resize', () => render({ animate: false, updateProgress: false }));
 
-  render();
+  render({ animate: false });
+  requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('no-transition')));
   schedule();
 });
