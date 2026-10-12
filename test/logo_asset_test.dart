@@ -27,6 +27,10 @@ void main() {
     expect(paperExport, contains('pageSize.width * .36'));
     expect(paperExport, contains("fontFamily: 'Bartino'"));
     expect(paperExport, contains('Colors.black.withAlpha(24)'));
+    expect(paperExport, contains('label("TUTOR\'S", fittedSize)'));
+    expect(paperExport, contains("label('DESK', fittedSize)"));
+    expect(paperExport, contains('destination.top - gap - topLabel.height'));
+    expect(paperExport, contains('destination.bottom + gap'));
     expect(paperExport, isNot(contains('DEMO • TUTOR’S DESK')));
     expect(pubspec, isNot(contains('adaptive_icon_foreground')));
     expect(pubspec, isNot(contains('adaptive_icon_background')));

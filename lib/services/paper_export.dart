@@ -185,28 +185,51 @@ class PaperExport {
       // Text branding belongs on question and answer pages. OMR sheets use
       // only the supplied logo because overlaid text can interfere with the
       // scanner's bubble and registration-mark detection.
-      final brand = TextPainter(
-        text: TextSpan(
-          text: "TUTOR'S DESK",
-          style: TextStyle(
-            // Large but deliberately pale so questions remain easy to read.
-            color: Colors.black.withAlpha(24),
-            fontFamily: 'Bartino',
-            fontSize: (pageSize.width * .36).clamp(400.0, 688.0),
-            fontWeight: FontWeight.w900,
-            letterSpacing: 3.2,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout(maxWidth: pageSize.width * .82);
-      brand.paint(
+      TextPainter label(String text, double fontSize) => TextPainter(
+            text: TextSpan(
+              text: text,
+              style: TextStyle(
+                color: Colors.black.withAlpha(24),
+                fontFamily: 'Bartino',
+                fontSize: fontSize,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 3.2,
+              ),
+            ),
+            maxLines: 1,
+            textDirection: TextDirection.ltr,
+          )..layout();
+
+      // Start at the requested 8x text size, then fit both complete labels to
+      // the page using the longer top line. Splitting the lockup prevents the
+      // right half of a single oversized "TUTOR'S DESK" line being clipped.
+      final requestedSize = (pageSize.width * .36).clamp(400.0, 688.0);
+      final maxLabelWidth = pageSize.width * .88;
+      var topLabel = label("TUTOR'S", requestedSize);
+      final fittedSize = topLabel.width > maxLabelWidth
+          ? requestedSize * maxLabelWidth / topLabel.width
+          : requestedSize;
+      topLabel.dispose();
+      topLabel = label("TUTOR'S", fittedSize);
+      final bottomLabel = label('DESK', fittedSize);
+      final gap = pageSize.height * .012;
+
+      topLabel.paint(
         canvas,
         Offset(
-          (pageSize.width - brand.width) / 2,
-          destination.bottom + pageSize.height * .008,
+          (pageSize.width - topLabel.width) / 2,
+          destination.top - gap - topLabel.height,
         ),
       );
-      brand.dispose();
+      bottomLabel.paint(
+        canvas,
+        Offset(
+          (pageSize.width - bottomLabel.width) / 2,
+          destination.bottom + gap,
+        ),
+      );
+      topLabel.dispose();
+      bottomLabel.dispose();
     }
 
     final picture = recorder.endRecording();
