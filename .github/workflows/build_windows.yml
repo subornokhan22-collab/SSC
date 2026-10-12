@@ -1,0 +1,151 @@
+name: Build Windows app
+
+on:
+  push:
+    branches: ['arena/01a0ce12-ssc']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate Windows runner
+        shell: pwsh
+        run: flutter create --platforms=windows --org com.tutorsdesk .
+
+      - name: Apply Tutor's Desk Windows branding
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          @'
+          from pathlib import Path
+          from PIL import Image
+
+          image = Image.open("New UI 4.0/Logo 1.png").convert("RGBA")
+          image.save(
+              "windows/runner/resources/app_icon.ico",
+              format="ICO",
+              sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
+          )
+
+          cmake = Path("windows/CMakeLists.txt")
+          text = cmake.read_text(encoding="utf-8")
+          text = text.replace('set(BINARY_NAME "tutors_desk")', "set(BINARY_NAME \"Tutor'sDesk\")")
+          cmake.write_text(text, encoding="utf-8")
+
+          main = Path("windows/runner/main.cpp")
+          text = main.read_text(encoding="utf-8")
+          text = text.replace('L"tutors_desk"', "L\"Tutor's Desk\"")
+          main.write_text(text, encoding="utf-8")
+
+          rc = Path("windows/runner/Runner.rc")
+          text = rc.read_text(encoding="utf-8")
+          text = text.replace('VALUE "FileDescription", "tutors_desk"', "VALUE \"FileDescription\", \"Tutor's Desk\"")
+          text = text.replace('VALUE "InternalName", "tutors_desk"', "VALUE \"InternalName\", \"Tutor'sDesk\"")
+          text = text.replace('VALUE "OriginalFilename", "tutors_desk.exe"', "VALUE \"OriginalFilename\", \"Tutor'sDesk.exe\"")
+          text = text.replace('VALUE "ProductName", "tutors_desk"', "VALUE \"ProductName\", \"Tutor's Desk\"")
+          rc.write_text(text, encoding="utf-8")
+          '@ | python
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Create portable package
+        shell: pwsh
+        run: |
+          $bundle = "build/windows/x64/runner/Release"
+          if (-not (Test-Path "$bundle/Tutor'sDesk.exe")) {
+            throw "Tutor'sDesk.exe was not produced."
+          }
+          Compress-Archive -Path "$bundle/*" -DestinationPath "Tutor'sDesk-Windows-Portable.zip" -Force
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y
+          $bundle = (Resolve-Path "build/windows/x64/runner/Release").Path
+          $icon = (Resolve-Path "windows/runner/resources/app_icon.ico").Path
+          @"
+          [Setup]
+          AppId={{B52A105A-DF76-48C6-A180-2E56B16DF914}
+          AppName=Tutor's Desk
+          AppVersion=1.0.0
+          AppPublisher=Tutor's Desk
+          DefaultDirName={localappdata}\Programs\TutorsDesk
+          DefaultGroupName=Tutor's Desk
+          OutputDir=$($PWD.Path)
+          OutputBaseFilename=Tutor'sDesk-Windows-Setup
+          SetupIconFile=$icon
+          UninstallDisplayIcon={app}\Tutor'sDesk.exe
+          Compression=lzma2
+          SolidCompression=yes
+          WizardStyle=modern
+          PrivilegesRequired=lowest
+          ArchitecturesAllowed=x64compatible
+          ArchitecturesInstallIn64BitMode=x64compatible
+
+          [Files]
+          Source: "$bundle\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+          [Icons]
+          Name: "{group}\Tutor's Desk"; Filename: "{app}\Tutor'sDesk.exe"
+          Name: "{autodesktop}\Tutor's Desk"; Filename: "{app}\Tutor'sDesk.exe"; Tasks: desktopicon
+
+          [Tasks]
+          Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+
+          [Run]
+          Filename: "{app}\Tutor'sDesk.exe"; Description: "Launch Tutor's Desk"; Flags: nowait postinstall skipifsilent
+          "@ | Set-Content -Path installer.iss -Encoding UTF8
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer.iss
+          if (-not (Test-Path "Tutor'sDesk-Windows-Setup.exe")) {
+            throw "Windows installer was not produced."
+          }
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tutors-desk-windows
+          path: |
+            Tutor'sDesk-Windows-Portable.zip
+            Tutor'sDesk-Windows-Setup.exe
+          if-no-files-found: error
+
+      - name: Publish Windows release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "windows-build-${{ github.run_number }}"
+          gh release create $tag `
+            "Tutor'sDesk-Windows-Portable.zip" `
+            "Tutor'sDesk-Windows-Setup.exe" `
+            --target "${{ github.sha }}" `
+            --title "Tutor's Desk for Windows — Build ${{ github.run_number }}" `
+            --notes "Windows x64 release. Choose the Setup EXE for installation or the Portable ZIP for use without installation."
