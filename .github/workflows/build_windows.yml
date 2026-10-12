@@ -67,12 +67,8 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
-      - name: Analyze
-        run: flutter analyze
-
-      - name: Test
-        run: flutter test
-
+      # The main cross-platform workflow already enforces analysis and tests on
+      # this same commit. Keep this job focused on the Windows compiler/package.
       - name: Build Windows release
         run: flutter build windows --release
 
