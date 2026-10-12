@@ -88,9 +88,11 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
     if (visualIndex === slides.length + 1) {
       visualIndex = 1;
       render({ animate: false, updateProgress: false });
+      requestAnimationFrame(() => track.classList.remove('no-transition'));
     } else if (visualIndex === 0) {
       visualIndex = slides.length;
       render({ animate: false, updateProgress: false });
+      requestAnimationFrame(() => track.classList.remove('no-transition'));
     }
   });
 
@@ -109,7 +111,10 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
   });
   document.addEventListener('visibilitychange', schedule);
   reducedMotion.addEventListener('change', () => { render({ animate: false }); schedule(); });
-  window.addEventListener('resize', () => render({ animate: false, updateProgress: false }));
+  window.addEventListener('resize', () => {
+    render({ animate: false, updateProgress: false });
+    requestAnimationFrame(() => track.classList.remove('no-transition'));
+  });
 
   render({ animate: false });
   requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('no-transition')));
