@@ -190,9 +190,9 @@ class PaperExport {
           text: "TUTOR'S DESK",
           style: TextStyle(
             // Large but deliberately pale so questions remain easy to read.
-            color: Colors.black.withAlpha(72),
+            color: Colors.black.withAlpha(24),
             fontFamily: 'Bartino',
-            fontSize: (pageSize.width * .045).clamp(50.0, 86.0),
+            fontSize: (pageSize.width * .36).clamp(400.0, 688.0),
             fontWeight: FontWeight.w900,
             letterSpacing: 3.2,
           ),

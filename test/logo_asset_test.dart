@@ -22,9 +22,11 @@ void main() {
     expect(paperExport, contains('pages.length - 1'));
     expect(paperExport, contains('pageSize.width * .58'));
     expect(paperExport, contains('pageSize.height * .28'));
-    expect(paperExport, contains('pageSize.width * .045'));
+    // The printable text watermark is eight times larger than the previous
+    // 4.5%-wide sizing and substantially lighter so content stays legible.
+    expect(paperExport, contains('pageSize.width * .36'));
     expect(paperExport, contains("fontFamily: 'Bartino'"));
-    expect(paperExport, contains('Colors.black.withAlpha(72)'));
+    expect(paperExport, contains('Colors.black.withAlpha(24)'));
     expect(paperExport, isNot(contains('DEMO • TUTOR’S DESK')));
     expect(pubspec, isNot(contains('adaptive_icon_foreground')));
     expect(pubspec, isNot(contains('adaptive_icon_background')));

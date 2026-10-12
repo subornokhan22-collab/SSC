@@ -626,6 +626,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _proCard() {
+    final entitlement = SubscriptionState.instance.entitlement;
+    final planName = entitlement.plan.displayName;
+    final activePlanDescription = switch (entitlement.plan) {
+      SubscriptionPlan.basic =>
+        'Up to 3 subjects with watermarked paper export and printing.',
+      SubscriptionPlan.pro =>
+        'Up to 5 subjects, no watermark, PDF export and printing.',
+      SubscriptionPlan.professional =>
+        'Unlimited subjects, no watermark, PDF export and printing.',
+      SubscriptionPlan.free => '',
+    };
+
     if (_hasPaidSubscription) {
       return GlassCard(
         highlighted: true,
@@ -644,22 +656,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Pro is active',
-                    style: TextStyle(
+                    '$planName is active',
+                    style: const TextStyle(
                       color: AppTheme.accent,
                       fontSize: 15.5,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  SizedBox(height: 3),
+                  const SizedBox(height: 3),
                   Text(
-                    'Full papers, no watermark, PDF export and printing.',
-                    style: TextStyle(
+                    activePlanDescription,
+                    style: const TextStyle(
                       color: AppTheme.muted,
                       fontSize: 12,
                       height: 1.4,

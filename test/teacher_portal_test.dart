@@ -150,6 +150,14 @@ void main() {
       expect(src.contains('sendOtp'), isFalse);
     });
 
+    test('the profile active-plan card uses the current entitlement', () {
+      final src = File('lib/screens/profile_screen.dart').readAsStringSync();
+      expect(src.contains("'Pro is active'"), isFalse);
+      expect(src.contains("'\$planName is active'"), isTrue);
+      expect(src.contains('SubscriptionPlan.basic =>'), isTrue);
+      expect(src.contains('SubscriptionPlan.professional =>'), isTrue);
+    });
+
     test('the code step exists only in sign-up', () {
       final src = File('lib/screens/signup_screen.dart').readAsStringSync();
       expect(src.contains('signUpWithPassword'), isTrue);
