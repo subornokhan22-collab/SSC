@@ -16,9 +16,17 @@ class AuthChoiceScreen extends StatelessWidget {
           child: Align(
             alignment: Alignment.topCenter,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(28, 48, 28, 32),
+              padding: EdgeInsets.fromLTRB(
+                28,
+                MediaQuery.sizeOf(context).width >= 900 ? 72 : 48,
+                28,
+                32,
+              ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 440),
+                constraints: BoxConstraints(
+                  maxWidth:
+                      MediaQuery.sizeOf(context).width >= 900 ? 560 : 440,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   // Keep the account chooser static; animated offsets make

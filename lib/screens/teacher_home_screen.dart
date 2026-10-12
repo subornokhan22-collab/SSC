@@ -347,19 +347,253 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: ReferencePalette.background,
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) => SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: home(),
+  Widget build(BuildContext context) {
+    final desktop = MediaQuery.sizeOf(context).width >= 900;
+    return Scaffold(
+      backgroundColor: ReferencePalette.background,
+      body: SafeArea(child: desktop ? _desktopHome() : home()),
+      bottomNavigationBar:
+          desktop ? null : ReferenceBottomBar(onSettings: _openSettings),
+    );
+  }
+
+  Widget _desktopHome() => Row(
+        children: [
+          Container(
+            width: 232,
+            decoration: const BoxDecoration(
+              color: ReferencePalette.surface,
+              border: Border(right: BorderSide(color: Color(0xFFE1E0DC))),
+            ),
+            padding: const EdgeInsets.fromLTRB(18, 24, 18, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _referenceBrand(),
+                const SizedBox(height: 44),
+                _desktopNavItem(PhosphorIcons.house, 'Overview', selected: true),
+                _desktopNavItem(
+                  PhosphorIcons.filePlus,
+                  'Create paper',
+                  onTap: () => create(),
+                ),
+                _desktopNavItem(
+                  PhosphorIcons.bookmarkSimple,
+                  'My papers',
+                  onTap: () => _openScreen(const PapersLibraryScreen()),
+                ),
+                _desktopNavItem(
+                  PhosphorIcons.magicWand,
+                  'AI assistant',
+                  onTap: () => _openPremium(
+                    const AiToolsScreen(),
+                    PremiumFeature.aiAssistant,
+                  ),
+                ),
+                _desktopNavItem(
+                  PhosphorIcons.scan,
+                  'OMR scanner',
+                  onTap: () => _openPremium(
+                    const OMrScannerScreen(),
+                    PremiumFeature.omrScanner,
+                  ),
+                ),
+                const Spacer(),
+                _desktopNavItem(
+                  PhosphorIcons.wallet,
+                  'Plans',
+                  onTap: () => _openScreen(const SubscriptionScreen()),
+                ),
+                _desktopNavItem(
+                  PhosphorIcons.gear,
+                  'Settings',
+                  onTap: _openSettings,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  height: 82,
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  decoration: const BoxDecoration(
+                    color: ReferencePalette.surface,
+                    border: Border(bottom: BorderSide(color: Color(0xFFE1E0DC))),
+                  ),
+                  child: Row(
+                    children: [
+                      const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'TEACHER WORKSPACE',
+                            style: TextStyle(
+                              fontSize: 10,
+                              letterSpacing: 1.5,
+                              color: ReferencePalette.mutedInk,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Overview',
+                            style: TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      _referenceHeader(),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _refreshByUser,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(32),
+                      children: [
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1080),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Ready for your next class?',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Create, review and manage every paper from one focused desk.',
+                                  style: TextStyle(color: ReferencePalette.mutedInk),
+                                ),
+                                const SizedBox(height: 28),
+                                _desktopDashboard(),
+                                if (_expiryWarning() case final warning?) ...[
+                                  const SizedBox(height: 18),
+                                  warning,
+                                ],
+                                if (error != null) ...[
+                                  const SizedBox(height: 18),
+                                  ReferenceCard(onTap: load, child: Text(error!)),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+
+  Widget _desktopNavItem(
+    IconData icon,
+    String label, {
+    bool selected = false,
+    VoidCallback? onTap,
+  }) => Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Material(
+          color: selected ? const Color(0xFF111111) : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+              child: Row(
+                children: [
+                  AppIcon(
+                    icon,
+                    size: 19,
+                    color: selected ? Colors.white : ReferencePalette.ink,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: selected ? Colors.white : ReferencePalette.ink,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        bottomNavigationBar: ReferenceBottomBar(onSettings: _openSettings),
       );
+
+  Widget _desktopDashboard() {
+    final actions = <Widget>[
+      ReferenceActionCard(
+        icon: PhosphorIcons.filePlus,
+        label: 'CREATE PAPER',
+        onTap: () => create(),
+      ),
+      ReferenceActionCard(
+        icon: PhosphorIcons.magicWand,
+        label: 'AI Assistant',
+        locked: !SubscriptionState.instance.canUse(PremiumFeature.aiAssistant),
+        onTap: () => _openPremium(
+          const AiToolsScreen(),
+          PremiumFeature.aiAssistant,
+        ),
+      ),
+      ReferenceActionCard(
+        icon: PhosphorIcons.bookmarkSimple,
+        label: 'My Papers',
+        onTap: () => _openScreen(const PapersLibraryScreen()),
+      ),
+      ReferenceActionCard(
+        icon: PhosphorIcons.clock,
+        label: 'Recents',
+        onTap: _showRecents,
+      ),
+      ReferenceActionCard(
+        icon: PhosphorIcons.chartBar,
+        label: 'Statistics',
+        locked: !SubscriptionState.instance.canUse(PremiumFeature.omrScanner),
+        onTap: () => _openPremium(
+          const OMrAnalyticsScreen(),
+          PremiumFeature.omrScanner,
+        ),
+      ),
+      ReferenceActionCard(
+        icon: PhosphorIcons.scan,
+        label: 'OMR Scanner',
+        locked: !SubscriptionState.instance.canUse(PremiumFeature.omrScanner),
+        onTap: () => _openPremium(
+          const OMrScannerScreen(),
+          PremiumFeature.omrScanner,
+        ),
+      ),
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) => GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: constraints.maxWidth >= 960 ? 3 : 2,
+        childAspectRatio: 1.65,
+        mainAxisSpacing: 14,
+        crossAxisSpacing: 14,
+        children: actions,
+      ),
+    );
+  }
 
   Widget home() => Column(
         children: [
