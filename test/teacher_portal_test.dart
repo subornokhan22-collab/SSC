@@ -151,12 +151,14 @@ void main() {
     });
 
     test('the teacher dashboard has a dedicated desktop workspace', () {
-      final src = File('lib/screens/teacher_home_screen.dart').readAsStringSync();
+      final src =
+          File('lib/screens/teacher_home_screen.dart').readAsStringSync();
       expect(src.contains('width >= 900'), isTrue);
       expect(src.contains('_desktopHome()'), isTrue);
       expect(src.contains('width: 232'), isTrue);
       expect(src.contains('Ready for your next class?'), isTrue);
-      expect(src.contains('ReferenceBottomBar(onSettings: _openSettings)'), isTrue);
+      expect(src.contains('ReferenceBottomBar(onSettings: _openSettings)'),
+          isTrue);
     });
 
     test('the profile active-plan card uses the current entitlement', () {

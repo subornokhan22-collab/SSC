@@ -371,7 +371,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               children: [
                 _referenceBrand(),
                 const SizedBox(height: 44),
-                _desktopNavItem(PhosphorIcons.house, 'Overview', selected: true),
+                _desktopNavItem(PhosphorIcons.house, 'Overview',
+                    selected: true),
                 _desktopNavItem(
                   PhosphorIcons.filePlus,
                   'Create paper',
@@ -420,7 +421,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   decoration: const BoxDecoration(
                     color: ReferencePalette.surface,
-                    border: Border(bottom: BorderSide(color: Color(0xFFE1E0DC))),
+                    border:
+                        Border(bottom: BorderSide(color: Color(0xFFE1E0DC))),
                   ),
                   child: Row(
                     children: [
@@ -474,7 +476,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                                 const SizedBox(height: 8),
                                 const Text(
                                   'Create, review and manage every paper from one focused desk.',
-                                  style: TextStyle(color: ReferencePalette.mutedInk),
+                                  style: TextStyle(
+                                      color: ReferencePalette.mutedInk),
                                 ),
                                 const SizedBox(height: 28),
                                 _desktopDashboard(),
@@ -484,7 +487,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
                                 ],
                                 if (error != null) ...[
                                   const SizedBox(height: 18),
-                                  ReferenceCard(onTap: load, child: Text(error!)),
+                                  ReferenceCard(
+                                      onTap: load, child: Text(error!)),
                                 ],
                               ],
                             ),
@@ -505,7 +509,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
     String label, {
     bool selected = false,
     VoidCallback? onTap,
-  }) => Padding(
+  }) =>
+      Padding(
         padding: const EdgeInsets.only(bottom: 6),
         child: Material(
           color: selected ? const Color(0xFF111111) : Colors.transparent,

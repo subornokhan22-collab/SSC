@@ -24,8 +24,7 @@ class AuthChoiceScreen extends StatelessWidget {
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth:
-                      MediaQuery.sizeOf(context).width >= 900 ? 560 : 440,
+                  maxWidth: MediaQuery.sizeOf(context).width >= 900 ? 560 : 440,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
