@@ -213,7 +213,7 @@ void main() {
       );
       expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
       final pubspec = File('pubspec.yaml').readAsStringSync();
-      expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
+      expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.png"'));
       expect(pubspec, isNot(contains('adaptive_icon_foreground')));
       expect(pubspec, isNot(contains('adaptive_icon_background')));
     });
