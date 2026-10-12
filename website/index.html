@@ -11,7 +11,9 @@
   <title>Tutor's Desk — Your teaching workspace</title>
   <link rel="icon" href="assets/app-icon.png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="carousel.css">
   <script src="script.js" defer></script>
+  <script src="carousel.js" defer></script>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -86,29 +88,54 @@
       <h2>Everything your teaching day needs.<br><span>Nothing it doesn't.</span></h2>
     </section>
 
-    <section class="feature-grid section-shell" id="features">
-      <article class="feature feature-large reveal">
-        <div class="feature-top"><span class="feature-number">01</span><span class="line-icon">✦</span></div>
-        <div class="paper-visual">
-          <div class="paper-sheet back"></div><div class="paper-sheet front"><header><span>TUTOR'S DESK</span><b>MODEL TEST — 2027</b></header><div class="paper-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="watermark-mini">TD</div></div>
+    <section class="feature-showcase section-shell" id="features" aria-roledescription="carousel" aria-label="Tutor's Desk features" data-carousel>
+      <div class="carousel-toolbar reveal">
+        <p><span data-current-slide>01</span> / <span>07</span></p>
+        <div class="carousel-controls">
+          <button type="button" aria-label="Previous feature" data-carousel-prev>←</button>
+          <button type="button" aria-label="Next feature" data-carousel-next>→</button>
         </div>
-        <div class="feature-copy"><h3>Paper builder</h3><p>Build balanced, print-ready papers from a structured SSC question bank—without wrestling with formatting.</p></div>
-      </article>
-      <article class="feature reveal delay-1">
-        <div class="feature-top"><span class="feature-number">02</span><span class="line-icon">⌗</span></div>
-        <div class="omr-visual"><div class="scan-line"></div><div class="omr-grid"></div><div class="score-chip"><small>RESULT</small><strong>36 / 40</strong></div></div>
-        <div class="feature-copy"><h3>OMR scanner</h3><p>Scan answer sheets, review detected marks and get results while the class is still fresh.</p></div>
-      </article>
-      <article class="feature reveal">
-        <div class="feature-top"><span class="feature-number">03</span><span class="line-icon">◈</span></div>
-        <div class="ai-visual"><span>Rewrite this question for clarity</span><div><i></i><i></i><i></i></div><b>Clearer, classroom-ready wording—while preserving the original learning objective.</b></div>
-        <div class="feature-copy"><h3>Purposeful AI tools</h3><p>Refine content, validate questions and prepare better material with teacher-controlled assistance.</p></div>
-      </article>
-      <article class="feature feature-wide dark-feature reveal delay-1">
-        <div class="feature-top"><span class="feature-number">04</span><span class="line-icon">↗</span></div>
-        <div class="insight-visual"><div class="ring"><span>78<small>%</small></span></div><div class="bars"><i style="--h:42%"></i><i style="--h:61%"></i><i style="--h:53%"></i><i style="--h:78%"></i><i style="--h:69%"></i><i style="--h:88%"></i></div></div>
-        <div class="feature-copy"><h3>Class insights</h3><p>See patterns, spot difficult topics and understand where your students need you most.</p></div>
-      </article>
+      </div>
+      <div class="carousel-viewport" data-carousel-viewport tabindex="0">
+        <div class="feature-track" data-carousel-track>
+          <article class="feature feature-large" data-slide>
+            <div class="feature-top"><span class="feature-number">01</span><span class="line-icon">✦</span></div>
+            <div class="paper-visual"><div class="paper-sheet back"></div><div class="paper-sheet front"><header><span>TUTOR'S DESK</span><b>MODEL TEST — 2027</b></header><div class="paper-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="watermark-mini">TD</div></div></div>
+            <div class="feature-copy"><h3>Paper builder</h3><p>Build balanced, print-ready papers from a structured SSC question bank—without wrestling with formatting.</p></div>
+          </article>
+          <article class="feature" data-slide>
+            <div class="feature-top"><span class="feature-number">02</span><span class="line-icon">⌗</span></div>
+            <div class="omr-visual"><div class="scan-line"></div><div class="omr-grid"></div><div class="score-chip"><small>RESULT</small><strong>36 / 40</strong></div></div>
+            <div class="feature-copy"><h3>OMR scanner</h3><p>Scan answer sheets, review detected marks and get results while the class is still fresh.</p></div>
+          </article>
+          <article class="feature" data-slide>
+            <div class="feature-top"><span class="feature-number">03</span><span class="line-icon">◈</span></div>
+            <div class="ai-visual"><span>Rewrite this question for clarity</span><div><i></i><i></i><i></i></div><b>Clearer, classroom-ready wording—while preserving the original learning objective.</b></div>
+            <div class="feature-copy"><h3>Purposeful AI tools</h3><p>Refine content, validate questions and prepare better material with teacher-controlled assistance.</p></div>
+          </article>
+          <article class="feature dark-feature" data-slide>
+            <div class="feature-top"><span class="feature-number">04</span><span class="line-icon">↗</span></div>
+            <div class="insight-visual"><div class="ring"><span>78<small>%</small></span></div><div class="bars"><i style="--h:42%"></i><i style="--h:61%"></i><i style="--h:53%"></i><i style="--h:78%"></i><i style="--h:69%"></i><i style="--h:88%"></i></div></div>
+            <div class="feature-copy"><h3>Class insights</h3><p>See patterns, spot difficult topics and understand where your students need you most.</p></div>
+          </article>
+          <article class="feature" data-slide>
+            <div class="feature-top"><span class="feature-number">05</span><span class="line-icon">↓</span></div>
+            <div class="export-visual"><div class="export-page"><span>PDF</span><i></i><i></i><i></i></div><div class="export-ready">✓ &nbsp; Export ready</div></div>
+            <div class="feature-copy"><h3>PDF export</h3><p>Turn every finished paper into a polished, classroom-ready PDF for printing or sharing.</p></div>
+          </article>
+          <article class="feature" data-slide>
+            <div class="feature-top"><span class="feature-number">06</span><span class="line-icon">▱</span></div>
+            <div class="library-visual"><div><b>PH</b><span>Physics model test<small>Today · 5 pages</small></span></div><div><b>EN</b><span>English practice<small>Yesterday · 7 pages</small></span></div><div><b>GM</b><span>General Math<small>09 Oct · 4 pages</small></span></div></div>
+            <div class="feature-copy"><h3>Saved papers</h3><p>Keep your best work organized, searchable and ready to reuse for the next class.</p></div>
+          </article>
+          <article class="feature dark-feature" data-slide>
+            <div class="feature-top"><span class="feature-number">07</span><span class="line-icon">◇</span></div>
+            <div class="secure-visual"><div class="shield">✓</div><span>YOUR WORKSPACE</span><strong>Private by design</strong><div class="secure-line"><i></i><i></i><i></i></div></div>
+            <div class="feature-copy"><h3>Secure workspace</h3><p>Your account, papers and teaching workflow stay protected behind a focused personal workspace.</p></div>
+          </article>
+        </div>
+      </div>
+      <div class="carousel-progress" data-carousel-dots aria-label="Choose feature"></div>
     </section>
 
     <section class="workflow section-shell" id="workflow">
