@@ -40,10 +40,13 @@ class FeatureCarousel extends StatefulWidget {
 
 class _FeatureCarouselState extends State<FeatureCarousel>
     with WidgetsBindingObserver {
-  static const _initialPage = 10000;
+  // A common multiple of 2, 3, 4, 6 and 7 keeps the first supplied feature
+  // centered for the currently supported carousel sizes.
+  static const _initialPage = 9996;
   late final PageController _controller;
   Timer? _timer;
   bool _foreground = true;
+  bool _initialTransitionScheduled = false;
   int _page = _initialPage;
 
   bool get _canAutoPlay =>
@@ -69,6 +72,16 @@ class _FeatureCarouselState extends State<FeatureCarousel>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _synchronizeTimer();
+    if (!_initialTransitionScheduled && _canAutoPlay) {
+      _initialTransitionScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_canAutoPlay || !_controller.hasClients) return;
+        _controller.nextPage(
+          duration: MotionPolicy.duration(context, 340),
+          curve: Curves.easeOutCubic,
+        );
+      });
+    }
   }
 
   @override
