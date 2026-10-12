@@ -37,3 +37,29 @@ document.querySelectorAll('details').forEach((detail) => {
     });
   });
 });
+
+// Reflect the section currently in view in the navigation without changing
+// the URL or interrupting the reading position.
+const sectionLinks = [...document.querySelectorAll('.desktop-nav a, .mobile-nav a')];
+const trackedSections = ['features', 'workflow', 'plans', 'downloads', 'questions']
+  .map((id) => document.getElementById(id))
+  .filter(Boolean);
+const navigationObserver = new IntersectionObserver((entries) => {
+  const visible = entries
+    .filter((entry) => entry.isIntersecting)
+    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if (!visible) return;
+  sectionLinks.forEach((link) => {
+    const active = link.getAttribute('href') === `#${visible.target.id}`;
+    link.classList.toggle('active', active);
+    if (active) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+}, { rootMargin: '-30% 0px -55%', threshold: [0, 0.15, 0.5] });
+trackedSections.forEach((section) => navigationObserver.observe(section));
+
+const backToTop = document.querySelector('[data-back-to-top]');
+const updateBackToTop = () => backToTop.classList.toggle('visible', window.scrollY > 700);
+updateBackToTop();
+window.addEventListener('scroll', updateBackToTop, { passive: true });
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
