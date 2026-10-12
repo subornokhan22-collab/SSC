@@ -70,7 +70,14 @@ jobs:
       # The main cross-platform workflow already enforces analysis and tests on
       # this same commit. Keep this job focused on the Windows compiler/package.
       - name: Build Windows release
-        run: flutter build windows --release
+        shell: pwsh
+        run: |
+          flutter build windows --release 2>&1 | Tee-Object -FilePath windows-build.log
+          if ($LASTEXITCODE -ne 0) {
+            $tail = (Get-Content windows-build.log -Tail 30) -join '%0A'
+            Write-Output "::error title=Windows build failed::$tail"
+            exit $LASTEXITCODE
+          }
 
       - name: Create portable package
         shell: pwsh
