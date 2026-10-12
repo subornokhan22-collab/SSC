@@ -123,7 +123,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: [
                       const SectionTitle(
                         title: 'Your details',
-                        icon: PhosphorIcons.at,
+                        icon: 'User-Identifier-Card',
                       ),
                       TextField(
                         controller: _emailCtrl,

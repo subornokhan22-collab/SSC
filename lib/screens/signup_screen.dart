@@ -230,7 +230,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SectionTitle(
             title: 'Your details',
             subtitle: 'Used on your papers and to recover your account.',
-            icon: PhosphorIcons.identificationBadge,
+            icon: 'User-Identifier-Card',
           ),
           TextField(
             controller: _nameCtrl,

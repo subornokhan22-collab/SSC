@@ -72,7 +72,7 @@ class GlassCard extends StatelessWidget {
 class SectionTitle extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final IconData? icon;
+  final Object? icon;
 
   const SectionTitle({
     super.key,
@@ -148,7 +148,7 @@ class SectionTitle extends StatelessWidget {
 class StatusPill extends StatelessWidget {
   final String label;
   final Color color;
-  final IconData? icon;
+  final Object? icon;
 
   const StatusPill({
     super.key,
