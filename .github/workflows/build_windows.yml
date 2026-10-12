@@ -47,7 +47,9 @@ jobs:
 
           cmake = Path("windows/CMakeLists.txt")
           text = cmake.read_text(encoding="utf-8")
-          text = text.replace('set(BINARY_NAME "tutors_desk")', "set(BINARY_NAME \"Tutor'sDesk\")")
+          # Keep the CMake target apostrophe-free; rename the finished binary
+          # afterward to the requested Windows filename.
+          text = text.replace('set(BINARY_NAME "tutors_desk")', 'set(BINARY_NAME "TutorsDesk")')
           cmake.write_text(text, encoding="utf-8")
 
           main = Path("windows/runner/main.cpp")
@@ -83,9 +85,10 @@ jobs:
         shell: pwsh
         run: |
           $bundle = "build/windows/x64/runner/Release"
-          if (-not (Test-Path "$bundle/Tutor'sDesk.exe")) {
-            throw "Tutor'sDesk.exe was not produced."
+          if (-not (Test-Path "$bundle/TutorsDesk.exe")) {
+            throw "The Windows compiler did not produce TutorsDesk.exe."
           }
+          Rename-Item "$bundle/TutorsDesk.exe" "Tutor'sDesk.exe"
           Compress-Archive -Path "$bundle/*" -DestinationPath "Tutor'sDesk-Windows-Portable.zip" -Force
 
       - name: Build Windows installer
