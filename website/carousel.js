@@ -8,7 +8,6 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
   let index = 0;
   let timer = null;
   let pointerStart = null;
-  let paused = false;
 
   const dots = slides.map((slide, slideIndex) => {
     const dot = document.createElement('button');
@@ -25,14 +24,15 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
       if (dotIndex === index) {
         void dot.offsetWidth;
         dot.classList.add('active');
-        if (paused || reducedMotion.matches) dot.classList.add('paused');
+        if (reducedMotion.matches) dot.classList.add('paused');
       }
     });
   };
 
   const render = () => {
-    const left = slides[index].offsetLeft;
-    track.style.transform = `translate3d(${-left}px, 0, 0)`;
+    const slide = slides[index];
+    const centeredLeft = slide.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
+    track.style.transform = `translate3d(${-centeredLeft}px, 0, 0)`;
     slides.forEach((slide, slideIndex) => {
       slide.classList.toggle('is-active', slideIndex === index);
       slide.classList.toggle('is-next', slideIndex === (index + 1) % slides.length);
@@ -44,7 +44,7 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
 
   const schedule = () => {
     clearTimeout(timer);
-    if (paused || reducedMotion.matches || document.hidden) return;
+    if (reducedMotion.matches || document.hidden) return;
     timer = setTimeout(() => goTo(index + 1), 1800);
   };
 
@@ -68,8 +68,6 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
     pointerStart = null;
     if (Math.abs(distance) > 45) goTo(index + (distance < 0 ? 1 : -1), true);
   });
-  carousel.addEventListener('mouseenter', () => { paused = true; clearTimeout(timer); restartProgress(); });
-  carousel.addEventListener('mouseleave', () => { paused = false; restartProgress(); schedule(); });
   document.addEventListener('visibilitychange', schedule);
   reducedMotion.addEventListener('change', () => { render(); schedule(); });
   window.addEventListener('resize', render);
