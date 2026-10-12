@@ -45,7 +45,7 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
   const schedule = () => {
     clearTimeout(timer);
     if (paused || reducedMotion.matches || document.hidden) return;
-    timer = setTimeout(() => goTo(index + 1), 4000);
+    timer = setTimeout(() => goTo(index + 1), 1800);
   };
 
   function goTo(nextIndex, initiatedByUser = false) {

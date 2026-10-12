@@ -305,6 +305,27 @@ jobs:
             --title "TEST BUILD $GITHUB_RUN_NUMBER — debug-signed, not for distribution" \
             --notes "$notes"
 
+          # Keep a permanent download URL for the public website. Numbered
+          # test releases are pruned, so linking the site to one of those tags
+          # eventually produces a GitHub 404.
+          stable_tag="android-latest"
+          git -c user.email=ci@local -c user.name=ci tag -f "$stable_tag"
+          git -c user.email=ci@local -c user.name=ci push -f origin "refs/tags/$stable_tag"
+          if gh release view "$stable_tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$stable_tag" \
+              build/app/outputs/flutter-apk/app-*-release.apk \
+              --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$stable_tag" --repo "$GITHUB_REPOSITORY" --latest \
+              --title "Tutor's Desk for Android — Latest preview" \
+              --notes "$notes"
+          else
+            gh release create "$stable_tag" \
+              build/app/outputs/flutter-apk/app-*-release.apk \
+              --repo "$GITHUB_REPOSITORY" --latest \
+              --title "Tutor's Desk for Android — Latest preview" \
+              --notes "$notes"
+          fi
+
       - name: Keep only the three newest test builds
         if: ${{ env.BUILD_TEST_APK == 'true' && env.HAS_RELEASE_SIGNING != 'true' }}
         env:
