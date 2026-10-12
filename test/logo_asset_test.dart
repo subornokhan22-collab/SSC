@@ -10,10 +10,10 @@ void main() {
       'lib/services/paper_export.dart',
     ).readAsStringSync();
 
-    expect(File('New UI 4.0/Logo 1.jpg').existsSync(), isTrue);
+    expect(File('New UI 4.0/Logo 1.png').existsSync(), isTrue);
     expect(File('New UI 4.0/Logo 2.png').existsSync(), isTrue);
     expect(File('New UI 4.0/NEW LOGO.png').existsSync(), isFalse);
-    expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.jpg"'));
+    expect(pubspec, contains('image_path: "New UI 4.0/Logo 1.png"'));
     expect(pubspec, contains('- New UI 4.0/Logo 2.png'));
     expect(paperExport, contains("New UI 4.0/Logo 2.png"));
     expect(paperExport, contains('includeText: index != omrPageIndex'));
