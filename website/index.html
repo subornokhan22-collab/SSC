@@ -34,8 +34,10 @@
   <link rel="icon" href="assets/app-icon.png">
   <link rel="stylesheet" href="styles.css?v=20261012-9">
   <link rel="stylesheet" href="carousel.css?v=20261012-9">
+  <link rel="stylesheet" href="extra.css?v=20261013-1">
   <script src="script.js?v=20261012-8" defer></script>
   <script src="carousel.js?v=20261012-7" defer></script>
+  <script src="checkout.js?v=20261013-1" defer></script>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -195,9 +197,25 @@
       </div>
     </section>
 
+    <section class="impact section-shell" aria-label="Tutor's Desk highlights">
+      <div class="impact-intro reveal">
+        <p class="section-index">03 — BUILT FOR REAL CLASSROOMS</p>
+        <h2>One workspace.<br><span>Every teaching moment.</span></h2>
+        <p>From the first question to the final result, Tutor's Desk keeps the complete assessment workflow connected.</p>
+      </div>
+      <div class="impact-grid">
+        <article class="impact-card reveal"><strong>12</strong><span>purpose-built teaching tools</span><small>Paper creation, OMR, AI, export and more</small></article>
+        <article class="impact-card reveal delay-1"><strong>2</strong><span>native platforms</span><small>Android in your hand. Windows at your desk.</small></article>
+        <article class="impact-card impact-dark reveal delay-2"><strong>1</strong><span>focused workspace</span><small>Your subjects, papers and results stay together.</small></article>
+      </div>
+      <div class="signature-strip reveal">
+        <span>QUESTION BANK</span><i></i><span>SMART COMPOSER</span><i></i><span>PDF STUDIO</span><i></i><span>OMR VISION</span><i></i><span>AI ASSIST</span>
+      </div>
+    </section>
+
     <section class="plans section-shell" id="plans">
       <div class="plans-heading reveal">
-        <div><p class="section-index">03 — PLANS</p><h2>Start simple.<br><span>Grow without limits.</span></h2></div>
+        <div><p class="section-index">04 — PLANS</p><h2>Start simple.<br><span>Grow without limits.</span></h2></div>
         <p>Every plan keeps the paper-building workflow focused. Choose the access that fits the way you teach.</p>
       </div>
       <div class="plan-toggle reveal" role="group" aria-label="Billing period"><span>30-day plans</span><small>Simple, transparent pricing</small></div>
@@ -213,7 +231,7 @@
           <div class="plan-name"><span>BASIC</span><b>02</b></div>
           <h3>Basic</h3><div class="plan-price"><strong>৳100</strong><span>/ 30 days</span></div>
           <p>For tutors building papers regularly.</p>
-          <a href="#downloads">Choose Basic <span>→</span></a>
+          <button class="plan-buy" type="button" data-buy-plan="basic" data-plan-label="Basic">Buy Basic <span>→</span></button>
           <ul><li><i>✓</i> Unlimited papers</li><li><i>✓</i> Up to 3 subjects</li><li><i>✓</i> PDF export and printing</li><li class="muted"><i>—</i> Tutor's Desk watermark</li><li class="muted"><i>—</i> AI and OMR tools</li></ul>
         </article>
         <article class="plan-card featured-plan reveal delay-1">
@@ -221,24 +239,24 @@
           <div class="plan-name"><span>PRO</span><b>03</b></div>
           <h3>Pro</h3><div class="plan-price"><strong>৳200</strong><span>/ 30 days</span></div>
           <p>Advanced tools for an active teaching practice.</p>
-          <a href="#downloads">Choose Pro <span>→</span></a>
+          <button class="plan-buy" type="button" data-buy-plan="pro" data-plan-label="Pro">Buy Pro <span>→</span></button>
           <ul><li><i>✓</i> Unlimited papers</li><li><i>✓</i> Up to 5 subjects</li><li><i>✓</i> No watermark</li><li><i>✓</i> 20 AI requests per day</li><li class="muted"><i>—</i> OMR scanner</li></ul>
         </article>
         <article class="plan-card dark-plan reveal delay-2">
           <div class="plan-name"><span>PROFESSIONAL</span><b>04</b></div>
           <h3>Professional</h3><div class="plan-price"><strong>৳400</strong><span>/ 30 days</span></div>
           <p>The complete workspace for serious tutors.</p>
-          <a href="#downloads">Go Professional <span>→</span></a>
+          <button class="plan-buy" type="button" data-buy-plan="professional" data-plan-label="Professional">Buy Professional <span>→</span></button>
           <ul><li><i>✓</i> Unlimited papers</li><li><i>✓</i> Unlimited subjects</li><li><i>✓</i> No watermark</li><li><i>✓</i> 50 AI requests per day</li><li><i>✓</i> OMR scanner included</li></ul>
         </article>
       </div>
-      <p class="pricing-note reveal">Plan availability and final checkout pricing are verified inside the app before payment.</p>
+      <p class="pricing-note reveal">Secure checkout is created by the Tutor’s Desk payment server. Sign in, choose a plan and continue to RupantorPay.</p>
     </section>
 
     <section class="downloads" id="downloads">
       <div class="section-shell download-inner">
         <div class="download-copy reveal">
-          <p class="section-index light">04 — DOWNLOAD</p>
+          <p class="section-index light">05 — DOWNLOAD</p>
           <h2>Your teaching workspace,<br><span>wherever you work.</span></h2>
           <p>Use Tutor's Desk on Android for work on the move, or settle into the complete Windows desktop experience.</p>
           <div class="system-note"><span>✓</span> Current preview builds · Updated 12 October 2026</div>
@@ -264,7 +282,7 @@
     </section>
 
     <section class="faq section-shell" id="questions">
-      <div class="faq-title reveal"><p class="section-index">05 — QUESTIONS</p><h2>Good to know.</h2></div>
+      <div class="faq-title reveal"><p class="section-index">06 — QUESTIONS</p><h2>Good to know.</h2></div>
       <div class="faq-list reveal">
         <details><summary>Is Tutor's Desk available for both phone and PC?<span>＋</span></summary><p>Yes. Download the Android APK for mobile devices or the Windows installer for 64-bit Windows 10 and 11 computers.</p></details>
         <details><summary>Which Windows download should I choose?<span>＋</span></summary><p>The installer is best for most people. The portable ZIP is useful when you want to run the app without installing it—extract the complete ZIP before opening Tutor'sDesk.exe.</p></details>
@@ -275,6 +293,22 @@
   </main>
 
   <button class="back-to-top" type="button" aria-label="Back to top" data-back-to-top>↑</button>
+
+  <dialog class="checkout-dialog" data-checkout-dialog aria-labelledby="checkout-title">
+    <button class="checkout-close" type="button" data-checkout-close aria-label="Close checkout">×</button>
+    <div class="checkout-mark"><img src="assets/brand-mark.png" alt=""></div>
+    <p class="section-index">SECURE CHECKOUT</p>
+    <h2 id="checkout-title">Continue with <span data-checkout-plan>your plan</span></h2>
+    <p class="checkout-lede">Sign in to the same Tutor’s Desk account you use in the app. Your plan activates on that account after verified payment.</p>
+    <form data-checkout-form>
+      <label>Email address<input type="email" name="email" autocomplete="email" required placeholder="you@example.com"></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" minlength="6" required placeholder="Your Tutor’s Desk password"></label>
+      <button class="checkout-submit" type="submit"><span data-checkout-submit>Sign in &amp; continue</span><i>→</i></button>
+    </form>
+    <p class="checkout-status" data-checkout-status role="status" aria-live="polite"></p>
+    <button class="checkout-mode" type="button" data-checkout-mode>New to Tutor’s Desk? Create an account</button>
+    <div class="checkout-trust"><span>🔒 Server-verified price</span><span>✓ Secure RupantorPay redirect</span><span>↻ Automatic activation</span></div>
+  </dialog>
 
   <footer>
     <div class="section-shell footer-grid">
