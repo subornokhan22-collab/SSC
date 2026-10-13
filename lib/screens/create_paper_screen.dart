@@ -53,7 +53,6 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
   late final PaperController c;
   final title = TextEditingController();
   int step = 0;
-  int page = 0;
   RenderedPaper? preview;
   bool _subjectChosen = false;
   final SubjectEntitlementService subjectEntitlements =
@@ -293,10 +292,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           c.paper!,
           watermark: SubscriptionState.instance.shouldShowWatermark,
         );
-        if (mounted) {
-          preview = result;
-          page = 0;
-        }
+        if (mounted) preview = result;
       });
       if (!ok) return;
     }
@@ -1107,25 +1103,68 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(12),
+        const Padding(
+          padding: EdgeInsets.all(12),
           child: Text(
-            'Page ${page + 1} of ${preview!.pages.length} · Pinch to zoom · Swipe for next page',
-            style: const TextStyle(color: AppTheme.muted, fontSize: 12),
+            'Scroll to view every page at full size',
+            style: TextStyle(color: AppTheme.muted, fontSize: 12),
           ),
         ),
         Expanded(
-          child: PageView.builder(
-            itemCount: preview!.pages.length,
-            onPageChanged: (i) => setState(() => page = i),
-            itemBuilder: (_, i) => Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: InteractiveViewer(
-                minScale: 1,
-                maxScale: 4,
-                child: Image.memory(preview!.pages[i], fit: BoxFit.contain),
-              ),
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final desktop = constraints.maxWidth >= 700;
+              return ListView.separated(
+                padding: EdgeInsets.fromLTRB(
+                  desktop ? 24 : 16,
+                  4,
+                  desktop ? 24 : 16,
+                  32,
+                ),
+                itemCount: preview!.pages.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 28),
+                itemBuilder: (_, i) => Column(
+                  children: [
+                    Text(
+                      'Page ${i + 1} of ${preview!.pages.length}',
+                      style: const TextStyle(
+                        color: AppTheme.muted,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: desktop ? 1000 : 720,
+                        ),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: AppColors.border),
+                            boxShadow: desktop
+                                ? const [
+                                    BoxShadow(
+                                      color: Color(0x16000000),
+                                      blurRadius: 18,
+                                      offset: Offset(0, 7),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Image.memory(
+                            preview!.pages[i],
+                            width: double.infinity,
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ],
