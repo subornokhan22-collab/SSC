@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' show Offset;
 
 import 'package:camera/camera.dart';
+import 'package:image/image.dart' as img;
 
 /// Live-frame quality analysis for guided auto-capture.
 ///
@@ -85,7 +86,43 @@ class OmQuality {
       }
     }
 
-    final sharp = _laplacianVariance(g, _outW, outH);
+    return _analyzeGray(g, _outW, outH, fw, fh);
+  }
+
+  /// Analyzes a JPEG/PNG still frame. Windows cameras do not expose a live
+  /// image stream, so the desktop scanner samples stills through this path.
+  static OmFrameQuality analyzeEncoded(Uint8List bytes) {
+    final decoded = img.decodeImage(bytes);
+    if (decoded == null || decoded.width <= 0 || decoded.height <= 0) {
+      return OmFrameQuality(sharpness: 0, paperFrac: 0, marks: 0);
+    }
+    final fw = decoded.width;
+    final fh = decoded.height;
+    final outH = (fh * _outW / fw).round();
+    final g = Uint8List(_outW * outH);
+    for (var oy = 0; oy < outH; oy++) {
+      final sy = oy * fh ~/ outH;
+      final row = oy * _outW;
+      for (var ox = 0; ox < _outW; ox++) {
+        final sx = ox * fw ~/ _outW;
+        final pixel = decoded.getPixel(sx, sy);
+        g[row + ox] = (0.299 * pixel.r + 0.587 * pixel.g + 0.114 * pixel.b)
+            .round()
+            .clamp(0, 255)
+            .toInt();
+      }
+    }
+    return _analyzeGray(g, _outW, outH, fw, fh);
+  }
+
+  static OmFrameQuality _analyzeGray(
+    Uint8List g,
+    int width,
+    int outH,
+    int fw,
+    int fh,
+  ) {
+    final sharp = _laplacianVariance(g, width, outH);
     final otsuT = _otsu(g);
     // A patterned dark background (woven carpet, busy tablecloth) puts
     // bright threads above a whole-frame Otsu threshold, and they merge
@@ -98,7 +135,7 @@ class OmQuality {
       if (v > maxLuma) maxLuma = v;
     }
     final paperT = math.max(otsuT, (maxLuma * 0.62).round());
-    final (sheetFrac, quad) = _sheetQuad(g, _outW, outH, fw, fh, paperT);
+    final (sheetFrac, quad) = _sheetQuad(g, width, outH, fw, fh, paperT);
 
     // Marks are only meaningful on top of a plausible sheet — without one,
     // skip the four flood-fill searches entirely (the common case while
@@ -108,7 +145,7 @@ class OmQuality {
       // The sheet's corners in preview pixels, and its shorter side —
       // a real registration mark sits within a quarter of it from the
       // sheet corner.
-      final qx = [for (final p in quad) p.dx * _outW / fw];
+      final qx = [for (final p in quad) p.dx * width / fw];
       final qy = [for (final p in quad) p.dy * outH / fh];
       var minDim = 1e18;
       for (var c = 0; c < 4; c++) {
@@ -122,7 +159,7 @@ class OmQuality {
       }
       final dark = (otsuT * 0.55).round();
       final found = <List<int>?>[
-        for (var c = 0; c < 4; c++) _findMarkCenter(g, _outW, outH, c, dark),
+        for (var c = 0; c < 4; c++) _findMarkCenter(g, width, outH, c, dark),
       ];
       // Keep only blobs that are actually at the sheet's corner. Dark
       // wheels, shadows or seams elsewhere in the quadrant are not marks.
@@ -142,7 +179,7 @@ class OmQuality {
         final e = _parallelogram(c, found);
         if (e != null &&
             e[0] >= 0 &&
-            e[0] < _outW &&
+            e[0] < width &&
             e[1] >= 0 &&
             e[1] < outH) {
           found[c] = e;

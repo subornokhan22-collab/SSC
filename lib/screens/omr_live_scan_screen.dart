@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui' show PathFillType;
 
@@ -60,6 +61,8 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   int _framesSeen = 0;
   bool _streamDead = false;
   Timer? _streamWatchdog;
+  Timer? _desktopSampler;
+  bool _samplingDesktop = false;
 
   // At the ~15 fps analysis rate an uninterrupted run to target takes
   // ~0.55 s; the leak lets a real capture land in roughly 0.6-1.2 s of
@@ -100,6 +103,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
       _confidence = 0;
     });
     _streamWatchdog?.cancel();
+    _desktopSampler?.cancel();
     CameraController? opening;
     try {
       final cameras = await availableCameras();
@@ -134,6 +138,16 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
           if (!_current(generation) || _framesSeen > 0) return;
           setState(() => _streamDead = true);
         });
+      } else if (Platform.isWindows) {
+        // camera_windows has no image stream. Sample full-resolution stills
+        // periodically and run the same sheet/mark/sharpness detector on them.
+        _streamDead = false;
+        _desktopSampler?.cancel();
+        _desktopSampler = Timer.periodic(
+          const Duration(milliseconds: 900),
+          (_) => _sampleDesktopFrame(generation),
+        );
+        unawaited(_sampleDesktopFrame(generation));
       } else {
         _streamDead = true;
       }
@@ -157,6 +171,42 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
   }
 
   DateTime _lastUi = DateTime.fromMillisecondsSinceEpoch(0);
+
+  Future<void> _sampleDesktopFrame(int generation) async {
+    final controller = _controller;
+    if (!_current(generation) ||
+        _samplingDesktop ||
+        _capturing ||
+        controller == null ||
+        !controller.value.isInitialized) {
+      return;
+    }
+    _samplingDesktop = true;
+    try {
+      final file = await controller.takePicture();
+      if (!_current(generation)) return;
+      final quality = OmQuality.analyzeEncoded(await file.readAsBytes());
+      if (!_current(generation)) return;
+      _quality = quality;
+      _framesSeen++;
+      _confidence = quality.ready
+          ? math.min(_confidence + 1, 3)
+          : math.max(_confidence - 1, 0);
+      if (mounted) setState(() {});
+      // Two consecutive good samples prevent a single blurred still from
+      // completing the scan while keeping desktop capture responsive.
+      if (_autoCapture && _confidence >= 2 && _current(generation)) {
+        _desktopSampler?.cancel();
+        Navigator.of(context).pop(file.path);
+      }
+    } catch (error, stack) {
+      unawaited(
+        LocalDiagnostics.record(error, stack, scope: 'windows-camera-sample'),
+      );
+    } finally {
+      _samplingDesktop = false;
+    }
+  }
 
   void _onFrame(CameraImage frame) {
     // While a capture is being processed the guidance can't change the
@@ -212,6 +262,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     final controller = _controller;
     if (!_foreground ||
         _capturing ||
+        _samplingDesktop ||
         controller == null ||
         !controller.value.isInitialized) return;
     final generation = _cameraGeneration;
@@ -248,6 +299,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     } else {
       _cameraGeneration++;
       _streamWatchdog?.cancel();
+      _desktopSampler?.cancel();
       final controller = _controller;
       _controller = null;
       if (mounted) setState(() => _starting = true);
@@ -272,6 +324,7 @@ class _OmLiveScanScreenState extends State<OmLiveScanScreen>
     _foreground = false;
     _cameraGeneration++;
     _streamWatchdog?.cancel();
+    _desktopSampler?.cancel();
     final controller = _controller;
     _controller = null;
     if (controller != null) {
