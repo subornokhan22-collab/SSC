@@ -132,6 +132,9 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
     });
   }
 
+  bool get _isDesktop =>
+      Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+
   Future<bool> _canUseScanner() =>
       SubscriptionGuard.require(context, PremiumFeature.omrScanner);
 
@@ -208,6 +211,13 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// stain/finger-cleaning ML models from Play services — an extra
   /// failure point for clean printed OMR sheets that never use it.
   Future<void> _openCamera() async {
+    // ML Kit's document scanner is Android-only. Calling it on Windows causes
+    // a MissingPluginException and incorrectly suggests installing Play
+    // services. Desktop users select a camera capture or scan from disk.
+    if (_isDesktop) {
+      await _pickPhoto(ImageSource.gallery);
+      return;
+    }
     if (!await _canUseScanner()) return;
     if (_key.any((k) => k < 0)) {
       await _problem(
@@ -417,6 +427,10 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
   /// Guided live-camera capture: the in-app preview shows an A4 guide,
   /// sheet/marks/sharp indicators and auto-captures a steady frame.
   Future<void> _openLiveScan() async {
+    if (_isDesktop) {
+      await _pickPhoto(ImageSource.gallery);
+      return;
+    }
     if (!await _canUseScanner()) return;
     if (_key.any((k) => k < 0)) {
       await _problem(
@@ -1075,22 +1089,26 @@ class _OMrScannerScreenState extends State<OMrScannerScreen> {
                         children: [
                           Expanded(
                             child: AppButton(
-                              label: 'Camera',
-                              icon: PhosphorIcons.cubeDuotone,
+                              label: _isDesktop ? 'Choose image' : 'Camera',
+                              icon: _isDesktop
+                                  ? PhosphorIcons.folderOpenDuotone
+                                  : PhosphorIcons.cameraDuotone,
                               onPressed: _busy ? null : _openCamera,
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: AppButton(
-                              label: 'Gallery',
-                              icon: PhosphorIcons.imagesDuotone,
-                              outlined: true,
-                              onPressed: _busy
-                                  ? null
-                                  : () => _pickPhoto(ImageSource.gallery),
+                          if (!_isDesktop) ...[
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: AppButton(
+                                label: 'Gallery',
+                                icon: PhosphorIcons.imagesDuotone,
+                                outlined: true,
+                                onPressed: _busy
+                                    ? null
+                                    : () => _pickPhoto(ImageSource.gallery),
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       )
                     else
