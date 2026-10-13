@@ -52,8 +52,7 @@ class AuthChoiceScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     FeatureCarousel(
                       viewportFraction: .82,
-                      showThreeCards:
-                          MediaQuery.sizeOf(context).width >= 700,
+                      showThreeCards: MediaQuery.sizeOf(context).width >= 700,
                       height:
                           MediaQuery.sizeOf(context).width >= 700 ? 146 : 126,
                       features: const [
