@@ -20,6 +20,7 @@ dependencies:
   # OMR scanner + question-paper library
   image_picker: ^1.1.0   # OMR শিট / প্রশ্নপত্রের ফটো (ক্যামেরা + গ্যালারি)
   camera: ^0.12.1        # লাইভ ক্যামেরা প্রিভিউ + গাইডেড অটো-ক্যাপচার (OMR)
+  camera_windows: 0.2.6+2 # Windows webcam implementation (manual capture)
   google_mlkit_document_scanner: ^0.6.1  # Google ডকুমেন্ট স্ক্যানার — শিট শনাক্ত/অটো-ক্যাপচার (ML Kit)
   image: ^4.2.0          # pure-Dart image processing (OMR bubble reading)
   file_picker: ^8.1.2    # PDF প্রশ্নপত্র যোগ করা
