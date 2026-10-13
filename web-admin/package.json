@@ -1,0 +1,1 @@
+{"name":"tutors-desk-admin","private":true,"scripts":{"vendor":"node vendor-build.cjs","test":"node --test tests/*.test.cjs"},"dependencies":{"@supabase/supabase-js":"2.57.4","pdfjs-dist":"4.10.38"},"devDependencies":{"esbuild":"0.25.10","@playwright/test":"1.55.1"}}

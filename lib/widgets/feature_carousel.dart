@@ -1,0 +1,307 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../theme/design_tokens.dart';
+import 'app_icon.dart';
+import 'motion_policy.dart';
+
+@immutable
+class FeatureHighlight {
+  final Object icon;
+  final String title;
+  final String description;
+
+  const FeatureHighlight({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+}
+
+/// Compact, accessible feature tour for the authentication welcome surface.
+///
+/// The center card receives the only decorative glow. Auto-play remains
+/// continuous during touch interaction, while still respecting reduced motion,
+/// hidden routes, and background app lifecycle states.
+class FeatureCarousel extends StatefulWidget {
+  final List<FeatureHighlight> features;
+  final Duration interval;
+  final double viewportFraction;
+  final double height;
+  final bool showThreeCards;
+
+  const FeatureCarousel({
+    super.key,
+    required this.features,
+    this.interval = const Duration(seconds: 3),
+    this.viewportFraction = .82,
+    this.height = 126,
+    this.showThreeCards = false,
+  });
+
+  @override
+  State<FeatureCarousel> createState() => _FeatureCarouselState();
+}
+
+class _FeatureCarouselState extends State<FeatureCarousel>
+    with WidgetsBindingObserver {
+  // A common multiple of 2, 3, 4, 6 and 7 keeps the first supplied feature
+  // centered for the currently supported carousel sizes.
+  static const _initialPage = 9996;
+  late final PageController _controller;
+  Timer? _timer;
+  bool _foreground = true;
+  bool _initialTransitionScheduled = false;
+  int _page = _initialPage;
+
+  bool get _canAutoPlay =>
+      mounted &&
+      widget.features.length > 1 &&
+      _foreground &&
+      !MotionPolicy.reduce(context) &&
+      TickerMode.of(context);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(
+      initialPage: _initialPage,
+      viewportFraction: widget.viewportFraction,
+    );
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    _foreground = lifecycle == null || lifecycle == AppLifecycleState.resumed;
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _synchronizeTimer();
+    if (!_initialTransitionScheduled && _canAutoPlay) {
+      _initialTransitionScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_canAutoPlay) return;
+        _advance();
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FeatureCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _synchronizeTimer();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    _synchronizeTimer();
+  }
+
+  void _synchronizeTimer() {
+    _timer?.cancel();
+    _timer = null;
+    if (!_canAutoPlay) return;
+    _timer = Timer.periodic(widget.interval, (_) {
+      if (!_canAutoPlay) return;
+      _advance();
+    });
+  }
+
+  void _advance({bool forward = true}) {
+    if (widget.showThreeCards) {
+      setState(() => _page += forward ? 1 : -1);
+      return;
+    }
+    if (!_controller.hasClients) return;
+    final target = _page + (forward ? 1 : -1);
+    _controller.animateToPage(
+      target,
+      duration: MotionPolicy.duration(context, 340),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.features.isEmpty) return const SizedBox.shrink();
+    if (MotionPolicy.reduce(context) || widget.features.length == 1) {
+      return _FeatureCard(feature: widget.features.first, active: true);
+    }
+    if (widget.showThreeCards) return _buildWideCarousel();
+
+    return Semantics(
+      label: 'Tutor’s Desk features',
+      child: SizedBox(
+        height: widget.height,
+        child: PageView.builder(
+          controller: _controller,
+          onPageChanged: (page) => setState(() => _page = page),
+          itemBuilder: (context, index) {
+            final feature = widget.features[index % widget.features.length];
+            return AnimatedBuilder(
+              animation: _controller,
+              child: _FeatureCard(
+                feature: feature,
+                active: index == _page,
+              ),
+              builder: (context, child) {
+                final current = _controller.hasClients &&
+                        _controller.position.haveDimensions
+                    ? _controller.page ?? _page.toDouble()
+                    : _page.toDouble();
+                final distance = (current - index).abs().clamp(0.0, 1.0);
+                final scale = 1 - distance * .08;
+                final lift = 7 * (1 - distance);
+                return Transform.translate(
+                  offset: Offset(0, -lift),
+                  child: Transform.scale(scale: scale, child: child),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWideCarousel() {
+    final center = _page % widget.features.length;
+    final previous = (center - 1) % widget.features.length;
+    final next = (center + 1) % widget.features.length;
+
+    return Semantics(
+      label: 'Tutor’s Desk features',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onHorizontalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (velocity.abs() < 80) return;
+          _advance(forward: velocity < 0);
+        },
+        child: SizedBox(
+          height: widget.height,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _wideSlot(widget.features[previous], active: false),
+              ),
+              Expanded(
+                child: _wideSlot(widget.features[center], active: true),
+              ),
+              Expanded(
+                child: _wideSlot(widget.features[next], active: false),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _wideSlot(FeatureHighlight feature, {required bool active}) {
+    return AnimatedSwitcher(
+      duration: MotionPolicy.duration(context, 240),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      layoutBuilder: (currentChild, previousChildren) => Stack(
+        fit: StackFit.expand,
+        children: [...previousChildren, if (currentChild != null) currentChild],
+      ),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+      child: _FeatureCard(
+        key: ValueKey(feature.title),
+        feature: feature,
+        active: active,
+      ),
+    );
+  }
+}
+
+class _FeatureCard extends StatelessWidget {
+  final FeatureHighlight feature;
+  final bool active;
+
+  const _FeatureCard({
+    super.key,
+    required this.feature,
+    required this.active,
+  });
+
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+        duration: MotionPolicy.duration(context, 220),
+        curve: Curves.easeOutCubic,
+        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadii.card),
+          border: Border.all(
+            color: active ? AppColors.primaryDark : AppColors.border,
+            width: active ? 1.4 : 1,
+          ),
+          boxShadow: active
+              ? const [
+                  BoxShadow(
+                    color: Color(0x24000000),
+                    blurRadius: 18,
+                    offset: Offset(0, 7),
+                  ),
+                ]
+              : null,
+        ),
+        child: Opacity(
+          opacity: active ? 1 : .72,
+          child: Row(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(AppRadii.compact),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: AppIcon(
+                    feature.icon,
+                    size: 25,
+                    color: AppColors.text,
+                    semanticLabel: feature.title,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(feature.title, style: AppTypography.titleMedium),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      feature.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.caption,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+}
