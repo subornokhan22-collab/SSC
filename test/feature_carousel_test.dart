@@ -44,7 +44,7 @@ void main() {
     expect(carousel, isNot(contains('Listener(')));
     expect(carousel, isNot(contains('_touching')));
     expect(carousel, contains('addPostFrameCallback'));
-    expect(carousel, contains('_controller.nextPage('));
+    expect(carousel, contains('_controller.animateToPage('));
   });
 
   testWidgets('reduced motion renders a static feature card', (tester) async {
