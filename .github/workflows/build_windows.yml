@@ -74,7 +74,7 @@ jobs:
       - name: Build Windows release
         shell: pwsh
         run: |
-          flutter build windows --release 2>&1 | Tee-Object -FilePath windows-build.log
+          flutter build windows --release --dart-define=ENABLE_PLAN_DIAGNOSTICS=true 2>&1 | Tee-Object -FilePath windows-build.log
           if ($LASTEXITCODE -ne 0) {
             $tail = (Get-Content windows-build.log -Tail 30) -join '%0A'
             Write-Output "::error title=Windows build failed::$tail"
