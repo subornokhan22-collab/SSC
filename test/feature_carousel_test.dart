@@ -27,8 +27,11 @@ void main() {
     final carousel =
         File('lib/widgets/feature_carousel.dart').readAsStringSync();
     expect(choice, contains('FeatureCarousel('));
-    expect(choice, contains('? .34 : .82'));
+    expect(choice, contains('showThreeCards:'));
+    expect(choice, contains('width >= 700'));
     expect(carousel, contains('widget.viewportFraction'));
+    expect(carousel, contains('_buildWideCarousel'));
+    expect(carousel, contains('AnimatedSwitcher'));
     expect(choice, contains("title: 'PDF export'"));
     expect(choice, contains("title: 'Saved papers'"));
     expect(choice, contains("title: 'Class insights'"));

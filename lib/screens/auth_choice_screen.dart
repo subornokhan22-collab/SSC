@@ -18,13 +18,13 @@ class AuthChoiceScreen extends StatelessWidget {
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
                 28,
-                MediaQuery.sizeOf(context).width >= 900 ? 72 : 48,
+                MediaQuery.sizeOf(context).width >= 700 ? 72 : 48,
                 28,
                 32,
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width >= 900 ? 920 : 440,
+                  maxWidth: MediaQuery.sizeOf(context).width >= 700 ? 920 : 440,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,10 +51,11 @@ class AuthChoiceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     FeatureCarousel(
-                      viewportFraction:
-                          MediaQuery.sizeOf(context).width >= 900 ? .34 : .82,
+                      viewportFraction: .82,
+                      showThreeCards:
+                          MediaQuery.sizeOf(context).width >= 700,
                       height:
-                          MediaQuery.sizeOf(context).width >= 900 ? 146 : 126,
+                          MediaQuery.sizeOf(context).width >= 700 ? 146 : 126,
                       features: const [
                         FeatureHighlight(
                           icon: PhosphorIcons.fileTextDuotone,
@@ -104,7 +105,7 @@ class AuthChoiceScreen extends StatelessWidget {
                     if (AuthService.ready) ...[
                       Center(
                         child: SizedBox(
-                          width: MediaQuery.sizeOf(context).width >= 900
+                          width: MediaQuery.sizeOf(context).width >= 700
                               ? 560
                               : double.infinity,
                           child: FilledButton(
@@ -120,7 +121,7 @@ class AuthChoiceScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       Center(
                         child: SizedBox(
-                          width: MediaQuery.sizeOf(context).width >= 900
+                          width: MediaQuery.sizeOf(context).width >= 700
                               ? 560
                               : double.infinity,
                           child: OutlinedButton(

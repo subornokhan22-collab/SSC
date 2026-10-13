@@ -29,6 +29,7 @@ class FeatureCarousel extends StatefulWidget {
   final Duration interval;
   final double viewportFraction;
   final double height;
+  final bool showThreeCards;
 
   const FeatureCarousel({
     super.key,
@@ -36,6 +37,7 @@ class FeatureCarousel extends StatefulWidget {
     this.interval = const Duration(seconds: 3),
     this.viewportFraction = .82,
     this.height = 126,
+    this.showThreeCards = false,
   });
 
   @override
@@ -79,11 +81,8 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     if (!_initialTransitionScheduled && _canAutoPlay) {
       _initialTransitionScheduled = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_canAutoPlay || !_controller.hasClients) return;
-        _controller.nextPage(
-          duration: MotionPolicy.duration(context, 340),
-          curve: Curves.easeOutCubic,
-        );
+        if (!mounted || !_canAutoPlay) return;
+        _advance();
       });
     }
   }
@@ -105,12 +104,23 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     _timer = null;
     if (!_canAutoPlay) return;
     _timer = Timer.periodic(widget.interval, (_) {
-      if (!_canAutoPlay || !_controller.hasClients) return;
-      _controller.nextPage(
-        duration: MotionPolicy.duration(context, 340),
-        curve: Curves.easeOutCubic,
-      );
+      if (!_canAutoPlay) return;
+      _advance();
     });
+  }
+
+  void _advance({bool forward = true}) {
+    if (widget.showThreeCards) {
+      setState(() => _page += forward ? 1 : -1);
+      return;
+    }
+    if (!_controller.hasClients) return;
+    final target = _page + (forward ? 1 : -1);
+    _controller.animateToPage(
+      target,
+      duration: MotionPolicy.duration(context, 340),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -127,6 +137,7 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     if (MotionPolicy.reduce(context) || widget.features.length == 1) {
       return _FeatureCard(feature: widget.features.first, active: true);
     }
+    if (widget.showThreeCards) return _buildWideCarousel();
 
     return Semantics(
       label: 'Tutor’s Desk features',
@@ -158,6 +169,63 @@ class _FeatureCarouselState extends State<FeatureCarousel>
               },
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWideCarousel() {
+    final center = _page % widget.features.length;
+    final previous = (center - 1) % widget.features.length;
+    final next = (center + 1) % widget.features.length;
+
+    return Semantics(
+      label: 'Tutor’s Desk features',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onHorizontalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (velocity.abs() < 80) return;
+          _advance(forward: velocity < 0);
+        },
+        child: SizedBox(
+          height: widget.height,
+          child: AnimatedSwitcher(
+            duration: MotionPolicy.duration(context, 280),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween(begin: .985, end: 1.0).animate(animation),
+                child: child,
+              ),
+            ),
+            child: Row(
+              key: ValueKey(_page),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _FeatureCard(
+                    feature: widget.features[previous],
+                    active: false,
+                  ),
+                ),
+                Expanded(
+                  child: _FeatureCard(
+                    feature: widget.features[center],
+                    active: true,
+                  ),
+                ),
+                Expanded(
+                  child: _FeatureCard(
+                    feature: widget.features[next],
+                    active: false,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
