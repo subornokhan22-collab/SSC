@@ -550,7 +550,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
         pages: bytes,
       );
       _snack('${bytes.length}-page paper added.');
-      _tabs.animateTo(1);
       await _reload();
     } catch (e) {
       await _problem('Could not add paper', '$e');
@@ -587,7 +586,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
         bytes: bytes,
       );
       _snack('PDF paper added.');
-      _tabs.animateTo(1);
       await _reload();
     } catch (e) {
       await _problem('Could not add paper', '$e');
