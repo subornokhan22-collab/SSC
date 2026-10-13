@@ -110,6 +110,11 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
       c.update(c.draft.copyWith(format: PaperFormat.board, chapters: []));
     }
     await subjectEntitlements.load();
+    if (!_subjectChosen &&
+        subjectEntitlements.selectedSubjects.isEmpty &&
+        mounted) {
+      await _promptForInitialSubjects();
+    }
     if (_subjectChosen) {
       // A subject supplied by another flow is still checked against the same
       // server-authoritative subject allowance before it can generate.
@@ -124,9 +129,81 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     if (widget.quickStart &&
         _subjectChosen &&
         widget.initialQuestions == null) {
-      if (await c.generate() && mounted) step = 3;
+      if (await c.generate() &&
+          await c.confirmSuccessfulGeneration() &&
+          mounted) {
+        step = 3;
+      }
     }
     sync();
+  }
+
+  Future<void> _promptForInitialSubjects() async {
+    final limit = SubscriptionState.instance.entitlement.subjectLimit;
+    final chosen = <String>{};
+    final result = await showDialog<Set<String>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, updateDialog) => AlertDialog(
+          title: const Text('Choose your subjects'),
+          content: SizedBox(
+            width: 520,
+            height: MediaQuery.sizeOf(context).height * .58,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  limit == null
+                      ? 'Select the subjects you want to unlock and use.'
+                      : 'Your plan lets you unlock up to $limit subjects. Choose carefully.',
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      for (final subject in allSubjects)
+                        CheckboxListTile(
+                          value: chosen.contains(subject.id),
+                          secondary: const AppIcon(PhosphorIcons.bookOpen),
+                          title: Text(subject.name),
+                          subtitle: Text(subject.bengaliName),
+                          onChanged: (selected) {
+                            updateDialog(() {
+                              if (selected == true &&
+                                  (limit == null || chosen.length < limit)) {
+                                chosen.add(subject.id);
+                              } else if (selected != true) {
+                                chosen.remove(subject.id);
+                              }
+                            });
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: chosen.isEmpty
+                  ? null
+                  : () => Navigator.pop(dialogContext, Set.of(chosen)),
+              child: const Text('Unlock subjects'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (result == null) return;
+    for (final id in result) {
+      final selection = await subjectEntitlements.select(id);
+      if (!selection.allowed) break;
+    }
+    if (!mounted || result.isEmpty) return;
+    c.selectSubject(result.first);
+    _subjectChosen = true;
   }
 
   bool get _isFreePlan =>
@@ -197,7 +274,7 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppIcon(
-              english ? PhosphorIcons.notePencil : PhosphorIcons.bookOpen,
+              PhosphorIcons.bookOpen,
               color: english ? AppColors.writing : AppTheme.muted,
             ),
             if (locked) ...[
@@ -283,6 +360,9 @@ class _CreatePaperScreenState extends State<CreatePaperScreen> {
     }
     if (step == 2) {
       if (c.paper == null && !await c.generate()) return;
+      // Reaching Review questions is the successful-generation boundary. Only
+      // now is the monthly allowance consumed for these exact questions.
+      if (!await c.confirmSuccessfulGeneration()) return;
     }
     if (step == 3) {
       if (c.paper == null) return;

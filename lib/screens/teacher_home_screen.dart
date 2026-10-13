@@ -93,8 +93,13 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
       }
       if (raw != null) {
         final snapshot = jsonDecode(raw) as Map<String, dynamic>;
-        if (snapshot['version'] == 1 && snapshot['draft'] is Map) {
-          storedTitle = (snapshot['draft']['title'] as String?)?.trim();
+        // A draft becomes a Recent only after an exact composed-paper snapshot
+        // exists. Merely choosing a title or counts must not create a recent.
+        if (snapshot['version'] == 1 &&
+            snapshot['draft'] is Map &&
+            snapshot['paper'] is Map) {
+          final title = (snapshot['draft']['title'] as String?)?.trim();
+          storedTitle = title == null || title.isEmpty ? 'Generated paper' : title;
         }
       }
     } catch (_) {
@@ -688,26 +693,16 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
   Future<void> _showRecents() async {
     final saved = recent.take(8).toList(growable: false);
     final draft = draftTitle?.trim();
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: ReferencePalette.surface,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(sheetContext).height * .72,
-            ),
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                const Text(
-                  'Recents',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 10),
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (sheetContext) => Scaffold(
+          backgroundColor: ReferencePalette.surface,
+          appBar: AppBar(title: const Text('Recents')),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
+              child: ListView(
+                children: [
                 if (draft != null && draft.isNotEmpty) ...[
                   ReferenceCard(
                     onTap: () {
@@ -817,6 +812,7 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
           ),
         ),
       ),
+    ),
     );
   }
 

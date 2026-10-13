@@ -30,6 +30,7 @@ class PaperController extends OperationController {
   DateTime? savedAt;
   String? saveError;
   bool initialized = false;
+  bool _generationAwaitingReview = false;
 
   PaperController({
     required this.composer,
@@ -154,29 +155,6 @@ class PaperController extends OperationController {
   }
 
   Future<bool> generate() async {
-    PaperUsageClaim? claim;
-    if (paperUsage != null) {
-      try {
-        claim = await paperUsage!.claim(
-          mcqCount: draft.mcqCount,
-          saqCount: draft.saqCount,
-          cqCount: draft.cqCount,
-          examFormat: draft.format == PaperFormat.board
-              ? 'model_test'
-              : draft.format.name,
-        );
-        if (!claim.allowed) {
-          error = claim.message;
-          changed();
-          return false;
-        }
-      } catch (_) {
-        error = 'Could not verify the paper allowance. Connect and retry.';
-        changed();
-        return false;
-      }
-    }
-
     final ok = await run(
       'Selecting questions and checking the paper…',
       () async {
@@ -209,14 +187,42 @@ class PaperController extends OperationController {
         if (!disposed) _apply(PaperSnapshot(draft, result));
       },
     );
-    if (claim != null) {
-      if (ok) {
-        await paperUsage!.complete(claim);
-      } else {
-        await paperUsage!.refund(claim);
-      }
-    }
+    if (ok) _generationAwaitingReview = true;
     return ok;
+  }
+
+  /// Consumes the monthly allowance only when the successfully composed paper
+  /// is about to become visible on the Review questions screen.
+  Future<bool> confirmSuccessfulGeneration() async {
+    if (paper == null) return false;
+    if (!_generationAwaitingReview || paperUsage == null) return true;
+    try {
+      final claim = await paperUsage!.claim(
+        mcqCount: paper!.mcqs.length,
+        saqCount: paper!.saqs.length,
+        cqCount: paper!.cqs.length,
+        examFormat:
+            draft.format == PaperFormat.board ? 'model_test' : draft.format.name,
+      );
+      if (!claim.allowed) {
+        _current = PaperSnapshot(draft, null);
+        _generationAwaitingReview = false;
+        _scheduleSave();
+        error = claim.message;
+        changed();
+        return false;
+      }
+      await paperUsage!.complete(claim);
+      _generationAwaitingReview = false;
+      return true;
+    } catch (_) {
+      _current = PaperSnapshot(draft, null);
+      _generationAwaitingReview = false;
+      _scheduleSave();
+      error = 'Could not verify the paper allowance. Connect and retry.';
+      changed();
+      return false;
+    }
   }
 
   bool _hasIndex<T>(List<T> items, int index) =>

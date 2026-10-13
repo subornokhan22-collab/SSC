@@ -34,8 +34,7 @@ class PapersLibraryScreen extends StatefulWidget {
 }
 
 class _PapersLibraryScreenState extends State<PapersLibraryScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  late final TabController _tabs;
+    with WidgetsBindingObserver {
   List<PaperEntry> _entries = const [];
   List<SavedPaper> _saved = const [];
   bool _loading = true;
@@ -45,7 +44,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _tabs = TabController(length: 2, vsync: this);
     _initializeLibrary();
     _maybeNudgeAutoSave();
   }
@@ -53,7 +51,6 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _tabs.dispose();
     super.dispose();
   }
 
@@ -651,49 +648,7 @@ class _PapersLibraryScreenState extends State<PapersLibraryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Question Papers')),
-      body: SafeArea(
-        child: Column(
-          children: [
-            TabBar(
-              controller: _tabs,
-              tabs: const [
-                Tab(text: 'Saved'),
-                Tab(text: 'Added'),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabs,
-                children: [
-                  _savedTab(),
-                  RefreshIndicator(
-                    color: AppColors.science,
-                    onRefresh: _reload,
-                    child: _loading
-                        ? const Center(
-                            child: ActivityIndicator(
-                              size: 24,
-                              color: AppColors.science,
-                            ),
-                          )
-                        : _entries.isEmpty
-                            ? _empty()
-                            : ListView.builder(
-                                physics: const AlwaysScrollableScrollPhysics(
-                                  parent: BouncingScrollPhysics(),
-                                ),
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 10, 16, 90),
-                                itemCount: _entries.length,
-                                itemBuilder: (context, i) => _card(_entries[i]),
-                              ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: SafeArea(child: _savedTab()),
     );
   }
 
