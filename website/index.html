@@ -34,10 +34,10 @@
   <link rel="icon" href="assets/app-icon.png">
   <link rel="stylesheet" href="styles.css?v=20261012-9">
   <link rel="stylesheet" href="carousel.css?v=20261012-9">
-  <link rel="stylesheet" href="extra.css?v=20261013-1">
+  <link rel="stylesheet" href="extra.css?v=20261013-2">
   <script src="script.js?v=20261012-8" defer></script>
   <script src="carousel.js?v=20261012-7" defer></script>
-  <script src="checkout.js?v=20261013-1" defer></script>
+  <script src="checkout.js?v=20261013-2" defer></script>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -53,13 +53,16 @@
       <a href="#downloads">Downloads</a>
       <a href="#questions">FAQ</a>
     </nav>
-    <a class="nav-cta" href="#downloads">Get the app <span>↘</span></a>
+    <div class="header-actions">
+      <button class="account-link" type="button" data-account-open><span class="account-dot"></span><span data-account-label>Account</span></button>
+      <a class="nav-cta" href="#downloads">Get the app <span>↘</span></a>
+    </div>
     <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" data-menu-button>
       <span></span><span></span>
     </button>
   </header>
   <nav class="mobile-nav" aria-label="Mobile navigation" data-mobile-nav>
-    <a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#plans">Plans</a><a href="#downloads">Downloads</a><a href="#questions">FAQ</a>
+    <a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#plans">Plans</a><a href="#downloads">Downloads</a><a href="#questions">FAQ</a><button type="button" data-account-open>Account / Sign in</button>
   </nav>
 
   <main id="top">
@@ -299,7 +302,13 @@
     <div class="checkout-mark"><img src="assets/brand-mark.png" alt=""></div>
     <p class="section-index">SECURE CHECKOUT</p>
     <h2 id="checkout-title">Continue with <span data-checkout-plan>your plan</span></h2>
-    <p class="checkout-lede">Sign in to the same Tutor’s Desk account you use in the app. Your plan activates on that account after verified payment.</p>
+    <p class="checkout-lede" data-checkout-lede>Sign in to the same Tutor’s Desk account you use in the app. Your plan activates on that account after verified payment.</p>
+    <section class="account-summary" data-account-summary hidden>
+      <div class="account-avatar" data-account-avatar>TD</div>
+      <div><small>SIGNED IN AS</small><strong data-account-email></strong><span data-account-plan>Checking subscription…</span></div>
+      <button type="button" data-account-signout>Sign out</button>
+      <button class="checkout-submit account-checkout" type="button" data-account-checkout hidden><span>Continue to secure checkout</span><i>→</i></button>
+    </section>
     <form data-checkout-form>
       <label>Email address<input type="email" name="email" autocomplete="email" required placeholder="you@example.com"></label>
       <label>Password<input type="password" name="password" autocomplete="current-password" minlength="6" required placeholder="Your Tutor’s Desk password"></label>
