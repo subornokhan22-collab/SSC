@@ -86,9 +86,18 @@ class SubjectEntitlementService {
     return selectedSubjects;
   }
 
+  bool get _usingDiagnosticPlan =>
+      SubscriptionState.instance.entitlement.provider ==
+      'test-build-diagnostics';
+
   Future<SubjectLimitResult> check(String subjectId) async {
     await load();
-    final entitlement = subscriptions.current;
+    // Owner diagnostics are process-wide effective entitlements. Reading the
+    // repository directly here used the underlying server plan instead, so a
+    // displayed Professional plan could still be gated as Pro.
+    final entitlement = _usingDiagnosticPlan
+        ? SubscriptionState.instance.entitlement
+        : subscriptions.current;
     final already = _selected.contains(subjectId);
     final allowed = already ||
         entitlement.subjectLimit == null ||
@@ -111,7 +120,7 @@ class SubjectEntitlementService {
     if (!result.allowed || result.alreadySelected) return result;
     final id = AuthService.userId;
     final c = client;
-    if (id != null && c != null) {
+    if (id != null && c != null && !_usingDiagnosticPlan) {
       try {
         final data = await c.rpc(
           'select_user_subject',
@@ -155,7 +164,9 @@ class SubjectEntitlementService {
       alreadySelected: false,
       limit: result.limit,
       selectedCount: _selected.length,
-      plan: subscriptions.current.plan,
+      plan: _usingDiagnosticPlan
+          ? SubscriptionState.instance.entitlement.plan
+          : subscriptions.current.plan,
     );
   }
 
