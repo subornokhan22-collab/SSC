@@ -24,7 +24,7 @@ class AuthChoiceScreen extends StatelessWidget {
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width >= 900 ? 560 : 440,
+                  maxWidth: MediaQuery.sizeOf(context).width >= 900 ? 920 : 440,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,8 +50,12 @@ class AuthChoiceScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const FeatureCarousel(
-                      features: [
+                    FeatureCarousel(
+                      viewportFraction:
+                          MediaQuery.sizeOf(context).width >= 900 ? .34 : .82,
+                      height:
+                          MediaQuery.sizeOf(context).width >= 900 ? 146 : 126,
+                      features: const [
                         FeatureHighlight(
                           icon: PhosphorIcons.fileTextDuotone,
                           title: 'Paper builder',
@@ -98,33 +102,49 @@ class AuthChoiceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     if (AuthService.ready) ...[
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
+                      Center(
+                        child: SizedBox(
+                          width: MediaQuery.sizeOf(context).width >= 900
+                              ? 560
+                              : double.infinity,
+                          child: FilledButton(
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (_) => const SignUpScreen()),
                           ),
-                          child: const Text('Sign up'),
+                            child: const Text('Sign up'),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
+                      Center(
+                        child: SizedBox(
+                          width: MediaQuery.sizeOf(context).width >= 900
+                              ? 560
+                              : double.infinity,
+                          child: OutlinedButton(
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (_) => const SignInScreen()),
                           ),
-                          child: const Text('Sign in'),
+                            child: const Text('Sign in'),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Create an account to sync papers and use server AI. Already have an account? Sign in above.',
-                        style: TextStyle(color: AppTheme.muted, fontSize: 12),
+                      const Center(
+                        child: SizedBox(
+                          width: 560,
+                          child: Text(
+                            'Create an account to sync papers and use server AI. Already have an account? Sign in above.',
+                            style: TextStyle(
+                              color: AppTheme.muted,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                       ),
                     ] else
                       const Text(

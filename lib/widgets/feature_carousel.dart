@@ -27,11 +27,15 @@ class FeatureHighlight {
 class FeatureCarousel extends StatefulWidget {
   final List<FeatureHighlight> features;
   final Duration interval;
+  final double viewportFraction;
+  final double height;
 
   const FeatureCarousel({
     super.key,
     required this.features,
     this.interval = const Duration(seconds: 3),
+    this.viewportFraction = .82,
+    this.height = 126,
   });
 
   @override
@@ -61,7 +65,7 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     super.initState();
     _controller = PageController(
       initialPage: _initialPage,
-      viewportFraction: .82,
+      viewportFraction: widget.viewportFraction,
     );
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     _foreground = lifecycle == null || lifecycle == AppLifecycleState.resumed;
@@ -127,7 +131,7 @@ class _FeatureCarouselState extends State<FeatureCarousel>
     return Semantics(
       label: 'Tutor’s Desk features',
       child: SizedBox(
-        height: 126,
+        height: widget.height,
         child: PageView.builder(
           controller: _controller,
           onPageChanged: (page) => setState(() => _page = page),
@@ -190,7 +194,7 @@ class _FeatureCard extends StatelessWidget {
               : null,
         ),
         child: Opacity(
-          opacity: active ? 1 : .58,
+          opacity: active ? 1 : .72,
           child: Row(
             children: [
               DecoratedBox(

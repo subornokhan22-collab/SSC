@@ -93,7 +93,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final inset = ((MediaQuery.sizeOf(context).width - 520) / 2)
+    final inset = ((MediaQuery.sizeOf(context).width - 620) / 2)
         .clamp(18.0, double.infinity)
         .toDouble();
     // The front door is the one screen that should feel like an arrival, so it

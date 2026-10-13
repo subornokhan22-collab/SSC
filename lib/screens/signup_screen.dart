@@ -181,6 +181,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final inset = ((MediaQuery.sizeOf(context).width - 620) / 2)
+        .clamp(18.0, double.infinity)
+        .toDouble();
     return AuroraRibbons(
       enabled: true,
       opacity: .45,
@@ -193,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         body: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+            padding: EdgeInsets.fromLTRB(inset, 12, inset, 28),
             children: [
               AuthHero(
                 icon: _otpSent
