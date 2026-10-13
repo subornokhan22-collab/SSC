@@ -161,6 +161,13 @@ void main() {
           isTrue);
     });
 
+    test('authentication forms stay centered at desktop widths', () {
+      final signIn = File('lib/screens/signin_screen.dart').readAsStringSync();
+      final signUp = File('lib/screens/signup_screen.dart').readAsStringSync();
+      expect(signIn.contains('width - 620'), isTrue);
+      expect(signUp.contains('width - 620'), isTrue);
+    });
+
     test('the profile active-plan card uses the current entitlement', () {
       final src = File('lib/screens/profile_screen.dart').readAsStringSync();
       expect(src.contains("'Pro is active'"), isFalse);
