@@ -99,7 +99,8 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
             snapshot['draft'] is Map &&
             snapshot['paper'] is Map) {
           final title = (snapshot['draft']['title'] as String?)?.trim();
-          storedTitle = title == null || title.isEmpty ? 'Generated paper' : title;
+          storedTitle =
+              title == null || title.isEmpty ? 'Generated paper' : title;
         }
       }
     } catch (_) {
@@ -703,116 +704,117 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen>
               padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
               child: ListView(
                 children: [
-                if (draft != null && draft.isNotEmpty) ...[
-                  ReferenceCard(
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      create();
-                    },
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      children: [
-                        const ReferenceIcon(
-                          PhosphorIcons.pencilSimple,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Unsaved paper',
-                                style: TextStyle(fontWeight: FontWeight.w700),
-                              ),
-                              Text(
-                                draft,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: ReferencePalette.mutedInk,
+                  if (draft != null && draft.isNotEmpty) ...[
+                    ReferenceCard(
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        create();
+                      },
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          const ReferenceIcon(
+                            PhosphorIcons.pencilSimple,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Unsaved paper',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
                                 ),
+                                Text(
+                                  draft,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: ReferencePalette.mutedInk,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const ReferenceIcon(PhosphorIcons.caretRight,
+                              size: 20),
+                        ],
+                      ),
+                    ),
+                    if (saved.isNotEmpty) const SizedBox(height: 10),
+                  ],
+                  if (saved.isEmpty && (draft == null || draft.isEmpty))
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 28),
+                      child: Center(
+                        child: Text(
+                          'No saved or unsaved papers yet',
+                          style: TextStyle(color: ReferencePalette.mutedInk),
+                        ),
+                      ),
+                    )
+                  else
+                    ...saved.map(
+                      (entry) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: ReferenceCard(
+                          onTap: () {
+                            Navigator.pop(sheetContext);
+                            _openScreen(const PapersLibraryScreen());
+                          },
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              const ReferenceIcon(
+                                PhosphorIcons.fileText,
+                                size: 28,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      entry.title.isEmpty
+                                          ? 'Untitled paper'
+                                          : entry.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${entry.subject.isEmpty ? entry.kindLabel : entry.subject} · ${_recentDate(entry.createdAt)}',
+                                      style: const TextStyle(
+                                        color: ReferencePalette.mutedInk,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const ReferenceIcon(
+                                PhosphorIcons.caretRight,
+                                size: 20,
                               ),
                             ],
                           ),
                         ),
-                        const ReferenceIcon(PhosphorIcons.caretRight, size: 20),
-                      ],
+                      ),
                     ),
-                  ),
-                  if (saved.isNotEmpty) const SizedBox(height: 10),
                 ],
-                if (saved.isEmpty && (draft == null || draft.isEmpty))
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 28),
-                    child: Center(
-                      child: Text(
-                        'No saved or unsaved papers yet',
-                        style: TextStyle(color: ReferencePalette.mutedInk),
-                      ),
-                    ),
-                  )
-                else
-                  ...saved.map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: ReferenceCard(
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _openScreen(const PapersLibraryScreen());
-                        },
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
-                        ),
-                        child: Row(
-                          children: [
-                            const ReferenceIcon(
-                              PhosphorIcons.fileText,
-                              size: 28,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    entry.title.isEmpty
-                                        ? 'Untitled paper'
-                                        : entry.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${entry.subject.isEmpty ? entry.kindLabel : entry.subject} · ${_recentDate(entry.createdAt)}',
-                                    style: const TextStyle(
-                                      color: ReferencePalette.mutedInk,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const ReferenceIcon(
-                              PhosphorIcons.caretRight,
-                              size: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 

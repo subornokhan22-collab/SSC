@@ -201,8 +201,9 @@ class PaperController extends OperationController {
         mcqCount: paper!.mcqs.length,
         saqCount: paper!.saqs.length,
         cqCount: paper!.cqs.length,
-        examFormat:
-            draft.format == PaperFormat.board ? 'model_test' : draft.format.name,
+        examFormat: draft.format == PaperFormat.board
+            ? 'model_test'
+            : draft.format.name,
       );
       if (!claim.allowed) {
         _current = PaperSnapshot(draft, null);
