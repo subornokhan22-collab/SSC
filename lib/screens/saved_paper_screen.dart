@@ -22,7 +22,6 @@ class SavedPaperScreen extends StatefulWidget {
 class _SavedPaperScreenState extends State<SavedPaperScreen> {
   List<Uint8List>? pages;
   String? error;
-  int page = 0;
   bool busy = false;
   SavedPaper? saved;
   @override
@@ -137,24 +136,68 @@ class _SavedPaperScreenState extends State<SavedPaperScreen> {
                 : Column(
                     children: [
                       if (busy) const ActivityBar(),
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          'Page ${page + 1} of ${pages!.length} · Pinch to zoom',
-                        ),
+                      const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Text('Scroll to view every page at full size'),
                       ),
                       Expanded(
-                        child: PageView.builder(
-                          itemCount: pages!.length,
-                          onPageChanged: (v) => setState(() => page = v),
-                          itemBuilder: (_, i) => Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: InteractiveViewer(
-                              maxScale: 4,
-                              child:
-                                  Image.memory(pages![i], fit: BoxFit.contain),
-                            ),
-                          ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final desktop = constraints.maxWidth >= 700;
+                            return ListView.separated(
+                              padding: EdgeInsets.fromLTRB(
+                                desktop ? 24 : 16,
+                                4,
+                                desktop ? 24 : 16,
+                                32,
+                              ),
+                              itemCount: pages!.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 28),
+                              itemBuilder: (_, i) => Column(
+                                children: [
+                                  Text(
+                                    'Page ${i + 1} of ${pages!.length}',
+                                    style: const TextStyle(
+                                      color: AppColors.muted,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Center(
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: desktop ? 1000 : 720,
+                                      ),
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: AppColors.border,
+                                          ),
+                                          boxShadow: desktop
+                                              ? const [
+                                                  BoxShadow(
+                                                    color: Color(0x16000000),
+                                                    blurRadius: 18,
+                                                    offset: Offset(0, 7),
+                                                  ),
+                                                ]
+                                              : null,
+                                        ),
+                                        child: Image.memory(
+                                          pages![i],
+                                          width: double.infinity,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
