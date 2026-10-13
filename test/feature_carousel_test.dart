@@ -32,6 +32,8 @@ void main() {
     expect(carousel, contains('widget.viewportFraction'));
     expect(carousel, contains('_buildWideCarousel'));
     expect(carousel, contains('AnimatedSwitcher'));
+    expect(carousel, contains('StackFit.expand'));
+    expect(carousel, isNot(contains('ScaleTransition')));
     expect(choice, contains("title: 'PDF export'"));
     expect(choice, contains("title: 'Saved papers'"));
     expect(choice, contains("title: 'Class insights'"));

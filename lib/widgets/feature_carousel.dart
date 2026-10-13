@@ -190,43 +190,42 @@ class _FeatureCarouselState extends State<FeatureCarousel>
         },
         child: SizedBox(
           height: widget.height,
-          child: AnimatedSwitcher(
-            duration: MotionPolicy.duration(context, 280),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: ScaleTransition(
-                scale: Tween(begin: .985, end: 1.0).animate(animation),
-                child: child,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _wideSlot(widget.features[previous], active: false),
               ),
-            ),
-            child: Row(
-              key: ValueKey(_page),
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: _FeatureCard(
-                    feature: widget.features[previous],
-                    active: false,
-                  ),
-                ),
-                Expanded(
-                  child: _FeatureCard(
-                    feature: widget.features[center],
-                    active: true,
-                  ),
-                ),
-                Expanded(
-                  child: _FeatureCard(
-                    feature: widget.features[next],
-                    active: false,
-                  ),
-                ),
-              ],
-            ),
+              Expanded(
+                child: _wideSlot(widget.features[center], active: true),
+              ),
+              Expanded(
+                child: _wideSlot(widget.features[next], active: false),
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _wideSlot(FeatureHighlight feature, {required bool active}) {
+    return AnimatedSwitcher(
+      duration: MotionPolicy.duration(context, 240),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      layoutBuilder: (currentChild, previousChildren) => Stack(
+        fit: StackFit.expand,
+        children: [...previousChildren, if (currentChild != null) currentChild],
+      ),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+      child: _FeatureCard(
+        key: ValueKey(feature.title),
+        feature: feature,
+        active: active,
       ),
     );
   }
@@ -236,7 +235,11 @@ class _FeatureCard extends StatelessWidget {
   final FeatureHighlight feature;
   final bool active;
 
-  const _FeatureCard({required this.feature, required this.active});
+  const _FeatureCard({
+    super.key,
+    required this.feature,
+    required this.active,
+  });
 
   @override
   Widget build(BuildContext context) => AnimatedContainer(
