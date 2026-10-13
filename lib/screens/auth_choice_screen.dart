@@ -108,11 +108,11 @@ class AuthChoiceScreen extends StatelessWidget {
                               ? 560
                               : double.infinity,
                           child: FilledButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SignUpScreen()),
-                          ),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const SignUpScreen()),
+                            ),
                             child: const Text('Sign up'),
                           ),
                         ),
@@ -124,11 +124,11 @@ class AuthChoiceScreen extends StatelessWidget {
                               ? 560
                               : double.infinity,
                           child: OutlinedButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SignInScreen()),
-                          ),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const SignInScreen()),
+                            ),
                             child: const Text('Sign in'),
                           ),
                         ),
