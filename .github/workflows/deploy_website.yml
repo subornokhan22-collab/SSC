@@ -2,7 +2,7 @@ name: Publish website
 
 on:
   push:
-    branches: ['arena/01a0ce12-ssc']
+    branches: ['arena/01a0ce12-ssc', 'arena/7b3847a6-ssc']
     paths:
       - 'website/**'
       - '.github/workflows/deploy_website.yml'
