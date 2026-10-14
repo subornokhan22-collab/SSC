@@ -1,6 +1,6 @@
 # Teacher workspace implementation — 24 September 2026
 
-Branch: `arena/01a0ce12-ssc` · PR: https://github.com/subornokhan22-collab/SSC/pull/6
+Branch: `arena/01a0ce12-ssc` · PR: https://github.com/tutorsdesk/SSC/pull/6
 
 This builds on the recovered Phase 1 originals; their provenance remains in
 `RECOVERY-2026-09-24.md`. These are new implementation changes, not reconstructed

@@ -58,7 +58,7 @@ CONTENT STUDIO UPDATE FILES
    calling the browser ZIP production-ready.
 
 No production services were changed by preparing these files.
-Full source: https://github.com/subornokhan22-collab/SSC/pull/6
+Full source: https://github.com/tutorsdesk/SSC/pull/6
 
 AI TOOLS ATTACHMENT / FORMATTING UPDATE
 Deploy the current mimi.ts first, then install the new APK from green CI.

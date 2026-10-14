@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://subornokhan22-collab.github.io/SSC/sitemap.xml
+Sitemap: https://tutorsdesk.github.io/SSC/sitemap.xml

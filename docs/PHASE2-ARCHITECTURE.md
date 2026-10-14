@@ -7,7 +7,7 @@ for the working paths, tests and remaining legacy/deployment limitations. The
 slice-1 report below is retained as historical context, not the current backlog.
 
 Started 2026-09-24 after Phase 1 CI passed at `65dec3b`:
-https://github.com/subornokhan22-collab/SSC/actions/runs/35976648526
+https://github.com/tutorsdesk/SSC/actions/runs/35976648526
 
 ## Slice 1: shared design foundation
 

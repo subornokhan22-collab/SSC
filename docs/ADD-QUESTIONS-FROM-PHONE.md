@@ -14,7 +14,7 @@ app loads it exactly like every other bank file.
 
 **1.** Open this on your phone:
 
-<https://github.com/subornokhan22-collab/SSC/edit/arena/01a06614-ssc/assets/questions/my_questions.json>
+<https://github.com/tutorsdesk/SSC/edit/arena/01a06614-ssc/assets/questions/my_questions.json>
 
 **2.** You will see:
 
@@ -103,7 +103,7 @@ maths, where `questionGh` is left empty:
 
 **1.** Upload the image through GitHub:
 
-<https://github.com/subornokhan22-collab/SSC/upload/arena/01a06614-ssc/assets/question_figures>
+<https://github.com/tutorsdesk/SSC/upload/arena/01a06614-ssc/assets/question_figures>
 
 Tap **choose your files**, pick the picture, then **Commit changes**.
 

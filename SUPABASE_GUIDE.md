@@ -120,7 +120,7 @@ On Android, **Termux** can also work:
 pkg update
 pkg install nodejs git
 cd "$HOME"
-git clone https://github.com/subornokhan22-collab/SSC.git
+git clone https://github.com/tutorsdesk/SSC.git
 cd SSC
 npx --yes supabase@latest --version
 npx --yes supabase@latest login

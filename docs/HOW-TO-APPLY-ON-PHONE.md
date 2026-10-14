@@ -12,7 +12,7 @@ You are editing **one file**, changing **four lines**.
 
 **1.** Open this link on your phone:
 
-<https://github.com/subornokhan22-collab/SSC/edit/arena/01a06614-ssc/.github/workflows/build_apk.yml>
+<https://github.com/tutorsdesk/SSC/edit/arena/01a06614-ssc/.github/workflows/build_apk.yml>
 
 That opens the file directly in GitHub's editor. If it asks you to sign in,
 sign in first, then open the link again.
