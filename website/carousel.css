@@ -3,3 +3,11 @@
 @media(max-width:650px){.bank-visual,.pattern-visual,.preview-visual,.subject-visual,.platform-visual{height:295px}.pc-device{width:145px;height:100px}.phone-device{width:64px;height:125px}.platform-visual{gap:12px}.platform-link{display:none}}
 .feature-track.no-transition{transition:none!important}
 .platform-device img{width:42%;height:42%;object-fit:contain;filter:drop-shadow(0 7px 12px rgba(0,0,0,.2))}.dark-feature .feature-top{position:relative}.dark-feature .feature-top:after{content:"";position:absolute;right:-65px;top:-75px;width:170px;height:170px;border:1px solid #333;border-radius:50%;box-shadow:0 0 0 25px rgba(255,255,255,.012)}.paper-sheet.front,.preview-page,.export-page{transition:transform .45s cubic-bezier(.2,.7,.2,1)}.feature.is-active .paper-sheet.front{transform:rotate(1deg) translateY(-4px)}.feature.is-active .preview-page{transform:rotate(0) translateY(-5px)}.feature.is-active .export-page{transform:rotate(-1deg) translateY(-5px)}
+
+/* Desktop: show three complete cards (active card centred, both neighbours
+   fully visible). The viewport edges sit exactly on the outer card edges, so
+   no card is ever cropped. Only vertical room is left for shadows. */
+@media(min-width:981px){
+  .feature-showcase .carousel-viewport{width:min(100%,1180px);margin-inline:auto;clip-path:inset(-60px -6px -60px -6px)}
+  .feature-track .feature{flex:0 0 calc((100% - 28px)/3)}
+}
