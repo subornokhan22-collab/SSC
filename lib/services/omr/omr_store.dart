@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../local_account_scope.dart';
+
 /// One graded OMR scan, kept in the device history.
 class OmScanRecord {
   final String id;
@@ -18,6 +20,7 @@ class OmScanRecord {
   final int wrong;
   final int blank;
   final int ambiguous;
+  final List<int> correctedIndices;
   final List<int> answers;
   final List<int> key;
 
@@ -42,6 +45,7 @@ class OmScanRecord {
     required this.answers,
     required this.key,
     this.durationMs = 0,
+    this.correctedIndices = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -60,26 +64,26 @@ class OmScanRecord {
         'blank': blank,
         'ambiguous': ambiguous,
         'answers': answers,
+        'correctedIndices': correctedIndices,
         'key': key,
         'durationMs': durationMs,
       };
 
   static OmScanRecord fromJson(Map<String, dynamic> m) => OmScanRecord(
         id: m['id'] as String,
-        date: DateTime.tryParse(m['date'] as String? ?? '') ??
-            DateTime.now(),
+        date: DateTime.tryParse(m['date'] as String? ?? '') ?? DateTime.now(),
         paperTitle: m['paperTitle'] as String? ?? '',
         subjectName: m['subjectName'] as String? ?? '',
         roll: m['roll'] as String? ?? '',
         registration: m['registration'] as String? ?? '',
         subjectCode: m['subjectCode'] as String? ?? '',
         setCode: m['setCode'] as String? ?? '—',
-        total: m['total'] as int? ?? 0,
-        score: m['score'] as int? ?? 0,
-        correct: m['correct'] as int? ?? 0,
-        wrong: m['wrong'] as int? ?? 0,
-        blank: m['blank'] as int? ?? 0,
-        ambiguous: m['ambiguous'] as int? ?? 0,
+        total: (m['total'] as num?)?.toInt() ?? 0,
+        score: (m['score'] as num?)?.toInt() ?? 0,
+        correct: (m['correct'] as num?)?.toInt() ?? 0,
+        wrong: (m['wrong'] as num?)?.toInt() ?? 0,
+        blank: (m['blank'] as num?)?.toInt() ?? 0,
+        ambiguous: (m['ambiguous'] as num?)?.toInt() ?? 0,
         answers: (m['answers'] as List? ?? const [])
             .map((e) => (e as num).toInt())
             .toList(),
@@ -87,6 +91,10 @@ class OmScanRecord {
             .map((e) => (e as num).toInt())
             .toList(),
         durationMs: (m['durationMs'] as num? ?? 0).toInt(),
+        correctedIndices: (m['correctedIndices'] as List? ?? const [])
+            .whereType<num>()
+            .map((e) => e.toInt())
+            .toList(),
       );
 }
 
@@ -117,27 +125,52 @@ class OmKeyDraft {
         key: (m['key'] as List? ?? const [])
             .map((e) => (e as num).toInt())
             .toList(),
-        savedAt: DateTime.tryParse(m['savedAt'] as String? ?? '') ??
-            DateTime.now(),
+        savedAt:
+            DateTime.tryParse(m['savedAt'] as String? ?? '') ?? DateTime.now(),
       );
 }
 
 class OmrStore {
   OmrStore._();
 
-  static const _historyKey = 'omr_scan_history';
-  static const _keyDraftKey = 'omr_key_draft';
+  static const _legacyHistoryKey = 'omr_scan_history';
+  static const _legacyKeyDraftKey = 'omr_key_draft';
+  static String get _historyKey => LocalAccountScope.key(_legacyHistoryKey);
+  static String get _keyDraftKey => LocalAccountScope.key(_legacyKeyDraftKey);
   static const _maxHistory = 60;
+
+  static Future<String?> _claimLegacy(
+    SharedPreferences prefs,
+    String scoped,
+    String legacy,
+  ) async {
+    var raw = prefs.getString(scoped);
+    if (raw != null) return raw;
+    raw = prefs.getString(legacy);
+    if (raw != null) {
+      await prefs.setString(scoped, raw);
+      await prefs.remove(legacy);
+    }
+    return raw;
+  }
 
   static Future<List<OmScanRecord>> loadHistory() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_historyKey);
+    final raw = await _claimLegacy(prefs, _historyKey, _legacyHistoryKey);
     if (raw == null || raw.isEmpty) return const [];
     try {
-      final list = (json.decode(raw) as List)
-          .map((e) => OmScanRecord.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
-      return list;
+      final decoded = json.decode(raw);
+      if (decoded is! List) return const [];
+      final records = <OmScanRecord>[];
+      for (final item in decoded) {
+        try {
+          if (item is! Map) continue;
+          records.add(OmScanRecord.fromJson(item.cast<String, dynamic>()));
+        } catch (_) {
+          // A single damaged scan must not hide the rest of the local history.
+        }
+      }
+      return records;
     } catch (_) {
       return const [];
     }
@@ -145,14 +178,19 @@ class OmrStore {
 
   static Future<void> addRecord(OmScanRecord record) async {
     final prefs = await SharedPreferences.getInstance();
-    final all = [record, ...await loadHistory()];
-    final trimmed = all.length > _maxHistory
-        ? all.sublist(0, _maxHistory)
-        : all;
-    await prefs.setString(
+    final all = [
+      record,
+      ...(await loadHistory()).where((r) => r.id != record.id),
+    ];
+    final trimmed =
+        all.length > _maxHistory ? all.sublist(0, _maxHistory) : all;
+    if (!await prefs.setString(
       _historyKey,
       json.encode([for (final r in trimmed) r.toJson()]),
-    );
+    ))
+      throw StateError(
+        'The scan could not be saved. Check device storage and retry.',
+      );
   }
 
   static Future<void> deleteRecord(String id) async {
@@ -166,10 +204,12 @@ class OmrStore {
 
   static Future<OmKeyDraft?> loadKeyDraft() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_keyDraftKey);
+    final raw = await _claimLegacy(prefs, _keyDraftKey, _legacyKeyDraftKey);
     if (raw == null || raw.isEmpty) return null;
     try {
-      return OmKeyDraft.fromJson((json.decode(raw) as Map).cast<String, dynamic>());
+      return OmKeyDraft.fromJson(
+        (json.decode(raw) as Map).cast<String, dynamic>(),
+      );
     } catch (_) {
       return null;
     }

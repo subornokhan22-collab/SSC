@@ -85,3 +85,7 @@ built yet.
 
 See `docs/ADD-QUESTIONS-FROM-PHONE.md` — questions can be added from a
 phone through GitHub's web editor, with no tooling at all.
+
+## Shared content rules (Content Studio)
+
+The local writer now calls `web-admin/content-core.js` in addition to its asset-specific checks. A missing MCQ answer stays `-1` and cannot be saved as a valid question. Four distinct options and a source explanation are required. For hosted publication, audit/review and complete English papers, use `web-admin/index.html`; this local writer remains a developer-only asset editor.

@@ -28,10 +28,15 @@ void main() {
       // `physicsChapterNames` used to be declared beside the hardcoded bank;
       // ChapterCatalog.physics is now the single source of truth.
       expect(ChapterCatalog.physics.length, 13);
-      expect(ChapterCatalog.physics.toSet().length, 13,
-          reason: 'chapter names must be unique');
-      expect(ChapterCatalog.ordered(const <String>[], subjectId: 'physics'),
-          ChapterCatalog.physics);
+      expect(
+        ChapterCatalog.physics.toSet().length,
+        13,
+        reason: 'chapter names must be unique',
+      );
+      expect(
+        ChapterCatalog.ordered(const <String>[], subjectId: 'physics'),
+        ChapterCatalog.physics,
+      );
     });
 
     test('every question points at a catalogued chapter', () {
@@ -57,15 +62,21 @@ void main() {
 
     test('every chapter meets its per-chapter minimum', () {
       for (final name in ChapterCatalog.physics) {
-        expect(physicsMcqs.where((q) => q.chapter == name).length,
-            greaterThanOrEqualTo(50),
-            reason: 'MCQ shortfall in $name');
-        expect(physicsSAQs.where((q) => q.chapter == name).length,
-            greaterThanOrEqualTo(20),
-            reason: 'SAQ shortfall in $name');
-        expect(physicsCqs.where((q) => q.chapter == name).length,
-            greaterThanOrEqualTo(10),
-            reason: 'CQ shortfall in $name');
+        expect(
+          physicsMcqs.where((q) => q.chapter == name).length,
+          greaterThanOrEqualTo(50),
+          reason: 'MCQ shortfall in $name',
+        );
+        expect(
+          physicsSAQs.where((q) => q.chapter == name).length,
+          greaterThanOrEqualTo(20),
+          reason: 'SAQ shortfall in $name',
+        );
+        expect(
+          physicsCqs.where((q) => q.chapter == name).length,
+          greaterThanOrEqualTo(10),
+          reason: 'CQ shortfall in $name',
+        );
       }
     });
 
@@ -76,8 +87,11 @@ void main() {
             .map((q) => q.source)
             .toSet();
         for (final s in QuestionSource.values) {
-          expect(sources.contains(s), isTrue,
-              reason: 'chapter "$name" is missing ${s.name} questions');
+          expect(
+            sources.contains(s),
+            isTrue,
+            reason: 'chapter "$name" is missing ${s.name} questions',
+          );
         }
       }
     });
@@ -98,8 +112,11 @@ void main() {
     test('MCQs have four distinct non-empty options and a valid key', () {
       for (final q in physicsMcqs) {
         expect(q.options.length, 4, reason: q.id);
-        expect(q.options.toSet().length, 4,
-            reason: 'repeated option in ${q.id}');
+        expect(
+          q.options.toSet().length,
+          4,
+          reason: 'repeated option in ${q.id}',
+        );
         for (final o in q.options) {
           expect(o.trim(), isNotEmpty, reason: 'blank option in ${q.id}');
         }
@@ -138,8 +155,10 @@ void main() {
     });
 
     test('no placeholder text leaks into the bank', () {
-      final banned =
-          RegExp(r'TODO|FIXME|lorem|placeholder|xxx', caseSensitive: false);
+      final banned = RegExp(
+        r'TODO|FIXME|lorem|placeholder|xxx',
+        caseSensitive: false,
+      );
       for (final q in physicsMcqs) {
         expect(banned.hasMatch(q.questionText), isFalse, reason: q.id);
         expect(banned.hasMatch(q.explanation), isFalse, reason: q.id);
@@ -163,8 +182,11 @@ void main() {
         'accounting': 0,
       };
       expected.forEach((subject, count) {
-        expect(allMCQs.where((q) => q.subjectId == subject).length, count,
-            reason: '$subject lost questions during the physics merge');
+        expect(
+          allMCQs.where((q) => q.subjectId == subject).length,
+          count,
+          reason: '$subject lost questions during the physics merge',
+        );
       });
     });
 
@@ -176,8 +198,10 @@ void main() {
         expect(allMCQs.any((m) => m.id == q.id), isTrue, reason: q.id);
       }
       // The 55 physics MCQs that predate this bank must still be present.
-      expect(allMCQs.where((q) => q.subjectId == 'physics').length,
-          physicsMcqs.length + 55);
+      expect(
+        allMCQs.where((q) => q.subjectId == 'physics').length,
+        physicsMcqs.length + 55,
+      );
     });
   });
 }

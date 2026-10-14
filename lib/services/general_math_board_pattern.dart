@@ -92,38 +92,48 @@ class GeneralMathBoardPatternGenerator {
     Random? random,
   }) {
     final rng = random ?? Random();
-    final mathMcqs = mcqBank.where((q) =>
-        q.subjectId == 'general_math' &&
-        q.source == QuestionSource.original &&
-        q.sourceLabel == 'Original chapter practice');
-    final mathSaqs = saqBank.where((q) =>
-        q.subjectId == 'general_math' &&
-        q.source == QuestionSource.original &&
-        q.sourceLabel == 'Original chapter practice');
-    final mathCqs = cqBank.where((q) =>
-        q.subjectId == 'general_math' &&
-        q.source == QuestionSource.original &&
-        q.sourceLabel == 'Original chapter practice');
+    final mathMcqs = mcqBank.where(
+      (q) =>
+          q.subjectId == 'general_math' &&
+          q.source == QuestionSource.original &&
+          q.sourceLabel == 'Original chapter practice',
+    );
+    final mathSaqs = saqBank.where(
+      (q) =>
+          q.subjectId == 'general_math' &&
+          q.source == QuestionSource.original &&
+          q.sourceLabel == 'Original chapter practice',
+    );
+    final mathCqs = cqBank.where(
+      (q) =>
+          q.subjectId == 'general_math' &&
+          q.source == QuestionSource.original &&
+          q.sourceLabel == 'Original chapter practice',
+    );
 
     final mcqs = <Question>[];
     final saqs = <ShortQuestion>[];
     final cqs = <CreativeQuestion>[];
 
     for (final division in GeneralMathDivisions.names) {
-      mcqs.addAll(_take(
-        mathMcqs,
-        (q) => q.chapter,
-        division,
-        mcqDistribution[division]!,
-        rng,
-      ));
-      saqs.addAll(_take(
-        mathSaqs,
-        (q) => q.chapter,
-        division,
-        saqDistribution[division]!,
-        rng,
-      ));
+      mcqs.addAll(
+        _take(
+          mathMcqs,
+          (q) => q.chapter,
+          division,
+          mcqDistribution[division]!,
+          rng,
+        ),
+      );
+      saqs.addAll(
+        _take(
+          mathSaqs,
+          (q) => q.chapter,
+          division,
+          saqDistribution[division]!,
+          rng,
+        ),
+      );
       cqs.addAll(
         _take(
           mathCqs,
